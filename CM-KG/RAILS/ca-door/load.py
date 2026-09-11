@@ -100,5 +100,9 @@ def main():
     nodes = [{'node': f'{c}-cm-kg', 'country': nme, 'registry': f'{c}-cm-kg.org', 'door': f'https://mcp.{c}-cm-kg.ai', 'live': c == 'ca', 'as_of': AS_OF if c == 'ca' else None, 'records': n if c == 'ca' else 0}
              for c, nme in [('ca', 'Canada'), ('uk', 'United Kingdom'), ('au', 'Australia'), ('sg', 'Singapore'), ('ch', 'Switzerland'), ('de', 'Germany'), ('fr', 'France'), ('nl', 'Netherlands'), ('hk', 'Hong Kong'), ('jp', 'Japan'), ('kr', 'South Korea'), ('us', 'United States')]]
     json.dump(nodes, open(os.path.join(OUT, 'nodes.json'), 'w', encoding='utf-8'), indent=1)
+    # static set (favicons, manifest) kept in CM-KG\DOOR\static and carried into data/ on every regeneration
+    static_dir = os.path.join(ROOT, r'CM-KG\DOOR\static')
+    if os.path.isdir(static_dir):
+        for f in os.listdir(static_dir): shutil.copy(os.path.join(static_dir, f), os.path.join(OUT, f))
     print('records', n, counts, '| events', facts['events'], 'issuers with events', facts['issuers_with_events'], '| index tickers', len(index['ticker']), 'isins', len(index['isin']), 'leis', len(index['lei']))
 if __name__ == '__main__': main()

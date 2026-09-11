@@ -104,7 +104,7 @@ async function handleRpc(env, origin, host, msg) {
 // ---- pages
 function human(host, node) {
   const title = node === 'global' ? 'Capital Markets Knowledge Graph — global door' : 'Capital Markets Knowledge Graph — Canada node door';
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>body{font-family:system-ui,sans-serif;max-width:72ch;margin:2rem auto;padding:0 1rem;color:#14213D;line-height:1.5}code{background:#f3f4f6;padding:.1em .3em}h1{font-size:1.4rem}</style></head><body><h1>${title}</h1>
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" content="#14213D"><style>body{font-family:system-ui,sans-serif;max-width:72ch;margin:2rem auto;padding:0 1rem;color:#14213D;line-height:1.5}code{background:#f3f4f6;padding:.1em .3em}h1{font-size:1.4rem}</style></head><body><h1>${title}</h1>
 <p>A read-only MCP door over the Capital Markets Knowledge Graph. ${node === 'global' ? 'Routes by identifier to the node that holds the name. Live today: Canada (ca-cm-kg).' : 'Scope: TSX, TSXV, CSE, Cboe Canada.'} Public-record only: no prices, no quotes, no licensed market data. No authentication.</p>
 <p>MCP endpoint (Streamable HTTP): <code>https://${host}/mcp</code><br>Facts: <a href="/facts.json">/facts.json</a> · <a href="/llms.txt">/llms.txt</a> · record: <code>/record/TSX/SHOP</code> · events: <code>/events/TSX/SHOP?since=2026-06-01</code></p>
 <p>Tools: resolve_issuer · get_record · list_events_since · list_aliases · list_nodes. Every field carries its source, its reader and a state (sourced · filled · confirmed · conflict). Records are versioned and never deleted; no signature is present until cm-record signing exists.</p>
@@ -156,6 +156,12 @@ export default {
     if (p === '/facts.json') return json({ door: host, scope: node, ...FACTS, live_nodes: NODES.filter(n => n.live).map(n => n.node), mcp_url: `https://${host}/mcp` }, 200, node, asOf, ver, 'public, max-age=300');
     if (p === '/nodes.json') return json(NODES, 200, node, asOf, ver, 'public, max-age=3600');
     if (p === '/robots.txt') return new Response('User-agent: *\nAllow: /\n', { headers: { 'content-type': 'text/plain', ...headers({ node }, asOf, ver) } });
+    if (['/favicon.ico', '/favicon.svg', '/apple-touch-icon.png', '/icon-192.png', '/icon-512.png', '/site.webmanifest'].includes(p)) {
+      const a = await env.ASSETS.fetch(new Request(origin + p));
+      if (!a.ok) return json({ error: 'not_found' }, 404, node, asOf, ver);
+      const h = new Headers(a.headers); h.set('cache-control', 'public, max-age=86400'); for (const [k, v] of Object.entries(headers({ node }, asOf, ver))) h.set(k, v);
+      return new Response(a.body, { status: 200, headers: h });
+    }
     let m = p.match(/^\/record\/([A-Z\-]+)\/(.+)$/i);
     if (m) { const r = await record(env, origin, `ca-cm-kg/${m[1].toUpperCase()}/${decodeURIComponent(m[2])}`); return r ? json(r, 200, node, asOf, ver, 'public, max-age=3600') : json({ error: 'not_found' }, 404, node, asOf, ver); }
     m = p.match(/^\/events\/([A-Z\-]+)\/(.+)$/i);
