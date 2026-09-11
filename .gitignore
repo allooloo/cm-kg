@@ -1,0 +1,8 @@
+AGENT KEYS/
+CM-KG/RAILS/**/raw/
+CM-KG/RAILS/logs/
+CM-KG/ISSUERS/*.xlsx
+CM-KG/DISCLOSURE/
+SITE/node_modules/
+__pycache__/
+*.pyc
