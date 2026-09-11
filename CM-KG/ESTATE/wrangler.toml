@@ -1,0 +1,13 @@
+name = "estate-pages"
+main = "worker/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = false
+preview_urls = false
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+
+[observability]
+enabled = true
