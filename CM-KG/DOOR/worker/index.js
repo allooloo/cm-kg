@@ -24,7 +24,7 @@ async function boot(env, origin) {
 }
 function nodeOf(host) { return host.startsWith('mcp.capitalmarketsknowledgegraph') ? 'global' : 'ca-cm-kg'; }
 function headers(extra = {}, asOf = '', version = '') {
-  return { 'X-CMR-Node': extra.node || '', 'X-CMR-As-Of': asOf, 'X-CMR-Version': String(version), 'X-CMR-Source': 'public-record', 'X-CMR-Operator': OPERATOR,
+  return { 'X-CMR-Node': extra.node || '', 'X-CMR-As-Of': asOf, 'X-CMR-Version': String(version), 'X-CMR-Source': 'public-record', 'X-CMR-Operator': OPERATOR, 'Strict-Transport-Security': 'max-age=31536000',
     'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Accept, Mcp-Session-Id, Mcp-Protocol-Version, Authorization', 'Access-Control-Expose-Headers': 'X-CMR-Node, X-CMR-As-Of, X-CMR-Version, X-CMR-Source, X-CMR-Operator, Mcp-Session-Id', ...extra.h };
 }
 function json(obj, status, node, asOf, version, cache) {
