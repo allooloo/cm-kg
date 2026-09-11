@@ -1,6 +1,9 @@
 # Canada passes 2 + 3 daily refresh — runs after CM-KG\RAILS\ca-width1\run_refresh.ps1
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
+# pond rule: skip on the node lock; open a new dated drop (raw\ becomes a junction to it); nothing is deleted or moved
+if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\ca-cm-kg\.lock') { 'ca-cm-kg locked (build order in flight): refresh skipped'; exit 0 }
+python ..\pond_open.py ca-cm-kg ca-fill-confirm fill-confirm
 $env:PYTHONIOENCODING = 'utf-8'
 if (-not $env:LIVE_HOURS) { $env:LIVE_HOURS = '168' }   # weekly cadence (standing change 2026-09-10); daily not switched on
 $env:LIVE_MAX_ISSUERS = '300'

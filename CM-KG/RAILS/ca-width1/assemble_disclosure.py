@@ -9,12 +9,19 @@ from common import *
 OUT_X = sys.argv[1] if len(sys.argv) > 1 else r'C:\ALLOOLOO\CM-KG\DISCLOSURE\ca-disclosure.xlsx'
 OUT_J = sys.argv[2] if len(sys.argv) > 2 else r'C:\ALLOOLOO\CM-KG\DISCLOSURE\events\ca-events.jsonl'
 issuers = load_issuers(); byk = {key(r): r for r in issuers}
+import pond
+NODE = 'ca-cm-kg'
 def load(fn):
-    if not os.path.exists(fn): return []
-    out = []
-    for line in open(fn, encoding='utf-8'):
-        try: out.append(json.loads(line))
-        except Exception: pass
+    """pond rule 3: every drop of this rail (POND\\ca-cm-kg\\width1\\<date>\\) plus the working folder; the dedupe key keeps one copy per event"""
+    out = []; seen_paths = set()
+    paths = [p for d, p in pond.drops(NODE, 'width1')] + (['raw'] if os.path.isdir('raw') else [])
+    for p in paths:
+        f = os.path.join(p, os.path.basename(fn)); rp = os.path.realpath(f)
+        if not os.path.exists(f) or rp in seen_paths: continue
+        seen_paths.add(rp)
+        for line in open(f, encoding='utf-8'):
+            try: out.append(json.loads(line))
+            except Exception: pass
     return out
 events = []; gaps = []; src_stats = Counter(); worker_notes = defaultdict(list)
 def take(rows, worker):
@@ -36,6 +43,15 @@ for d in load('raw/wire_search.jsonl'):
             events.append(event(r, classify(u['title']), dt, u['title'], u['wire'], u['url'], 'Tavily search (wire domains) + URL date', wire=u['wire']))
 for e in load('raw/cse_bulletins.jsonl'): events.append(e)
 for e in load('raw/grok_live.jsonl'): events.append(e)   # 48-hour live layer (read by Grok (live)), present on daily runs only
+# pond rule 3: the last versioned event set is merged too (history is never dropped)
+_prev = pond.latest_assembled(NODE, 'ca-events.jsonl') or (OUT_J if os.path.exists(OUT_J) else None)
+if _prev:
+    _n = 0
+    for line in open(_prev, encoding='utf-8'):
+        try:
+            e = json.loads(line); e.pop('as_of', None); e.pop('node', None); e.pop('width', None); events.append(e); _n += 1
+        except Exception: pass
+    print('merged prior assembled events', _n, 'from', _prev, flush=True)
 # re-classify wire releases from titles (rules live in common.py), keep bulletin types as set by their workers
 for e in events:
     if e['read_by'].startswith(('Tavily', 'newsfilecorp', 'newswire.ca', 'prnewswire')): e['event_type'] = classify(e['title'])

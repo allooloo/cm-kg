@@ -9,12 +9,23 @@ EVENTS_JSONL = r'C:\ALLOOLOO\CM-KG\DISCLOSURE\events\ca-events.jsonl'
 W1 = r'C:\ALLOOLOO\CM-KG\RAILS\ca-width1\raw'
 os.makedirs('raw', exist_ok=True); os.makedirs('raw/bodies', exist_ok=True)
 E = os.environ
+import pond
+NODE = 'ca-cm-kg'
 def jload(fn):
-    out = []
-    if os.path.exists(fn):
-        for line in open(fn, encoding='utf-8'):
+    """pond rule 3: a raw/<file> is read from every drop of this rail (newest wins per 'key' when rows carry one, union otherwise) plus the working folder"""
+    out = []; seen = set()
+    paths = ([p for d, p in pond.drops(NODE, 'fill-confirm')] + (['raw'] if os.path.isdir('raw') else [])) if fn.startswith('raw/') and fn.count('/') == 1 else [None]
+    for p in paths:
+        f = fn if p is None else os.path.join(p, os.path.basename(fn)); rp = os.path.realpath(f)
+        if not os.path.exists(f) or rp in seen: continue
+        seen.add(rp)
+        for line in open(f, encoding='utf-8'):
             try: out.append(json.loads(line))
             except Exception: pass
+    if out and all(isinstance(d, dict) and 'key' in d for d in out[:50]):
+        byk = {}
+        for d in out: byk[d.get('key')] = d   # newest drop last -> wins
+        return list(byk.values())
     return out
 def events(): return jload(EVENTS_JSONL)
 def all_rows():

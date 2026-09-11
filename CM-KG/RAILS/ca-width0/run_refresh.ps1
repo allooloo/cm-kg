@@ -2,6 +2,9 @@
 # Runtime on 2026-09-10 hardware: fetch ~2 min · CSE pages ~3 min · Tavily workers ~50 min in parallel · GLEIF name matcher ~80 min (60 req/min cap) · assemble ~1 min.
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
+# pond rule: skip on the node lock; open a new dated drop (raw\ becomes a junction to it); nothing is deleted or moved
+if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\ca-cm-kg\.lock') { 'ca-cm-kg locked (build order in flight): refresh skipped'; exit 0 }
+python ..\pond_open.py ca-cm-kg ca-width0 width0
 $env:PYTHONIOENCODING = 'utf-8'
 $py = 'python'
 

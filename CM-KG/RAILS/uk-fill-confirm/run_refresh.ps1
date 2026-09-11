@@ -3,6 +3,9 @@
 # or registrar, Mistral for non-English announcements, confirm for issuers whose fields changed, then both rebuilds and the spend line.
 $ErrorActionPreference = 'Continue'
 Set-Location $PSScriptRoot
+# pond rule: skip on the node lock; open a new dated drop (raw\ becomes a junction to it); nothing is deleted or moved
+if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\uk-cm-kg\.lock') { 'uk-cm-kg locked (build order in flight): refresh skipped'; exit 0 }
+python ..\pond_open.py uk-cm-kg uk-fill-confirm fill-confirm
 $log = Join-Path $PSScriptRoot ('raw\refresh-' + (Get-Date -Format 'yyyy-MM-dd') + '.log')
 function Step($name, $cmd) { "== $name $(Get-Date -Format 'yyyy-MM-dd')" | Tee-Object -FilePath $log -Append; & $cmd 2>&1 | Tee-Object -FilePath $log -Append }
 Step 'Grok live layer (7 days)' { $env:LIVE_HOURS = '168'; $env:LIVE_MAX_ISSUERS = '200'; python grok_live.py }
