@@ -3,16 +3,17 @@
 const OPERATOR = 'Allooloo Technologies Corp.';
 const SERVER_VERSION = '0.1.0';
 const PROTOCOL = '2025-06-18';
+const ANN = { readOnlyHint: true, destructiveHint: false, openWorldHint: false, idempotentHint: true };
 const TOOLS = [
-  { name: 'resolve_issuer', description: 'Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version.',
+  { name: 'resolve_issuer', title: 'Resolve issuer', annotations: { title: 'Resolve issuer', ...ANN }, description: 'Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version.',
     inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker (SHOP, TSX:SHOP, SHOP.TO), ISIN (CA82509L1076), LEI (20 characters), or an exact legal name or sourced alias (CPKC).' } }, required: ['identifier'] } },
-  { name: 'get_record', description: 'Return the full Capital Markets Record for an issuer, with per-field source, reader and state; optionally a prior version.',
+  { name: 'get_record', title: 'Get Capital Markets Record', annotations: { title: 'Get Capital Markets Record', ...ANN }, description: 'Return the full Capital Markets Record for an issuer, with per-field source, reader and state; optionally a prior version.',
     inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker, ISIN, LEI, or a CMR key such as ca-cm-kg/TSX/SHOP.' }, version: { type: 'integer', description: 'Prior version number; omitted = current.' } }, required: ['identifier'] } },
-  { name: 'list_events_since', description: 'Return dated, URL\'d disclosure events for an issuer (releases, bulletins, halts, corporate actions, statement and record dates) since a date.',
+  { name: 'list_events_since', title: 'List disclosure events since a date', annotations: { title: 'List disclosure events since a date', ...ANN }, description: 'Return dated, URL\'d disclosure events for an issuer (releases, bulletins, halts, corporate actions, statement and record dates) since a date.',
     inputSchema: { type: 'object', properties: { identifier: { type: 'string' }, since: { type: 'string', description: 'YYYY-MM-DD; omitted = full 12-month window.' }, cursor: { type: 'integer', description: 'Offset returned by the previous page.' }, limit: { type: 'integer', description: 'Page size, default 50, max 200.' } }, required: ['identifier'] } },
-  { name: 'list_aliases', description: 'Return the sourced trade and former names an issuer releases under.',
+  { name: 'list_aliases', title: 'List sourced aliases', annotations: { title: 'List sourced aliases', ...ANN }, description: 'Return the sourced trade and former names an issuer releases under.',
     inputSchema: { type: 'object', properties: { identifier: { type: 'string' } }, required: ['identifier'] } },
-  { name: 'list_nodes', description: 'Return the twelve market nodes and which are live.', inputSchema: { type: 'object', properties: {} } },
+  { name: 'list_nodes', title: 'List market nodes', annotations: { title: 'List market nodes', ...ANN }, description: 'Return the twelve market nodes and which are live.', inputSchema: { type: 'object', properties: {} } },
 ];
 let INDEX = null, FACTS = null, NODES = null;
 async function asset(env, origin, path) {

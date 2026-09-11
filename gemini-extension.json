@@ -1,0 +1,12 @@
+{
+  "name": "cm-kg",
+  "version": "0.1.0",
+  "description": "Capital Markets Knowledge Graph — the global MCP door. Know every Canadian issuer, agent-ready: resolve by ticker, ISIN or LEI; read the Capital Markets Record with per-field source, reader and state; list dated, URL-carrying disclosure events. Public-record only, no auth. Operator: Allooloo Technologies Corp.",
+  "mcpServers": {
+    "cm-kg": {
+      "httpUrl": "https://mcp.capitalmarketsknowledgegraph.ai/mcp",
+      "timeout": 30000,
+      "trust": false
+    }
+  }
+}
