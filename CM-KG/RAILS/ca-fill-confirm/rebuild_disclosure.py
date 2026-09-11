@@ -126,5 +126,6 @@ mt = sheet('Method', ['Item', 'Detail'], [list(m) for m in METHOD], [34, 150])
 for row in mt.iter_rows(min_row=2):
     for c in row: c.alignment = Alignment(wrap_text=True, vertical='top')
 wb.save(XL)
+import pond, shutil as _sh; _ad = pond.assembled('ca-cm-kg'); _sh.copy(XL, os.path.join(_ad, 'ca-disclosure.xlsx')); _sh.copy(JL, os.path.join(_ad, 'ca-events.jsonl')); print('versioned copy', _ad)  # pond rule 2
 print('saved', XL, JL); print('events', len(EV), 'confirmed', conf_n, 'touched', dict(touched)); print('by state', Counter(e['state'] for e in EV)); print('issuers with events', len(per), '/', len(issuers), 'zero', len(zero))
 print('zero first 20', [f"{r['exchange']}:{r['ticker']} {r['name']}" for r in zero[:20]])

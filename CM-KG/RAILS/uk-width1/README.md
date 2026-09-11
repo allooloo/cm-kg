@@ -45,6 +45,9 @@ Event types: `regulatory_announcement` (RNS not otherwise typed) · `financial_s
 - **Aquis public API**: an Aquis Elements data account would replace the browser-session read of the announcements feed.
 - **LSE news / notices**: an LSEG developer account for the authenticated news components (not blocking: Investegate carries RNS).
 
+## Incident — 2026-09-11 scheduled-sweep collision
+The Task Scheduler job "Allooloo CM-KG UK weekly" (Friday 12:00 machine time) was registered during the ORDER-009 build and fired the same day at 12:00 while the build was in flight. Its Width 1 step deleted `raw/investegate.jsonl`, `raw/ch_filings.jsonl` and `raw/wire_search.jsonl`, re-ran the three workers over a 7-day window, and overwrote `uk-events.jsonl` and `uk-disclosure.xlsx` (127,884 events → 5,195). It reached the Fill + Confirm Grok step before it was stopped at 12:57; the door loader and deploy did not run; the OpenAI batches, confirm and rebuild files were untouched. Recovery: the 7-day outputs were set aside as a drop (`weekly-7d-2026-09-11`), the three workers were re-run over 12 months, the assembler was changed to merge onto the existing event set on refresh runs, the weekly script moves prior outputs aside instead of deleting, and the task is disabled until the pond rule (CLAUDE.md) is in force with a node lock. Root cause: no lock between a build order and the scheduled sweep, and a refresh that rebuilt from a single run instead of merging drops.
+
 ## Known broken / not available (2026-09-11)
 - No LSE market notices or AIM notices as events (see the table). Aquis "notices" are trading-venue notices, not issuer events.
 - Business Wire blocks direct fetch; GlobeNewswire and Business Wire releases come from search, dated from the URL.

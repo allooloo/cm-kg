@@ -21,6 +21,11 @@ Weekly: live layer + Fill + Confirm over a 7-day window — Task Scheduler "Allo
 Monthly: full identity re-harvest, jurisdiction from the GLEIF legal-jurisdiction field, unclassified fund rows out of corporate scope — Task Scheduler "Allooloo CM-KG Canada monthly", 15th 18:00 build-machine time, after the TMX monthly listed-companies workbook is out.
 Daily not switched on. Alias channels: GLEIF other names · wire company page · exchange profile · issuer website <title> (site from the exchange profile's website field).
 
+## Current setting — United Kingdom (set Sept 11 2026)
+Weekly: Width 1 refresh over a 7-day window (Investegate RNS, Companies House filings, wire search), then Fill + Confirm (Grok live layer 168 h, aliases, bodies, ChatGPT batch, Gemini, Mistral, confirm, rebuilds, spend), then the door reload and deploy — Task Scheduler "Allooloo CM-KG UK weekly", Friday 12:00 build-machine time (Central Standard Time (Mexico)) = 18:00 London in summer, after the LSE close. Rail: CM-KG\RAILS\uk-weekly.ps1.
+Monthly identity re-harvest: CM-KG\RAILS\uk-width0\run_refresh.ps1, run on order until the first month turns (no Task Scheduler clock yet). Aquis: aquis.eu refuses plain clients, so the roster and the announcements feed are read in a browser session before a run (standing HITL).
+Alias channels: Companies House previous names · GLEIF other names · Investegate page display name · LSE issuer profile display name · issuer news page title found by Perplexity.
+
 ## Node clock
 Every node sweeps in its own market's business day, in the market's time zone, after close. Twelve nodes = twelve clocks.
 Never a global run at one hour.

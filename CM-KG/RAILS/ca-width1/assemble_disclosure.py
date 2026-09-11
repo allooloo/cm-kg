@@ -131,6 +131,7 @@ mt = sheet('Method', MCOLS, [list(m) for m in METHOD], [30, 150])
 for row in mt.iter_rows(min_row=2):
     for c in row: c.alignment = Alignment(wrap_text=True, vertical='top')
 os.makedirs(os.path.dirname(OUT_X), exist_ok=True); wb.save(OUT_X)
+import pond, shutil as _sh; _ad = pond.assembled('ca-cm-kg'); _sh.copy(OUT_X, os.path.join(_ad, 'ca-disclosure.xlsx')); _sh.copy(OUT_J, os.path.join(_ad, 'ca-events.jsonl')); print('versioned copy', _ad)  # pond rule 2
 # report
 print('saved', OUT_X, 'and', OUT_J)
 print('events', len(events)); print('by type', Counter(e['event_type'] for e in events).most_common())

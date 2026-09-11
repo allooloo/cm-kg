@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.allooloo/cm-kg",
-  "title": "Capital Markets Agents: MCP+A2A Canada",
-  "description": "Know every Canadian issuer, agent-ready. Instantly. Provably.",
-  "version": "0.1.0",
+  "title": "Capital Markets Agents: MCP+A2A Canada + United Kingdom",
+  "description": "Know every Canadian and UK-listed issuer, agent-ready. Instantly. Provably.",
+  "version": "0.2.0",
   "websiteUrl": "https://capitalmarketsknowledgegraph.ai",
   "repository": {
     "url": "https://github.com/allooloo/cm-kg",
@@ -19,17 +19,48 @@
     "io.modelcontextprotocol.registry/publisher-provided": {
       "operator": "Allooloo Technologies Corp.",
       "category": "agentic market dataset",
-      "keywords": ["agentic market dataset", "capital markets", "issuer record", "ISIN", "LEI", "KYP", "Canada", "TSX"],
+      "keywords": [
+        "agentic market dataset",
+        "capital markets",
+        "issuer record",
+        "ISIN",
+        "LEI",
+        "KYP",
+        "Canada",
+        "TSX",
+        "United Kingdom",
+        "LSE",
+        "AIM",
+        "Companies House"
+      ],
       "authentication": "none",
       "access": "read-only, public-record only; no prices, quotes or licensed market data",
       "record_spec": "CMR v0 (cm-record.org, draft)",
-      "nodes_live": ["ca-cm-kg"],
+      "nodes_live": [
+        "ca-cm-kg",
+        "uk-cm-kg"
+      ],
       "tools": [
-        { "name": "resolve_issuer", "description": "Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version." },
-        { "name": "get_record", "description": "Return the full Capital Markets Record for an issuer, with per-field source, reader and state; optionally a prior version." },
-        { "name": "list_events_since", "description": "Return dated, URL'd disclosure events for an issuer (releases, bulletins, halts, corporate actions, statement and record dates) since a date." },
-        { "name": "list_aliases", "description": "Return the sourced trade and former names an issuer releases under." },
-        { "name": "list_nodes", "description": "Return the twelve market nodes and which are live." }
+        {
+          "name": "resolve_issuer",
+          "description": "Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version."
+        },
+        {
+          "name": "get_record",
+          "description": "Return the full Capital Markets Record for an issuer, with per-field source, reader and state; optionally a prior version."
+        },
+        {
+          "name": "list_events_since",
+          "description": "Return dated, URL'd disclosure events for an issuer (releases, bulletins, halts, corporate actions, statement and record dates) since a date."
+        },
+        {
+          "name": "list_aliases",
+          "description": "Return the sourced trade and former names an issuer releases under."
+        },
+        {
+          "name": "list_nodes",
+          "description": "Return the twelve market nodes and which are live."
+        }
       ],
       "facts": "https://mcp.capitalmarketsknowledgegraph.ai/facts.json",
       "llms_txt": "https://mcp.capitalmarketsknowledgegraph.ai/llms.txt"

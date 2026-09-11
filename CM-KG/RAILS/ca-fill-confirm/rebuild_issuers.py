@@ -107,4 +107,5 @@ if 'Method' in wb.sheetnames:
         mt.append([a, b])
         for c in mt[mt.max_row]: c.font = ARIAL; c.alignment = Alignment(wrap_text=True, vertical='top')
 wb.save(SRC)
+import pond; _ad = pond.assembled('ca-cm-kg'); shutil.copy(SRC, os.path.join(_ad, 'ca-issuers.xlsx')); print('versioned copy', _ad)  # pond rule 2
 print('saved', SRC); print('touched', dict(touched)); print('states', sorted(states.items()))
