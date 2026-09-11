@@ -37,7 +37,22 @@ UK = {'tabs': {'LSE Main Market': 'LSE', 'AIM': 'AIM', 'Aquis Stock Exchange': '
                  'nsm_link': ('FCA NSM link (unverified — search entry)', None, 'NSM read by', None, 'FCA NSM link'), 'hq_city': ('HQ city', 'HQ source', 'HQ read by', 'HQ State', 'HQ city'), 'hq_country': ('HQ country', 'HQ source', 'HQ read by', None, 'HQ city'),
                  'website': ('Website', 'Website source', 'Website read by', None, None), 'admission_date': ('Admission date', 'Admission date source', 'Roster read by', None, 'Admission date')},
       'second': {'isin': 'ISIN', 'lei': 'LEI', 'companies_house_number': 'Companies House number', 'registrar': 'Registrar', 'auditor': 'Auditor', 'newswire': 'Newswire of habit', 'jurisdiction': 'Incorporation jurisdiction'}, 'prefixes': ['LSE', 'AIM', 'AQSE']}
-MAPS = {'ca': CA, 'uk': UK}
+AU = {'tabs': {'ASX': 'ASX', 'NSX': 'NSX', 'TMX Australia': 'TMX-AU'}, 'ticker': 'ASX code', 'name': 'Legal name', 'default_as_of': '2026-09-11',
+      'fields': {'name': ('Legal name', 'Roster source', 'Roster read by', None, None), 'ticker': ('ASX code', 'Roster source', 'Roster read by', None, None), 'exchange': ('Exchange', 'Roster source', 'Roster read by', None, None),
+                 'security_type': ('Security type', 'Roster source', 'Roster read by', None, None), 'share_description': ('Share description', 'Roster source', 'Roster read by', None, None),
+                 'isin': ('ISIN', 'ISIN source', 'ISIN read by', 'ISIN State', 'ISIN'), 'lei': ('LEI', 'LEI source', 'LEI read by', 'LEI State', 'LEI'), 'lei_registration_status': ('LEI registration status', 'LEI source', 'LEI read by', None, 'LEI'),
+                 'acn': ('ACN', 'ASIC source', 'ASIC read by', 'ASIC State', 'ACN'), 'abn': ('ABN', 'ASIC source', 'ASIC read by', 'ASIC State', 'ACN'), 'asic_link': ('ASIC link (unverified — search entry)', None, 'ASIC read by', None, 'ACN'),
+                 'asic_status': ('ASIC status', 'ASIC source', 'ASIC read by', None, 'ASIC status'), 'asic_registration_date': ('ASIC registration date', 'ASIC source', 'ASIC read by', None, 'ACN'),
+                 'registered_office': ('Registered office', 'Registered office source', 'Registered office read by', 'Registered office State', 'Registered office'), 'state': ('State', 'State source', 'State read by', 'State State', 'State'),
+                 'jurisdiction': ('Incorporation jurisdiction', 'Jurisdiction source', 'Jurisdiction read by', 'Jurisdiction State', 'Incorporation jurisdiction'),
+                 'sector': ('GICS sector', 'Sector source', 'Sector read by', 'Sector State', 'GICS sector'), 'industry_group': ('GICS industry group', 'Sector source', 'Sector read by', None, 'GICS sector'),
+                 'auditor': ('Auditor', 'Auditor source', 'Auditor read by', 'Auditor State', 'Auditor'), 'annual_report': ('Annual report (ASX announcement)', 'Annual report source', 'Annual report read by', None, 'Annual report (ASX announcement)'),
+                 'accounts_period_end': ('Accounts period end', 'Auditor source', 'Auditor read by', None, None), 'going_concern': ('Going concern (annual report)', 'Auditor source', 'Auditor read by', None, None),
+                 'share_registry': ('Share registry', 'Share registry source', 'Share registry read by', 'Share registry State', 'Share registry'), 'newswire': ('Newswire of habit', 'Newswire releases seen', 'Newswire read by', 'Newswire State', 'Newswire of habit'),
+                 'asx_announcements_12m': ('ASX announcements (12 months)', 'ASX announcements link', 'Newswire read by', None, 'Newswire of habit'), 'asx_announcements_link': ('ASX announcements link', 'ASX announcements link', 'Newswire read by', None, 'Newswire of habit'),
+                 'hq_city': ('HQ city', 'HQ source', 'HQ read by', 'HQ State', 'HQ city'), 'website': ('Website', 'Website source', 'Roster read by', None, None), 'listing_date': ('Listing date', 'Listing date source', 'Roster read by', None, 'Listing date')},
+      'second': {'isin': 'ISIN', 'lei': 'LEI', 'acn': 'ACN', 'share_registry': 'Share registry', 'auditor': 'Auditor', 'newswire': 'Newswire of habit', 'state': 'State'}, 'prefixes': ['ASX', 'NSX']}
+MAPS = {'ca': CA, 'uk': UK, 'au': AU}
 def field(d, spec, gaps):
     vcol, scol, rcol, stcol, glabel = spec
     v = d.get(vcol)
@@ -85,7 +100,7 @@ def load_node(cc, index, facts_nodes):
             evs = sorted(ev_by.get((tab, t), []), key=lambda e: e['date'], reverse=True)
             rec = {'cmr': key, 'node': node, 'as_of': as_of, 'version': version, 'identity': identity, 'aliases': aliases, 'events_url': f'{host}/events/{exs}/{t}', 'event_count': len(evs), 'gaps': [{'field': f, 'reason': w} for f, w in gaps.items()]}
             json.dump(rec, open(os.path.join(OUT, 'records', node, exs, slug_ticker(t) + '.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
-            json.dump([{k2: e.get(k2) for k2 in ('date', 'event_type', 'title', 'rns_category', 'ch_filing_type', 'wire', 'source', 'url', 'read_by', 'state', 'detail', 'second_source', 'second_read_by', 'period_end', 'statement_date', 'auditor_named', 'going_concern', 'extract_read_by') if e.get(k2) not in (None, '')} for e in evs],
+            json.dump([{k2: e.get(k2) for k2 in ('date', 'event_type', 'title', 'rns_category', 'ch_filing_type', 'asx_category', 'price_sensitive', 'wire', 'source', 'url', 'read_by', 'state', 'detail', 'second_source', 'second_read_by', 'period_end', 'statement_date', 'auditor_named', 'going_concern', 'extract_read_by') if e.get(k2) not in (None, '')} for e in evs],
                       open(os.path.join(OUT, 'events', node, exs, slug_ticker(t) + '.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
             index['keys'].append(key); index['ticker'].setdefault(t.upper(), []).append(key)
             root = t.split('.')[0].upper()

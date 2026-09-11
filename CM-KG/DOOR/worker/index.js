@@ -1,16 +1,16 @@
-// CM-KG door — one Worker, node hosts and the global door: mcp.ca-cm-kg.ai (Canada), mcp.uk-cm-kg.ai (United Kingdom, ORDER-010),
+// CM-KG door — one Worker, node hosts and the global door: mcp.ca-cm-kg.ai (Canada), mcp.uk-cm-kg.ai (United Kingdom, ORDER-010), mcp.au-cm-kg.ai (Australia, ORDER-013),
 // mcp.capitalmarketsknowledgegraph.ai (global door: routes by identifier to the node that holds the name).
 // Read-only. No auth. Public-record only. Streamable HTTP MCP at /mcp (JSON-RPC 2.0, stateless). Data = Workers Static Assets under /data
 // laid out per node: records/<node>/<EXCHANGE>/<TICKER>.json, events/<node>/<EXCHANGE>/<TICKER>.json, one index.json across nodes.
 const OPERATOR = 'Allooloo Technologies Corp.';
-const SERVER_VERSION = '0.2.0';
+const SERVER_VERSION = '0.3.0';
 const PROTOCOL = '2025-06-18';
 const ANN = { readOnlyHint: true, destructiveHint: false, openWorldHint: false, idempotentHint: true };
 const TOOLS = [
   { name: 'resolve_issuer', title: 'Resolve issuer', annotations: { title: 'Resolve issuer', ...ANN }, description: 'Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version.',
-    inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker (SHOP, TSX:SHOP, SHOP.TO, SHEL, LSE:SHEL, SHEL.L, AIM:4BB, AQSE:DGQ), ISIN (CA82509L1076, GB00BP6MXD84), LEI (20 characters), or an exact legal name or sourced alias.' } }, required: ['identifier'] } },
+    inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker (SHOP, TSX:SHOP, SHOP.TO, SHEL, LSE:SHEL, SHEL.L, AIM:4BB, AQSE:DGQ, BHP, ASX:BHP, BHP.AX), ISIN (CA82509L1076, GB00BP6MXD84, AU000000BHP4), LEI (20 characters), or an exact legal name or sourced alias.' } }, required: ['identifier'] } },
   { name: 'get_record', title: 'Get Capital Markets Record', annotations: { title: 'Get Capital Markets Record', ...ANN }, description: 'Return the full Capital Markets Record for an issuer, with per-field source, reader and state; optionally a prior version.',
-    inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker, ISIN, LEI, or a CMR key such as ca-cm-kg/TSX/SHOP or uk-cm-kg/LSE/SHEL.' }, version: { type: 'integer', description: 'Prior version number; omitted = current.' } }, required: ['identifier'] } },
+    inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker, ISIN, LEI, or a CMR key such as ca-cm-kg/TSX/SHOP, uk-cm-kg/LSE/SHEL or au-cm-kg/ASX/BHP.' }, version: { type: 'integer', description: 'Prior version number; omitted = current.' } }, required: ['identifier'] } },
   { name: 'list_events_since', title: 'List disclosure events since a date', annotations: { title: 'List disclosure events since a date', ...ANN }, description: 'Return dated, URL\'d disclosure events for an issuer (regulatory announcements, registry filings, releases, bulletins, halts, corporate actions, statement and record dates) since a date.',
     inputSchema: { type: 'object', properties: { identifier: { type: 'string' }, since: { type: 'string', description: 'YYYY-MM-DD; omitted = full 12-month window.' }, cursor: { type: 'integer', description: 'Offset returned by the previous page.' }, limit: { type: 'integer', description: 'Page size, default 50, max 200.' } }, required: ['identifier'] } },
   { name: 'list_aliases', title: 'List sourced aliases', annotations: { title: 'List sourced aliases', ...ANN }, description: 'Return the sourced trade and former names an issuer releases under.',
@@ -25,7 +25,7 @@ async function asset(env, origin, path) {
 async function boot(env, origin) {
   if (!INDEX) { [INDEX, FACTS, NODES] = await Promise.all([asset(env, origin, '/index.json'), asset(env, origin, '/facts.json'), asset(env, origin, '/nodes.json')]); }
 }
-const HOST_NODE = { 'mcp.ca-cm-kg.ai': 'ca-cm-kg', 'mcp.uk-cm-kg.ai': 'uk-cm-kg' };
+const HOST_NODE = { 'mcp.ca-cm-kg.ai': 'ca-cm-kg', 'mcp.uk-cm-kg.ai': 'uk-cm-kg', 'mcp.au-cm-kg.ai': 'au-cm-kg' };
 function nodeOf(host) { return HOST_NODE[host] || 'global'; }
 function nodeFacts(node) { return (FACTS && FACTS.nodes && FACTS.nodes[node]) || null; }
 function headers(extra = {}, asOf = '', version = '') {
@@ -35,10 +35,10 @@ function headers(extra = {}, asOf = '', version = '') {
 function json(obj, status, node, asOf, version, cache) {
   return new Response(JSON.stringify(obj), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cache || 'no-store', ...headers({ node }, asOf, version) } });
 }
-// ---- identifiers: exchange prefixes and suffixes per node; suffix L (London) covers LSE and AIM alike
-const SUFFIX = { TO: ['TSX'], V: ['TSXV'], CN: ['CSE'], C: ['CSE'], NE: ['CBOE-CANADA'], CB: ['CBOE-CANADA'], L: ['LSE', 'AIM'], LN: ['LSE', 'AIM'], AQ: ['AQSE'] };
-const PREFIX = { TSX: 'TSX', TSXV: 'TSXV', 'TSX-V': 'TSXV', CVE: 'TSXV', CSE: 'CSE', CNSX: 'CSE', CNQ: 'CSE', NEO: 'CBOE-CANADA', CBOE: 'CBOE-CANADA', 'CBOE-CANADA': 'CBOE-CANADA', LSE: 'LSE', LON: 'LSE', MAIN: 'LSE', AIM: 'AIM', AQSE: 'AQSE', AQUIS: 'AQSE', NEX: 'AQSE' };
-const EX_NODE = { TSX: 'ca-cm-kg', TSXV: 'ca-cm-kg', CSE: 'ca-cm-kg', 'CBOE-CANADA': 'ca-cm-kg', LSE: 'uk-cm-kg', AIM: 'uk-cm-kg', AQSE: 'uk-cm-kg' };
+// ---- identifiers: exchange prefixes and suffixes per node; suffix L (London) covers LSE and AIM alike; AX (Australia) is ASX
+const SUFFIX = { TO: ['TSX'], V: ['TSXV'], CN: ['CSE'], C: ['CSE'], NE: ['CBOE-CANADA'], CB: ['CBOE-CANADA'], L: ['LSE', 'AIM'], LN: ['LSE', 'AIM'], AQ: ['AQSE'], AX: ['ASX'], AU: ['ASX'], NS: ['NSX'] };
+const PREFIX = { TSX: 'TSX', TSXV: 'TSXV', 'TSX-V': 'TSXV', CVE: 'TSXV', CSE: 'CSE', CNSX: 'CSE', CNQ: 'CSE', NEO: 'CBOE-CANADA', CBOE: 'CBOE-CANADA', 'CBOE-CANADA': 'CBOE-CANADA', LSE: 'LSE', LON: 'LSE', MAIN: 'LSE', AIM: 'AIM', AQSE: 'AQSE', AQUIS: 'AQSE', NEX: 'AQSE', ASX: 'ASX', XASX: 'ASX', NSX: 'NSX', XNEC: 'NSX' };
+const EX_NODE = { TSX: 'ca-cm-kg', TSXV: 'ca-cm-kg', CSE: 'ca-cm-kg', 'CBOE-CANADA': 'ca-cm-kg', LSE: 'uk-cm-kg', AIM: 'uk-cm-kg', AQSE: 'uk-cm-kg', ASX: 'au-cm-kg', NSX: 'au-cm-kg' };
 function resolveKeys(idRaw, node) {
   const id = (idRaw || '').trim();
   if (!id) return { keys: [], kind: 'empty' };
@@ -117,9 +117,10 @@ async function handleRpc(env, origin, host, msg) {
 const NODE_COPY = {
   'ca-cm-kg': { title: 'Capital Markets Knowledge Graph — Canada node door', scope: 'Scope: TSX, TSXV, CSE, Cboe Canada.', example: 'TSX/SHOP', exchanges: 'TSX, TSXV, CSE, CBOE-CANADA', ids: 'SHOP, TSX:SHOP, SHOP.TO, CSE:AWR, AUMB.V' },
   'uk-cm-kg': { title: 'Capital Markets Knowledge Graph — United Kingdom node door', scope: 'Scope: LSE Main Market, AIM, Aquis Stock Exchange.', example: 'LSE/SHEL', exchanges: 'LSE, AIM, AQSE', ids: 'SHEL, LSE:SHEL, SHEL.L, AIM:4BB, AQSE:DGQ' },
+  'au-cm-kg': { title: 'Capital Markets Knowledge Graph — Australia node door', scope: 'Scope: ASX, NSX (National Stock Exchange of Australia). TMX Australia listings await a machine-readable list.', example: 'ASX/BHP', exchanges: 'ASX, NSX', ids: 'BHP, ASX:BHP, BHP.AX, NSX:SBL' },
 };
 function human(host, node) {
-  const c = NODE_COPY[node] || { title: 'Capital Markets Knowledge Graph — global door', scope: `Routes by identifier to the node that holds the name. Live today: ${liveNodes().join(', ')}.`, example: 'uk-cm-kg/LSE/SHEL', exchanges: 'per node', ids: 'SHOP, SHEL, SHEL.L, AIM:4BB' };
+  const c = NODE_COPY[node] || { title: 'Capital Markets Knowledge Graph — global door', scope: `Routes by identifier to the node that holds the name. Live today: ${liveNodes().join(', ')}.`, example: 'uk-cm-kg/LSE/SHEL', exchanges: 'per node', ids: 'SHOP, SHEL, SHEL.L, AIM:4BB, BHP.AX' };
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${c.title}</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" content="#14213D"><style>body{font-family:system-ui,sans-serif;max-width:72ch;margin:2rem auto;padding:0 1rem;color:#14213D;line-height:1.5}code{background:#f3f4f6;padding:.1em .3em}h1{font-size:1.4rem}</style></head><body><h1>${c.title}</h1>
 <p>A read-only MCP door over the Capital Markets Knowledge Graph. ${c.scope} Public-record only: no prices, no quotes, no licensed market data. No authentication.</p>
 <p>MCP endpoint (Streamable HTTP): <code>https://${host}/mcp</code><br>Facts: <a href="/facts.json">/facts.json</a> · <a href="/llms.txt">/llms.txt</a> · record: <code>/record/${c.example}</code> · events: <code>/events/${c.example}?since=2026-06-01</code></p>
@@ -133,9 +134,9 @@ function llms(host, node) {
 Operator: Allooloo Technologies Corp. Read-only MCP server, Streamable HTTP at https://${host}/mcp, JSON-RPC 2.0, no authentication. Public-record only: no prices, quotes or licensed market data.
 ${scope}
 Tools: resolve_issuer (ticker, ISIN or LEI -> record summary), get_record (full Capital Markets Record with per-field source_url, read_by and state), list_events_since (paged events since a date), list_aliases (sourced trade and former names), list_nodes (the twelve market nodes, which are live, record counts).
-Identifiers: ticker with or without exchange (${c ? c.ids : 'SHOP, TSX:SHOP, SHOP.TO, SHEL, SHEL.L, AIM:4BB, AQSE:DGQ'}), ISIN, LEI. An ambiguous ticker returns every match; the door never guesses.
+Identifiers: ticker with or without exchange (${c ? c.ids : 'SHOP, TSX:SHOP, SHOP.TO, SHEL, SHEL.L, AIM:4BB, AQSE:DGQ, BHP.AX'}), ISIN, LEI. An ambiguous ticker returns every match; the door never guesses.
 Record spec: CMR v0 (cm-record.org, draft). Blank stays blank: a field with no value is present with value null and its reason. No signature key exists yet; it is omitted, not stubbed.
-GET paths: / (this door), /facts.json, /llms.txt, /nodes.json, /record/<EXCHANGE>/<TICKER> (node hosts) or /record/<node>/<EXCHANGE>/<TICKER> (any host), /events/… likewise with ?since=YYYY-MM-DD&cursor=0&limit=50. Exchanges: ${c ? c.exchanges : 'TSX, TSXV, CSE, CBOE-CANADA (ca-cm-kg); LSE, AIM, AQSE (uk-cm-kg)'}.
+GET paths: / (this door), /facts.json, /llms.txt, /nodes.json, /record/<EXCHANGE>/<TICKER> (node hosts) or /record/<node>/<EXCHANGE>/<TICKER> (any host), /events/… likewise with ?since=YYYY-MM-DD&cursor=0&limit=50. Exchanges: ${c ? c.exchanges : 'TSX, TSXV, CSE, CBOE-CANADA (ca-cm-kg); LSE, AIM, AQSE (uk-cm-kg); ASX, NSX (au-cm-kg)'}.
 `;
 }
 export default {
