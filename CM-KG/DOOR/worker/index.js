@@ -121,7 +121,19 @@ GET paths: / (this door), /facts.json, /llms.txt, /record/<EXCHANGE>/<TICKER>, /
 `;
 }
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
+    // edge cache on GET paths (Worker responses are only stored when the Worker puts them there); MCP POST is never cached
+    if (request.method === 'GET') {
+      const cache = caches.default; const hit = await cache.match(request);
+      if (hit) { const h = new Headers(hit.headers); h.set('X-CMR-Cache', 'HIT'); return new Response(hit.body, { status: hit.status, headers: h }); }
+      const res = await this.handle(request, env);
+      const cc = res.headers.get('cache-control') || '';
+      if (res.status === 200 && cc.includes('public')) { ctx.waitUntil(cache.put(request, res.clone())); }
+      const h = new Headers(res.headers); h.set('X-CMR-Cache', 'MISS'); return new Response(res.body, { status: res.status, headers: h });
+    }
+    return this.handle(request, env);
+  },
+  async handle(request, env) {
     const url = new URL(request.url); const host = url.hostname; const origin = url.origin; const node = nodeOf(host);
     await boot(env, origin);
     const asOf = FACTS ? FACTS.as_of : ''; const ver = FACTS ? FACTS.version : '';
