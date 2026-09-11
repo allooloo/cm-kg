@@ -47,4 +47,7 @@ if __name__ == '__main__':
             m = re.search(r'idsId=(\d+)', e['url'])
             if m and m.group(1) not in seen: seen.add(m.group(1)); items.append({'idsId': m.group(1), 'key': e['exchange'] + '|' + e['ticker'], 'kind': 'appendix_4e_4d', 'viewer': e['url'], 'date': e['date'], 'headline': e['title']})
     print('documents to read: annual reports', sum(1 for i in items if i['kind'] == 'annual_report'), 'appendix 4E/4D', sum(1 for i in items if i['kind'] != 'annual_report'), flush=True)
-    resume('annual_reports', fetch, items, threads=int(E.get('THREADS', '4')), keyf=lambda it: it['idsId'])
+    shard = E.get('SHARD')  # 'i/n': a build-day helper shard reads every n-th document into the raw/reports cache; the main run skips cached documents
+    if shard:
+        i, n = (int(x) for x in shard.split('/')); items = [it for j, it in enumerate(items) if j % n == i]
+    resume('annual_reports' + (f'_s{shard.split("/")[0]}' if shard else ''), fetch, items, threads=int(E.get('THREADS', '4')), keyf=lambda it: it['idsId'])
