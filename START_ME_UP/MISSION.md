@@ -16,7 +16,7 @@ Dealers carry a legal duty to know every product they shelve, continuously
 AU: DDO; SG: MAS product due diligence; EU: MiFID II product governance; CH: FinSA).
 Today that is PDFs and analyst hours. A signed, current CMR over MCP discharges it.
 
-## The estate (all owned — see COMPANY RECORDS\Allooloo_Build_Domains_2026-09-10.xlsx)
+## The estate (all owned — see COMPANY RECORDS\Allooloo_Domains_Master.xlsx, the single master; versioned copies live in CM-KG\POND\estate\domains\)
 - capitalmarketsknowledgegraph.ai — the graph; mcp.capitalmarketsknowledgegraph.ai is the door
 - cm-kg.org standard · cm-kg.io twin · cm-kg.ai/.com brand
 - cm-record.org/.ai/.io/.com — the CMR
