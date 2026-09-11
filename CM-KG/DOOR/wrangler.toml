@@ -1,0 +1,21 @@
+name = "cm-kg-door"
+main = "worker/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = false
+preview_urls = false
+
+# data = CM-KG\DOOR\data (written by CM-KG\RAILS\ca-door\load.py from the confirmed workbooks); served only through the Worker
+[assets]
+directory = "./data"
+binding = "ASSETS"
+run_worker_first = true
+
+# generous per-IP limit, no keys
+[[unsafe.bindings]]
+name = "RL"
+type = "ratelimit"
+namespace_id = "1101"
+simple = { limit = 600, period = 60 }
+
+[observability]
+enabled = true
