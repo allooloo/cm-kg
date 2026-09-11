@@ -5,7 +5,7 @@ const SERVER_VERSION = '0.1.0';
 const PROTOCOL = '2025-06-18';
 const TOOLS = [
   { name: 'resolve_issuer', description: 'Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version.',
-    inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker (SHOP, TSX:SHOP, SHOP.TO), ISIN (CA82509L1076) or LEI (20 characters).' } }, required: ['identifier'] } },
+    inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker (SHOP, TSX:SHOP, SHOP.TO), ISIN (CA82509L1076), LEI (20 characters), or an exact legal name or sourced alias (CPKC).' } }, required: ['identifier'] } },
   { name: 'get_record', description: 'Return the full Capital Markets Record for an issuer, with per-field source, reader and state; optionally a prior version.',
     inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker, ISIN, LEI, or a CMR key such as ca-cm-kg/TSX/SHOP.' }, version: { type: 'integer', description: 'Prior version number; omitted = current.' } }, required: ['identifier'] } },
   { name: 'list_events_since', description: 'Return dated, URL\'d disclosure events for an issuer (releases, bulletins, halts, corporate actions, statement and record dates) since a date.',
@@ -45,7 +45,12 @@ function resolveKeys(idRaw) {
   const sm = t.match(/^(.+)\.([A-Z]{1,2})$/); if (!ex && sm && SUFFIX[sm[2]] && !(INDEX.ticker[t])) { ex = SUFFIX[sm[2]]; t = sm[1]; }
   let keys = INDEX.ticker[t] || [];
   if (ex) keys = keys.filter(k => k.split('/')[1] === ex);
-  return { keys, kind: 'ticker', exchange: ex, ticker: t };
+  if (keys.length) return { keys, kind: 'ticker', exchange: ex, ticker: t };
+  // sourced alias or exact legal name (normalised); never fuzzy
+  const nk = id.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim();
+  if (INDEX.alias && INDEX.alias[nk]) return { keys: INDEX.alias[nk], kind: 'alias', matched: id };
+  if (INDEX.name && INDEX.name[nk]) return { keys: INDEX.name[nk], kind: 'name', matched: id };
+  return { keys: [], kind: 'ticker', exchange: ex, ticker: t };
 }
 async function record(env, origin, key) { const [, ex, t] = key.split('/'); return asset(env, origin, `/records/${ex}/${encodeURIComponent(t)}.json`); }
 async function eventsOf(env, origin, key) { const [, ex, t] = key.split('/'); return (await asset(env, origin, `/events/${ex}/${encodeURIComponent(t)}.json`)) || []; }
@@ -61,7 +66,7 @@ async function callTool(env, origin, host, name, args) {
   if (!res.keys.length) return { error: 'not_found', identifier: args.identifier, kind: res.kind, note: node === 'global' ? 'no live node holds this identifier (live today: ca-cm-kg)' : 'no record on ca-cm-kg for this identifier' };
   if (name === 'resolve_issuer') {
     const recs = await Promise.all(res.keys.map(k => record(env, origin, k)));
-    return { matches: recs.filter(Boolean).map(summary), ambiguous: res.keys.length > 1, note: res.keys.length > 1 ? 'ticker matches more than one listing; pick by exchange prefix (TSX:, TSXV:, CSE:, CBOE:)' : undefined };
+    return { matches: recs.filter(Boolean).map(summary), matched_by: res.kind, ambiguous: res.keys.length > 1, note: res.keys.length > 1 ? 'identifier matches more than one listing; pick by exchange prefix (TSX:, TSXV:, CSE:, CBOE:)' : (res.kind === 'alias' ? 'matched on a sourced alias' : undefined) };
   }
   if (res.keys.length > 1) return { error: 'ambiguous', matches: res.keys, note: 'more than one listing matches; call again with an exchange prefix or the CMR key' };
   const key = res.keys[0];

@@ -56,7 +56,8 @@ def main():
     for sub in ('records', 'events'):
         os.makedirs(os.path.join(OUT, sub), exist_ok=True)
     wb = openpyxl.load_workbook(XLSX, read_only=True)
-    index = {'ticker': {}, 'isin': {}, 'lei': {}, 'keys': []}; n = 0; counts = {}
+    index = {'ticker': {}, 'isin': {}, 'lei': {}, 'alias': {}, 'name': {}, 'keys': []}; n = 0; counts = {}
+    def nkey(s): return re.sub(r'[^a-z0-9]+', ' ', str(s).lower().replace('&', ' and ')).strip()
     ev_by = {}
     for line in open(EVENTS, encoding='utf-8'):
         e = json.loads(line); k = (e['exchange'], e['ticker']); ev_by.setdefault(k, []).append(e)
@@ -89,6 +90,8 @@ def main():
             index['keys'].append(key); index['ticker'].setdefault(t.upper(), []).append(key)
             root = t.split('.')[0].upper()
             if root != t.upper(): index['ticker'].setdefault(root, []).append(key)
+            for a in aliases: index['alias'].setdefault(nkey(a['value']), []).append(key)      # sourced aliases only (GLEIF, wire page, exchange profile, website title)
+            index['name'].setdefault(nkey(d['Legal name']), []).append(key)                       # exact legal name, normalised
             if identity['isin']['value']: index['isin'].setdefault(identity['isin']['value'].upper(), []).append(key)
             if identity['lei']['value']: index['lei'].setdefault(identity['lei']['value'].upper(), []).append(key)
             counts[ex] = counts.get(ex, 0) + 1; n += 1
