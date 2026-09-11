@@ -1,0 +1,548 @@
+[
+ {
+  "zone": "au-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://au-cm-kg.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "au-cm-kg.com",
+  "root": 301,
+  "location": "https://au-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "au-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://au-cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "ca-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://ca-cm-kg.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "ca-cm-kg.com",
+  "root": 301,
+  "location": "https://ca-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "ca-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://ca-cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "capitalmarketsknowledgegraph.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://capitalmarketsknowledgegraph.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "capitalmarketsknowledgegraph.com",
+  "root": 301,
+  "location": "https://capitalmarketsknowledgegraph.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "capitalmarketsknowledgegraph.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://capitalmarketsknowledgegraph.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "ch-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://ch-cm-kg.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "ch-cm-kg.com",
+  "root": 301,
+  "location": "https://ch-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "ch-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://ch-cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "cm-kg.ai",
+  "root": 301,
+  "location": "https://capitalmarketsknowledgegraph.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "cm-kg.com",
+  "root": 301,
+  "location": "https://cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "cm-kg.io",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://cm-kg.io/",
+  "favicon": 200
+ },
+ {
+  "zone": "cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "cm-record.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://cm-record.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "cm-record.com",
+  "root": 301,
+  "location": "https://cm-record.org/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "cm-record.io",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://cm-record.io/",
+  "favicon": 200
+ },
+ {
+  "zone": "cm-record.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://cm-record.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "de-cm-kg.com",
+  "root": 301,
+  "location": "https://de-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "de-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://de-cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "fr-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://fr-cm-kg.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "fr-cm-kg.com",
+  "root": 301,
+  "location": "https://fr-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "fr-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://fr-cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "hk-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://hk-cm-kg.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "hk-cm-kg.com",
+  "root": 301,
+  "location": "https://hk-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "hk-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://hk-cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "jp-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://jp-cm-kg.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "jp-cm-kg.com",
+  "root": 301,
+  "location": "https://jp-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "jp-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://jp-cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "kr-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://kr-cm-kg.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "kr-cm-kg.com",
+  "root": 301,
+  "location": "https://kr-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "kr-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://kr-cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "nl-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://nl-cm-kg.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "nl-cm-kg.com",
+  "root": 301,
+  "location": "https://nl-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "nl-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://nl-cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "sg-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://sg-cm-kg.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "sg-cm-kg.com",
+  "root": 301,
+  "location": "https://sg-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "sg-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://sg-cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "uk-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://uk-cm-kg.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "uk-cm-kg.com",
+  "root": 301,
+  "location": "https://uk-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "uk-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://uk-cm-kg.org/",
+  "favicon": 200
+ },
+ {
+  "zone": "us-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://us-cm-kg.ai/",
+  "favicon": 200
+ },
+ {
+  "zone": "us-cm-kg.com",
+  "root": 301,
+  "location": "https://us-cm-kg.ai/",
+  "redirect_ok": true
+ },
+ {
+  "zone": "us-cm-kg.org",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://us-cm-kg.org/",
+  "favicon": 200
+ }
+]

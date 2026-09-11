@@ -80,7 +80,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url); const host = url.hostname; const c = classify(host);
     const apex = host.replace(/^www\./, '');
-    if (c.kind === 'redirect') return Response.redirect(c.canonical + url.pathname.replace(/^\//, '') + url.search, 301);
+    if (c.kind === 'redirect' || c.canonical) return Response.redirect(c.canonical + url.pathname.replace(/^\//, '') + url.search, 301);   // brand hosts: .com -> canonical .ai/.org; cm-kg.ai -> long-form root
     if (host !== apex) return Response.redirect(`https://${apex}${url.pathname}${url.search}`, 301);
     const live = await liveNodes(); const f = facts(host, c, live);
     const meta = { node: c.kind === 'node' ? `${c.cc}-cm-kg` : (c.kind === 'root' ? 'global' : 'cm-record'), as_of: f.node_as_of || f.as_of, version: c.kind === 'node' && f.live ? 1 : '' };
