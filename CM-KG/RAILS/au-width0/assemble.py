@@ -103,7 +103,7 @@ def build(r):
     # registered office / HQ / state
     if rec.get('legal_city') or rec.get('legal_lines'):
         o['Registered office'] = ', '.join(v for v in ((rec.get('legal_lines') or []) + [rec.get('legal_city'), rec.get('legal_region'), rec.get('legal_postal'), rec.get('legal_country')]) if v); o['Registered office source'] = rec['src']; o['Registered office read by'] = RB['gleif_rec'] + ' (legal address)'; o['Registered office State'] = 'sourced'
-        if not o['State'] and rec.get('legal_region', '').startswith('AU-'): o['State'] = STATE_NAMES.get(rec['legal_region'][3:], rec['legal_region']) + f" ({rec['legal_region'][3:]})"; o['State source'] = rec['src']; o['State read by'] = RB['gleif_rec'] + ' (legal address region)'; o['State State'] = 'sourced'
+        if not o['State'] and (rec.get('legal_region') or '').startswith('AU-'): o['State'] = STATE_NAMES.get(rec['legal_region'][3:], rec['legal_region']) + f" ({rec['legal_region'][3:]})"; o['State source'] = rec['src']; o['State read by'] = RB['gleif_rec'] + ' (legal address region)'; o['State State'] = 'sourced'
     elif r.get('contact_address'):
         o['Registered office'] = r['contact_address']; o['Registered office source'] = src_co; o['Registered office read by'] = RB['asx_co'] + ' (contact address)'; o['Registered office State'] = 'sourced'
     else: gaps.append(('Registered office', 'no LEI record and no address on the exchange record'))
