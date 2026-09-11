@@ -272,6 +272,7 @@ for row in mt.iter_rows(min_row=2):
 mt.column_dimensions['A'].width = 34; mt.column_dimensions['B'].width = 140
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 wb.save(OUT)
+import pond, shutil as _sh; _ad = pond.assembled('ca-cm-kg'); _sh.copy(OUT, os.path.join(_ad, 'ca-issuers.xlsx')); print('versioned copy', _ad)  # pond rule 2
 # console report
 print('saved', OUT)
 for ex, data in sheets.items():

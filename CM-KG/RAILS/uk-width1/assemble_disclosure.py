@@ -6,17 +6,25 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill
 from openpyxl.utils import get_column_letter
 from common import *
+import pond
+NODE = 'uk-cm-kg'
 OUT_X = sys.argv[1] if len(sys.argv) > 1 else r'C:\ALLOOLOO\CM-KG\DISCLOSURE\uk-disclosure.xlsx'
 OUT_J = sys.argv[2] if len(sys.argv) > 2 else r'C:\ALLOOLOO\CM-KG\DISCLOSURE\events\uk-events.jsonl'
 issuers = load_issuers(); byk = {key(r): r for r in issuers}; bysym = {r['ticker']: r for r in issuers if r['exchange'] == 'Aquis Stock Exchange'}
 ALIASES = {}
-if os.path.exists('raw/aliases.json'): ALIASES = json.load(open('raw/aliases.json', encoding='utf-8'))  # written by the Fill pass (ORDER-009): key -> [alias, ...], every alias sourced
+_al = pond.latest(NODE, 'width1', 'aliases.json') or ('raw/aliases.json' if os.path.exists('raw/aliases.json') else None)
+if _al: ALIASES = json.load(open(_al, encoding='utf-8'))  # written by the Fill pass (ORDER-009): key -> [alias, ...], every alias sourced
 def load(fn):
-    if not os.path.exists(fn): return []
-    out = []
-    for line in open(fn, encoding='utf-8'):
-        try: out.append(json.loads(line))
-        except Exception: pass
+    """pond rule 3: every drop of this rail (POND\\uk-cm-kg\\width1\\<date>\\) plus the working folder; the dedupe key below keeps one copy per event"""
+    out = []; seen_paths = set()
+    paths = [p for d, p in pond.drops(NODE, 'width1')] + (['raw'] if os.path.isdir('raw') else [])
+    for p in paths:
+        f = os.path.join(p, os.path.basename(fn)); rp = os.path.realpath(f)
+        if not os.path.exists(f) or rp in seen_paths: continue
+        seen_paths.add(rp)
+        for line in open(f, encoding='utf-8'):
+            try: out.append(json.loads(line))
+            except Exception: pass
     return out
 events = []; gaps = []; worker_notes = defaultdict(list)
 def take(rows, worker):
@@ -35,7 +43,7 @@ for d in load('raw/wire_search.jsonl'):  # search hits without published_date wh
         dt = url_date(u['url'])
         if dt and in_window(dt): events.append(event(r, classify(u['title'], default='newswire_release'), dt, u['title'], u['wire'], u['url'], 'Tavily search (wire domains) + URL date', wire=u['wire']))
 # Aquis announcements feed (the exchange's own list, read in a browser session; keyed by the exchange symbol)
-AQ = 'raw/aquis_announcements.json'; n_aq = 0
+AQ = pond.latest(NODE, 'width1', 'aquis_announcements.json') or 'raw/aquis_announcements.json'; n_aq = 0
 if os.path.exists(AQ):
     aq = json.load(open(AQ, encoding='utf-8'))
     for row in aq.get('rows', []):
@@ -44,6 +52,15 @@ if os.path.exists(AQ):
         if not r or not in_window(date): continue
         events.append(event(r, classify(title), date, title, 'Aquis Stock Exchange announcements', f'https://www.aquis.eu/stock-exchange/announcements/{aid}', 'aquis.eu announcements page data (exchange feed; read in a browser session)', wire='RNS (via Aquis)', rns_category=title)); n_aq += 1
 for e in load('raw/grok_live.jsonl'): events.append(e)   # weekly live layer (read by Grok (live)), present on refresh runs only
+# pond rule 3: the last versioned event set is merged too (history is never dropped); the dedupe key below keeps one copy
+n_prior = 0
+_prev = pond.latest_assembled(NODE, 'uk-events.jsonl') or (OUT_J if os.path.exists(OUT_J) else None)
+if _prev:
+    for line in open(_prev, encoding='utf-8'):
+        try:
+            e = json.loads(line); e.pop('as_of', None); e.pop('node', None); e.pop('width', None); events.append(e); n_prior += 1
+        except Exception: pass
+    print('merged prior assembled events', n_prior, 'from', _prev, flush=True)
 for e in events: e.pop('key', None)
 events = [e for e in events if e.get('url', '').startswith('http') and e.get('date')]
 # name rule on search-found wire hits; company pages, the exchange feed and the registry are the issuer's own listings (exempt)
@@ -131,7 +148,10 @@ mt = sheet('Method', ['Item', 'Detail'], [list(m) for m in METHOD], [30, 150])
 for row in mt.iter_rows(min_row=2):
     for c in row: c.alignment = Alignment(wrap_text=True, vertical='top')
 os.makedirs(os.path.dirname(OUT_X), exist_ok=True); wb.save(OUT_X)
-print('saved', OUT_X, 'and', OUT_J)
+# versioned output in the pond (rule 2), mirrored at the canonical paths above
+_ad = pond.assembled(NODE); import shutil as _sh
+_sh.copy(OUT_X, os.path.join(_ad, 'uk-disclosure.xlsx')); _sh.copy(OUT_J, os.path.join(_ad, 'uk-events.jsonl'))
+print('saved', OUT_X, 'and', OUT_J, '| versioned copy', _ad)
 print('events', len(events)); print('by type', Counter(e['event_type'] for e in events).most_common())
 print('by source', Counter(e['read_by'] for e in events).most_common())
 print('issuers with events', len(per), '/', len(issuers), '| zero events', len(zero))
