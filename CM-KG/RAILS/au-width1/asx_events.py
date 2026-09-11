@@ -17,6 +17,7 @@ def parse(h):
         sensitive = bool(ps and re.search(r'<img|\$|price', ps.group(1), re.I))
         cells = [html.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', c))).strip() for c in re.findall(r'<td[^>]*>(.*?)</td>', r, re.S)]
         head = next((c for c in cells if c and not re.match(r'^\d{2}/\d{2}/\d{4}', c) and not re.fullmatch(r'[\d:]+ [ap]m|\d+ pages?|[\d.]+[KM]B|\*?', c)), '')
+        head = re.sub(r'\s+\d+ pages?\s+[\d.]+\s*[KM]B\s*$', '', head).strip()  # the search cell appends '<n> pages <size>' to the headline
         rows.append({'date': f'{d.group(3)}-{d.group(2)}-{d.group(1)}', 'headline': head[:200], 'idsId': a.group(1), 'sensitive': sensitive, 'url': f'https://www.asx.com.au/asx/v2/statistics/displayAnnouncement.do?display=pdf&idsId={a.group(1)}'})
     return rows
 def fetch(r):

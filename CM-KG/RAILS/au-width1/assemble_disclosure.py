@@ -1,7 +1,7 @@
 r"""Merges every worker's events from every pond drop of this rail (plus the last versioned event set), dedupes on (exchange, code, type, date, URL),
 applies the name rule to search-found wire hits, and writes CM-KG\DISCLOSURE\au-disclosure.xlsx (Events, Coverage, Gaps, HITL, Method) and
 CM-KG\DISCLOSURE\events\au-events.jsonl, with a versioned copy under POND\au-cm-kg\assembled\<date>\."""
-import json, os, sys, datetime, shutil
+import json, os, re, sys, datetime, shutil
 from collections import Counter, defaultdict
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill
@@ -25,9 +25,14 @@ def load(fn):
             except Exception: pass
     return out
 events = []; gaps = []; worker_notes = defaultdict(list)
+PAGES = re.compile(r'\s+\d+ pages?\s+[\d.]+\s*[KM]B\s*$')
 def take(rows, worker):
     for d in rows:
         k = d.get('key')
+        for e in d.get('events', []):  # drops before the 2026-09-11 headline fix carried '<n> pages <size>' on ASX headlines
+            if e.get('read_by', '').startswith('asx'):
+                e['title'] = PAGES.sub('', e.get('title') or '').strip()
+                if e.get('asx_category'): e['asx_category'] = PAGES.sub('', e['asx_category']).strip()
         if d.get('error'): gaps.append((k, worker, 'error: ' + str(d['error'])[:160])); continue
         if d.get('gap') and d['gap'] not in ('not an ASX issuer', 'not an NSX issuer'): gaps.append((k, worker, d['gap']))
         for e in d.get('events', []): events.append(e)
@@ -46,7 +51,9 @@ _prev = pond.latest_assembled(NODE, 'au-events.jsonl') or (OUT_J if os.path.exis
 if _prev:
     for line in open(_prev, encoding='utf-8'):
         try:
-            e = json.loads(line); e.pop('as_of', None); e.pop('node', None); e.pop('width', None); events.append(e); n_prior += 1
+            e = json.loads(line); e.pop('as_of', None); e.pop('node', None); e.pop('width', None)
+            if e.get('read_by', '').startswith('asx'): e['title'] = PAGES.sub('', e.get('title') or '').strip(); e['asx_category'] = PAGES.sub('', e.get('asx_category') or '').strip()
+            events.append(e); n_prior += 1
         except Exception: pass
     print('merged prior assembled events', n_prior, 'from', _prev, flush=True)
 for e in events: e.pop('key', None)
