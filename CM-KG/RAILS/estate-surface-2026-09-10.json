@@ -544,5 +544,21 @@
   "cmr": true,
   "www": "301 -> https://us-cm-kg.org/",
   "favicon": 200
+ },
+ {
+  "zone": "de-cm-kg.ai",
+  "root": 200,
+  "location": "",
+  "paths": {
+   "/llms.txt": 200,
+   "/facts.json": 200,
+   "/robots.txt": 200,
+   "/sitemap.xml": 200
+  },
+  "all_200": true,
+  "cmr": true,
+  "www": "301 -> https://de-cm-kg.ai/",
+  "favicon": 200,
+  "note": "verified via the zone edge addresses; this machine caches a negative DNS answer from before the zone existed"
  }
 ]

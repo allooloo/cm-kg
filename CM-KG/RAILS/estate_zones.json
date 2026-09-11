@@ -348,5 +348,12 @@
   "account": "dd2832b36f171b815f84c8487aada36b",
   "group": "Node",
   "role": "Brand; forwards to .ai"
+ },
+ "de-cm-kg.ai": {
+  "id": "0e7b54741212fb036c2cf18b9392ed25",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
  }
 }

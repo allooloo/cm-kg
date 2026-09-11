@@ -1850,5 +1850,36 @@
   },
   "patched": [],
   "note": []
+ },
+ {
+  "zone": "de-cm-kg.ai",
+  "group": "Node",
+  "plan_sbfm_fields": false,
+  "before": {
+   "fight_mode": false,
+   "ai_bots_protection": "disabled",
+   "content_bots_protection": "disabled",
+   "crawler_protection": "disabled",
+   "ai_training": "disabled",
+   "ai_search": "disabled",
+   "ai_user": "disabled",
+   "is_robots_txt_managed": false,
+   "security_level": "medium",
+   "sbfm_verified_bots": null
+  },
+  "after": {
+   "fight_mode": false,
+   "ai_bots_protection": "disabled",
+   "content_bots_protection": "disabled",
+   "crawler_protection": "disabled",
+   "ai_training": "disabled",
+   "ai_search": "disabled",
+   "ai_user": "disabled",
+   "is_robots_txt_managed": false,
+   "security_level": "medium",
+   "sbfm_verified_bots": null
+  },
+  "patched": [],
+  "note": []
  }
 ]

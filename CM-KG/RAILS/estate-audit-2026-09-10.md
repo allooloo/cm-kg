@@ -1,4 +1,4 @@
-# Cloudflare agent-access audit — every Allooloo zone in the account (50 of 51; de-cm-kg.ai is not in the account)
+# Cloudflare agent-access audit — every Allooloo zone in the account (51 of 51; de-cm-kg.ai registered later the same day and audited)
 
 Date: 2026-09-10. Token: AGENT KEYS\cloudflare.txt. Values read and written through /zones/{id}/bot_management and /zones/{id}/settings/security_level.
 
@@ -54,6 +54,8 @@ Date: 2026-09-10. Token: AGENT KEYS\cloudflare.txt. Values read and written thro
 | us-cm-kg.ai | Node | off | disabled | disabled | disabled | disabled | disabled | off | disabled | medium | Super Bot Fight Mode (no such setting on the Free plan; verified-bots fields absent); pay-per-crawl (no zone API); WAF custom rules (token not authorised); browser integrity check left on |
 | us-cm-kg.com | Node | off | disabled | disabled | disabled | disabled | disabled | off | disabled | medium | Super Bot Fight Mode (no such setting on the Free plan; verified-bots fields absent); pay-per-crawl (no zone API); WAF custom rules (token not authorised); browser integrity check left on |
 | us-cm-kg.org | Node | off | disabled | disabled | disabled | disabled | disabled | off | disabled | medium | Super Bot Fight Mode (no such setting on the Free plan; verified-bots fields absent); pay-per-crawl (no zone API); WAF custom rules (token not authorised); browser integrity check left on |
+
+| de-cm-kg.ai | Node | off | disabled | disabled | disabled | disabled | disabled | off | disabled | medium | Super Bot Fight Mode (no such setting on the Free plan); pay-per-crawl (no zone API); WAF custom rules (token not authorised); browser integrity check left on |
 
 ## Summary
 
