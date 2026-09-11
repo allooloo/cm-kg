@@ -9,3 +9,5 @@ __pycache__/
 CM-KG/DOOR/data/
 CM-KG/DOOR/node_modules/
 CM-KG/DOOR/.wrangler/
+AI-ASK/node_modules/
+AI-ASK/.wrangler/

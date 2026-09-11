@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI ASK | Allooloo</title>
+<meta name="description" content="AI ASK: the desk on the Capital Markets Knowledge Graph. Ask about a listed company and read the record: field, source, reader, state. Public-record only.">
+<link rel="canonical" href="https://ask.allooloo.io/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#14213D">
+<link rel="preload" href="/fonts/plex-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/plex-local.css">
+<link rel="stylesheet" href="/styles.css">
+<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"AI ASK","alternateName":"AI assistant ask","url":"https://ask.allooloo.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","description":"The desk on the Capital Markets Knowledge Graph: ask about a listed company and read the record with field, source, reader and state. Public-record only.","publisher":{"@type":"Organization","name":"Allooloo Technologies Corp.","url":"https://allooloo.io"},"offers":{"@type":"Offer","price":"0","priceCurrency":"CAD"}}
+</script>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brand"><span class="name">AI ASK</span><span class="by">Allooloo Technologies Corp.</span></div>
+  <a class="onboard" href="https://mcp.ca-cm-kg.ai/llms.txt" rel="noopener">Onboard your agent to the Capital Markets Knowledge Graph <span class="marks" aria-label="eight engines">Claude · ChatGPT · Gemini · Perplexity · Grok · Mistral · Tavily · Cloudflare</span></a>
+</header>
+
+<section class="idbar" aria-label="Identifier">
+  <label for="ident">Identifier</label>
+  <input id="ident" type="text" autocomplete="off" spellcheck="false" placeholder="SHOP · TSX:SHOP · SHOP.TO · ISIN · LEI · a name it releases under">
+  <div id="parsed" class="parsed" aria-live="polite"></div>
+</section>
+<nav class="markets" aria-label="Market nodes">
+  <span class="chip live" data-node="ca-cm-kg">Canada</span><span class="chip dim">United Kingdom</span><span class="chip dim">Australia</span><span class="chip dim">Singapore</span><span class="chip dim">Switzerland</span><span class="chip dim">Germany</span><span class="chip dim">France</span><span class="chip dim">Netherlands</span><span class="chip dim">Hong Kong</span><span class="chip dim">Japan</span><span class="chip dim">South Korea</span><span class="chip dim">United States</span><span class="chip-note">Canada live. Eleven not live.</span>
+</nav>
+
+<main class="panes">
+  <section class="left">
+    <form id="ask" class="ask">
+      <label for="q">Question</label>
+      <textarea id="q" rows="2" placeholder="Who is the transfer agent for SHOP? Halts in the last 12 months for AUMB.V? Is this issuer dual-listed?"></textarea>
+      <div class="row"><button type="submit" id="go">Ask</button><span id="status" class="status" aria-live="polite"></span></div>
+    </form>
+    <div class="samples" aria-label="Samples">
+      <button type="button" class="sample" data-q="What is a Capital Markets Record?">What is a Capital Markets Record?</button>
+      <button type="button" class="sample" data-id="SHOP" data-q="transfer agent">SHOP · transfer agent</button>
+      <button type="button" class="sample" data-id="ATD" data-q="halts in the last 12 months">ATD · halts 12m</button>
+      <button type="button" class="sample" data-id="AUMB.V" data-q="auditor">AUMB.V · auditor</button>
+      <button type="button" class="sample" data-q="Is this issuer dual-listed?">Is this issuer dual-listed?</button>
+      <button type="button" class="sample" data-q="Who runs Allooloo?">Who runs Allooloo?</button>
+    </div>
+    <section class="answer" id="answer" aria-live="polite" aria-label="Answer">
+      <div class="abody" id="abody"><p class="muted">Ask about a listed company. The record fills at right the moment the identifier parses; the answer comes from that record.</p></div>
+      <footer class="afoot" id="afoot"><span id="f-state">—</span><span id="f-node">—</span><span id="f-read">—</span><button type="button" id="copy" disabled>copy link</button><a id="open" href="#" hidden>open record</a></footer>
+    </section>
+    <section class="also" id="also" hidden><h2>Also on record</h2><div class="chips" id="alsochips"></div></section>
+    <section class="sugg" id="sugg" hidden><h2>Suggested</h2><ul id="sugglist"></ul></section>
+  </section>
+  <aside class="right" id="record" aria-label="Resolved issuer record">
+    <h2>Record</h2>
+    <dl id="rec">
+      <div><dt>Name</dt><dd data-f="name">—</dd></div>
+      <div><dt>Ticker</dt><dd data-f="ticker">—</dd></div>
+      <div><dt>Exchange</dt><dd data-f="exchange">—</dd></div>
+      <div><dt>ISIN</dt><dd data-f="isin">—</dd></div>
+      <div><dt>LEI</dt><dd data-f="lei">—</dd></div>
+      <div><dt>Sector</dt><dd data-f="sector">—</dd></div>
+      <div><dt>Transfer agent</dt><dd data-f="transfer_agent">—</dd></div>
+      <div><dt>Auditor</dt><dd data-f="auditor">—</dd></div>
+      <div><dt>Newswire</dt><dd data-f="newswire">—</dd></div>
+      <div><dt>Jurisdiction</dt><dd data-f="jurisdiction">—</dd></div>
+    </dl>
+    <p class="recmeta" id="recmeta"></p>
+  </aside>
+</main>
+
+<p class="notice">NOTICE: AI ASK is AI and can make mistakes. Public-record data only; no prices or market data.</p>
+<footer class="foot"><span>Allooloo Technologies Corp. · Vancouver, Canada</span><a href="/llms.txt">llms.txt</a><a href="/facts.json">facts.json</a><a href="https://mcp.ca-cm-kg.ai/" rel="noopener">Canada node door</a></footer>
+</div>
+<script src="/app.js" defer></script>
+</body>
+</html>
