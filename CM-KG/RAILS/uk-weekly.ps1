@@ -11,8 +11,9 @@ $env:WINDOW_DAYS = '7'
 Set-Location (Join-Path $root 'uk-width1'); & .\run_refresh.ps1 2>&1 | Tee-Object -FilePath $log -Append
 Set-Location (Join-Path $root 'uk-fill-confirm'); & .\run_refresh.ps1 2>&1 | Tee-Object -FilePath $log -Append
 Set-Location (Join-Path $root 'door'); python load_nodes.py 2>&1 | Tee-Object -FilePath $log -Append
+python load_d1.py 2>&1 | Tee-Object -FilePath $log -Append   # door store = D1 since 2026-09-11 (loads every node rendered under DOOR\data)
 Set-Location 'C:\ALLOOLOO\CM-KG\DOOR'
-$env:CLOUDFLARE_API_TOKEN = (Get-Content 'C:\ALLOOLOO\AGENT KEYS\cloudflare.txt' -Raw).Trim(); $env:CLOUDFLARE_ACCOUNT_ID = 'dd2832b36f171b815f84c8487aada36b'
+$env:CLOUDFLARE_API_TOKEN = (Get-Content 'C:\ALLOOLOO\AGENT KEYS\cloudflare-d1.txt' -Raw).Trim(); $env:CLOUDFLARE_ACCOUNT_ID = 'dd2832b36f171b815f84c8487aada36b'
 npx --yes wrangler deploy 2>&1 | Tee-Object -FilePath $log -Append
 Remove-Item Env:CLOUDFLARE_API_TOKEN
 "== UK weekly done $(Get-Date -Format 'yyyy-MM-dd')" | Tee-Object -FilePath $log -Append
