@@ -1,0 +1,352 @@
+{
+ "allooloo.io": {
+  "id": "44182090354e25f3e63bdc763cf2e1ae",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Company",
+  "role": "New corporate site \u2014 ground-up Cloudflare build; allooloo.ai forwards here"
+ },
+ "allooloo.ai": {
+  "id": "9af1b931fe8e639b3486b49ccd51fea7",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Company",
+  "role": "Brand \u2014 cards, decks, footer; forwards to .io"
+ },
+ "allooloo.org": {
+  "id": "38b2d52381f8ee54c10fc07ebdadd8d1",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Company",
+  "role": "Forward to .io"
+ },
+ "allooloo.com": {
+  "id": "75a5b204062636f4d9dbfa954da619fa",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Company",
+  "role": "Forward to .io"
+ },
+ "capitalmarketsknowledgegraph.ai": {
+  "id": "04555c755d51d2ca4a0c271dc02654b5",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Root \u2014 CM-KG",
+  "role": "The graph; mcp. door"
+ },
+ "capitalmarketsknowledgegraph.org": {
+  "id": "127d4172bfe561fa2ea457fa5694c295",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Root \u2014 CM-KG",
+  "role": "Standard mirror of the long form"
+ },
+ "capitalmarketsknowledgegraph.com": {
+  "id": "17f50c29fed6f349f7ef7e5cf5a94c78",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Root \u2014 CM-KG",
+  "role": "Brand; forwards to .ai"
+ },
+ "cm-kg.ai": {
+  "id": "95d69876923e5a43a84c16bcc9505175",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Root \u2014 CM-KG",
+  "role": "Short brand; forwards to long form"
+ },
+ "cm-kg.com": {
+  "id": "1c49adf13411dce24eff525c79fbf6cf",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Root \u2014 CM-KG",
+  "role": "Short brand; forwards to long form"
+ },
+ "cm-kg.org": {
+  "id": "a562aeae1b47cbe7a8ecf8f3f1999ca4",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Root \u2014 CM-KG",
+  "role": "Standard and beacon"
+ },
+ "cm-kg.io": {
+  "id": "73b26a9e16b89a65c74a683fcc027cb7",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Root \u2014 CM-KG",
+  "role": "Machine twin"
+ },
+ "cm-record.org": {
+  "id": "5d6b0252cc5acf774f19dec78fe00675",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Root \u2014 CMR",
+  "role": "Capital Markets Record \u2014 the object standard: schema, signing, versions"
+ },
+ "cm-record.ai": {
+  "id": "92c086c5fa69b3dab86c5a091b1f1eab",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Root \u2014 CMR",
+  "role": "CMR resolver door (by ISIN / ticker / LEI)"
+ },
+ "cm-record.io": {
+  "id": "fafc045284cb9d2e977e5935389b6b04",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Root \u2014 CMR",
+  "role": "Machine twin"
+ },
+ "cm-record.com": {
+  "id": "52449cd8302e49f9e9ee66192e6c57f8",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Root \u2014 CMR",
+  "role": "Brand; forwards to .org"
+ },
+ "ca-cm-kg.org": {
+  "id": "e292d8ff0c30698e325a0dde348cc77d",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry \u2014 The wedge"
+ },
+ "ca-cm-kg.ai": {
+  "id": "4d2c6dc2f534dd8c013f6e66544eed4c",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
+ },
+ "ca-cm-kg.com": {
+  "id": "5adf76b15feedc9e560192fce8fda8d4",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ },
+ "us-cm-kg.org": {
+  "id": "fc574af2651c9c388c5d2156bc06f7f1",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry \u2014 The scale claim"
+ },
+ "us-cm-kg.ai": {
+  "id": "64516e94b82d13781980dff99c20c8b0",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
+ },
+ "us-cm-kg.com": {
+  "id": "323b79332a3de8dc1bb93b5145d0b860",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ },
+ "uk-cm-kg.org": {
+  "id": "8309f50f367ff9cc093636885e94a519",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry"
+ },
+ "uk-cm-kg.ai": {
+  "id": "999f8cab6ae570a878379f0e37cd87b0",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
+ },
+ "uk-cm-kg.com": {
+  "id": "cf9fffbbead9a4b63cac1fe248a2f8cb",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ },
+ "sg-cm-kg.org": {
+  "id": "2c0261bae9ff00d4af154e2c7b568c74",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry \u2014 AI-market flag; cleanest APAC regulator to stand a node under"
+ },
+ "sg-cm-kg.ai": {
+  "id": "0d4ae29fdde22945ffd2858bc2922576",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
+ },
+ "sg-cm-kg.com": {
+  "id": "bdfffea1d1c65a2e184ba873e8f02d98",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ },
+ "au-cm-kg.org": {
+  "id": "155dbc024d56990f313154406baaad25",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry \u2014 Partners on the ground; GSC Agentic Pty Ltd as operating licensee"
+ },
+ "au-cm-kg.ai": {
+  "id": "8732370fd5742f40dba657be3eab5d37",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
+ },
+ "au-cm-kg.com": {
+  "id": "caf231f14b9dfb1eb9d08f75de1129b5",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ },
+ "ch-cm-kg.org": {
+  "id": "04dce17fb9fe18682174ae375e51893e",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry \u2014 Wealth money; private banks are dealer-grade buyers"
+ },
+ "ch-cm-kg.ai": {
+  "id": "0ea4358fbd0c1dc5ccf069448ccefe48",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
+ },
+ "ch-cm-kg.com": {
+  "id": "687f9e1b29142a2cdc3c3d1309aea8a4",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ },
+ "de-cm-kg.org": {
+  "id": "3f8d67167e725b5e0048af47e6f3be40",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry \u2014 Xetra plus the largest EU issuer base"
+ },
+ "de-cm-kg.com": {
+  "id": "b298156d863cd1f71a8cb9454ab155b3",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ },
+ "jp-cm-kg.org": {
+  "id": "96ffe0b2a1812dd93a6b732c0f41be5a",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry"
+ },
+ "jp-cm-kg.ai": {
+  "id": "f1c120f9d544c4af28bd6029ce071b96",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
+ },
+ "jp-cm-kg.com": {
+  "id": "22d782e07a1a9d9c7ec118e35c9aa763",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ },
+ "hk-cm-kg.org": {
+  "id": "9ca97f1edb4d03c8c448a7dd780c71fe",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry"
+ },
+ "hk-cm-kg.ai": {
+  "id": "eccfebad4729da2b3ab6411bf739acb4",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
+ },
+ "hk-cm-kg.com": {
+  "id": "e0ad677ad144ebec91b4767bd2fb5501",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ },
+ "fr-cm-kg.org": {
+  "id": "59cbc22494c3bfc45a9002ec56416069",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry"
+ },
+ "fr-cm-kg.ai": {
+  "id": "645c30886df97804e3b793399e303c2b",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
+ },
+ "fr-cm-kg.com": {
+  "id": "8eaaf16796eebd7adb26dfb541762090",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ },
+ "nl-cm-kg.org": {
+  "id": "3c5ba3f34db488f878fd85062485945f",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry"
+ },
+ "nl-cm-kg.ai": {
+  "id": "e5a042d3df88b7e170d5225ecfacb008",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
+ },
+ "nl-cm-kg.com": {
+  "id": "6a83fdf73628d4de21a90808bb7856d6",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ },
+ "kr-cm-kg.org": {
+  "id": "3f3fd429bf11a998efd2eacdc39bb21a",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Standard / registry"
+ },
+ "kr-cm-kg.ai": {
+  "id": "cd87134802ca140f4767253f39453ce1",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Operating door"
+ },
+ "kr-cm-kg.com": {
+  "id": "e195bd5a5d284572cc4b616e648caf72",
+  "status": "active",
+  "account": "dd2832b36f171b815f84c8487aada36b",
+  "group": "Node",
+  "role": "Brand; forwards to .ai"
+ }
+}
