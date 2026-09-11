@@ -2,9 +2,11 @@
 on each host from three probes per city and reports the median total time. Usage: python latency.py mcp.ca-cm-kg.ai mcp.capitalmarketsknowledgegraph.ai"""
 import sys, time, json, requests, statistics
 def measure(host):
-    body = {'type': 'http', 'target': host, 'limit': 9, 'locations': [{'city': 'Toronto', 'limit': 3}, {'city': 'London', 'limit': 3}, {'city': 'Singapore', 'limit': 3}],
+    body = {'type': 'http', 'target': host, 'locations': [{'city': 'Toronto', 'limit': 3}, {'city': 'London', 'limit': 3}, {'city': 'Singapore', 'limit': 3}],
             'measurementOptions': {'request': {'path': '/facts.json', 'method': 'GET'}, 'protocol': 'HTTPS'}}
-    r = requests.post('https://api.globalping.io/v1/measurements', json=body, timeout=60); r.raise_for_status(); mid = r.json()['id']
+    r = requests.post('https://api.globalping.io/v1/measurements', json=body, timeout=60)
+    if not r.ok: raise SystemExit(f'globalping {r.status_code}: {r.text[:300]}')
+    mid = r.json()['id']
     for _ in range(40):
         time.sleep(3); m = requests.get(f'https://api.globalping.io/v1/measurements/{mid}', timeout=60).json()
         if m.get('status') == 'finished': break
