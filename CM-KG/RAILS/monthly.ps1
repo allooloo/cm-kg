@@ -10,11 +10,9 @@ Start-Transcript -Path $log
 $env:PYTHONIOENCODING = 'utf-8'
 Set-Location 'C:\ALLOOLOO\CM-KG\RAILS\ca-width0'
 # clean sweep: every worker re-reads (the roster, ISIN, LEI, transfer agent, auditor, newswire, jurisdiction)
-Remove-Item -Path 'raw\enr_*.jsonl','raw\lei_match*.jsonl','raw\lei_records.jsonl','raw\isin_lei_hits.json' -ErrorAction SilentlyContinue
 & '.\run_refresh.ps1'
 # re-apply passes 2 and 3 columns to the fresh identity workbook
 Set-Location 'C:\ALLOOLOO\CM-KG\RAILS\ca-fill-confirm'
-Remove-Item -Path 'raw\confirm_fields.jsonl','raw\aliases.jsonl' -ErrorAction SilentlyContinue
 Remove-Item -Path 'C:\ALLOOLOO\CM-KG\ISSUERS\ca-issuers-width0.xlsx' -ErrorAction SilentlyContinue
 $env:THREADS = '5'; python alias_sources.py
 $env:THREADS = '8'; python confirm.py
