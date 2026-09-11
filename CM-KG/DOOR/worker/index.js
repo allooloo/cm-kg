@@ -1,7 +1,7 @@
 // CM-KG door — one Worker, node hosts and the global door: mcp.ca-cm-kg.ai (Canada), mcp.uk-cm-kg.ai (United Kingdom, ORDER-010), mcp.au-cm-kg.ai (Australia, ORDER-013),
 // mcp.capitalmarketsknowledgegraph.ai (global door: routes by identifier to the node that holds the name).
-// Read-only. No auth. Public-record only. Streamable HTTP MCP at /mcp (JSON-RPC 2.0, stateless). Data = Workers Static Assets under /data
-// laid out per node: records/<node>/<EXCHANGE>/<TICKER>.json, events/<node>/<EXCHANGE>/<TICKER>.json, one index.json across nodes.
+// Read-only. No auth. Public-record only. Streamable HTTP MCP at /mcp (JSON-RPC 2.0, stateless). Data = Cloudflare D1 (one database cm-kg, node column;
+// tables records / events / idx / meta, loaded by CM-KG\RAILS\door\load_d1.py) since the CEO's D1 order of 2026-09-11; favicons stay on static assets.
 const OPERATOR = 'Allooloo Technologies Corp.';
 const SERVER_VERSION = '0.3.0';
 const PROTOCOL = '2025-06-18';
@@ -17,14 +17,12 @@ const TOOLS = [
     inputSchema: { type: 'object', properties: { identifier: { type: 'string' } }, required: ['identifier'] } },
   { name: 'list_nodes', title: 'List market nodes', annotations: { title: 'List market nodes', ...ANN }, description: 'Return the twelve market nodes, which are live, and their record counts.', inputSchema: { type: 'object', properties: {} } },
 ];
-let INDEX = null, FACTS = null, NODES = null;
-async function asset(env, origin, path) {
-  const r = await env.ASSETS.fetch(new Request(origin + path));
-  return r.ok ? r.json() : null;
-}
+let FACTS = null, NODES = null, BOOTED = 0;
+async function meta(env, k) { const row = await env.DB.prepare('SELECT json FROM meta WHERE k = ?').bind(k).first(); return row ? JSON.parse(row.json) : null; }
 async function boot(env, origin) {
-  if (!INDEX) { [INDEX, FACTS, NODES] = await Promise.all([asset(env, origin, '/index.json'), asset(env, origin, '/facts.json'), asset(env, origin, '/nodes.json')]); }
+  if (!FACTS || Date.now() - BOOTED > 300000) { [FACTS, NODES] = await Promise.all([meta(env, 'facts'), meta(env, 'nodes')]); FACTS = FACTS || { nodes: {} }; NODES = NODES || []; BOOTED = Date.now(); }
 }
+async function lookup(env, kind, value) { const rs = await env.DB.prepare('SELECT cmr FROM idx WHERE kind = ? AND value = ?').bind(kind, value).all(); return (rs.results || []).map(r => r.cmr); }
 const HOST_NODE = { 'mcp.ca-cm-kg.ai': 'ca-cm-kg', 'mcp.uk-cm-kg.ai': 'uk-cm-kg', 'mcp.au-cm-kg.ai': 'au-cm-kg' };
 function nodeOf(host) { return HOST_NODE[host] || 'global'; }
 function nodeFacts(node) { return (FACTS && FACTS.nodes && FACTS.nodes[node]) || null; }
@@ -39,27 +37,27 @@ function json(obj, status, node, asOf, version, cache) {
 const SUFFIX = { TO: ['TSX'], V: ['TSXV'], CN: ['CSE'], C: ['CSE'], NE: ['CBOE-CANADA'], CB: ['CBOE-CANADA'], L: ['LSE', 'AIM'], LN: ['LSE', 'AIM'], AQ: ['AQSE'], AX: ['ASX'], AU: ['ASX'], NS: ['NSX'] };
 const PREFIX = { TSX: 'TSX', TSXV: 'TSXV', 'TSX-V': 'TSXV', CVE: 'TSXV', CSE: 'CSE', CNSX: 'CSE', CNQ: 'CSE', NEO: 'CBOE-CANADA', CBOE: 'CBOE-CANADA', 'CBOE-CANADA': 'CBOE-CANADA', LSE: 'LSE', LON: 'LSE', MAIN: 'LSE', AIM: 'AIM', AQSE: 'AQSE', AQUIS: 'AQSE', NEX: 'AQSE', ASX: 'ASX', XASX: 'ASX', NSX: 'NSX', XNEC: 'NSX' };
 const EX_NODE = { TSX: 'ca-cm-kg', TSXV: 'ca-cm-kg', CSE: 'ca-cm-kg', 'CBOE-CANADA': 'ca-cm-kg', LSE: 'uk-cm-kg', AIM: 'uk-cm-kg', AQSE: 'uk-cm-kg', ASX: 'au-cm-kg', NSX: 'au-cm-kg' };
-function resolveKeys(idRaw, node) {
+async function resolveKeys(env, idRaw, node) {
   const id = (idRaw || '').trim();
   if (!id) return { keys: [], kind: 'empty' };
   const up = id.toUpperCase();
   const scope = keys => node === 'global' ? keys : keys.filter(k => k.startsWith(node + '/'));
-  if (/^[A-Z]{2}-CM-KG\//.test(up)) { const k = INDEX.keys.find(x => x.toUpperCase() === up); return { keys: scope(k ? [k] : []), kind: 'cmr' }; }
-  if (/^[A-Z]{2}[A-Z0-9]{9}\d$/.test(up)) return { keys: scope(INDEX.isin[up] || []), kind: 'isin' };
-  if (/^[A-Z0-9]{18}[0-9]{2}$/.test(up) && !/^[A-Z]{2}[A-Z0-9]{9}\d$/.test(up)) return { keys: scope(INDEX.lei[up] || []), kind: 'lei' };
+  if (/^[A-Z]{2}-CM-KG\//.test(up)) return { keys: scope(await lookup(env, 'cmr', up)), kind: 'cmr' };
+  if (/^[A-Z]{2}[A-Z0-9]{9}\d$/.test(up)) return { keys: scope(await lookup(env, 'isin', up)), kind: 'isin' };
+  if (/^[A-Z0-9]{18}[0-9]{2}$/.test(up) && !/^[A-Z]{2}[A-Z0-9]{9}\d$/.test(up)) return { keys: scope(await lookup(env, 'lei', up)), kind: 'lei' };
   let exs = null, t = up;
   const pm = up.match(/^([A-Z\-]+):(.+)$/); if (pm && PREFIX[pm[1]]) { exs = [PREFIX[pm[1]]]; t = pm[2]; }
-  const sm = t.match(/^(.+)\.([A-Z]{1,2})$/); if (!exs && sm && SUFFIX[sm[2]] && !(INDEX.ticker[t])) { exs = SUFFIX[sm[2]]; t = sm[1]; }
-  let keys = scope(INDEX.ticker[t] || []);
+  const sm = t.match(/^(.+)\.([A-Z]{1,2})$/); if (!exs && sm && SUFFIX[sm[2]] && !(await lookup(env, 'ticker', t)).length) { exs = SUFFIX[sm[2]]; t = sm[1]; }
+  let keys = scope(await lookup(env, 'ticker', t));
   if (exs) keys = keys.filter(k => exs.includes(k.split('/')[1]));
   if (keys.length) return { keys, kind: 'ticker', exchange: exs ? exs.join('/') : null, ticker: t };
   const nk = id.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim();
-  if (INDEX.alias && INDEX.alias[nk]) { const k = scope(INDEX.alias[nk]); if (k.length) return { keys: k, kind: 'alias', matched: id }; }
-  if (INDEX.name && INDEX.name[nk]) { const k = scope(INDEX.name[nk]); if (k.length) return { keys: k, kind: 'name', matched: id }; }
+  { const k = scope(await lookup(env, 'alias', nk)); if (k.length) return { keys: k, kind: 'alias', matched: id }; }
+  { const k = scope(await lookup(env, 'name', nk)); if (k.length) return { keys: k, kind: 'name', matched: id }; }
   return { keys: [], kind: 'ticker', exchange: exs ? exs.join('/') : null, ticker: t };
 }
-async function record(env, origin, key) { const [n, ex, t] = key.split('/'); return asset(env, origin, `/records/${n}/${ex}/${encodeURIComponent(t)}.json`); }
-async function eventsOf(env, origin, key) { const [n, ex, t] = key.split('/'); return (await asset(env, origin, `/events/${n}/${ex}/${encodeURIComponent(t)}.json`)) || []; }
+async function record(env, origin, key) { const row = await env.DB.prepare('SELECT json FROM records WHERE cmr = ?').bind(key).first(); return row ? JSON.parse(row.json) : null; }
+async function eventsOf(env, origin, key) { const rs = await env.DB.prepare('SELECT json FROM events WHERE cmr = ? ORDER BY date DESC, id ASC').bind(key).all(); return (rs.results || []).map(r => JSON.parse(r.json)); }
 function summary(r) {
   const v = f => r.identity[f] ? r.identity[f].value : null;
   return { cmr: r.cmr, node: r.node, version: r.version, as_of: r.as_of, name: v('name'), ticker: v('ticker'), exchange: v('exchange'), security_type: v('security_type'), isin: v('isin'), lei: v('lei'), sector: v('sector'), event_count: r.event_count, events_url: r.events_url, record_url: r.events_url.replace('/events/', '/record/') };
@@ -69,7 +67,7 @@ function liveNodes() { return NODES.filter(n => n.live).map(n => n.node); }
 async function callTool(env, origin, host, name, args) {
   const node = nodeOf(host); args = args || {};
   if (name === 'list_nodes') return { door: node === 'global' ? 'global door: routes by identifier to the node that holds the name' : `${node} node door`, live_nodes: liveNodes(), nodes: NODES };
-  const res = resolveKeys(args.identifier, node);
+  const res = await resolveKeys(env, args.identifier, node);
   if (!res.keys.length) return { error: 'not_found', identifier: args.identifier, kind: res.kind, note: node === 'global' ? `no live node holds this identifier (live today: ${liveNodes().join(', ')})` : `no record on ${node} for this identifier` };
   if (name === 'resolve_issuer') {
     const recs = await Promise.all(res.keys.map(k => record(env, origin, k)));

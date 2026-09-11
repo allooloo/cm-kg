@@ -28,7 +28,8 @@ Alias channels: Companies House previous names · GLEIF other names · Investega
 
 ## Current setting — Australia (set Sept 11 2026)
 Weekly: Width 1 refresh over a 7-day window (ASX announcements search, ASIC bulk register, NSX news feed, wire search), then Fill + Confirm (Grok live layer 168 h, aliases, annual reports, ChatGPT batch, Gemini, Perplexity agent, Mistral, confirm, rebuilds, spend), then the door reload and deploy — Task Scheduler "Allooloo CM-KG AU weekly", Friday 02:00 build-machine time (Central Standard Time (Mexico)) = Friday 18:00 AEST, after the ASX close. Rail: CM-KG\RAILSu-weekly.ps1; skips while PONDu-cm-kg\.lock exists.
-Monthly identity re-harvest: CM-KG\RAILSu-width0un_refresh.ps1, run on order until the first month turns. TMX Australia: no machine-readable list (standing HITL).
+Monthly identity re-harvest: CM-KG\RAILSu-width0
+un_refresh.ps1, run on order until the first month turns. TMX Australia: no machine-readable list (standing HITL).
 Alias channels: ASIC previous names · GLEIF other names · ASX company record · issuer page <title> · wire release pages.
 
 ## Node clock
