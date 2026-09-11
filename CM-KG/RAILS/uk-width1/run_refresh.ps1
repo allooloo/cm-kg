@@ -5,10 +5,9 @@ Set-Location $PSScriptRoot
 $env:WINDOW_DAYS = if ($env:WINDOW_DAYS) { $env:WINDOW_DAYS } else { '7' }
 $log = Join-Path $PSScriptRoot ('raw\refresh-' + (Get-Date -Format 'yyyy-MM-dd') + '.log')
 function Step($name, $cmd) { "== $name $(Get-Date -Format 'yyyy-MM-dd')" | Tee-Object -FilePath $log -Append; & $cmd 2>&1 | Tee-Object -FilePath $log -Append }
-# prior worker outputs move aside (never deleted); the assembler merges the new window onto the existing 12-month event set on the dedupe key
-$prior = Join-Path $PSScriptRoot ('raw\prior-' + (Get-Date -Format 'yyyy-MM-dd'))
-New-Item -ItemType Directory -Force $prior | Out-Null
-Get-ChildItem raw\investegate.jsonl, raw\ch_filings.jsonl, raw\wire_search.jsonl -ErrorAction SilentlyContinue | Move-Item -Destination $prior -Force
+# pond rule: skip on the node lock; open a new dated drop (raw\ becomes a junction to it); nothing is deleted or moved
+if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\uk-cm-kg\.lock') { 'uk-cm-kg locked (build order in flight): refresh skipped'; exit 0 }
+python ..\pond_open.py uk-cm-kg uk-width1 width1
 Step 'RNS via Investegate' { $env:THREADS = '4'; python investegate.py }
 Step 'Companies House filings' { $env:THREADS = '3'; python ch_filings.py }
 Step 'Newswire search' { $env:THREADS = '4'; python wire_search.py }

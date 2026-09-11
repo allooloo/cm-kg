@@ -22,7 +22,7 @@ def parse(h):
         d = re.search(r'(\d{2})/(\d{2})/(20\d\d)', r); a = re.search(r'idsId=(\d+)', r)
         if not (d and a): continue
         cells = [html.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', c))).strip() for c in re.findall(r'<td[^>]*>(.*?)</td>', r, re.S)]
-        head = next((c for c in cells if c and not re.fullmatch(r'[\d/]+|[\d:]+ [ap]m|\d+ pages?|[\d.]+[KM]B|\*?', c)), '')
+        head = next((c for c in cells if c and not re.match(r'^\d{2}/\d{2}/\d{4}', c) and not re.fullmatch(r'[\d:]+ [ap]m|\d+ pages?|[\d.]+[KM]B|\*?', c)), '')
         rows.append({'date': f'{d.group(3)}-{d.group(2)}-{d.group(1)}', 'headline': head[:200], 'idsId': a.group(1), 'url': f'https://www.asx.com.au/asx/v2/statistics/displayAnnouncement.do?display=pdf&idsId={a.group(1)}'})
     return rows
 def work(c):

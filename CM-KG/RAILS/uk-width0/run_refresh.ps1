@@ -2,6 +2,9 @@
 # Aquis is not fetched here: aquis.eu refuses plain HTTP clients (HTTP 429). raw\aquis.json is refreshed by a browser session (see README) before this runs.
 $ErrorActionPreference = 'Continue'
 Set-Location $PSScriptRoot
+# pond rule: skip on the node lock; open a new dated drop (raw\ becomes a junction to it); nothing is deleted or moved
+if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\uk-cm-kg\.lock') { 'uk-cm-kg locked (build order in flight): refresh skipped'; exit 0 }
+python ..\pond_open.py uk-cm-kg uk-width0 width0
 $log = Join-Path $PSScriptRoot ('raw\refresh-' + (Get-Date -Format 'yyyy-MM-dd') + '.log')
 function Step($name, $cmd) { "== $name $(Get-Date -Format 'yyyy-MM-dd')" | Tee-Object -FilePath $log -Append; & $cmd 2>&1 | Tee-Object -FilePath $log -Append }
 Remove-Item raw\lse_alldata.jsonl, raw\lse_issuer.jsonl, raw\lei_match.jsonl, raw\lei_records.jsonl, raw\ch_match.jsonl, raw\enr_reg.jsonl, raw\enr_wire.jsonl -ErrorAction SilentlyContinue

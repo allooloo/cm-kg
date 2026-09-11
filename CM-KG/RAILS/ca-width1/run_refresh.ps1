@@ -3,8 +3,9 @@ $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
 $env:PYTHONIOENCODING = 'utf-8'
 $env:WINDOW_DAYS = '2'
-# fresh worker outputs for the daily window; the assembler merges into the existing events file
-Remove-Item -Path 'raw\wire_pages.jsonl','raw\wire_search.jsonl','raw\release_dates.jsonl','raw\tsxv_bulletins.jsonl','raw\cse_bulletins.jsonl' -ErrorAction SilentlyContinue
+# pond rule: skip on the node lock; open a new dated drop (raw\ becomes a junction to it); nothing is deleted or moved
+if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\ca-cm-kg\.lock') { 'ca-cm-kg locked (build order in flight): refresh skipped'; exit 0 }
+python ..\pond_open.py ca-cm-kg ca-width1 width1
 $env:SKIP_WIRE = 'Newsfile'   # Newsfile is read through newsfile_snippets.py (bot protection blocks direct fetch)
 $env:THREADS = '5'; $a = Start-Process python -ArgumentList 'wire_pages.py'     -NoNewWindow -PassThru -RedirectStandardOutput 'raw\wire_pages.log'     -RedirectStandardError 'raw\wire_pages.err'
 $env:THREADS = '6'; $b = Start-Process python -ArgumentList 'wire_search.py'    -NoNewWindow -PassThru -RedirectStandardOutput 'raw\wire_search.log'    -RedirectStandardError 'raw\wire_search.err'
