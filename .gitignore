@@ -6,3 +6,6 @@ CM-KG/DISCLOSURE/
 SITE/node_modules/
 __pycache__/
 *.pyc
+CM-KG/DOOR/data/
+CM-KG/DOOR/node_modules/
+CM-KG/DOOR/.wrangler/
