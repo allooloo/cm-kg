@@ -23,7 +23,7 @@ h2{font-size:1rem;font-weight:600;margin:0 0 .5rem}
 .markets{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin:.75rem 0 1rem}
 .chip{font-size:.8rem;border:1px solid var(--rule);border-radius:2px;padding:.15rem .5rem;color:var(--grey)}
 .chip.live{border-color:var(--signed);color:var(--signed);font-weight:600}
-.chip.dim{opacity:.6}
+.chip.dim{color:var(--grey);border-style:dashed}
 .chip-note{font-size:.75rem;color:var(--grey);margin-left:.25rem}
 .panes{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:1.5rem;align-items:start}
 .ask .row{display:flex;gap:.75rem;align-items:center;margin-top:.5rem}
