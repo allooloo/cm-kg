@@ -5,6 +5,8 @@ const OPERATOR = 'Allooloo Technologies Corp.';
 const GLOBAL_DOOR = 'https://mcp.capitalmarketsknowledgegraph.ai';
 const NODES = { ca: 'Canada', uk: 'United Kingdom', au: 'Australia', sg: 'Singapore', ch: 'Switzerland', de: 'Germany', fr: 'France', nl: 'Netherlands', hk: 'Hong Kong', jp: 'Japan', kr: 'South Korea', us: 'United States' };
 const ORDER = ['ca', 'uk', 'au', 'sg', 'ch', 'de', 'fr', 'nl', 'hk', 'jp', 'kr', 'us'];
+// The dealer's product-knowledge duty by its local name (the name the node serves); blank where the build order has not named it yet.
+const DUTY = { ca: 'KYP (Know Your Product)', uk: 'product governance (FCA PROD sourcebook)', de: 'product governance (MiFID II Produktüberwachung)', au: 'DDO (Design and Distribution Obligations)', sg: 'MAS product due diligence', us: 'reasonable-basis suitability (FINRA Rule 2111)' };
 let LIVE = null, LIVE_AT = 0;
 async function liveNodes() {
   if (LIVE && Date.now() - LIVE_AT < 300000) return LIVE;
@@ -36,7 +38,7 @@ function facts(host, c, live) {
   if (c.kind === 'node') {
     const n = live[`${c.cc}-cm-kg`] || {}; const isLive = !!n.live;
     return { ...base, kind: c.tld === 'org' ? 'node registry' : 'node door', node: `${c.cc}-cm-kg`, country: NODES[c.cc], live: isLive, records: isLive ? n.records : 0, node_as_of: isLive ? n.as_of : null,
-      registry: `https://${c.cc}-cm-kg.org/`, door_host: `mcp.${c.cc}-cm-kg.ai`, door_url: isLive ? `https://mcp.${c.cc}-cm-kg.ai/mcp` : null, note: isLive ? 'the node door answers' : 'named; the door is not published until it answers' };
+      registry: `https://${c.cc}-cm-kg.org/`, door_host: `mcp.${c.cc}-cm-kg.ai`, door_url: isLive ? `https://mcp.${c.cc}-cm-kg.ai/mcp` : null, duty: DUTY[c.cc] || null, note: isLive ? 'the node door answers' : 'named; the door is not published until it answers' };
   }
   if (c.kind === 'root') return { ...base, kind: { graph: 'root of the graph', standard: 'standard mirror of the long-form root', 'cmkg-standard': 'CM-KG standard and beacon', 'cmkg-twin': 'CM-KG machine twin' }[c.role], live_nodes: Object.values(live).filter(n => n.live).map(n => n.node), global_door: `${GLOBAL_DOOR}/mcp`, nodes: ORDER.map(cc => ({ node: `${cc}-cm-kg`, country: NODES[cc], live: !!(live[`${cc}-cm-kg`] || {}).live })) };
   if (c.kind === 'record') return { ...base, kind: { standard: 'Capital Markets Record — the object standard (schema, signing, versions)', resolver: 'CMR resolver door', twin: 'CMR machine twin' }[c.role], spec: 'CMR v0 (draft)', signing: 'not yet live; no signature is stubbed', resolver_live: false, records_served_by: `${GLOBAL_DOOR}/mcp` };
@@ -49,6 +51,7 @@ function page(host, c, f) {
     title = `${f.node} — ${f.country} node ${c.tld === 'org' ? 'registry' : 'door'}`;
     body = `<p>${esc(f.country)} node of the Capital Markets Knowledge Graph. This host is the node's ${c.tld === 'org' ? 'public registry' : 'operating door'}.</p>
 <p><strong>Status: ${f.live ? 'live' : 'not live'}.</strong> ${f.live ? `${f.records.toLocaleString()} records as of ${esc(f.node_as_of)}. The door answers at <code>${esc(f.door_url)}</code> (Streamable HTTP MCP, no auth).` : 'The node is named in the twelve-node build order; its door is not published until it answers.'}</p>
+${f.duty ? `<p>Duty served: <strong>${esc(f.duty)}</strong> — know every product on the shelf, continuously. Same record, one local name.</p>` : ''}
 <p>Read live from the global door's <code>list_nodes</code>. ${f.live ? `<a href="https://mcp.${c.cc}-cm-kg.ai/">Node door</a> · ` : ''}<a href="${GLOBAL_DOOR}/">Global door</a></p>`;
   } else if (c.kind === 'root') {
     title = { graph: 'Capital Markets Knowledge Graph', standard: 'Capital Markets Knowledge Graph — standard', 'cmkg-standard': 'CM-KG — standard and beacon', 'cmkg-twin': 'CM-KG — machine twin' }[c.role];
@@ -69,7 +72,7 @@ function page(host, c, f) {
 }
 function llms(host, c, f) {
   const lines = [`# ${host}`, `Operator: ${OPERATOR} (Vancouver, Canada). Corporate: https://allooloo.io`, `What this domain is: ${f.kind}.`];
-  if (c.kind === 'node') lines.push(`Node: ${f.node} (${f.country}). Live: ${f.live ? 'yes' : 'no'}.${f.live ? ` Records: ${f.records} as of ${f.node_as_of}. Door: ${f.door_url}` : ' The door is not published until it answers.'}`);
+  if (c.kind === 'node') lines.push(`Node: ${f.node} (${f.country}). Live: ${f.live ? 'yes' : 'no'}.${f.live ? ` Records: ${f.records} as of ${f.node_as_of}. Door: ${f.door_url}` : ' The door is not published until it answers.'}${f.duty ? ` Duty served: ${f.duty}.` : ''}`);
   if (c.kind === 'root') lines.push(`Live nodes: ${f.live_nodes.join(', ') || 'none'}. Global door (Streamable HTTP MCP, no auth): ${f.global_door}. Tools: resolve_issuer, get_record, list_events_since, list_aliases, list_nodes.`);
   if (c.kind === 'record') lines.push(`Spec: ${f.spec}. Signing: ${f.signing}. Records served by ${f.records_served_by}.`);
   lines.push('Rules: public-record only; no prices, quotes or licensed market data; blank stays blank; nothing published before it answers.', 'Machine paths: /llms.txt, /facts.json, /robots.txt, /sitemap.xml');
