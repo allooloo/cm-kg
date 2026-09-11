@@ -11,9 +11,9 @@ h2{font-size:1rem;font-weight:600;margin:0 0 .5rem}
 .top{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding-bottom:.75rem;border-bottom:1px solid var(--rule)}
 .brand .name{font-weight:700;font-size:1.25rem;margin-right:.75rem}
 .brand .by{color:var(--grey);font-size:.9rem}
-.onboard{color:var(--ink);text-decoration:none;border:1px solid var(--rule);border-radius:999px;padding:.35rem .9rem;font-size:.85rem;background:var(--paper)}
+.onboard{color:var(--ink);text-decoration:none;border:1px solid #E5E7EB;border-radius:999px;padding:.35rem .9rem;font-size:.85rem;background:var(--paper)}
 .onboard .marks{display:block;color:var(--grey);font-size:.75rem}
-.onboard:hover{border-color:var(--ink)}
+.onboard:hover{border-color:#E5E7EB;text-decoration:underline;text-underline-offset:.15em}
 .idbar{margin-top:1rem}
 .idbar label,.ask label{display:block;font-size:.8rem;color:var(--grey);margin-bottom:.25rem}
 .idbar input,.ask textarea{width:100%;font:inherit;padding:.55rem .7rem;border:1px solid var(--ink);border-radius:2px;background:var(--paper);color:var(--ink)}
