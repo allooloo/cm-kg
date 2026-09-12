@@ -30,7 +30,7 @@ if _ra:
         def _fix(t):
             try: return t.encode('latin-1').decode('utf-8')  # the fetch saved the list as latin-1-decoded text
             except Exception: return t
-        RA[row[_ic]] = _fix((reg or '') + ((' — ' + org) if org else ''))
+        RA[row[_ic]] = _fix(reg or '') + ((' — ' + _fix(org)) if org else '')
 def name_key(s):
     s = (s or '').upper().replace('&', ' AND ').replace('.', '').replace(',', '').replace('-', ' ')
     s = re.sub(r'\b(AG|SE|KGAA|GMBH|LTD|LIMITED|INC|PLC|NV|N|O|HOLDING|HOLDINGS|GROUP|GRUPPE|AKTIENGESELLSCHAFT|CORP|CORPORATION|CO|INH|VZ|ST|NA|ON|VNA|VZO)\b', ' ', s)
