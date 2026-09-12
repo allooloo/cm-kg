@@ -173,7 +173,7 @@ outdir = pond.assembled(NODE); out = os.path.join(outdir, 'nl-issuers.xlsx'); wb
 os.makedirs(os.path.dirname(MIRROR), exist_ok=True); shutil.copy(out, MIRROR)
 print('saved', out, 'mirrored to', MIRROR)
 for ex, data in sheets.items():
-    print(f'== {ex}: {len(data)} rows (Dutch ISIN {sum(1 for o in data if o["ISIN"].startswith("FR"))})')
+    print(f'== {ex}: {len(data)} rows (Dutch ISIN {sum(1 for o in data if o["ISIN"].startswith("NL"))})')
     for f in FIELDS:
         n = sum(1 for o in data if o[f]); print(f'   {f:40s} {n:5d} {n / max(1, len(data)) * 100:5.1f}%')
 print('gap rows', len(gap_detail))
