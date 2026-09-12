@@ -22,6 +22,14 @@ def name_key(s):
     s = (s or '').upper().replace('&', ' AND ').replace('.', '').replace(',', '').replace('-', ' ')
     s = re.sub(r'\b(AG|SA|LTD|LIMITED|INC|PLC|NV|N|I|HOLDING|HOLDINGS|GROUP|GROUPE|GRUPPE|SOCIETE ANONYME|AKTIENGESELLSCHAFT|CORP|CORPORATION|CO|REG|BR|PC|PS)\b', ' ', s)
     return ' '.join(re.sub(r'[^A-Z0-9 ]', ' ', s).split())
+def names_overlap(a, b):
+    """exchange short names are abbreviated (UTD.INTERNET, BAY.MOTOREN WERKE, HIGHLIGHT E AND E): the mapping-file LEI is another entity only when the two names share no distinctive token (a token of 4+ letters, or a 3-letter token that starts a name), allowing prefix abbreviations"""
+    ta = [t for t in name_key(a).split() if len(t) >= 3]; tb = [t for t in name_key(b).split() if len(t) >= 3]
+    if not ta or not tb: return name_key(a) == name_key(b)
+    for x in ta:
+        for y in tb:
+            if x == y or (len(x) >= 4 and len(y) >= 4 and (x.startswith(y) or y.startswith(x))): return True
+    return False
 def is_corp(r): return r['security_type'] == 'Corporate'
 RB = {'six': 'SIX Swiss Exchange share explorer feed (exchange list)', 'bx': 'BX Swiss instruments list (exchange list)', 'gleif_map': 'GLEIF ISIN-to-LEI mapping file (exact ISIN match)', 'gleif_exact': 'GLEIF name-exact', 'gleif_rec': 'GLEIF LEI record (LEI per the LEI column)',
       'zefix': 'Zefix federal commercial register index (zefix.ch public web API, name-exact + corporation legal form)', 'tavily': 'Tavily search + regex extraction from page text', 'tavily_wire': 'Tavily search restricted to wire domains (release hits)'}
@@ -48,7 +56,7 @@ def build(r):
     if r.get('isin') and ISIN_LEI.get(r['isin']):
         lei = ISIN_LEI[r['isin']].split('|')[0]; o['LEI'] = lei; o['LEI source'] = ISIN_LEI_SRC; o['LEI read by'] = RB['gleif_map']; o['LEI State'] = 'sourced'
         mrec = E_LEIREC.get(lei)
-        if mrec and name_key(mrec['name']) != name_key(r['name']) and not (name_key(mrec['name']).startswith(name_key(r['name'])) or name_key(r['name']).startswith(name_key(mrec['name']))): o['LEI State'] = 'conflict'; gaps.append(('LEI', f"mapping file maps ISIN {r['isin']} to LEI {lei}, whose GLEIF legal name is \"{mrec['name']}\", not the issuer; LEI kept with State conflict"))
+        if mrec and not names_overlap(mrec['name'], r['name']): o['LEI State'] = 'conflict'; gaps.append(('LEI', f"mapping file maps ISIN {r['isin']} to LEI {lei}, whose GLEIF legal name is \"{mrec['name']}\", not the issuer; LEI kept with State conflict"))
     elif exact:
         lei = exact[0][0]; o['LEI'] = lei; o['LEI source'] = f'https://api.gleif.org/api/v1/lei-records/{lei}'; o['LEI read by'] = RB['gleif_exact']; o['LEI State'] = 'sourced'
     else: gaps.append(('LEI', ('ISIN not in the GLEIF ISIN-to-LEI mapping file; ' if r.get('isin') else 'no ISIN; ') + ('no GLEIF legal name equals the roster name' if m else 'GLEIF name lookup not run')))
