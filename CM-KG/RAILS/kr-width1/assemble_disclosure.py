@@ -53,6 +53,9 @@ if _prev:
         except Exception: pass
     print('merged prior assembled events', n_prior, 'from', _prev, flush=True)
 for e in events: e.pop('key', None)
+from dart_events import etype as _etype  # RETYPE: DART rows are typed from the report name at assembly (the first sweep typed every row regulatory_filing)
+for e in events:
+    if e.get('wire') == 'DART': e['event_type'] = _etype('', e.get('title', ''))
 events = [e for e in events if e.get('url', '').startswith('http') and e.get('date')]
 kept = []; ambiguous = Counter()
 EXEMPT = ('DART', 'KIND', 'Grok')  # the regulator's filing list and the live layer are the issuer's own rows

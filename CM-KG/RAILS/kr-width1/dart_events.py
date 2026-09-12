@@ -1,4 +1,4 @@
-"""DART filings per issuer over the window through the DART list API (AGENT KEYS\\dart.txt): list.json per corp_code with bgn_de / end_de, 100 rows a
+"""DART filings per issuer over the window (event types from the Korean report name: the list response carries no publication-type field) through the DART list API (AGENT KEYS\\dart.txt): list.json per corp_code with bgn_de / end_de, 100 rows a
 page. Event types from the publication type (pblntf_ty) and the report name: A 정기공시 (사업보고서 annual, 반기 / 분기보고서) → results; B 주요사항보고
 → ad_hoc; C 발행공시 (증권신고서 …) → prospectus; D 지분공시 (임원ㆍ주요주주특정증권등소유상황보고서 → directors_dealings; 주식등의대량보유상황보고서 → major_holder);
 E 기타공시 → corporate_news; F 외부감사관련 → regulatory_filing (audit); I 거래소공시 (조회공시, 수시공시, 공정공시 — KIND mirrored) → exchange_bulletin, or
@@ -11,18 +11,15 @@ DK = os.environ['DART_API_KEY']
 API = 'https://opendart.fss.or.kr/api/list.json'; VIEW = 'https://dart.fss.or.kr/dsaf001/main.do?rcpNo='
 PT = {'A': 'results', 'B': 'ad_hoc', 'C': 'prospectus', 'D': 'major_holder', 'E': 'corporate_news', 'F': 'regulatory_filing', 'G': 'regulatory_filing', 'H': 'regulatory_filing', 'I': 'exchange_bulletin', 'J': 'regulatory_filing'}
 PTL = {'A': '정기공시 (periodic)', 'B': '주요사항보고 (material events)', 'C': '발행공시 (issuance)', 'D': '지분공시 (ownership)', 'E': '기타공시 (other)', 'F': '외부감사관련 (external audit)', 'G': '펀드공시 (funds)', 'H': '자산유동화 (securitisation)', 'I': '거래소공시 (exchange disclosure)', 'J': '공정위공시 (fair trade)'}
+RULES = [('halt_suspension', ('매매거래정지', '거래정지', '상장폐지')), ('directors_dealings', ('임원ㆍ주요주주', '임원·주요주주', '임원 주요주주', '특정증권등소유상황')), ('major_holder', ('대량보유', '대량보유상황')), ('takeover', ('공개매수',)), ('agm_egm', ('주주총회', '주총')), ('dividend', ('배당결정', '현금ㆍ현물배당', '현금·현물배당', '배당')),
+         ('name_change', ('상호변경', '회사명변경')), ('results', ('사업보고서', '반기보고서', '분기보고서', '영업(잠정)실적', '결산실적', '연결재무제표기준영업', '매출액또는손익구조')), ('prospectus', ('증권신고서', '투자설명서', '일괄신고', '증권발행실적보고서')), ('ad_hoc', ('주요사항보고서',)), ('director_change', ('대표이사변경', '임원변경', '대표이사 변경')),
+         ('regulatory_filing', ('감사보고서', '외부감사', '내부회계관리제도', '기업지배구조보고서', '지속가능경영보고서', '자기주식', '주식등의 대량')), ('exchange_bulletin', ('조회공시', '공정공시', '기타 경영사항', '기타경영사항', '풍문', '답변'))]
 def etype(pt, nm):
-    n = nm or ''
-    if pt == 'D': return 'directors_dealings' if '임원' in n or '주요주주' in n else 'major_holder'
-    if pt == 'I' or pt == 'B' or pt == 'E':
-        if '매매거래정지' in n or '거래정지' in n: return 'halt_suspension'
-        if '주주총회' in n: return 'agm_egm'
-        if '배당' in n: return 'dividend'
-        if '영업(잠정)실적' in n or '결산실적' in n or '연결재무제표' in n and '실적' in n: return 'results'
-        if '공개매수' in n: return 'takeover'
-        if '상호변경' in n or '회사명' in n: return 'name_change'
-    if pt == 'A' and ('사업보고서' in n or '반기보고서' in n or '분기보고서' in n): return 'results'
-    return PT.get(pt, 'regulatory_filing')
+    """type from the Korean report name (the DART list response carries no publication-type field); pt kept for compatibility"""
+    n = (nm or '').replace(' ', '')
+    for t, keys in RULES:
+        if any(k.replace(' ', '') in n for k in keys): return t
+    return PT.get(pt or '', 'corporate_news')
 _gate = threading.Lock(); _last = [0.0]
 def call(params, tries=4):
     for i in range(tries):
