@@ -31,13 +31,13 @@ if __name__ == '__main__':
     ra = None
     for u in ('https://www.gleif.org/content/2-about-lei/7-code-lists/2-gleif-registration-authorities-list/2025-10-08_ra-list-v1.9.csv', 'https://www.gleif.org/content/2-about-lei/7-code-lists/2-gleif-registration-authorities-list/2024-11-13_ra-list-v1.8.csv'):
         x = get(u)
-        if x is not None and x.status_code == 200 and x.text.startswith('Registration Authority Code'): ra = x.text; open('raw/gleif_ra_list.csv', 'w', encoding='utf-8').write(ra); print('GLEIF RA list', u.split('/')[-1], flush=True); break
+        if x is not None and x.status_code == 200 and x.content.decode('utf-8-sig', 'replace').startswith('Registration Authority Code'): ra = x.content.decode('utf-8-sig', 'replace'); open('raw/gleif_ra_list.csv', 'w', encoding='utf-8').write(ra); print('GLEIF RA list', u.split('/')[-1], flush=True); break
     if ra is None:
         page = get('https://www.gleif.org/en/about-lei/code-lists/gleif-registration-authorities-list')
         m = re.search(r'href="([^"]+ra-list[^"]*\.csv)"', page.text) if page is not None else None
         if m:
             u = m.group(1) if m.group(1).startswith('http') else 'https://www.gleif.org' + m.group(1); x = get(u)
-            if x is not None and x.status_code == 200: open('raw/gleif_ra_list.csv', 'w', encoding='utf-8').write(x.text); print('GLEIF RA list', u, flush=True)
+            if x is not None and x.status_code == 200: open('raw/gleif_ra_list.csv', 'w', encoding='utf-8').write(x.content.decode('utf-8-sig', 'replace')); print('GLEIF RA list', u, flush=True)
         else: print('GLEIF RA list not found (courts will be shown by RA code)', flush=True)
     if '--no-gleif' not in sys.argv and not os.path.exists('raw/isin-lei-latest.zip'):
         meta = requests.get('https://mapping.gleif.org/api/v2/isin-lei/latest', headers={'Accept': 'application/vnd.api+json'}, timeout=60).json()['data']['attributes']
