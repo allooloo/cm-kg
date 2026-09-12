@@ -6,7 +6,7 @@ information database (per filer token)'. Register rows are the issuer's own reco
 from common import *
 API = 'https://bdif.amf-france.org/back/api/v1/informations'
 TYPE = {'FT': 'results', 'DD': 'regulatory_filing', 'OPA': 'takeover', 'VISA': 'prospectus', 'SPDE': 'regulatory_filing', 'DP': 'prospectus', 'RA': 'results', 'RF': 'results', 'AG': 'agm_egm', 'DEC': 'regulatory_filing', 'FRANC': 'major_holder', 'DIR': 'directors_dealings'}
-DOC = {'DocumentReferenceEnregistrement': 'results', 'RapportFinancierAnnuel': 'results', 'RapportFinancierSemestriel': 'results', 'InformationTrimestrielle': 'results', 'DeclarationFranchissementSeuil': 'major_holder', 'DeclarationDirigeant': 'directors_dealings', 'ObligationDepotOP': 'takeover', 'NoteOperation': 'prospectus', 'Prospectus': 'prospectus', 'AvisConvocationAG': 'agm_egm', 'DescriptifProgrammeRachat': 'corporate_news', 'InformationReglementee': 'regulatory_filing'}
+DOC = {'DocumentReferenceEnregistrement': 'results', 'RapportFinancierAnnuel': 'results', 'RapportFinancierSemestriel': 'results', 'InformationTrimestrielle': 'results', 'DeclarationFranchissementSeuil': 'major_holder', 'DeclarationDirigeant': 'directors_dealings', 'DeclarationDirigeants': 'directors_dealings', 'DeclarationFranchissementSeuils': 'major_holder', 'ObligationDepotOP': 'takeover', 'NoteOperation': 'prospectus', 'Prospectus': 'prospectus', 'AvisConvocationAG': 'agm_egm', 'DescriptifProgrammeRachat': 'corporate_news', 'InformationReglementee': 'regulatory_filing'}
 def fetch(r):
     tok = (r.get('amf_token') or '').strip()
     if not tok: return {'gap': 'no AMF filer token in Width 0 (not among the filers of the last 10,000 BDIF items)', 'events': []}
