@@ -1,0 +1,9 @@
+[au] Origin CA certificate issued for mcp.au-cm-kg.ai (id 36923839…, expires 2041-09-08)
+[au] certificate origin-mcp-au-2026-09-12 uploaded to cmkg-env-australiaeast
+[au] bind mcp.au-cm-kg.ai -> origin-mcp-au-2026-09-12: ok
+[au] Origin CA certificate issued for agent.au-cm-kg.ai (id 52154495…, expires 2041-09-08)
+[au] certificate origin-agent-au-2026-09-12 uploaded to cmkg-env-australiaeast
+[au] bind agent.au-cm-kg.ai -> origin-agent-au-2026-09-12: ok
+[au] mcp.au-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[au] agent.au-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[au] zone SSL strict: True

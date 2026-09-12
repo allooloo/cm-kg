@@ -1,0 +1,9 @@
+[kr] Origin CA certificate issued for mcp.kr-cm-kg.ai (id 61789428…, expires 2041-09-08)
+[kr] certificate origin-mcp-kr-2026-09-12 uploaded to cmkg-env-koreacentral
+[kr] bind mcp.kr-cm-kg.ai -> origin-mcp-kr-2026-09-12: ok
+[kr] Origin CA certificate issued for agent.kr-cm-kg.ai (id 68288352…, expires 2041-09-08)
+[kr] certificate origin-agent-kr-2026-09-12 uploaded to cmkg-env-koreacentral
+[kr] bind agent.kr-cm-kg.ai -> origin-agent-kr-2026-09-12: ok
+[kr] mcp.kr-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[kr] agent.kr-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[kr] zone SSL strict: True

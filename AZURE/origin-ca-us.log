@@ -1,0 +1,10 @@
+[us] Origin CA certificate issued for mcp.us-cm-kg.ai (id 66409946…, expires 2041-09-08)
+[us] certificate origin-mcp-us-2026-09-12 uploaded to cmkg-env-eastus-2
+[us] hostname mcp.us-cm-kg.ai add attempted: ok
+[us] bind mcp.us-cm-kg.ai -> origin-mcp-us-2026-09-12: ok
+[us] Origin CA certificate issued for agent.us-cm-kg.ai (id 61910203…, expires 2041-09-08)
+[us] certificate origin-agent-us-2026-09-12 uploaded to cmkg-env-eastus-2
+[us] bind agent.us-cm-kg.ai -> origin-agent-us-2026-09-12: ok
+[us] mcp.us-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[us] agent.us-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[us] zone SSL strict: True

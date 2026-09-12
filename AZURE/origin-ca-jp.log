@@ -1,0 +1,9 @@
+[jp] Origin CA certificate issued for mcp.jp-cm-kg.ai (id 19018761…, expires 2041-09-08)
+[jp] certificate origin-mcp-jp-2026-09-12 uploaded to cmkg-env-japaneast
+[jp] bind mcp.jp-cm-kg.ai -> origin-mcp-jp-2026-09-12: ok
+[jp] Origin CA certificate issued for agent.jp-cm-kg.ai (id 38518594…, expires 2041-09-08)
+[jp] certificate origin-agent-jp-2026-09-12 uploaded to cmkg-env-japaneast
+[jp] bind agent.jp-cm-kg.ai -> origin-agent-jp-2026-09-12: ok
+[jp] mcp.jp-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[jp] agent.jp-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[jp] zone SSL strict: True

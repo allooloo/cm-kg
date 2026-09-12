@@ -1,0 +1,9 @@
+[fr] Origin CA certificate issued for mcp.fr-cm-kg.ai (id 68287894…, expires 2041-09-08)
+[fr] certificate origin-mcp-fr-2026-09-12 uploaded to cmkg-env-francecentral
+[fr] bind mcp.fr-cm-kg.ai -> origin-mcp-fr-2026-09-12: ok
+[fr] Origin CA certificate issued for agent.fr-cm-kg.ai (id 45450561…, expires 2041-09-08)
+[fr] certificate origin-agent-fr-2026-09-12 uploaded to cmkg-env-francecentral
+[fr] bind agent.fr-cm-kg.ai -> origin-agent-fr-2026-09-12: ok
+[fr] mcp.fr-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[fr] agent.fr-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[fr] zone SSL strict: True

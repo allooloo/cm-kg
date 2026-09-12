@@ -1,0 +1,9 @@
+[nl] Origin CA certificate issued for mcp.nl-cm-kg.ai (id 31132038…, expires 2041-09-08)
+[nl] certificate origin-mcp-nl-2026-09-12 uploaded to cmkg-env-westeurope
+[nl] bind mcp.nl-cm-kg.ai -> origin-mcp-nl-2026-09-12: ok
+[nl] Origin CA certificate issued for agent.nl-cm-kg.ai (id 60476746…, expires 2041-09-08)
+[nl] certificate origin-agent-nl-2026-09-12 uploaded to cmkg-env-westeurope
+[nl] bind agent.nl-cm-kg.ai -> origin-agent-nl-2026-09-12: ok
+[nl] mcp.nl-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[nl] agent.nl-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[nl] zone SSL strict: True

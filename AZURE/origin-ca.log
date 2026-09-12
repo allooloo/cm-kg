@@ -1,0 +1,108 @@
+2026-09-12 14:19 [ca] Origin CA refused: User is not authorized to perform this action
+2026-09-12 14:29 [ca] Origin CA certificate issued for mcp.ca-cm-kg.ai (id 60388430…, expires 2041-09-08)
+2026-09-12 14:29 [ca] certificate origin-mcp-ca-2026-09-12 uploaded to cmkg-env-canadacentral
+2026-09-12 14:29 [ca] bind mcp.ca-cm-kg.ai -> origin-mcp-ca-2026-09-12: refused
+2026-09-12 14:29 [ca] Origin CA certificate issued for agent.ca-cm-kg.ai (id 72109162…, expires 2041-09-08)
+2026-09-12 14:29 [ca] certificate origin-agent-ca-2026-09-12 uploaded to cmkg-env-canadacentral
+2026-09-12 14:29 [ca] bind agent.ca-cm-kg.ai -> origin-agent-ca-2026-09-12: refused
+2026-09-12 14:29 [ca] mcp.ca-cm-kg.ai: binding Disabled — left grey (reported, not retried)
+2026-09-12 14:29 [ca] agent.ca-cm-kg.ai: binding Disabled — left grey (reported, not retried)
+2026-09-12 14:29 [ca] zone SSL strict: True
+2026-09-12 14:30 [ca] certificate origin-mcp-ca-2026-09-12 already on cmkg-env-canadacentral
+2026-09-12 14:30 [us] Origin CA certificate issued for mcp.us-cm-kg.ai (id 66409946…, expires 2041-09-08)
+2026-09-12 14:30 [jp] Origin CA certificate issued for mcp.jp-cm-kg.ai (id 19018761…, expires 2041-09-08)
+2026-09-12 14:30 [uk] Origin CA certificate issued for mcp.uk-cm-kg.ai (id 67150478…, expires 2041-09-08)
+2026-09-12 14:30 [au] Origin CA certificate issued for mcp.au-cm-kg.ai (id 36923839…, expires 2041-09-08)
+2026-09-12 14:30 [fr] Origin CA certificate issued for mcp.fr-cm-kg.ai (id 68287894…, expires 2041-09-08)
+2026-09-12 14:30 [kr] Origin CA certificate issued for mcp.kr-cm-kg.ai (id 61789428…, expires 2041-09-08)
+2026-09-12 14:30 [de] Origin CA certificate issued for mcp.de-cm-kg.ai (id 69757364…, expires 2041-09-08)
+2026-09-12 14:30 [sg] Origin CA certificate issued for mcp.sg-cm-kg.ai (id 37815640…, expires 2041-09-08)
+2026-09-12 14:30 [ch] Origin CA certificate issued for mcp.ch-cm-kg.ai (id 39551347…, expires 2041-09-08)
+2026-09-12 14:30 [nl] Origin CA certificate issued for mcp.nl-cm-kg.ai (id 31132038…, expires 2041-09-08)
+2026-09-12 14:30 [us] certificate origin-mcp-us-2026-09-12 uploaded to cmkg-env-eastus-2
+2026-09-12 14:30 [jp] certificate origin-mcp-jp-2026-09-12 uploaded to cmkg-env-japaneast
+2026-09-12 14:30 [au] certificate origin-mcp-au-2026-09-12 uploaded to cmkg-env-australiaeast
+2026-09-12 14:30 [uk] certificate origin-mcp-uk-2026-09-12 uploaded to cmkg-env-uksouth
+2026-09-12 14:30 [fr] certificate origin-mcp-fr-2026-09-12 uploaded to cmkg-env-francecentral
+2026-09-12 14:30 [kr] certificate origin-mcp-kr-2026-09-12 uploaded to cmkg-env-koreacentral
+2026-09-12 14:30 [de] certificate origin-mcp-de-2026-09-12 uploaded to cmkg-env-germanywestcentral
+2026-09-12 14:30 [sg] certificate origin-mcp-sg-2026-09-12 uploaded to cmkg-env-southeastasia
+2026-09-12 14:30 [ch] certificate origin-mcp-ch-2026-09-12 uploaded to cmkg-env-switzerlandnorth
+2026-09-12 14:30 [nl] certificate origin-mcp-nl-2026-09-12 uploaded to cmkg-env-westeurope
+2026-09-12 14:30 [ca] bind mcp.ca-cm-kg.ai -> origin-mcp-ca-2026-09-12: ok
+2026-09-12 14:30 [ca] certificate origin-agent-ca-2026-09-12 already on cmkg-env-canadacentral
+2026-09-12 14:30 [us] hostname mcp.us-cm-kg.ai add attempted: ok
+2026-09-12 14:30 [au] bind mcp.au-cm-kg.ai -> origin-mcp-au-2026-09-12: ok
+2026-09-12 14:30 [jp] bind mcp.jp-cm-kg.ai -> origin-mcp-jp-2026-09-12: ok
+2026-09-12 14:30 [au] Origin CA certificate issued for agent.au-cm-kg.ai (id 52154495…, expires 2041-09-08)
+2026-09-12 14:30 [jp] Origin CA certificate issued for agent.jp-cm-kg.ai (id 38518594…, expires 2041-09-08)
+2026-09-12 14:30 [kr] bind mcp.kr-cm-kg.ai -> origin-mcp-kr-2026-09-12: ok
+2026-09-12 14:30 [uk] bind mcp.uk-cm-kg.ai -> origin-mcp-uk-2026-09-12: ok
+2026-09-12 14:30 [kr] Origin CA certificate issued for agent.kr-cm-kg.ai (id 68288352…, expires 2041-09-08)
+2026-09-12 14:30 [uk] Origin CA certificate issued for agent.uk-cm-kg.ai (id 47717218…, expires 2041-09-08)
+2026-09-12 14:30 [fr] bind mcp.fr-cm-kg.ai -> origin-mcp-fr-2026-09-12: ok
+2026-09-12 14:30 [sg] bind mcp.sg-cm-kg.ai -> origin-mcp-sg-2026-09-12: ok
+2026-09-12 14:30 [de] bind mcp.de-cm-kg.ai -> origin-mcp-de-2026-09-12: ok
+2026-09-12 14:30 [fr] Origin CA certificate issued for agent.fr-cm-kg.ai (id 45450561…, expires 2041-09-08)
+2026-09-12 14:30 [sg] Origin CA certificate issued for agent.sg-cm-kg.ai (id 64182862…, expires 2041-09-08)
+2026-09-12 14:30 [de] Origin CA certificate issued for agent.de-cm-kg.ai (id 48796713…, expires 2041-09-08)
+2026-09-12 14:30 [au] certificate origin-agent-au-2026-09-12 uploaded to cmkg-env-australiaeast
+2026-09-12 14:30 [jp] certificate origin-agent-jp-2026-09-12 uploaded to cmkg-env-japaneast
+2026-09-12 14:30 [ch] bind mcp.ch-cm-kg.ai -> origin-mcp-ch-2026-09-12: ok
+2026-09-12 14:30 [ch] Origin CA certificate issued for agent.ch-cm-kg.ai (id 48546485…, expires 2041-09-08)
+2026-09-12 14:30 [kr] certificate origin-agent-kr-2026-09-12 uploaded to cmkg-env-koreacentral
+2026-09-12 14:30 [nl] bind mcp.nl-cm-kg.ai -> origin-mcp-nl-2026-09-12: ok
+2026-09-12 14:30 [fr] certificate origin-agent-fr-2026-09-12 uploaded to cmkg-env-francecentral
+2026-09-12 14:30 [uk] certificate origin-agent-uk-2026-09-12 uploaded to cmkg-env-uksouth
+2026-09-12 14:30 [nl] Origin CA certificate issued for agent.nl-cm-kg.ai (id 60476746…, expires 2041-09-08)
+2026-09-12 14:30 [us] bind mcp.us-cm-kg.ai -> origin-mcp-us-2026-09-12: ok
+2026-09-12 14:30 [sg] certificate origin-agent-sg-2026-09-12 uploaded to cmkg-env-southeastasia
+2026-09-12 14:30 [us] Origin CA certificate issued for agent.us-cm-kg.ai (id 61910203…, expires 2041-09-08)
+2026-09-12 14:30 [ca] bind agent.ca-cm-kg.ai -> origin-agent-ca-2026-09-12: ok
+2026-09-12 14:30 [de] certificate origin-agent-de-2026-09-12 uploaded to cmkg-env-germanywestcentral
+2026-09-12 14:30 [nl] certificate origin-agent-nl-2026-09-12 uploaded to cmkg-env-westeurope
+2026-09-12 14:30 [ch] certificate origin-agent-ch-2026-09-12 uploaded to cmkg-env-switzerlandnorth
+2026-09-12 14:30 [us] certificate origin-agent-us-2026-09-12 uploaded to cmkg-env-eastus-2
+2026-09-12 14:30 [ca] mcp.ca-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:30 [ca] agent.ca-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:30 [ca] zone SSL strict: True
+2026-09-12 14:31 [au] bind agent.au-cm-kg.ai -> origin-agent-au-2026-09-12: ok
+2026-09-12 14:31 [jp] bind agent.jp-cm-kg.ai -> origin-agent-jp-2026-09-12: ok
+2026-09-12 14:31 [au] mcp.au-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [au] agent.au-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [uk] bind agent.uk-cm-kg.ai -> origin-agent-uk-2026-09-12: ok
+2026-09-12 14:31 [au] zone SSL strict: True
+2026-09-12 14:31 [jp] mcp.jp-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [fr] bind agent.fr-cm-kg.ai -> origin-agent-fr-2026-09-12: ok
+2026-09-12 14:31 [kr] bind agent.kr-cm-kg.ai -> origin-agent-kr-2026-09-12: ok
+2026-09-12 14:31 [jp] agent.jp-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [us] bind agent.us-cm-kg.ai -> origin-agent-us-2026-09-12: ok
+2026-09-12 14:31 [sg] bind agent.sg-cm-kg.ai -> origin-agent-sg-2026-09-12: ok
+2026-09-12 14:31 [jp] zone SSL strict: True
+2026-09-12 14:31 [uk] mcp.uk-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [de] bind agent.de-cm-kg.ai -> origin-agent-de-2026-09-12: ok
+2026-09-12 14:31 [fr] mcp.fr-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [uk] agent.uk-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [kr] mcp.kr-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [us] mcp.us-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [uk] zone SSL strict: True
+2026-09-12 14:31 [fr] agent.fr-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [kr] agent.kr-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [sg] mcp.sg-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [us] agent.us-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [fr] zone SSL strict: True
+2026-09-12 14:31 [ch] bind agent.ch-cm-kg.ai -> origin-agent-ch-2026-09-12: ok
+2026-09-12 14:31 [kr] zone SSL strict: True
+2026-09-12 14:31 [de] mcp.de-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [us] zone SSL strict: True
+2026-09-12 14:31 [nl] bind agent.nl-cm-kg.ai -> origin-agent-nl-2026-09-12: ok
+2026-09-12 14:31 [sg] agent.sg-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [de] agent.de-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [sg] zone SSL strict: True
+2026-09-12 14:31 [de] zone SSL strict: True
+2026-09-12 14:31 [ch] mcp.ch-cm-kg.ai: binding SniEnabled; CNAME proxied already True
+2026-09-12 14:31 [ch] agent.ch-cm-kg.ai: binding SniEnabled; CNAME proxied already True
+2026-09-12 14:31 [nl] mcp.nl-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [ch] zone SSL strict: True
+2026-09-12 14:31 [nl] agent.nl-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+2026-09-12 14:31 [nl] zone SSL strict: True

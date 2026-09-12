@@ -1,0 +1,9 @@
+[de] Origin CA certificate issued for mcp.de-cm-kg.ai (id 69757364…, expires 2041-09-08)
+[de] certificate origin-mcp-de-2026-09-12 uploaded to cmkg-env-germanywestcentral
+[de] bind mcp.de-cm-kg.ai -> origin-mcp-de-2026-09-12: ok
+[de] Origin CA certificate issued for agent.de-cm-kg.ai (id 48796713…, expires 2041-09-08)
+[de] certificate origin-agent-de-2026-09-12 uploaded to cmkg-env-germanywestcentral
+[de] bind agent.de-cm-kg.ai -> origin-agent-de-2026-09-12: ok
+[de] mcp.de-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[de] agent.de-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[de] zone SSL strict: True

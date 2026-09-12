@@ -23,7 +23,7 @@ for cc in want:
     sa = f'allooloocmkg{cc}pond'; k = az('storage', 'account', 'keys', 'list', '-g', f'allooloo-cmkg-{NODES[cc]}', '-n', sa, '--query', '[0].value', '-o', 'tsv')
     if not k: k = az('storage', 'account', 'keys', 'list', '-g', f'allooloo-cmkg-{NODES[cc]}', '-n', sa, '--query', '[1].value', '-o', 'tsv')
     got = {}
-    for fn in ('index.json', 'nodes.json'):
+    for fn in ('index.json', 'nodes.json', 'facts.json'):
         p = os.path.join(tmp, f'{cc}-{fn}')
         az('storage', 'blob', 'download', '--account-name', sa, '--account-key', k, '-c', 'pond', '-n', f'door/{fn}', '-f', p, '--no-progress', '-o', 'none')
         got[fn] = json.load(open(p, encoding='utf-8')) if os.path.exists(p) else None
@@ -37,10 +37,13 @@ for cc in want:
             elif isinstance(cur, list):
                 if node not in cur: cur.append(node)
             elif cur != node: idx[kind][ident] = [cur, node]
+    fx = ((got.get('facts.json') or {}).get('nodes') or {}).get(node) or {}
     for x in (got['nodes.json'] or []):
         if x.get('node') == node:
             for y in nodes:
-                if y.get('node') == node: y.update({kk: x[kk] for kk in ('live', 'as_of', 'records', 'exchanges') if kk in x})
+                if y.get('node') == node:
+                    y.update({kk: x[kk] for kk in ('live', 'as_of', 'records', 'exchanges') if kk in x})
+                    if 'events' in fx: y['events'] = fx['events']; y['issuers_with_events'] = fx.get('issuers_with_events')
 for kind in idx:
     for ident, v in idx[kind].items():
         if isinstance(v, list): idx[kind][ident] = sorted(v)

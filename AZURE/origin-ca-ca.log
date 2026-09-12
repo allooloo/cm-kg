@@ -1,0 +1,7 @@
+[ca] certificate origin-mcp-ca-2026-09-12 already on cmkg-env-canadacentral
+[ca] bind mcp.ca-cm-kg.ai -> origin-mcp-ca-2026-09-12: ok
+[ca] certificate origin-agent-ca-2026-09-12 already on cmkg-env-canadacentral
+[ca] bind agent.ca-cm-kg.ai -> origin-agent-ca-2026-09-12: ok
+[ca] mcp.ca-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[ca] agent.ca-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[ca] zone SSL strict: True

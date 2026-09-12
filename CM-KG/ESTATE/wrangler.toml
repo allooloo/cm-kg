@@ -1,5 +1,5 @@
 name = "estate-pages"
-main = "worker/index.js"
+main = "worker/surfaces.js"
 compatibility_date = "2026-09-01"
 workers_dev = false
 preview_urls = false

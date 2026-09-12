@@ -1,0 +1,9 @@
+[ch] Origin CA certificate issued for mcp.ch-cm-kg.ai (id 39551347…, expires 2041-09-08)
+[ch] certificate origin-mcp-ch-2026-09-12 uploaded to cmkg-env-switzerlandnorth
+[ch] bind mcp.ch-cm-kg.ai -> origin-mcp-ch-2026-09-12: ok
+[ch] Origin CA certificate issued for agent.ch-cm-kg.ai (id 48546485…, expires 2041-09-08)
+[ch] certificate origin-agent-ch-2026-09-12 uploaded to cmkg-env-switzerlandnorth
+[ch] bind agent.ch-cm-kg.ai -> origin-agent-ch-2026-09-12: ok
+[ch] mcp.ch-cm-kg.ai: binding SniEnabled; CNAME proxied already True
+[ch] agent.ch-cm-kg.ai: binding SniEnabled; CNAME proxied already True
+[ch] zone SSL strict: True

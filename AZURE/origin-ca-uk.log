@@ -1,0 +1,9 @@
+[uk] Origin CA certificate issued for mcp.uk-cm-kg.ai (id 67150478…, expires 2041-09-08)
+[uk] certificate origin-mcp-uk-2026-09-12 uploaded to cmkg-env-uksouth
+[uk] bind mcp.uk-cm-kg.ai -> origin-mcp-uk-2026-09-12: ok
+[uk] Origin CA certificate issued for agent.uk-cm-kg.ai (id 47717218…, expires 2041-09-08)
+[uk] certificate origin-agent-uk-2026-09-12 uploaded to cmkg-env-uksouth
+[uk] bind agent.uk-cm-kg.ai -> origin-agent-uk-2026-09-12: ok
+[uk] mcp.uk-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[uk] agent.uk-cm-kg.ai: binding SniEnabled; CNAME proxied: True
+[uk] zone SSL strict: True
