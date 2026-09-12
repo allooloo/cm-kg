@@ -29,7 +29,7 @@ for d in jload('raw/gemini_agm.jsonl'):
 rep = {}
 for d in jload('raw/chatgpt_reports.jsonl'):
     if d.get('custom_id'): rep[d['custom_id']] = d
-mis = {d['url']: d for d in jload('raw/mistral_reads.jsonl')}
+mis = jload('raw/mistral_reads.jsonl')  # review rows only: verdicts and flags go to the Review tab, never into an event
 events_all = base + new
 for e in events_all:
     for kk in ('key', 'as_of', 'node', 'width'): e.pop(kk, None)
@@ -37,9 +37,6 @@ for e in events_all:
     if x and e['event_type'] == 'results' and not x.get('error'):
         bits = [b for b in [f"period_end {x.get('period_end')}" if x.get('period_end') else '', f"statement_date {x.get('statement_date')}" if x.get('statement_date') else '', f"auditor {x.get('auditor')}" if x.get('auditor') else '', 'going-concern material uncertainty' if x.get('going_concern') == 'material_uncertainty' else ''] if b]
         if bits: e['detail'] = (e.get('detail', '') + '; ' if e.get('detail') else '') + 'read by ChatGPT (batch): ' + ', '.join(bits); e['read_by'] += ' · read by ChatGPT (batch)'
-    mm = mis.get(e['url'])
-    if mm and not mm.get('error') and (mm.get('period_end') or mm.get('meeting_date') or mm.get('record_date')):
-        e['detail'] = (e.get('detail', '') + '; ' if e.get('detail') else '') + 'read by Mistral: ' + ', '.join(f'{k} {mm[k]}' for k in ('period_end', 'meeting_date', 'record_date', 'auditor') if mm.get(k)); e['read_by'] += ' · read by Mistral (de)'
 seen = {}
 for e in sorted(events_all, key=lambda e: 0 if e.get('state') == 'sourced' else 1):
     kk = (e['exchange'], e['ticker'], e['event_type'], e['date'], e['url'].lower().rstrip('/'))
@@ -92,12 +89,29 @@ for a, b in [('Claude (claude-sonnet-5)', f'Rematch collisions ruled from the re
              ('Google Gemini (gemini-flash-latest)', f'AGM / general-meeting / record dates stated in the announcement set: {gem_n} events written (dated on the announcement, stated date in Detail). Label "read by Gemini".'),
              ('Perplexity (Agent API, preset low)', f"Located company pages: {sum(1 for d in jload('raw/perplexity_pages.jsonl') if d.get('verified'))} verified; page titles became sourced aliases used by the rematch."),
              ('Grok (grok-4.6)', f"Live layer wired into the weekly refresh; validation run found {gl.get('halts', 0)} halt/suspension/reinstatement items and {gl.get('newswire', 0)} silent-issuer items."),
-             ('Mistral (mistral-small-latest)', f"German / French / Italian items read natively: {mc.get('n_targets', 0)} found, read {min(mc.get('n_targets', 0), int(E.get('MISTRAL_MAX', '600')))}. Label 'read by Mistral (de)'."),
+             ('Mistral (mistral-small-latest)', f"Translation and review only (CEO rule, 2026-09-11; reading order Perplexity → Grok → Mistral): {mc.get('reviewed', 0)} native-language items reviewed of {mc.get('n_targets', 0)} — {mc.get('confirmed', 0)} confirmed, {mc.get('disputed', 0)} disputed, {mc.get('flags', 0)} Mistral-only findings flagged on the Review tab; no event or field written. Label 'review by Mistral (de)'."),
              ('Tavily (search)', f'Rematch on legal name OR sourced alias for zero-event and ambiguous issuers: {len(rm)} issuers searched, {rm_ev} events added.'),
              ('Cloudflare', 'Not used on this workbook.'),
              ('State', f'sourced = one source; filled = lab-derived row; confirmed = results / AGM rows seen on a second source family (exchange vs document vs wire) within 45 days: {conf_n} events confirmed.')]:
     mt.append([a, b])
     for c in mt[mt.max_row]: c.font = ARIAL; c.alignment = Alignment(wrap_text=True, vertical='top')
+
+# Review tab (CEO rule for the European nodes, 2026-09-11): Mistral is translation and review only. Verdicts on what Perplexity and Grok sourced, and
+# Mistral-only findings as flags. Nothing here is written into an event or an identity field.
+rv = wb.create_sheet('Review') if 'Review' not in wb.sheetnames else wb['Review']
+if rv.max_row > 1: rv.delete_rows(2, rv.max_row)
+if rv.max_row == 1 and rv.cell(row=1, column=1).value is None:
+    rv.append(['Exchange', 'Code', 'Issuer', 'Reviewed item', 'URL', 'Verdict', 'Reason', 'Issuer named', 'Date on page', 'Flag field', 'Flag value', 'Flag evidence (native language)', 'Read by'])
+    for c in rv[1]: c.font = BOLD
+n_rv = 0
+for d in mis:
+    r0 = byk.get(d.get('key') or '', {}); base_row = [r0.get('exchange', ''), r0.get('ticker', ''), d.get('issuer') or r0.get('name', ''), d.get('kind', ''), d.get('url', ''), d.get('verdict', ''), (d.get('reason') or '')[:300], d.get('issuer_named'), d.get('date_on_page', '')]
+    flags = d.get('flags') or []
+    if not flags: rv.append(base_row + ['', '', '', d.get('read_by', '')]); n_rv += 1
+    for f in flags: rv.append(base_row + [f.get('field', ''), str(f.get('value', ''))[:200], str(f.get('evidence', ''))[:300], d.get('read_by', '')]); n_rv += 1
+for row in rv.iter_rows(min_row=2):
+    for c in row: c.font = ARIAL
+for i, w in enumerate([10, 8, 34, 16, 60, 10, 50, 12, 12, 14, 30, 60, 26], 1): rv.column_dimensions[get_column_letter(i)].width = w
 wb.save(X); _ad = pond.assembled(NODE); shutil.copy(X, os.path.join(_ad, 'de-disclosure.xlsx')); shutil.copy(J, os.path.join(_ad, 'de-events.jsonl'))
 print('saved', X, 'events', len(events_all), 'new from passes', len(new), 'gemini', gem_n, 'confirmed', conf_n, 'rematch events', rm_ev, 'collisions', rm_conf, '| versioned copy', _ad)
 print('by state', Counter(e.get('state') for e in events_all))
