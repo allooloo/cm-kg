@@ -29,6 +29,7 @@ async function askUp() { if (ASK_UP !== null && Date.now() - ASK_AT < 600000) re
 function classify(host) {
   const h = host.replace(/^www\./, ''); let m;
   if (h === 'allooloo.io') return { kind: 'site' };
+  if (h === 'allooloo.ai') return { kind: 'redirect', canonical: 'https://allooloo.io', status: 308 };   // CEO forward, Sept 12 2026: allooloo.ai + www → 308 → allooloo.io, path + query kept
   if ((m = h.match(/^([a-z]{2})-cm-kg\.(ai|org|com)$/)) && NODE_DATA[m[1]]) return { kind: 'node', cc: m[1], tld: m[2], canonical: m[2] === 'ai' ? null : `https://${m[1]}-cm-kg.ai` };
   if ((m = h.match(/^agentic-([a-z]+)\.(ai|com|org|io)$/)) && PRODUCTS[m[1]]) return { kind: 'product', product: m[1], tld: m[2], canonical: m[2] === 'ai' ? null : `https://agentic-${m[1]}.ai` };
   if (h === 'capitalmarketsknowledgegraph.ai') return { kind: 'root', role: 'graph' };
@@ -125,7 +126,7 @@ export default {
   async scheduled(event, env, ctx) { ctx.waitUntil(probe(env)); },
   async fetch(request, env) {
     const url = new URL(request.url); const host = url.hostname; const c = classify(host); const apex = host.replace(/^www\./, '');
-    if (c.kind === 'redirect' || c.canonical) return Response.redirect(c.canonical + url.pathname + url.search, 301);
+    if (c.kind === 'redirect' || c.canonical) return Response.redirect(c.canonical + url.pathname + url.search, c.status || 301);
     if (host !== apex) return Response.redirect(`https://${apex}${url.pathname}${url.search}`, 301);
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method Not Allowed', { status: 405, headers: headers({}, { 'content-type': 'text/plain' }) });
     const p = url.pathname.replace(/\/+$/, '') || '/';
