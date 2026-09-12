@@ -3,7 +3,7 @@
   "name": "io.github.allooloo/cm-kg",
   "title": "Capital Markets Agents: MCP+A2A Canada",
   "description": "Know every Canadian and UK issuer, agent-ready. Instantly. Provably. Ten markets served in-country.",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "websiteUrl": "https://capitalmarketsknowledgegraph.ai",
   "repository": {
     "url": "https://github.com/allooloo/cm-kg",
@@ -98,7 +98,22 @@
       "facts": "https://mcp.capitalmarketsknowledgegraph.ai/facts.json",
       "llms_txt": "https://mcp.capitalmarketsknowledgegraph.ai/llms.txt",
       "description_of_record": "Know every Canadian and United Kingdom issuer, agent-ready. Instantly. Provably. Ten markets on the same record — Toronto to Tokyo — served in-country.",
-      "description_note": "The registry caps description at 100 characters; the description of record (CEO, Sept 12 2026) is carried here in full."
+      "description_note": "The registry caps description at 100 characters; the description of record (CEO, Sept 12 2026) is carried here in full.",
+      "estate": "ORDER-018 sovereign estate: eleven regional doors on Azure Container Apps (records and events served in their own jurisdiction), apex router index-only on Cloudflare, an A2A Agent Card per node at agent.<node>-cm-kg.ai and at agent.capitalmarketsknowledgegraph.ai",
+      "agent_cards": [
+        "https://agent.ca-cm-kg.ai/.well-known/agent-card.json",
+        "https://agent.uk-cm-kg.ai/.well-known/agent-card.json",
+        "https://agent.au-cm-kg.ai/.well-known/agent-card.json",
+        "https://agent.sg-cm-kg.ai/.well-known/agent-card.json",
+        "https://agent.ch-cm-kg.ai/.well-known/agent-card.json",
+        "https://agent.de-cm-kg.ai/.well-known/agent-card.json",
+        "https://agent.fr-cm-kg.ai/.well-known/agent-card.json",
+        "https://agent.nl-cm-kg.ai/.well-known/agent-card.json",
+        "https://agent.jp-cm-kg.ai/.well-known/agent-card.json",
+        "https://agent.kr-cm-kg.ai/.well-known/agent-card.json",
+        "https://agent.us-cm-kg.ai/.well-known/agent-card.json",
+        "https://agent.capitalmarketsknowledgegraph.ai/.well-known/agent-card.json"
+      ]
     }
   }
 }
