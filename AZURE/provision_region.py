@@ -205,7 +205,11 @@ elif step in ('stage', 'check'):
         hn = {x.get('name'): x.get('bindingType') for x in (az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or [])}
         for h in hosts:
             st = certs.get(h); bt = hn.get(h)
-            if bt != 'SniEnabled' and st == 'Succeeded': az('containerapp', 'hostname', 'bind', '-n', app, '-g', rg, '--hostname', h, '--environment', env_name, '--validation-method', 'TXT', check=False); hn2 = {x.get('name'): x.get('bindingType') for x in (az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or [])}; bt = hn2.get(h)
+            if bt != 'SniEnabled':
+                # one bind attempt per check (a bind call is what triggers Azure's validation now that the name resolves to the app); no loop
+                az('containerapp', 'hostname', 'bind', '-n', app, '-g', rg, '--hostname', h, '--environment', env_name, '--validation-method', 'TXT', check=False)
+                hn2 = {x.get('name'): x.get('bindingType') for x in (az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or [])}; bt = hn2.get(h)
+                certs2 = {c['properties'].get('subjectName'): c['properties'].get('provisioningState') for c in (az('containerapp', 'env', 'certificate', 'list', '-g', rg, '-n', env_name, '--managed-certificates-only', check=False) or [])}; st = certs2.get(h, st)
             if bt == 'SniEnabled':
                 recs = cf('GET', f'/zones/{zone}/dns_records?name={h}&type=CNAME', tok=tok).get('result') or []
                 for r0 in recs:
