@@ -6,7 +6,7 @@ const GLOBAL_DOOR = 'https://mcp.capitalmarketsknowledgegraph.ai';
 const NODES = { ca: 'Canada', uk: 'United Kingdom', au: 'Australia', sg: 'Singapore', ch: 'Switzerland', de: 'Germany', fr: 'France', nl: 'Netherlands', hk: 'Hong Kong', jp: 'Japan', kr: 'South Korea', us: 'United States' };
 const ORDER = ['ca', 'uk', 'au', 'sg', 'ch', 'de', 'fr', 'nl', 'hk', 'jp', 'kr', 'us'];
 // The dealer's product-knowledge duty by its local name (the name the node serves); blank where the build order has not named it yet.
-const DUTY = { ca: 'KYP (Know Your Product)', uk: 'product governance (FCA PROD sourcebook)', de: 'product governance (MiFID II Produktüberwachung)', au: 'DDO (Design and Distribution Obligations)', sg: 'MAS product due diligence', us: 'reasonable-basis suitability (FINRA Rule 2111)' };
+const DUTY = { ca: 'KYP (Know Your Product)', uk: 'product governance (FCA PROD sourcebook)', de: 'MiFID II product governance (Produktüberwachung)', ch: 'FinSA (Financial Services Act) product duties', fr: 'MiFID II product governance', nl: 'MiFID II product governance', au: 'DDO (Design and Distribution Obligations)', sg: 'MAS product due diligence', us: 'reasonable-basis suitability (FINRA Rule 2111)' };
 let LIVE = null, LIVE_AT = 0;
 async function liveNodes() {
   if (LIVE && Date.now() - LIVE_AT < 300000) return LIVE;
