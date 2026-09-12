@@ -1,0 +1,11 @@
+Allooloo CM-KG ca weekly: FRI 15:00 build-machine time -> created
+Allooloo CM-KG us weekly: FRI 15:30 build-machine time -> created
+Allooloo CM-KG uk weekly: FRI 10:30 build-machine time -> created
+Allooloo CM-KG fr weekly: FRI 11:00 build-machine time -> created
+Allooloo CM-KG nl weekly: FRI 11:15 build-machine time -> created
+Allooloo CM-KG ch weekly: FRI 11:30 build-machine time -> created
+Allooloo CM-KG de weekly: FRI 11:45 build-machine time -> created
+Allooloo CM-KG sg weekly: FRI 04:00 build-machine time -> created
+Allooloo CM-KG au weekly: SAT 01:00 build-machine time -> created
+Allooloo CM-KG jp weekly: SAT 01:15 build-machine time -> created
+Allooloo CM-KG kr weekly: SAT 01:30 build-machine time -> created

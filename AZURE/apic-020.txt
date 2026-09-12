@@ -1,0 +1,40 @@
+cm-kg-apex: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.capitalmarketsknowledgegraph.ai/mcp
+cm-kg-ca: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.ca-cm-kg.ai/mcp
+cm-kg-uk: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.uk-cm-kg.ai/mcp
+cm-kg-au: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.au-cm-kg.ai/mcp
+cm-kg-sg: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.sg-cm-kg.ai/mcp
+cm-kg-ch: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.ch-cm-kg.ai/mcp
+cm-kg-de: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.de-cm-kg.ai/mcp
+cm-kg-fr: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.fr-cm-kg.ai/mcp
+cm-kg-nl: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.nl-cm-kg.ai/mcp
+cm-kg-jp: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.jp-cm-kg.ai/mcp
+cm-kg-kr: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.kr-cm-kg.ai/mcp
+cm-kg-us: kind mcp · version ok · definition ok · deployment ERROR: Not Found · https://mcp.us-cm-kg.ai/mcp
+
+cm-kg-apex: deployment ERROR: Not Found
+cm-kg-ca: deployment ERROR: Not Found
+cm-kg-uk: deployment ERROR: Not Found
+cm-kg-au: deployment ERROR: Not Found
+cm-kg-sg: deployment ERROR: Not Found
+cm-kg-ch: deployment ERROR: Not Found
+cm-kg-de: deployment ERROR: Not Found
+cm-kg-fr: deployment ERROR: Not Found
+cm-kg-nl: deployment ERROR: Not Found
+cm-kg-jp: deployment ERROR: Not Found
+cm-kg-kr: deployment ERROR: Not Found
+cm-kg-us: deployment ERROR: Not Found
+deployments ok 0 of 12
+
+cm-kg-apex: deployment ok
+cm-kg-ca: deployment ok
+cm-kg-uk: deployment ok
+cm-kg-au: deployment ok
+cm-kg-sg: deployment ok
+cm-kg-ch: deployment ok
+cm-kg-de: deployment ok
+cm-kg-fr: deployment ok
+cm-kg-nl: deployment ok
+cm-kg-jp: deployment ok
+cm-kg-kr: deployment ok
+cm-kg-us: deployment ok
+deployments ok 12 of 12

@@ -1,0 +1,36 @@
+{
+ "as_of": "2026-09-12",
+ "card": {
+  "title": "Capital Markets Agents: MCP+A2A Canada",
+  "description": "Know every Canadian and UK issuer, agent-ready. Instantly. Provably. Eleven markets, in-country.",
+  "website": "https://capitalmarketsknowledgegraph.ai",
+  "remote": "https://mcp.capitalmarketsknowledgegraph.ai/mcp"
+ },
+ "filings": [
+  {
+   "registry": "MCP registry (registry.modelcontextprotocol.io)",
+   "state": "v0.11.0 published, latest",
+   "as_of": "2026-09-12"
+  },
+  {
+   "registry": "Azure API Center (Allooloo tenant)",
+   "state": "pending \u2014 see ORDER-020 build log",
+   "as_of": "2026-09-12"
+  },
+  {
+   "registry": "Google \u2014 enterprise MCP / agent catalogue",
+   "state": "HITL: needs a Google Cloud console account; card of record ready",
+   "as_of": "2026-09-12"
+  },
+  {
+   "registry": "Anthropic \u2014 connector directory",
+   "state": "HITL: submission form needs a human account; card of record ready",
+   "as_of": "2026-09-12"
+  },
+  {
+   "registry": "GitHub MCP listing / A2A agent directories",
+   "state": "HITL: as they stabilise; same card",
+   "as_of": "2026-09-12"
+  }
+ ]
+}

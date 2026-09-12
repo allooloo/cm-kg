@@ -1,0 +1,42 @@
+{
+ "as_of": "2026-09-12",
+ "note": "standing spend line as reported per order; Azure figure blank until the Cost Management API answers (429 on every try on Sept 12); lab figures at list price from usage",
+ "lines": [
+  {
+   "line": "Azure \u2014 eleven doors (0.5 vCPU / 1 GiB, min 1 replica, consumption plan), 12 environments, 11 storage accounts, ACR Basic, 1 job",
+   "node": "estate",
+   "figure": "blank \u2014 Cost Management API 429; consumption rows carry no cost yet",
+   "as_of": "2026-09-12"
+  },
+  {
+   "line": "Lab \u2014 US rail (Gemini gemini-flash-latest, 984 calls, 310,950 prompt / 28,595 output tokens)",
+   "node": "us-cm-kg",
+   "figure": "\u2248 USD 0.16 at list",
+   "as_of": "2026-09-12"
+  },
+  {
+   "line": "Lab \u2014 Japan Fill (Gemini / Perplexity / Grok / Mistral)",
+   "node": "jp-cm-kg",
+   "figure": "USD 4.50 / 16.57 / 18.79 / 2.53 at list",
+   "as_of": "2026-09-12"
+  },
+  {
+   "line": "Lab \u2014 Korea Fill (Gemini / Perplexity / Grok / Mistral)",
+   "node": "kr-cm-kg",
+   "figure": "USD 2.83 / 11.69 / 15.90 / 1.01 at list",
+   "as_of": "2026-09-12"
+  },
+  {
+   "line": "Tavily plan counter",
+   "node": "estate",
+   "figure": "80,283 of 100,000",
+   "as_of": "2026-09-12"
+  },
+  {
+   "line": "Cloudflare \u2014 Workers, KV, 22 Origin CA certificates, 126 custom domains",
+   "node": "estate",
+   "figure": "no charge beyond the plan on record",
+   "as_of": "2026-09-12"
+  }
+ ]
+}

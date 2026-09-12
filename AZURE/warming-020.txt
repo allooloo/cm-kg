@@ -1,0 +1,11 @@
+ca canadacentral min 1 max 3 0.5 vCPU 1Gi consumption=n/a
+uk uksouth min 1 max 3 0.5 vCPU 1Gi consumption=n/a
+au australiaeast min 1 max 3 0.5 vCPU 1Gi consumption=n/a
+sg southeastasia min 1 max 3 0.5 vCPU 1Gi consumption=n/a
+ch switzerlandnorth min 1 max 3 0.5 vCPU 1Gi consumption=n/a
+de germanywestcentral min 1 max 3 0.5 vCPU 1Gi consumption=n/a
+fr francecentral min 1 max 3 0.5 vCPU 1Gi consumption=n/a
+nl westeurope min 1 max 3 0.5 vCPU 1Gi consumption=n/a
+jp japaneast min 1 max 3 0.5 vCPU 1Gi consumption=n/a
+kr koreacentral min 1 max 3 0.5 vCPU 1Gi consumption=n/a
+us eastus min 1 max 3 0.5 vCPU 1Gi consumption=n/a

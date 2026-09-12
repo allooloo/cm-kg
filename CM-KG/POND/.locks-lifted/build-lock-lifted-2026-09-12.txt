@@ -1,0 +1,1 @@
+BUILD LOCK — set 2026-09-11 by CEO order: no scheduled sweep runs on any node while a build order is in flight (ORDER-014 to ORDER-018 chain). Remove this file when the chain has reported and the CEO re-enables the sweeps.

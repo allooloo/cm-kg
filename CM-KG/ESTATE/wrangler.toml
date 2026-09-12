@@ -11,3 +11,10 @@ run_worker_first = true
 
 [observability]
 enabled = true
+
+[[kv_namespaces]]
+binding = "STATUS"
+id = "c651588272f14f3080c7dd99be21a4fd"
+
+[triggers]
+crons = ["*/5 * * * *"]
