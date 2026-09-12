@@ -71,7 +71,8 @@
         "fr-cm-kg",
         "nl-cm-kg",
         "jp-cm-kg",
-        "kr-cm-kg"
+        "kr-cm-kg",
+        "us-cm-kg"
       ],
       "tools": [
         {

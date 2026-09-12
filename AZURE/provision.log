@@ -1,0 +1,298 @@
+2026-09-12 08:01 [us eastus storage] resource group allooloo-cmkg-eastus Succeeded
+2026-09-12 08:01 [us eastus storage] storage account allooloocmkguspond Succeeded eastus
+2026-09-12 08:01 [us eastus storage] blob versioning on
+2026-09-12 08:01 [us eastus storage] container 'pond' present
+2026-09-12 08:02 [jp japaneast storage] resource group allooloo-cmkg-japaneast Succeeded
+2026-09-12 08:02 [fr francecentral storage] resource group allooloo-cmkg-francecentral Succeeded
+2026-09-12 08:02 [ca canadacentral storage] resource group allooloo-cmkg-canadacentral Succeeded
+2026-09-12 08:02 [uk uksouth storage] resource group allooloo-cmkg-uksouth Succeeded
+2026-09-12 08:02 [de germanywestcentral storage] resource group allooloo-cmkg-germanywestcentral Succeeded
+2026-09-12 08:02 [au australiaeast storage] resource group allooloo-cmkg-australiaeast Succeeded
+2026-09-12 08:02 [sg southeastasia storage] resource group allooloo-cmkg-southeastasia Succeeded
+2026-09-12 08:02 [nl westeurope storage] resource group allooloo-cmkg-westeurope Succeeded
+2026-09-12 08:02 [kr koreacentral storage] resource group allooloo-cmkg-koreacentral Succeeded
+2026-09-12 08:02 [ch switzerlandnorth storage] resource group allooloo-cmkg-switzerlandnorth Succeeded
+2026-09-12 08:02 [us eastus app] environment cmkg-env-eastus present (Failed)
+2026-09-12 08:03 [ca canadacentral storage] storage account allooloocmkgcapond Succeeded canadacentral
+2026-09-12 08:03 [uk uksouth storage] storage account allooloocmkgukpond Succeeded uksouth
+2026-09-12 08:03 [ch switzerlandnorth storage] storage account allooloocmkgchpond Succeeded switzerlandnorth
+2026-09-12 08:03 [ca canadacentral storage] blob versioning on
+2026-09-12 08:03 [sg southeastasia storage] storage account allooloocmkgsgpond Succeeded southeastasia
+2026-09-12 08:03 [kr koreacentral storage] storage account allooloocmkgkrpond Succeeded koreacentral
+2026-09-12 08:03 [jp japaneast storage] storage account allooloocmkgjppond Succeeded japaneast
+2026-09-12 08:03 [uk uksouth storage] blob versioning on
+2026-09-12 08:03 [nl westeurope storage] storage account allooloocmkgnlpond Succeeded westeurope
+2026-09-12 08:03 [ca canadacentral storage] container 'pond' present
+2026-09-12 08:03 [kr koreacentral storage] blob versioning on
+2026-09-12 08:03 [au australiaeast storage] storage account allooloocmkgaupond Succeeded australiaeast
+2026-09-12 08:03 [sg southeastasia storage] blob versioning on
+2026-09-12 08:03 [ch switzerlandnorth storage] blob versioning on
+2026-09-12 08:03 [uk uksouth storage] container 'pond' present
+2026-09-12 08:03 [jp japaneast storage] blob versioning on
+2026-09-12 08:03 [nl westeurope storage] blob versioning on
+2026-09-12 08:03 [kr koreacentral storage] container 'pond' present
+2026-09-12 08:03 [au australiaeast storage] blob versioning on
+2026-09-12 08:03 [ch switzerlandnorth storage] container 'pond' present
+2026-09-12 08:03 [sg southeastasia storage] container 'pond' present
+2026-09-12 08:03 [jp japaneast storage] container 'pond' present
+2026-09-12 08:03 [nl westeurope storage] container 'pond' present
+2026-09-12 08:03 [au australiaeast storage] container 'pond' present
+2026-09-12 08:03 [fr francecentral storage] storage account allooloocmkgfrpond Succeeded francecentral
+2026-09-12 08:03 [de germanywestcentral storage] storage account allooloocmkgdepond Succeeded germanywestcentral
+2026-09-12 08:03 [fr francecentral storage] blob versioning on
+2026-09-12 08:03 [de germanywestcentral storage] blob versioning on
+2026-09-12 08:03 [fr francecentral storage] container 'pond' present
+2026-09-12 08:03 [us eastus app] environment cmkg-env-eastus is Failed — left standing, trying the next name
+2026-09-12 08:03 [de germanywestcentral storage] container 'pond' present
+2026-09-12 08:04 [nl westeurope upload] pond drops uploaded: 137 blobs from C:\ALLOOLOO\CM-KG\POND\nl-cm-kg
+2026-09-12 08:04 [nl westeurope upload] door records to upload: 123
+2026-09-12 08:04 [ch switzerlandnorth upload] pond drops uploaded: 300 blobs from C:\ALLOOLOO\CM-KG\POND\ch-cm-kg
+2026-09-12 08:04 [ch switzerlandnorth upload] door records to upload: 626
+2026-09-12 08:04 [nl westeurope upload] door/records: 123 blobs
+2026-09-12 08:04 [nl westeurope upload] door/events: 123 blobs
+2026-09-12 08:05 [nl westeurope upload] door index: 123 keys, 123 tickers, 123 isins, 93 aliases; facts + nodes uploaded
+2026-09-12 08:06 [fr francecentral upload] pond drops uploaded: 647 blobs from C:\ALLOOLOO\CM-KG\POND\fr-cm-kg
+2026-09-12 08:06 [fr francecentral upload] door records to upload: 712
+2026-09-12 08:06 [ch switzerlandnorth upload] door/records: 626 blobs
+2026-09-12 08:06 [ca canadacentral upload] pond drops uploaded: 2029 blobs from C:\ALLOOLOO\CM-KG\POND\ca-cm-kg
+2026-09-12 08:06 [ca canadacentral upload] door records to upload: 4820
+2026-09-12 08:07 [de germanywestcentral upload] pond drops uploaded: 489 blobs from C:\ALLOOLOO\CM-KG\POND\de-cm-kg
+2026-09-12 08:07 [de germanywestcentral upload] door records to upload: 3436
+2026-09-12 08:08 [ch switzerlandnorth upload] door/events: 626 blobs
+2026-09-12 08:08 [ch switzerlandnorth upload] door index: 626 keys, 626 tickers, 626 isins, 232 aliases; facts + nodes uploaded
+2026-09-12 08:08 [fr francecentral upload] door/records: 712 blobs
+2026-09-12 08:10 [fr francecentral upload] door/events: 712 blobs
+2026-09-12 08:10 [fr francecentral upload] door index: 712 keys, 711 tickers, 711 isins, 466 aliases; facts + nodes uploaded
+2026-09-12 08:11 [ch switzerlandnorth app] environment cmkg-env-switzerlandnorth Succeeded (Log Analytics workspace auto-created by the CLI)
+2026-09-12 08:11 [ch switzerlandnorth app] app cmkg-door-ch created
+2026-09-12 08:11 [ch switzerlandnorth app] fqdn https://cmkg-door-ch.gentledune-3c70acd2.switzerlandnorth.azurecontainerapps.io
+2026-09-12 08:11 [ch switzerlandnorth bind] TXT asuid.mcp.ch-cm-kg.ai created
+2026-09-12 08:11 [ch switzerlandnorth bind] hostname mcp.ch-cm-kg.ai added
+2026-09-12 08:11 [ch switzerlandnorth bind] hostname mcp.ch-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 08:11 [ch switzerlandnorth bind] TXT asuid.agent.ch-cm-kg.ai created
+2026-09-12 08:11 [ch switzerlandnorth bind] hostname agent.ch-cm-kg.ai added
+2026-09-12 08:11 [ch switzerlandnorth bind] hostname agent.ch-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 08:13 [fr francecentral app] environment cmkg-env-francecentral Succeeded (Log Analytics workspace auto-created by the CLI)
+2026-09-12 08:14 [fr francecentral app] app cmkg-door-fr created
+2026-09-12 08:14 [fr francecentral app] fqdn https://cmkg-door-fr.agreeablehill-d2a7639b.francecentral.azurecontainerapps.io
+2026-09-12 08:14 [fr francecentral bind] TXT asuid.mcp.fr-cm-kg.ai created
+2026-09-12 08:14 [fr francecentral bind] hostname mcp.fr-cm-kg.ai added
+2026-09-12 08:14 [fr francecentral bind] hostname mcp.fr-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 08:14 [fr francecentral bind] TXT asuid.agent.fr-cm-kg.ai created
+2026-09-12 08:14 [fr francecentral bind] hostname agent.fr-cm-kg.ai added
+2026-09-12 08:14 [fr francecentral bind] hostname agent.fr-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 08:14 [ca canadacentral upload] door/records: 4820 blobs
+2026-09-12 08:15 [au australiaeast upload] pond drops uploaded: 2550 blobs from C:\ALLOOLOO\CM-KG\POND\au-cm-kg
+2026-09-12 08:15 [au australiaeast upload] door records to upload: 1874
+2026-09-12 08:15 [us eastus app] environment cmkg-env-eastus-2 Succeeded (Log Analytics workspace auto-created by the CLI)
+2026-09-12 08:15 [us eastus app] app cmkg-door-us created
+2026-09-12 08:15 [us eastus app] fqdn https://cmkg-door-us.purpleglacier-e6bfd21c.eastus.azurecontainerapps.io
+2026-09-12 08:16 [nl westeurope app] environment cmkg-env-westeurope Succeeded (Log Analytics workspace auto-created by the CLI)
+2026-09-12 08:17 [nl westeurope app] app cmkg-door-nl created
+2026-09-12 08:17 [nl westeurope app] fqdn https://cmkg-door-nl.purpleisland-61490c7a.westeurope.azurecontainerapps.io
+2026-09-12 08:17 [nl westeurope bind] TXT asuid.mcp.nl-cm-kg.ai created
+2026-09-12 08:17 [de germanywestcentral upload] door/records: 3436 blobs
+2026-09-12 08:17 [nl westeurope bind] hostname mcp.nl-cm-kg.ai added
+2026-09-12 08:22 [au australiaeast upload] door/records: 1874 blobs
+2026-09-12 08:22 [ca canadacentral upload] door/events: 4820 blobs
+2026-09-12 08:22 [ca canadacentral upload] door index: 4820 keys, 5159 tickers, 1728 isins, 664 aliases; facts + nodes uploaded
+2026-09-12 08:24 [kr koreacentral upload] pond drops uploaded: 2740 blobs from C:\ALLOOLOO\CM-KG\POND\kr-cm-kg
+2026-09-12 08:24 [kr koreacentral upload] door records to upload: 2759
+2026-09-12 08:24 [ca canadacentral app] environment cmkg-env-canadacentral Succeeded (Log Analytics workspace auto-created by the CLI)
+2026-09-12 08:25 [ca canadacentral app] app cmkg-door-ca created
+2026-09-12 08:25 [ca canadacentral app] fqdn https://cmkg-door-ca.nicemushroom-8b4ba259.canadacentral.azurecontainerapps.io
+2026-09-12 08:27 [jp japaneast upload] pond drops uploaded: 7791 blobs from C:\ALLOOLOO\CM-KG\POND\jp-cm-kg
+2026-09-12 08:27 [jp japaneast upload] door records to upload: 3964
+2026-09-12 08:27 [de germanywestcentral upload] door/events: 3436 blobs
+2026-09-12 08:27 [de germanywestcentral upload] door index: 3436 keys, 3321 tickers, 3286 isins, 5192 aliases; facts + nodes uploaded
+2026-09-12 08:28 [au australiaeast upload] door/events: 1874 blobs
+2026-09-12 08:29 [au australiaeast upload] door index: 1874 keys, 1874 tickers, 1870 isins, 3425 aliases; facts + nodes uploaded
+2026-09-12 08:29 [us eastus upload] pond drops uploaded: 4 blobs from C:\ALLOOLOO\CM-KG\POND\us-cm-kg
+2026-09-12 08:29 [us eastus upload] door records to upload: 0
+2026-09-12 08:29 [us eastus upload] door index: 0 keys, 0 tickers, 0 isins, 0 aliases; facts + nodes uploaded
+2026-09-12 08:30 [de germanywestcentral app] environment cmkg-env-germanywestcentral Succeeded (Log Analytics workspace auto-created by the CLI)
+2026-09-12 08:30 [fr francecentral bind] TXT asuid.mcp.fr-cm-kg.ai present
+2026-09-12 08:31 [de germanywestcentral app] app cmkg-door-de created
+2026-09-12 08:31 [de germanywestcentral app] fqdn https://cmkg-door-de.greensand-6ae55941.germanywestcentral.azurecontainerapps.io
+2026-09-12 08:31 [de germanywestcentral bind] TXT asuid.mcp.de-cm-kg.ai created
+2026-09-12 08:31 [fr francecentral bind] hostname mcp.fr-cm-kg.ai added
+2026-09-12 08:32 [de germanywestcentral bind] hostname mcp.de-cm-kg.ai added
+2026-09-12 08:33 [kr koreacentral upload] door/records: 2759 blobs
+2026-09-12 08:38 [jp japaneast upload] door/records: 3964 blobs
+2026-09-12 08:39 [nl westeurope bind] hostname mcp.nl-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 08:39 [nl westeurope bind] TXT asuid.agent.nl-cm-kg.ai created
+2026-09-12 08:39 [nl westeurope bind] hostname agent.nl-cm-kg.ai added
+2026-09-12 08:41 [au australiaeast app] environment cmkg-env-australiaeast Succeeded (Log Analytics workspace auto-created by the CLI)
+2026-09-12 08:41 [au australiaeast app] app cmkg-door-au created
+2026-09-12 08:41 [au australiaeast app] fqdn https://cmkg-door-au.politeplant-e73e0a46.australiaeast.azurecontainerapps.io
+2026-09-12 08:42 [kr koreacentral upload] door/events: 2759 blobs
+2026-09-12 08:42 [kr koreacentral upload] door index: 2759 keys, 2759 tickers, 0 isins, 357 aliases; facts + nodes uploaded
+2026-09-12 08:42 [ca canadacentral bind] TXT asuid.mcp.ca-cm-kg.ai created
+2026-09-12 08:43 [uk uksouth upload] pond drops uploaded: 9590 blobs from C:\ALLOOLOO\CM-KG\POND\uk-cm-kg
+2026-09-12 08:43 [uk uksouth upload] door records to upload: 1570
+2026-09-12 08:43 [ca canadacentral bind] hostname mcp.ca-cm-kg.ai added
+2026-09-12 08:44 [kr koreacentral app] environment cmkg-env-koreacentral Succeeded (Log Analytics workspace auto-created by the CLI)
+2026-09-12 08:45 [sg southeastasia upload] pond drops uploaded: 9831 blobs from C:\ALLOOLOO\CM-KG\POND\sg-cm-kg
+2026-09-12 08:45 [sg southeastasia upload] door records to upload: 639
+2026-09-12 08:45 [kr koreacentral app] app cmkg-door-kr created
+2026-09-12 08:45 [kr koreacentral app] fqdn https://cmkg-door-kr.calmpond-68249885.koreacentral.azurecontainerapps.io
+2026-09-12 08:45 [kr koreacentral bind] TXT asuid.mcp.kr-cm-kg.ai created
+2026-09-12 08:46 [kr koreacentral bind] hostname mcp.kr-cm-kg.ai added
+2026-09-12 08:47 [sg southeastasia upload] door/records: 639 blobs
+2026-09-12 08:47 [uk uksouth upload] door/records: 1570 blobs
+2026-09-12 08:49 [jp japaneast upload] door/events: 3964 blobs
+2026-09-12 08:50 [jp japaneast upload] door index: 3964 keys, 3964 tickers, 526 isins, 313 aliases; facts + nodes uploaded
+2026-09-12 08:50 [sg southeastasia upload] door/events: 639 blobs
+2026-09-12 08:50 [sg southeastasia upload] door index: 639 keys, 639 tickers, 633 isins, 795 aliases; facts + nodes uploaded
+2026-09-12 08:52 [uk uksouth upload] door/events: 1570 blobs
+2026-09-12 08:52 [uk uksouth upload] door index: 1570 keys, 1586 tickers, 1566 isins, 2872 aliases; facts + nodes uploaded
+2026-09-12 08:52 [jp japaneast app] environment cmkg-env-japaneast Succeeded (Log Analytics workspace auto-created by the CLI)
+2026-09-12 08:53 [jp japaneast app] app cmkg-door-jp created
+2026-09-12 08:53 [jp japaneast app] fqdn https://cmkg-door-jp.calmpebble-18a3633a.japaneast.azurecontainerapps.io
+2026-09-12 08:53 [jp japaneast bind] TXT asuid.mcp.jp-cm-kg.ai created
+2026-09-12 08:53 [sg southeastasia app] environment cmkg-env-southeastasia Succeeded (Log Analytics workspace auto-created by the CLI)
+2026-09-12 08:53 [sg southeastasia app] app cmkg-door-sg created
+2026-09-12 08:53 [sg southeastasia app] fqdn https://cmkg-door-sg.ambitioussand-03ccaab5.southeastasia.azurecontainerapps.io
+2026-09-12 08:53 [sg southeastasia bind] TXT asuid.mcp.sg-cm-kg.ai created
+2026-09-12 08:54 [jp japaneast bind] hostname mcp.jp-cm-kg.ai added
+2026-09-12 08:54 [sg southeastasia bind] hostname mcp.sg-cm-kg.ai added
+2026-09-12 08:55 [uk uksouth app] environment cmkg-env-uksouth Succeeded (Log Analytics workspace auto-created by the CLI)
+2026-09-12 08:55 [uk uksouth app] app cmkg-door-uk created
+2026-09-12 08:55 [uk uksouth app] fqdn https://cmkg-door-uk.livelybay-3553b0b4.uksouth.azurecontainerapps.io
+2026-09-12 08:55 [uk uksouth bind] TXT asuid.mcp.uk-cm-kg.ai created
+2026-09-12 08:56 [uk uksouth bind] hostname mcp.uk-cm-kg.ai added
+2026-09-12 08:56 [fr francecentral bind] hostname mcp.fr-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 08:56 [fr francecentral bind] TXT asuid.agent.fr-cm-kg.ai present
+2026-09-12 08:56 [kr koreacentral bind] hostname mcp.kr-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 08:56 [kr koreacentral bind] TXT asuid.agent.kr-cm-kg.ai created
+2026-09-12 08:57 [fr francecentral bind] hostname agent.fr-cm-kg.ai added
+2026-09-12 08:57 [de germanywestcentral bind] hostname mcp.de-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 08:57 [de germanywestcentral bind] TXT asuid.agent.de-cm-kg.ai created
+2026-09-12 08:57 [kr koreacentral bind] hostname agent.kr-cm-kg.ai added
+2026-09-12 08:58 [de germanywestcentral bind] hostname agent.de-cm-kg.ai added
+2026-09-12 08:59 [uk uksouth bind] hostname mcp.uk-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 08:59 [uk uksouth bind] TXT asuid.agent.uk-cm-kg.ai created
+2026-09-12 08:59 [ca canadacentral go] TXT asuid.agent.ca-cm-kg.ai created
+2026-09-12 08:59 [ca canadacentral go] CNAME agent.ca-cm-kg.ai -> cmkg-door-ca.nicemushroom-8b4ba259.canadacentral.azurecontainerapps.io (DNS only): True 
+2026-09-12 08:59 [fr francecentral go] CNAME agent.fr-cm-kg.ai -> cmkg-door-fr.agreeablehill-d2a7639b.francecentral.azurecontainerapps.io (DNS only): True 
+2026-09-12 08:59 [jp japaneast go] TXT asuid.agent.jp-cm-kg.ai created
+2026-09-12 08:59 [kr koreacentral go] CNAME agent.kr-cm-kg.ai -> cmkg-door-kr.calmpond-68249885.koreacentral.azurecontainerapps.io (DNS only): True 
+2026-09-12 08:59 [jp japaneast go] CNAME agent.jp-cm-kg.ai -> cmkg-door-jp.calmpebble-18a3633a.japaneast.azurecontainerapps.io (DNS only): True 
+2026-09-12 08:59 [au australiaeast go] TXT asuid.agent.au-cm-kg.ai created
+2026-09-12 08:59 [nl westeurope go] CNAME agent.nl-cm-kg.ai -> cmkg-door-nl.purpleisland-61490c7a.westeurope.azurecontainerapps.io (DNS only): True 
+2026-09-12 08:59 [sg southeastasia go] TXT asuid.agent.sg-cm-kg.ai created
+2026-09-12 08:59 [de germanywestcentral go] CNAME agent.de-cm-kg.ai -> cmkg-door-de.greensand-6ae55941.germanywestcentral.azurecontainerapps.io (DNS only): True 
+2026-09-12 08:59 [au australiaeast go] CNAME agent.au-cm-kg.ai -> cmkg-door-au.politeplant-e73e0a46.australiaeast.azurecontainerapps.io (DNS only): True 
+2026-09-12 08:59 [sg southeastasia go] CNAME agent.sg-cm-kg.ai -> cmkg-door-sg.ambitioussand-03ccaab5.southeastasia.azurecontainerapps.io (DNS only): True 
+2026-09-12 08:59 [ch switzerlandnorth go] hostname agent.ch-cm-kg.ai: bound (SniEnabled)
+2026-09-12 08:59 [ch switzerlandnorth go] CNAME agent.ch-cm-kg.ai proxied: True
+2026-09-12 09:00 [uk uksouth bind] hostname agent.uk-cm-kg.ai added
+2026-09-12 09:04 [nl westeurope bind] hostname agent.nl-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 09:08 [ca canadacentral bind] hostname mcp.ca-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 09:08 [ca canadacentral bind] TXT asuid.agent.ca-cm-kg.ai present
+2026-09-12 09:08 [ca canadacentral bind] hostname agent.ca-cm-kg.ai added
+2026-09-12 09:08 [ca canadacentral bind] hostname agent.ca-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 09:10 [ch switzerlandnorth go] hostname agent.ch-cm-kg.ai: bound (SniEnabled)
+2026-09-12 09:10 [ch switzerlandnorth go] CNAME agent.ch-cm-kg.ai proxied: True
+2026-09-12 09:10 [ch switzerlandnorth go] CNAME mcp.ch-cm-kg.ai -> cmkg-door-ch.gentledune-3c70acd2.switzerlandnorth.azurecontainerapps.io (DNS only): True 
+2026-09-12 09:11 [ch switzerlandnorth go] hostname mcp.ch-cm-kg.ai: bound (SniEnabled)
+2026-09-12 09:11 [ch switzerlandnorth go] CNAME mcp.ch-cm-kg.ai proxied: True
+2026-09-12 09:11 [ch switzerlandnorth go] zone SSL strict: True
+2026-09-12 09:17 [fr francecentral go] hostname agent.fr-cm-kg.ai: NOT bound after 15 minutes — rerun go
+2026-09-12 09:17 [kr koreacentral go] hostname agent.kr-cm-kg.ai: NOT bound after 15 minutes — rerun go
+2026-09-12 09:17 [de germanywestcentral go] hostname agent.de-cm-kg.ai: NOT bound after 15 minutes — rerun go
+2026-09-12 09:18 [nl westeurope go] hostname agent.nl-cm-kg.ai: NOT bound after 15 minutes — rerun go
+2026-09-12 09:19 [jp japaneast bind] hostname mcp.jp-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 09:19 [jp japaneast bind] TXT asuid.agent.jp-cm-kg.ai present
+2026-09-12 09:19 [jp japaneast bind] hostname agent.jp-cm-kg.ai added
+2026-09-12 09:19 [jp japaneast bind] hostname agent.jp-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 09:19 [sg southeastasia bind] hostname mcp.sg-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 09:19 [sg southeastasia bind] TXT asuid.agent.sg-cm-kg.ai present
+2026-09-12 09:19 [sg southeastasia bind] hostname agent.sg-cm-kg.ai added
+2026-09-12 09:19 [us eastus go] TXT asuid.agent.us-cm-kg.ai created
+2026-09-12 09:19 [us eastus go] CNAME agent.us-cm-kg.ai -> cmkg-door-us.purpleglacier-e6bfd21c.eastus.azurecontainerapps.io (DNS only): True 
+2026-09-12 09:19 [sg southeastasia bind] hostname agent.sg-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 09:22 [fr francecentral bind] hostname agent.fr-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 09:22 [kr koreacentral bind] hostname agent.kr-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 09:23 [de germanywestcentral bind] hostname agent.de-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 09:25 [uk uksouth bind] hostname agent.uk-cm-kg.ai bind: pending/failed — rerun bind
+2026-09-12 09:29 [uk uksouth go] CNAME agent.uk-cm-kg.ai -> cmkg-door-uk.livelybay-3553b0b4.uksouth.azurecontainerapps.io (DNS only): True 
+2026-09-12 09:37 [fr francecentral go] hostname agent.fr-cm-kg.ai: NOT bound after 15 minutes — rerun go
+2026-09-12 09:37 [fr francecentral go] CNAME mcp.fr-cm-kg.ai -> cmkg-door-fr.agreeablehill-d2a7639b.francecentral.azurecontainerapps.io (DNS only): True 
+2026-09-12 09:37 [de germanywestcentral go] hostname agent.de-cm-kg.ai: NOT bound after 15 minutes — rerun go
+2026-09-12 09:37 [de germanywestcentral go] CNAME mcp.de-cm-kg.ai -> cmkg-door-de.greensand-6ae55941.germanywestcentral.azurecontainerapps.io (DNS only): True 
+2026-09-12 09:37 [kr koreacentral go] hostname agent.kr-cm-kg.ai: NOT bound after 15 minutes — rerun go
+2026-09-12 09:37 [kr koreacentral go] CNAME mcp.kr-cm-kg.ai -> cmkg-door-kr.calmpond-68249885.koreacentral.azurecontainerapps.io (DNS only): True 
+2026-09-12 09:38 [nl westeurope go] hostname agent.nl-cm-kg.ai: NOT bound after 15 minutes — rerun go
+2026-09-12 09:38 [nl westeurope go] CNAME mcp.nl-cm-kg.ai -> cmkg-door-nl.purpleisland-61490c7a.westeurope.azurecontainerapps.io (DNS only): True 
+2026-09-12 09:40 [ca canadacentral stage] hostname agent.ca-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:40 [ca canadacentral stage] workers custom-domain binding for mcp.ca-cm-kg.ai removed: True (the Worker stays deployed)
+2026-09-12 09:40 [ca canadacentral stage] CNAME mcp.ca-cm-kg.ai -> cmkg-door-ca.nicemushroom-8b4ba259.canadacentral.azurecontainerapps.io (DNS only): True
+2026-09-12 09:40 [ca canadacentral stage] hostname mcp.ca-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:40 [uk uksouth stage] hostname agent.uk-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:40 [uk uksouth stage] workers custom-domain binding for mcp.uk-cm-kg.ai removed: True (the Worker stays deployed)
+2026-09-12 09:40 [uk uksouth stage] CNAME mcp.uk-cm-kg.ai -> cmkg-door-uk.livelybay-3553b0b4.uksouth.azurecontainerapps.io (DNS only): True
+2026-09-12 09:40 [uk uksouth stage] hostname mcp.uk-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:40 [fr francecentral stage] hostname agent.fr-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:40 [fr francecentral stage] hostname mcp.fr-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [nl westeurope stage] hostname agent.nl-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [nl westeurope stage] hostname mcp.nl-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [de germanywestcentral stage] hostname agent.de-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [de germanywestcentral stage] hostname mcp.de-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [au australiaeast stage] hostname agent.au-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [au australiaeast stage] TXT asuid.mcp.au-cm-kg.ai created
+2026-09-12 09:41 [au australiaeast stage] workers custom-domain binding for mcp.au-cm-kg.ai removed: True (the Worker stays deployed)
+2026-09-12 09:41 [au australiaeast stage] CNAME mcp.au-cm-kg.ai -> cmkg-door-au.politeplant-e73e0a46.australiaeast.azurecontainerapps.io (DNS only): True
+2026-09-12 09:42 [au australiaeast stage] hostname mcp.au-cm-kg.ai add attempted
+2026-09-12 09:57 [au australiaeast stage] hostname mcp.au-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:57 [sg southeastasia stage] hostname agent.sg-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:57 [sg southeastasia stage] workers custom-domain binding for mcp.sg-cm-kg.ai removed: True (the Worker stays deployed)
+2026-09-12 09:57 [sg southeastasia stage] CNAME mcp.sg-cm-kg.ai -> cmkg-door-sg.ambitioussand-03ccaab5.southeastasia.azurecontainerapps.io (DNS only): True
+2026-09-12 09:57 [sg southeastasia stage] hostname mcp.sg-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:57 [jp japaneast stage] hostname agent.jp-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:57 [jp japaneast stage] workers custom-domain binding for mcp.jp-cm-kg.ai removed: True (the Worker stays deployed)
+2026-09-12 09:57 [jp japaneast stage] CNAME mcp.jp-cm-kg.ai -> cmkg-door-jp.calmpebble-18a3633a.japaneast.azurecontainerapps.io (DNS only): True
+2026-09-12 09:57 [jp japaneast stage] hostname mcp.jp-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:58 [kr koreacentral stage] hostname agent.kr-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:58 [kr koreacentral stage] hostname mcp.kr-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:58 [us eastus stage] hostname agent.us-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:58 [us eastus stage] TXT asuid.mcp.us-cm-kg.ai created
+2026-09-12 09:58 [us eastus stage] CNAME mcp.us-cm-kg.ai -> cmkg-door-us.purpleglacier-e6bfd21c.eastus.azurecontainerapps.io (DNS only): True
+2026-09-12 09:58 [us eastus stage] hostname mcp.us-cm-kg.ai add attempted
+2026-09-12 09:58 [us eastus stage] hostname mcp.us-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 10:28 [ca canadacentral check] agent.ca-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:28 [ca canadacentral check] mcp.ca-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:28 [ca canadacentral check] zone SSL strict: True
+2026-09-12 10:29 [uk uksouth check] agent.uk-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [uk uksouth check] mcp.uk-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [uk uksouth check] zone SSL strict: True
+2026-09-12 10:29 [fr francecentral check] agent.fr-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [fr francecentral check] mcp.fr-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [fr francecentral check] zone SSL strict: True
+2026-09-12 10:29 [nl westeurope check] agent.nl-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [nl westeurope check] mcp.nl-cm-kg.ai: certificate Failed, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [nl westeurope check] zone SSL strict: True
+2026-09-12 10:29 [de germanywestcentral check] agent.de-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [de germanywestcentral check] mcp.de-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [de germanywestcentral check] zone SSL strict: True
+2026-09-12 10:29 [au australiaeast check] agent.au-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [au australiaeast check] mcp.au-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [au australiaeast check] zone SSL strict: True
+2026-09-12 10:30 [sg southeastasia check] agent.sg-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [sg southeastasia check] mcp.sg-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [sg southeastasia check] zone SSL strict: True
+2026-09-12 10:30 [jp japaneast check] agent.jp-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [jp japaneast check] mcp.jp-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [jp japaneast check] zone SSL strict: True
+2026-09-12 10:30 [kr koreacentral check] agent.kr-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [kr koreacentral check] mcp.kr-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [kr koreacentral check] zone SSL strict: True
+2026-09-12 10:30 [us eastus check] agent.us-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [us eastus check] mcp.us-cm-kg.ai: certificate not created, binding none — PENDING (reported, not retried)
+2026-09-12 10:30 [us eastus check] zone SSL strict: True
+2026-09-12 11:00 [ca canadacentral check] agent.ca-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 11:08 [ca canadacentral check] mcp.ca-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 11:08 [ca canadacentral check] zone SSL strict: True
+2026-09-12 13:41 [uk uksouth check] agent.uk-cm-kg.ai: certificate Failed, binding none — PENDING (reported, not retried)
+2026-09-12 13:41 [uk uksouth check] mcp.uk-cm-kg.ai: certificate Failed, binding none — PENDING (reported, not retried)
+2026-09-12 13:41 [uk uksouth check] zone SSL strict: True

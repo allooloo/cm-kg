@@ -1,0 +1,36 @@
+2026-09-12 09:40 [ca canadacentral stage] hostname agent.ca-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:40 [ca canadacentral stage] workers custom-domain binding for mcp.ca-cm-kg.ai removed: True (the Worker stays deployed)
+2026-09-12 09:40 [ca canadacentral stage] CNAME mcp.ca-cm-kg.ai -> cmkg-door-ca.nicemushroom-8b4ba259.canadacentral.azurecontainerapps.io (DNS only): True
+2026-09-12 09:40 [ca canadacentral stage] hostname mcp.ca-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:40 [uk uksouth stage] hostname agent.uk-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:40 [uk uksouth stage] workers custom-domain binding for mcp.uk-cm-kg.ai removed: True (the Worker stays deployed)
+2026-09-12 09:40 [uk uksouth stage] CNAME mcp.uk-cm-kg.ai -> cmkg-door-uk.livelybay-3553b0b4.uksouth.azurecontainerapps.io (DNS only): True
+2026-09-12 09:40 [uk uksouth stage] hostname mcp.uk-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:40 [fr francecentral stage] hostname agent.fr-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:40 [fr francecentral stage] hostname mcp.fr-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [nl westeurope stage] hostname agent.nl-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [nl westeurope stage] hostname mcp.nl-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [de germanywestcentral stage] hostname agent.de-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [de germanywestcentral stage] hostname mcp.de-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [au australiaeast stage] hostname agent.au-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:41 [au australiaeast stage] TXT asuid.mcp.au-cm-kg.ai created
+2026-09-12 09:41 [au australiaeast stage] workers custom-domain binding for mcp.au-cm-kg.ai removed: True (the Worker stays deployed)
+2026-09-12 09:41 [au australiaeast stage] CNAME mcp.au-cm-kg.ai -> cmkg-door-au.politeplant-e73e0a46.australiaeast.azurecontainerapps.io (DNS only): True
+2026-09-12 09:42 [au australiaeast stage] hostname mcp.au-cm-kg.ai add attempted
+2026-09-12 09:57 [au australiaeast stage] hostname mcp.au-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:57 [sg southeastasia stage] hostname agent.sg-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:57 [sg southeastasia stage] workers custom-domain binding for mcp.sg-cm-kg.ai removed: True (the Worker stays deployed)
+2026-09-12 09:57 [sg southeastasia stage] CNAME mcp.sg-cm-kg.ai -> cmkg-door-sg.ambitioussand-03ccaab5.southeastasia.azurecontainerapps.io (DNS only): True
+2026-09-12 09:57 [sg southeastasia stage] hostname mcp.sg-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:57 [jp japaneast stage] hostname agent.jp-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:57 [jp japaneast stage] workers custom-domain binding for mcp.jp-cm-kg.ai removed: True (the Worker stays deployed)
+2026-09-12 09:57 [jp japaneast stage] CNAME mcp.jp-cm-kg.ai -> cmkg-door-jp.calmpebble-18a3633a.japaneast.azurecontainerapps.io (DNS only): True
+2026-09-12 09:57 [jp japaneast stage] hostname mcp.jp-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:58 [kr koreacentral stage] hostname agent.kr-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:58 [kr koreacentral stage] hostname mcp.kr-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:58 [us eastus stage] hostname agent.us-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+2026-09-12 09:58 [us eastus stage] TXT asuid.mcp.us-cm-kg.ai created
+2026-09-12 09:58 [us eastus stage] CNAME mcp.us-cm-kg.ai -> cmkg-door-us.purpleglacier-e6bfd21c.eastus.azurecontainerapps.io (DNS only): True
+2026-09-12 09:58 [us eastus stage] hostname mcp.us-cm-kg.ai add attempted
+2026-09-12 09:58 [us eastus stage] hostname mcp.us-cm-kg.ai: one bind attempt returned pending (certificate provisioning) — check at +30 minutes
+== STAGE ALL DONE 09:58

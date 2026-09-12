@@ -1,0 +1,6 @@
+2026-09-12 11:00 [ca canadacentral check] agent.ca-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 11:08 [ca canadacentral check] mcp.ca-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 11:08 [ca canadacentral check] zone SSL strict: True
+2026-09-12 13:41 [uk uksouth check] agent.uk-cm-kg.ai: certificate Failed, binding none — PENDING (reported, not retried)
+2026-09-12 13:41 [uk uksouth check] mcp.uk-cm-kg.ai: certificate Failed, binding none — PENDING (reported, not retried)
+2026-09-12 13:41 [uk uksouth check] zone SSL strict: True

@@ -1,0 +1,11 @@
+ca | agent.ca-cm-kg.ai: Disabled, certs Failed ; mcp.ca-cm-kg.ai: Disabled, certs Failed/Failed
+uk | agent.uk-cm-kg.ai: Disabled, certs Failed/Failed ; mcp.uk-cm-kg.ai: Disabled, certs Failed
+au | agent.au-cm-kg.ai: Disabled, certs Failed ; mcp.au-cm-kg.ai: Disabled, certs Failed
+sg | agent.sg-cm-kg.ai: Disabled, certs Failed ; mcp.sg-cm-kg.ai: Disabled, certs Failed
+ch | agent.ch-cm-kg.ai: SniEnabled, certs Succeeded ; mcp.ch-cm-kg.ai: SniEnabled, certs Succeeded
+de | agent.de-cm-kg.ai: Disabled, certs Failed ; mcp.de-cm-kg.ai: Disabled, certs Failed
+fr | agent.fr-cm-kg.ai: Disabled, certs Failed ; mcp.fr-cm-kg.ai: Disabled, certs Failed
+nl | agent.nl-cm-kg.ai: Disabled, certs Failed ; mcp.nl-cm-kg.ai: Disabled, certs Failed
+jp | agent.jp-cm-kg.ai: Disabled, certs Failed ; mcp.jp-cm-kg.ai: Disabled, certs Failed
+kr | agent.kr-cm-kg.ai: Disabled, certs Failed ; mcp.kr-cm-kg.ai: Disabled, certs Failed
+us | agent.us-cm-kg.ai: Disabled, certs Failed
