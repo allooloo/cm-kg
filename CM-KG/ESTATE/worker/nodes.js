@@ -20,6 +20,7 @@ export default {
     fiscal: 'set per issuer; carried as filed.',
     idForms: ['TSX:SHOP', 'SHOP.TO', 'TSXV:<code>', 'CSE:<code>', 'CBOE-CANADA:<code>', 'ISIN (CA…)', 'LEI', 'legal name', 'sourced alias'],
     auditorLine: 'Auditor and transfer agent: read from the issuer profile and annual filing pages, named to a closed list; unrecognised names go to Gaps.',
+    residency: "Store: storage account allooloocmkgcapond in Canada Central, container pond — immutable dated drops under pond/, rendered records and event lists under door/. Door: container app cmkg-door-ca in cmkg-env-canadacentral, one image shared by the estate, this node's store only. Certificates: Cloudflare Origin CA per hostname; Cloudflare in front, SSL Full (strict).", engines: 'Reading order for the Fill pass: Tavily search on the issuer profile and filing pages; Claude and ChatGPT extract; Gemini and Mistral read the French filings; Perplexity grounds a field before it is confirmed. Every engine read is labelled with the engine name; a field read by one engine and not grounded stays flagged.', sweep: 'Sweep clock: weekly, Friday after the Toronto close, plus a monthly identity re-harvest from the four exchange lists and GLEIF. Scheduled tasks are disabled under the estate-wide BUILD lock until the CEO re-arms them; the clock is the Toronto business day.',
     example: 'TSX:SHOP', duty: 'KYP (Know Your Product)'
   },
   us: {
@@ -41,6 +42,7 @@ export default {
     fiscal: 'fiscalYearEnd MMDD as filed on the submissions header.',
     idForms: ['NASDAQ:AAPL', 'NYSE:<ticker>', 'CBOE:<ticker>', 'ISIN (US…)', 'LEI', 'legal name as filed', 'former name (sourced alias)'],
     auditorLine: 'Auditor: the 10-K cover inline XBRL facts, sourced to the filing URL. Transfer agent: 10-K text, labelled read by Gemini.',
+    residency: 'Store: storage account allooloocmkguspond in East US, container pond — the EDGAR drop of the day (company list, submissions, roster, fill) under pond/width0/, rendered records and event lists under door/. Door: container app cmkg-door-us in cmkg-env-eastus-2. The pull itself is a Container Apps job in the same region (cmkg-us-rail), so EDGAR is read from a declared US address.', engines: 'Reading order for the Fill pass: the 10-K cover inline XBRL first (no engine, a tag); Gemini reads the transfer-agent windows of the 10-K text; Perplexity finds the investor-relations page and its title is kept as an alias only when it matches the legal name. No other engine writes to this node.', sweep: 'Sweep clock: weekly on the US market day, as a scheduled run of the East US job under the 8-requests-a-second EDGAR limit; disabled under the BUILD lock until re-armed. A same-day re-run resumes from the finished stages in the drop and never re-fetches.',
     example: 'NASDAQ:AAPL', duty: 'reasonable-basis suitability (FINRA Rule 2111)'
   },
   uk: {
@@ -62,6 +64,7 @@ export default {
     fiscal: 'set per issuer; carried as filed.',
     idForms: ['LSE:SHEL', 'SHEL.L', 'AIM:<code>', 'AQSE:<code>', 'ISIN (GB…)', 'LEI', 'legal name', 'sourced alias'],
     auditorLine: 'Auditor, registrar and going-concern note: carried from the annual report as filed.',
+    residency: 'Store: storage account allooloocmkgukpond in UK South, container pond — dated drops of the LSE, Aquis and Companies House reads under pond/, rendered records and RNS-derived event lists under door/. Door: container app cmkg-door-uk in cmkg-env-uksouth. Certificates issued by Cloudflare Origin CA per hostname, SSL Full (strict).', engines: 'Reading order for the Fill pass: Grok reads the live layer (RNS and wire headlines over 168 hours); Tavily fetches the annual report pages; ChatGPT extracts in batch; Gemini and Mistral second-read; Perplexity grounds. Registrar and auditor names are canonicalised against a recognised list before they are confirmed.', sweep: 'Sweep clock: weekly on the London business day after the close — Investegate RNS, Companies House filing history and wire search over a seven-day window, then Fill and Confirm on the new rows; monthly identity re-harvest on order. Disabled under the BUILD lock until the CEO re-arms.',
     example: 'LSE:SHEL', duty: 'product governance (FCA PROD sourcebook)'
   },
   fr: {
@@ -83,6 +86,7 @@ export default {
     fiscal: 'set per issuer; most close on 31 December; carried as filed.',
     idForms: ['XPAR:FR0000120271', 'ISIN (FR…) alone', 'ALXP:<ISIN>', 'XMLI:<ISIN>', 'LEI', 'SIREN', 'legal name', 'sourced alias (symbol)'],
     auditorLine: 'Commissaires aux comptes and registrar: read from the annual financial report pages; Mistral review flags go to the Review tab, never to the field.',
+    residency: 'Store: storage account allooloocmkgfrpond in France Central, container pond — FIRDS, AMF and register drops under pond/, rendered records keyed by ISIN under door/. Door: container app cmkg-door-fr in cmkg-env-francecentral. Records for Paris lines with a foreign ISIN are held here by ruling and mirrored on the home node.', engines: "Fill pass on this node: the annual financial report (rapport financier annuel) is the document of record; Perplexity's agent (preset low) grounds commissaires aux comptes, registrar and going-concern language from it, Grok watches the AMF and wire layer, and Mistral is confined to translation and review. A field Mistral alone would fill is a Review-tab flag, never a value.", sweep: 'Weekly motion for Paris: BDIF per filer token and the wires over seven days, Fill and Confirm on new rows, then a FIRDS re-harvest once a month to catch admissions and radiations. Scheduled runs are off under the BUILD lock; the CEO re-arms them.',
     example: 'XPAR:FR0000120271', duty: 'MiFID II product governance'
   },
   nl: {
@@ -90,13 +94,13 @@ export default {
     title: 'Netherlands Capital Markets Knowledge Graph — nl-cm-kg',
     meta: 'Agentic record of {{issuers}} Euronext Amsterdam issuers keyed by ISIN with {{events}} dated disclosures from the AFM register and the wires; sourced, read-dated, served from Amsterdam over MCP and A2A.',
     h1: 'Amsterdam by ISIN: the Euronext Amsterdam list as records an agent resolves, reads and follows.',
-    reason: 'The Amsterdam roster is the FIRDS instrument file for the Euronext Amsterdam venue: ISIN, name and market, no symbol. This node holds {{issuers}} such records with {{events}} dated disclosure events, the KVK number joined through GLEIF registration authority RA000463, the LEI from GLEIF, and the AFM register pages read for the regulated-information trail. A trading symbol is accepted only when a source carried it, as an alias with that source. Dutch is the reading language; the review layer translates and flags, it does not fill. Everything is stored and served from West Europe; the apex forwards to it and holds no record. Lines with a foreign ISIN listed in Amsterdam resolve here and on their home node.',
+    reason: 'The Amsterdam roster is the FIRDS instrument file for the Euronext Amsterdam venue: ISIN, name and market, no symbol. This node holds {{issuers}} such records with {{events}} dated disclosure events, the KVK number joined through GLEIF registration authority RA000463, the LEI from GLEIF, and the AFM register pages read for the regulated-information trail. A trading symbol is accepted only when a source carried it, as an alias with that source. Dutch is the reading language; the review layer translates and flags, it does not fill. Everything is stored and served from West Europe; the apex forwards to it and holds no record. Lines with a foreign ISIN listed in Amsterdam resolve here and on their home node. Because the venue is one market and the roster is short, this is the node where a single missing register page shows up as a whole row in the gaps count rather than a rounding error.',
     coverage: 'Euronext Amsterdam (regulated market)',
-    sources: 'ESMA FIRDS instrument reference files (roster by ISIN); AFM registers (public register pages); GLEIF (RA000463 KVK join, LEI records); newswires (GlobeNewswire, Business Wire)',
-    mapping: 'identity (name, ISIN, market) ← FIRDS; KVK number ← GLEIF registration-authority field; LEI, other names ← GLEIF; auditor, registrar ← annual report pages (Perplexity agent low, Grok); disclosure events ← AFM register pages, wires',
+    sources: 'FIRDS reference file for venue XAMS (ISIN, name, market — the roster); AFM public registers (register pages per issuer); GLEIF LEI records with the KVK number in the registration-authority field (RA000463); GlobeNewswire and Business Wire for the wire trail',
+    mapping: 'name, ISIN and market are the FIRDS line; the KVK number is the GLEIF registration-authority value; LEI and other entity names are the GLEIF record; accountant and registrar are read from the jaarverslag pages (Perplexity agent low grounds, Grok reads); the event trail is AFM register pages plus wire releases under the name rule',
     gaps: 'Gaps: 1 row. KVK API and Euronext issuer pages refuse plain clients; the KVK number is carried from GLEIF only.',
     gapsFrom: 'nl-width1 README (Gaps note verbatim) and nl-width0 Sources',
-    tiers: 'Euronext Amsterdam regulated market (AEX, AMX, AScX index membership not carried). Euronext Growth Amsterdam where FIRDS lists it.',
+    tiers: 'One regulated market, Euronext Amsterdam (MIC XAMS); Euronext Growth Amsterdam lines where the FIRDS file lists them. Index membership (AEX, AMX, AScX) is not a field on this node.',
     language: 'Dutch; English for most annual reports. Titles carried as published.',
     regulator: 'Autoriteit Financiële Markten (AFM). Exchange operator: Euronext Amsterdam.',
     register: 'Kamer van Koophandel (Handelsregister). Register key: KVK number (eight digits).',
@@ -104,6 +108,7 @@ export default {
     fiscal: 'set per issuer; carried as filed.',
     idForms: ['AMS:NL0000009165', 'XAMS:<ISIN>', 'ISIN (NL…) alone', 'LEI', 'KVK number', 'legal name', 'sourced alias (symbol)'],
     auditorLine: 'Auditor and registrar: read from the annual report pages; review flags stay on the Review tab.',
+    residency: 'Where it lives: allooloocmkgnlpond (West Europe, Amsterdam) holds the FIRDS and AFM drops under pond/ and the rendered ISIN-keyed records under door/; cmkg-door-nl in cmkg-env-westeurope serves them. Fewest records of any live node, same door image, same rules as the largest.', engines: "Fill pass on this node: the jaarverslag is the document of record; Perplexity's agent (preset low) grounds accountant, registrar and going-concern language from it, Grok watches the AFM and wire layer, and Mistral is confined to translation from Dutch and review. Amsterdam lines carrying a foreign ISIN are read from the home filings of the issuer.", sweep: 'Weekly motion for Amsterdam: AFM register pages and the wires over seven days, Fill and Confirm on new rows, then a FIRDS re-harvest once a month. Scheduled runs are off under the BUILD lock; the CEO re-arms them.',
     example: 'AMS:NL0000009165', duty: 'MiFID II product governance'
   },
   ch: {
@@ -125,6 +130,7 @@ export default {
     fiscal: 'set per issuer; carried as filed.',
     idForms: ['NESN.SW', 'SIX:NESN', 'BX:<code>', 'ISIN (CH… or foreign)', 'LEI', 'UID', 'legal name', 'sourced alias'],
     auditorLine: 'Auditor (Revisionsstelle) and registrar: read from the annual report pages; unresolved reads go to the Review tab.',
+    residency: 'Store: storage account allooloocmkgchpond in Switzerland North (Zürich), container pond — SIX, BX and Zefix drops under pond/, rendered records under door/. Door: container app cmkg-door-ch in cmkg-env-switzerlandnorth — the first door in the estate to answer on its own hostnames under a certificate.', engines: "Fill pass on this node: the Geschäftsbericht (or rapport de gestion) is the document of record in whichever language it was filed; Perplexity's agent (preset low) grounds Revisionsstelle, registrar and going-concern language, Grok watches the SIX ad hoc and wire layer, Mistral translates and reviews only. Foreign issuers with a SIX line are read from their home filings.", sweep: 'Weekly motion for Zürich: SIX ad hoc announcements, Zefix mutations and the wires over seven days, Fill and Confirm on new rows, then a SIX and BX list re-harvest once a month. Scheduled runs are off under the BUILD lock; the CEO re-arms them.',
     example: 'NESN.SW', duty: 'FinSA (Financial Services Act) product duties'
   },
   de: {
@@ -146,6 +152,7 @@ export default {
     fiscal: 'set per issuer; carried as filed.',
     idForms: ['SAP.DE', 'XETRA:SAP', 'FRA:<code>', 'EUREX:<product>', 'ISIN (DE… or foreign)', 'WKN', 'LEI', 'legal name', 'sourced alias'],
     auditorLine: 'Abschlussprüfer and registrar: read from the annual report pages; review flags to the Review tab.',
+    residency: 'Store: storage account allooloocmkgdepond in Germany West Central (Frankfurt), container pond — Xetra, FWB, EQS and Eurex reference-data drops under pond/, rendered records under door/ including the EUREX exchange prefix for derivatives products. Door: container app cmkg-door-de in cmkg-env-germanywestcentral.', engines: "Fill pass on this node: the Geschäftsbericht and the Bundesanzeiger notice are the documents of record; Perplexity's agent (preset low) grounds Abschlussprüfer, registrar and going-concern language, Grok watches the EQS and wire layer, Mistral translates from German and reviews only. Eurex reference data bypasses every engine: it is a direct API read.", sweep: 'Weekly motion for Frankfurt: EQS ad hoc and regulatory news, register and wires over seven days, Fill and Confirm on new rows, then a Xetra list and Eurex reference re-harvest once a month. Scheduled runs are off under the BUILD lock; the CEO re-arms them.',
     example: 'SAP.DE', duty: 'MiFID II product governance (Produktüberwachung)'
   },
   au: {
@@ -167,6 +174,7 @@ export default {
     fiscal: 'set per issuer; most close on 30 June; carried as filed.',
     idForms: ['ASX:BHP', 'BHP.AX', 'NSX:<code>', 'ISIN (AU…)', 'LEI', 'ACN', 'legal name', 'previous name (sourced alias)'],
     auditorLine: 'Auditor: annual report link only, by order. Registrar: read from the ASX company record where it names one.',
+    residency: 'Store: storage account allooloocmkgaupond in Australia East (Sydney), container pond — ASX, NSX and ASIC dataset drops under pond/, rendered records under door/. Door: container app cmkg-door-au in cmkg-env-australiaeast. One of the two storage keys on this account refuses authentication; the door runs on the other and the CEO holds the regeneration call.', engines: 'Reading order for the Fill pass: Grok reads the ASX announcements and wire layer over 168 hours; Tavily fetches annual report pages; ChatGPT extracts in batch; Gemini second-reads; Perplexity grounds. Auditor stays a source link by order — no engine writes the auditor name on this node.', sweep: 'Sweep clock: weekly after the Sydney close — ASX announcements search, ASIC bulk register, NSX feed and wires over seven days, then Fill and Confirm; monthly identity re-harvest on order. Disabled under the BUILD lock until re-armed by the CEO.',
     example: 'ASX:BHP', duty: 'DDO (Design and Distribution Obligations)'
   },
   sg: {
@@ -188,6 +196,7 @@ export default {
     fiscal: 'set per issuer; carried as filed.',
     idForms: ['D05.SI', 'SGX:D05', 'SGX-CATALIST:<code>', 'ISIN (SG…)', 'LEI', 'UEN', 'legal name', 'trading name (sourced alias)'],
     auditorLine: 'Auditor: read from the annual report pages; ACRA audit-firm columns are empty in the published dataset.',
+    residency: 'Store: storage account allooloocmkgsgpond in Southeast Asia (Singapore), container pond — SGX feed and ACRA dataset drops under pond/, rendered records under door/. Door: container app cmkg-door-sg in cmkg-env-southeastasia. Trust and REIT lines carry the trading name SGX lists, not a legal name.', engines: 'Reading order for the Fill pass: Grok reads the wire layer; Tavily fetches the annual report and IR pages; ChatGPT extracts in batch; Gemini second-reads; Perplexity grounds. Nothing is read from SGXNet, which refuses machines; the register trail comes from ACRA.', sweep: 'Sweep clock: weekly after the Singapore close (Friday 17:30 Singapore time in the weekly shape) — wires and ACRA register over seven days, then Fill and Confirm; monthly SGX feed re-harvest. Disabled under the BUILD lock until re-armed by the CEO.',
     example: 'D05.SI', duty: 'MAS product due diligence'
   },
   jp: {
@@ -209,6 +218,7 @@ export default {
     fiscal: 'set per issuer; most close on 31 March; carried from the XBRL fact.',
     idForms: ['7203.T', 'TSE-PRIME:7203', 'TSE-STANDARD:<code>', 'TSE-GROWTH:<code>', 'securities code alone', 'ISIN (JP3…)', 'LEI', 'EDINET code', 'legal name (Japanese or English as published)'],
     auditorLine: 'Auditor: the AuditFirm1Consolidated fact of the securities report XBRL, sourced to the EDINET document. Transfer agent (株主名簿管理人): read by Gemini from the securities report text.',
+    residency: 'Store: storage account allooloocmkgjppond in Japan East (Tokyo), container pond — JPX file, EDINET code list, daily document lists and XBRL-CSV drops under pond/, rendered records under door/ with exchange prefixes TSE-PRIME, TSE-STANDARD, TSE-GROWTH, TSE-PRO and REIT. Door: container app cmkg-door-jp in cmkg-env-japaneast.', engines: 'Reading order for the Fill pass: Gemini leads as the Japanese reader (securities report text windows: transfer agent, going concern); Perplexity fast finds the issuer page; Grok reads the live TSE layer; Mistral reviews and flags only. The auditor and the fiscal year end are XBRL facts, read by no engine.', sweep: 'Sweep clock: weekly after the Tokyo close — EDINET daily document lists over seven days (documents.json, type 2), then the document shards, the Gemini loop and the rebuilds; monthly JPX and EDINET code list re-harvest. Disabled under the BUILD lock until re-armed by the CEO.',
     example: '7203.T', duty: 'suitability principle (FIEA Article 40)'
   },
   kr: {
@@ -230,6 +240,7 @@ export default {
     fiscal: 'settlement month as carried by DART (most 12); settlement date from the auditor endpoint.',
     idForms: ['005930.KS', 'KOSPI:005930', 'KOSDAQ:<code>', 'KONEX:<code>', 'securities code alone', 'ISIN (KR7…)', 'LEI', 'DART corporation code', 'business registration number', 'legal name (Korean or English as published)'],
     auditorLine: 'Auditor, audit opinion and settlement date: the DART structured endpoint, sourced to the DART API call. Transfer agent (명의개서대리인): read by Gemini from the business report text.',
+    residency: 'Store: storage account allooloocmkgkrpond in Korea Central (Seoul), container pond — KIND list, DART corporation codes, filing lists and auditor endpoint drops under pond/, rendered records under door/ with prefixes KOSPI, KOSDAQ and KONEX. Door: container app cmkg-door-kr in cmkg-env-koreacentral.', engines: 'Reading order for the Fill pass: the DART auditor endpoint first (structured, no engine); Gemini leads as the Korean reader (business report text windows: transfer agent, going concern); Perplexity fast finds the issuer page; Grok reads the live KRX layer; Mistral reviews and flags only.', sweep: 'Sweep clock: weekly after the Seoul close — DART list.json per corporation code over seven days, paced under the 20,000-call daily cap, then the document shards and rebuilds; monthly KIND and corpCode re-harvest. Disabled under the BUILD lock until re-armed by the CEO.',
     example: '005930.KS', duty: 'suitability and appropriateness (FSCMA Articles 46 and 46-2)'
   },
   hk: {
@@ -251,6 +262,7 @@ export default {
     fiscal: 'not carried at Width 0.',
     idForms: ['none — no door on this node; the roster is not served'],
     auditorLine: 'Not populated at Width 0.',
+    residency: 'Store: none in Azure for this node — the Width 0 roster lives in the build pond on the build machine as a dated drop. No container app, no environment, no certificate; the East Asia region appears in the estate configuration as a line and nothing more until a partner is named.', engines: 'Reading order: none. No search layer, no engine reads and no Fill pass run on this node by order; the roster is the HKEX list and the GLEIF join, deterministic and in English.', sweep: 'Sweep clock: none. A Width 0 re-run into a new dated drop happens on order only; no weekly shape is written for Hong Kong until a local partner reads the filings.',
     example: null, duty: 'suitability (SFC Code of Conduct paragraph 5.2)'
   }
 };

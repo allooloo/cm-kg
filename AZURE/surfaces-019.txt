@@ -1,0 +1,12 @@
+ca-cm-kg.ai 200 "Canada Capital Markets Knowledge Graph — ca-cm-kg" | .org 301->https://ca-cm-kg.ai/ | .com 301->https://ca-cm-kg.ai/
+us-cm-kg.ai 200 "United States Capital Markets Knowledge Graph — us-cm-kg" | .org 301->https://us-cm-kg.ai/ | .com 301->https://us-cm-kg.ai/
+uk-cm-kg.ai 200 "United Kingdom Capital Markets Knowledge Graph — uk-cm-kg" | .org 301->https://uk-cm-kg.ai/ | .com 301->https://uk-cm-kg.ai/
+fr-cm-kg.ai 200 "France Capital Markets Knowledge Graph — fr-cm-kg" | .org 301->https://fr-cm-kg.ai/ | .com 301->https://fr-cm-kg.ai/
+nl-cm-kg.ai 200 "Netherlands Capital Markets Knowledge Graph — nl-cm-kg" | .org 301->https://nl-cm-kg.ai/ | .com 301->https://nl-cm-kg.ai/
+ch-cm-kg.ai 200 "Switzerland Capital Markets Knowledge Graph — ch-cm-kg" | .org 301->https://ch-cm-kg.ai/ | .com 301->https://ch-cm-kg.ai/
+de-cm-kg.ai 200 "Germany Capital Markets Knowledge Graph — de-cm-kg" | .org 301->https://de-cm-kg.ai/ | .com 301->https://de-cm-kg.ai/
+au-cm-kg.ai 200 "Australia Capital Markets Knowledge Graph — au-cm-kg" | .org 301->https://au-cm-kg.ai/ | .com 301->https://au-cm-kg.ai/
+sg-cm-kg.ai 200 "Singapore Capital Markets Knowledge Graph — sg-cm-kg" | .org 301->https://sg-cm-kg.ai/ | .com 301->https://sg-cm-kg.ai/
+jp-cm-kg.ai 200 "Japan Capital Markets Knowledge Graph — jp-cm-kg" | .org 301->https://jp-cm-kg.ai/ | .com 301->https://jp-cm-kg.ai/
+kr-cm-kg.ai 200 "South Korea Capital Markets Knowledge Graph — kr-cm-kg" | .org 301->https://kr-cm-kg.ai/ | .com 301->https://kr-cm-kg.ai/
+hk-cm-kg.ai 200 "Hong Kong Capital Markets Knowledge Graph — hk-cm-kg" | .org 301->https://hk-cm-kg.ai/ | .com 301->https://hk-cm-kg.ai/
