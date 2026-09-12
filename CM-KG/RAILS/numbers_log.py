@@ -5,6 +5,9 @@ import json, os, re, sys, datetime, requests
 ROOT = r'C:\ALLOOLOO'; BOOT = os.path.join(ROOT, 'START_ME_UP', 'NODE-SURFACES.md'); ASSET = os.path.join(ROOT, 'CM-KG', 'ESTATE', 'public', 'numbers-log.json')
 APEX = 'https://mcp.capitalmarketsknowledgegraph.ai/mcp'
 def live():
+    # source of truth = the apex node list just built and deployed (CM-KG/DOOR/apex/static/nodes.json); a live read right after a deploy can hit a stale isolate
+    local = os.path.join(ROOT, 'CM-KG', 'DOOR', 'apex', 'static', 'nodes.json')
+    if os.path.exists(local): return {n['node']: n for n in json.load(open(local, encoding='utf-8'))}
     r = requests.post(APEX, headers={'content-type': 'application/json', 'accept': 'application/json'}, json={'jsonrpc': '2.0', 'id': 1, 'method': 'tools/call', 'params': {'name': 'list_nodes', 'arguments': {}}}, timeout=60).json()
     return {n['node']: n for n in r['result']['structuredContent']['nodes']}
 s = open(BOOT, encoding='utf-8').read()

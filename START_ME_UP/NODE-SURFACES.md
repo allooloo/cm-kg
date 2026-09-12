@@ -286,5 +286,7 @@ jp-cm-kg · 2026-09-12 · 3964 · 39274 · seed (ORDER-019; first sweep line wil
 kr-cm-kg · 2026-09-12 · 2802 · 143297 · seed (ORDER-019; first sweep line will carry the delta)
 hk-cm-kg · 2026-09-12 · not served (Width 0) · none · seed (ORDER-019; no door, no sweep until a local partner)
 nl-cm-kg · 2026-09-11 · 123 · 2742 · records +0 · events +35 (sweep 2026-09-12)
+ch-cm-kg · 2026-09-11 · 829 · 1385 · records +0 · events +0 (sweep 2026-09-12)
+ch-cm-kg · 2026-09-11 · 829 · 1512 · records +0 · events +127 (sweep 2026-09-12)
 ```
 
