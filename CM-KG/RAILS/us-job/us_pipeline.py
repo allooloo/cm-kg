@@ -1,5 +1,5 @@
 """ORDER-018 — United States rail, run inside the East US container (the home address is blocked by EDGAR). Keyless EDGAR with the declared
-User-Agent "Allooloo Technologies Corp. <CONTACT>" (developers@allooloo.ai, the mailbox of record); under 8 requests a second. 0.1.1: a same-day re-run resumes from the finished stages in the pond drop; Gemini usage logged; door uploads in parallel. 0.1.2: the GLEIF extract is streamed to disk and only candidate LEIs are kept (2 GiB was not enough for the whole file). 0.1.3: fill.json lands before the Perplexity pages; the pages are their own resumable stage (perplexity.json, checkpoint every 500).
+User-Agent "Allooloo Technologies Corp. <CONTACT>" (developers@allooloo.ai, the mailbox of record); under 8 requests a second. 0.1.1: a same-day re-run resumes from the finished stages in the pond drop; Gemini usage logged; door uploads in parallel. 0.1.2: the GLEIF extract is streamed to disk and only candidate LEIs are kept (2 GiB was not enough for the whole file). 0.1.3: fill.json lands before the Perplexity pages; the pages are their own resumable stage (perplexity.json, checkpoint every 500). 0.1.4: HTML entities decoded in the iXBRL tag values.
   Width 0  company_tickers_exchange.json + submissions header per CIK (NYSE / Nasdaq / Cboe filers) -> roster; LEI by exact legal name against the
            GLEIF golden-copy US extract staged in the pond (registered-name route), ISIN from the GLEIF ISIN mapping zip; state of incorporation,
            SIC sector, business address, fiscal year end, latest annual report from the header
@@ -12,6 +12,7 @@ User-Agent "Allooloo Technologies Corp. <CONTACT>" (developers@allooloo.ai, the 
 Sourced or blank; no prices; nothing deleted."""
 import os, re, io, json, time, zipfile, csv, datetime, threading, hashlib
 from concurrent.futures import ThreadPoolExecutor
+import html
 import requests
 from azure.storage.blob import BlobServiceClient
 TODAY = datetime.date.today(); SINCE = (TODAY - datetime.timedelta(days=366)).isoformat(); STAMP = TODAY.isoformat()
@@ -165,7 +166,7 @@ def fill(roster, subs):
             if rr is not None and rr.status_code in (200, 206):
                 t = rr.text[:1500000]
                 def tag(name):
-                    m = re.search(r'<ix:nonNumeric[^>]*name="dei:' + name + r'"[^>]*>(.*?)</ix:nonNumeric>', t, re.S | re.I); return re.sub(r'<[^>]+>', '', m.group(1)).strip() if m else ''
+                    m = re.search(r'<ix:nonNumeric[^>]*name="dei:' + name + r'"[^>]*>(.*?)</ix:nonNumeric>', t, re.S | re.I); return html.unescape(re.sub(r'<[^>]+>', '', m.group(1))).strip() if m else ''
                 res = {'auditor': tag('AuditorName'), 'auditor_location': tag('AuditorLocation'), 'auditor_firm_id': tag('AuditorFirmId'), 'period_end': tag('DocumentPeriodEndDate'), 'well_known_seasoned': tag('EntityWellKnownSeasonedIssuer'), 'document_url': url, 'form': a['form'], 'filed': a['date'], 'read_by': 'EDGAR 10-K cover page iXBRL tag (dei:AuditorName, dei:AuditorLocation, dei:AuditorFirmId, dei:DocumentPeriodEndDate)'}
                 if gem_key:
                     w = []
