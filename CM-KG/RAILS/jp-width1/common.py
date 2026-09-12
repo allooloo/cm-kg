@@ -28,7 +28,7 @@ def _unique_tokens():
         c = Counter(); wb = openpyxl.load_workbook(ISSUERS_XLSX, read_only=True)
         for ex in TABS:
             if ex not in wb.sheetnames: continue
-            ws = wb[ex]; it = ws.iter_rows(values_only=True); hdr = next(it); i = hdr.index('Legal name')
+            ws = wb[ex]; it = ws.iter_rows(values_only=True); hdr = next(it); i = next(hdr.index(c) for c in ('Legal name (English, as published)', 'Legal name') if c in hdr)
             for row in it:
                 for t in set(w for w in norm(row[i] or '').split() if w not in STOP and len(w) >= 5): c[t] += 1
         _UNIQUE = set(t for t, n in c.items() if n == 1)

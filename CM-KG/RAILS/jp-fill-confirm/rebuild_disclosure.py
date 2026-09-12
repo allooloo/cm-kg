@@ -29,6 +29,11 @@ rep = {}
 for d in jload('raw/chatgpt_reports.jsonl'):
     if d.get('custom_id'): rep[d['custom_id']] = d
 mis = jload('raw/mistral_reads.jsonl')  # review rows only: verdicts and flags go to the Review tab, never into an event
+_u2k = {d.get('document_url'): d.get('key') for d in jload('raw/gemini_reads.jsonl') if d.get('document_url')}
+_u2k.update({d.get('url'): d.get('key') for d in jload('raw/perplexity_pages.jsonl') if d.get('url')})
+for d in mis:
+    ik = d.get('issuer_key') or _u2k.get(d.get('url'))
+    if ik: d['key'] = ik
 events_all = base + new
 for e in events_all:
     for kk in ('key', 'as_of', 'node', 'width'): e.pop(kk, None)
