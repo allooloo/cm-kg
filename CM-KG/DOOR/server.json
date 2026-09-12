@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.allooloo/cm-kg",
   "title": "Capital Markets Agents: MCP+A2A Canada",
-  "description": "Know every Canadian, United Kingdom and Australian issuer, agent-ready. Instantly. Provably.",
-  "version": "0.3.0",
+  "description": "Know every Canadian, United Kingdom, Australian and Singapore issuer, agent-ready. Instantly. Provably.",
+  "version": "0.4.0",
   "websiteUrl": "https://capitalmarketsknowledgegraph.ai",
   "repository": {
     "url": "https://github.com/allooloo/cm-kg",
@@ -35,7 +35,10 @@
         "Australia",
         "ASX",
         "NSX",
-        "ASIC"
+        "ASIC",
+        "Singapore",
+        "SGX",
+        "ACRA"
       ],
       "authentication": "none",
       "access": "read-only, public-record only; no prices, quotes or licensed market data",
@@ -43,7 +46,8 @@
       "nodes_live": [
         "ca-cm-kg",
         "uk-cm-kg",
-        "au-cm-kg"
+        "au-cm-kg",
+        "sg-cm-kg"
       ],
       "tools": [
         {

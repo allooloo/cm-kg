@@ -107,7 +107,7 @@ def method_rows():
             ('Google Gemini (gemini-flash-latest)', f"Long-context read of the 12-month announcement set for {len(gem)} issuers: share registry written {touched['Gemini:Registrar']}; AGM / record-date findings on the Disclosure workbook. Label 'read by Gemini'."),
             ('Perplexity (Agent API, preset low)', f"Located company pages for issuers with no events or no website: {sum(1 for d in pp if d.get('verified'))} verified of {len(pp)} asked; {sum(1 for d in pp if d.get('alias'))} aliases. Label 'read by Perplexity (agent · low)'. Sonar Chat Completions retire 2026-09-27; this rail never used them."),
             ('Grok (grok-4.6)', f"Live layer in the weekly refresh; validation run found {gl.get('halts', 0)} halt/suspension/reinstatement items and {gl.get('newswire', 0)} silent-issuer items. Label 'read by Grok (live)'."),
-            ('Mistral (mistral-small-latest)', f"Non-English announcements found: {mc.get('n_targets', 0)}; read {mc.get('n_targets', 0)}."),
+            ('Mistral (mistral-small-latest)', 'Zero on this node by rule (CEO, 2026-09-11): English-language filings only; Chinese-language announcements and reports are skipped, not read.'),
             ('Tavily (search)', f"Second-source reads for Pass 3: {cf} fields resolved to confirmed or conflict; alias rematch on the Disclosure workbook."),
             ('Cloudflare', 'Touched nothing on the issuer record.'),
             ('Sources (not engines)', 'Aliases: ' + ', '.join(f'{k} {n}' for k, n in a_src.most_common()) + '. States across the eight fields: ' + ', '.join(f'{s} {n}' for s, n in sorted(st.items())) + '.'),
