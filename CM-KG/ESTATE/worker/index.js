@@ -6,7 +6,8 @@ const GLOBAL_DOOR = 'https://mcp.capitalmarketsknowledgegraph.ai';
 const NODES = { ca: 'Canada', uk: 'United Kingdom', au: 'Australia', sg: 'Singapore', ch: 'Switzerland', de: 'Germany', fr: 'France', nl: 'Netherlands', hk: 'Hong Kong', jp: 'Japan', kr: 'South Korea', us: 'United States' };
 const ORDER = ['ca', 'uk', 'au', 'sg', 'ch', 'de', 'fr', 'nl', 'hk', 'jp', 'kr', 'us'];
 // The dealer's product-knowledge duty by its local name (the name the node serves); blank where the build order has not named it yet.
-const DUTY = { ca: 'KYP (Know Your Product)', uk: 'product governance (FCA PROD sourcebook)', de: 'MiFID II product governance (Produktüberwachung)', ch: 'FinSA (Financial Services Act) product duties', fr: 'MiFID II product governance', nl: 'MiFID II product governance', au: 'DDO (Design and Distribution Obligations)', sg: 'MAS product due diligence', us: 'reasonable-basis suitability (FINRA Rule 2111)' };
+const DUTY = { ca: 'KYP (Know Your Product)', uk: 'product governance (FCA PROD sourcebook)', de: 'MiFID II product governance (Produktüberwachung)', ch: 'FinSA (Financial Services Act) product duties', fr: 'MiFID II product governance', nl: 'MiFID II product governance', au: 'DDO (Design and Distribution Obligations)', sg: 'MAS product due diligence', us: 'reasonable-basis suitability (FINRA Rule 2111)', jp: 'suitability principle (FIEA Article 40)', kr: 'suitability and appropriateness (FSCMA Articles 46 and 46-2)', hk: 'suitability (SFC Code of Conduct paragraph 5.2)' };
+const NOTE = { hk: 'Hong Kong is held at Width 0 by order: the roster and identifiers (HKEX list, GLEIF) in English only, no search layer, no filings read. Width 1 and the Fill pass wait for a local partner. No door on this node until then.' };
 let LIVE = null, LIVE_AT = 0;
 async function liveNodes() {
   if (LIVE && Date.now() - LIVE_AT < 300000) return LIVE;
@@ -38,7 +39,7 @@ function facts(host, c, live) {
   if (c.kind === 'node') {
     const n = live[`${c.cc}-cm-kg`] || {}; const isLive = !!n.live;
     return { ...base, kind: c.tld === 'org' ? 'node registry' : 'node door', node: `${c.cc}-cm-kg`, country: NODES[c.cc], live: isLive, records: isLive ? n.records : 0, node_as_of: isLive ? n.as_of : null,
-      registry: `https://${c.cc}-cm-kg.org/`, door_host: `mcp.${c.cc}-cm-kg.ai`, door_url: isLive ? `https://mcp.${c.cc}-cm-kg.ai/mcp` : null, duty: DUTY[c.cc] || null, note: isLive ? 'the node door answers' : 'named; the door is not published until it answers' };
+      registry: `https://${c.cc}-cm-kg.org/`, door_host: `mcp.${c.cc}-cm-kg.ai`, door_url: isLive ? `https://mcp.${c.cc}-cm-kg.ai/mcp` : null, duty: DUTY[c.cc] || null, note: NOTE[c.cc] || (isLive ? 'the node door answers' : 'named; the door is not published until it answers'), local_partner: c.cc === 'hk' ? 'wanted (Width 1 and Fill)' : undefined };
   }
   if (c.kind === 'root') return { ...base, kind: { graph: 'root of the graph', standard: 'standard mirror of the long-form root', 'cmkg-standard': 'CM-KG standard and beacon', 'cmkg-twin': 'CM-KG machine twin' }[c.role], live_nodes: Object.values(live).filter(n => n.live).map(n => n.node), global_door: `${GLOBAL_DOOR}/mcp`, nodes: ORDER.map(cc => ({ node: `${cc}-cm-kg`, country: NODES[cc], live: !!(live[`${cc}-cm-kg`] || {}).live })) };
   if (c.kind === 'record') return { ...base, kind: { standard: 'Capital Markets Record — the object standard (schema, signing, versions)', resolver: 'CMR resolver door', twin: 'CMR machine twin' }[c.role], spec: 'CMR v0 (draft)', signing: 'not yet live; no signature is stubbed', resolver_live: false, records_served_by: `${GLOBAL_DOOR}/mcp` };
@@ -52,6 +53,7 @@ function page(host, c, f) {
     body = `<p>${esc(f.country)} node of the Capital Markets Knowledge Graph. This host is the node's ${c.tld === 'org' ? 'public registry' : 'operating door'}.</p>
 <p><strong>Status: ${f.live ? 'live' : 'not live'}.</strong> ${f.live ? `${f.records.toLocaleString()} records as of ${esc(f.node_as_of)}. The door answers at <code>${esc(f.door_url)}</code> (Streamable HTTP MCP, no auth).` : 'The node is named in the twelve-node build order; its door is not published until it answers.'}</p>
 ${f.duty ? `<p>Duty served: <strong>${esc(f.duty)}</strong> — know every product on the shelf, continuously. Same record, one local name.</p>` : ''}
+${NOTE[c.cc] ? `<p><strong>Local partner wanted.</strong> ${esc(NOTE[c.cc])} Enquiries: <a href="https://allooloo.io">allooloo.io</a>.</p>` : ''}
 <p>Read live from the global door's <code>list_nodes</code>. ${f.live ? `<a href="https://mcp.${c.cc}-cm-kg.ai/">Node door</a> · ` : ''}<a href="${GLOBAL_DOOR}/">Global door</a></p>`;
   } else if (c.kind === 'root') {
     title = { graph: 'Capital Markets Knowledge Graph', standard: 'Capital Markets Knowledge Graph — standard', 'cmkg-standard': 'CM-KG — standard and beacon', 'cmkg-twin': 'CM-KG — machine twin' }[c.role];
