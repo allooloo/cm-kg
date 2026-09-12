@@ -30,7 +30,9 @@ if not acct or acct.get('tenantId') != TENANT or acct.get('id') != SUB: raise Sy
 def cf(method, path, body=None, tok=None):
     tok = tok or open(r'C:\ALLOOLOO\AGENT KEYS\cloudflare.txt', encoding='utf-8').read().strip()
     req = urllib.request.Request('https://api.cloudflare.com/client/v4' + path, data=json.dumps(body).encode() if body is not None else None, method=method, headers={'Authorization': 'Bearer ' + tok, 'Content-Type': 'application/json'})
-    try: return json.load(urllib.request.urlopen(req, timeout=60))
+    try:
+        r = urllib.request.urlopen(req, timeout=60); raw = r.read()
+        return json.loads(raw) if raw.strip() else {'success': 200 <= r.status < 300, 'status': r.status}
     except urllib.error.HTTPError as e: return {'success': False, 'http': e.code, 'body': e.read()[:300].decode('utf-8', 'replace')}
 def storage_key():
     return az('storage', 'account', 'keys', 'list', '-n', sa, '-g', rg, '--query', '[0].value', '-o', 'tsv', raw=True)
@@ -136,6 +138,41 @@ elif step in ('bind', 'flip'):
             else:
                 r = cf('POST', f'/zones/{zone}/dns_records', {'type': 'CNAME', 'name': h, 'content': fqdn, 'proxied': True, 'ttl': 1}, tok=tok); log(f"CNAME {h} -> {fqdn} created: {r.get('success')} {r if not r.get('success') else ''}")
         z = cf('PATCH', f'/zones/{zone}/settings/ssl', {'value': 'strict'}, tok=tok); log(f"zone SSL strict: {z.get('success')}")
+elif step == 'go':
+    # End-to-end hostname move (the managed certificate validates only once the name resolves to the app): for each hostname — the Workers custom-domain
+    # binding comes off mcp.* (the Worker stays deployed, the apex still serves), a DNS-only CNAME points the name at the app, the hostname is added,
+    # the certificate bound (retried until Succeeded, up to 15 minutes), then the record turns proxied. Zone SSL: Full (strict).
+    zone = ZONES.get(cc)
+    if not zone: raise SystemExit(f'zone id for {cc} not on file (HITL)')
+    a = az('containerapp', 'show', '-n', app, '-g', rg); fqdn = a['properties']['configuration']['ingress']['fqdn']
+    e = az('containerapp', 'env', 'show', '-n', env_name, '-g', rg); vid = e['properties']['customDomainConfiguration']['customDomainVerificationId']
+    tok = open(r'C:\ALLOOLOO\AGENT KEYS\cloudflare.txt', encoding='utf-8').read().strip(); d1 = open(r'C:\ALLOOLOO\AGENT KEYS\cloudflare-d1.txt', encoding='utf-8').read().strip()
+    for h in (f'agent.{node}.ai', host):
+        recs = cf('GET', f'/zones/{zone}/dns_records?name=asuid.{h}&type=TXT', tok=tok).get('result') or []
+        if not any(r.get('content', '').strip('"') == vid for r in recs): cf('POST', f'/zones/{zone}/dns_records', {'type': 'TXT', 'name': f'asuid.{h}', 'content': vid, 'ttl': 300}, tok=tok); log(f'TXT asuid.{h} created')
+        if h == host:
+            for d in (cf('GET', f'/accounts/{CF_ACCT}/workers/domains?hostname={host}', tok=d1).get('result') or []):
+                r = cf('DELETE', f'/accounts/{CF_ACCT}/workers/domains/{d["id"]}', tok=d1); log(f"workers custom-domain binding for {host} removed: {r.get('success')} (the Worker stays deployed)")
+        recs = cf('GET', f'/zones/{zone}/dns_records?name={h}', tok=tok).get('result') or []
+        for r0 in [r for r in recs if r['type'] in ('A', 'AAAA')]:
+            r = cf('DELETE', f'/zones/{zone}/dns_records/{r0["id"]}', tok=tok); log(f"{h}: placeholder {r0['type']} {r0['content']} removed: {r.get('success')}")
+        cn = [r for r in recs if r['type'] == 'CNAME']
+        if not cn: r = cf('POST', f'/zones/{zone}/dns_records', {'type': 'CNAME', 'name': h, 'content': fqdn, 'proxied': False, 'ttl': 300}, tok=tok); log(f"CNAME {h} -> {fqdn} (DNS only): {r.get('success')} {r if not r.get('success') else ''}"); cn = [r.get('result')] if r.get('success') else []
+        elif cn[0]['content'] != fqdn: r = cf('PATCH', f'/zones/{zone}/dns_records/{cn[0]["id"]}', {'content': fqdn, 'proxied': False}, tok=tok); log(f"CNAME {h} repointed -> {fqdn}: {r.get('success')}")
+        for attempt in range(8):
+            hn = az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or []
+            if any(x.get('name') == h for x in hn): break
+            az('containerapp', 'hostname', 'add', '-n', app, '-g', rg, '--hostname', h, check=False); time.sleep(15)
+        bound = False
+        for attempt in range(30):
+            hn = az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or []
+            if any(x.get('name') == h and x.get('bindingType') == 'SniEnabled' for x in hn): bound = True; break
+            az('containerapp', 'hostname', 'bind', '-n', app, '-g', rg, '--hostname', h, '--environment', env_name, '--validation-method', 'TXT', check=False); time.sleep(30)
+        log(f"hostname {h}: {'bound (SniEnabled)' if bound else 'NOT bound after 15 minutes — rerun go'}")
+        if bound and cn:
+            recs = cf('GET', f'/zones/{zone}/dns_records?name={h}&type=CNAME', tok=tok).get('result') or []
+            for r0 in recs: r = cf('PATCH', f'/zones/{zone}/dns_records/{r0["id"]}', {'proxied': True}, tok=tok); log(f"CNAME {h} proxied: {r.get('success')}")
+    z = cf('PATCH', f'/zones/{zone}/settings/ssl', {'value': 'strict'}, tok=tok); log(f"zone SSL strict: {z.get('success')}")
 elif step == 'status':
     a = az('containerapp', 'show', '-n', app, '-g', rg); fqdn = a['properties']['configuration']['ingress']['fqdn']
     hn = az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or []
