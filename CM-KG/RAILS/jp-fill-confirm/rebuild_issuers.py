@@ -42,7 +42,8 @@ for ex in TABS:
             cell(rr, 'Auditor').value = x['auditor']; cell(rr, 'Auditor source').value = x['document_url']; cell(rr, 'Auditor read by').value = x['read_by'] + f" — element {x.get('auditor_element')}"; cell(rr, 'Auditor State').value = 'sourced'; touched['EDINET XBRL:Auditor'] += 1
             if len(x.get('audit_firms') or []) > 1: cell(rr, 'Gaps').value = ((cell(rr, 'Gaps').value or '') + '; ' if cell(rr, 'Gaps').value else '') + 'Auditor: joint audit — ' + ' / '.join(f['name'] for f in x['audit_firms'])
         if x and x.get('fiscal_year_end'): cell(rr, 'Accounts period end').value = x['fiscal_year_end']; touched['EDINET XBRL:period end'] += 1
-        if x and x.get('going_concern_windows'): cell(rr, 'Going concern (annual report)').value = 'going-concern note present (継続企業の前提; XBRL text block ' + ', '.join(x.get('going_concern_elements') or [])[:120] + ')'; touched['EDINET XBRL:going concern block'] += 1
+        gce = [e for e in (x.get('going_concern_elements') or []) if 'GoingConcern' in e] if x else []
+        if gce: cell(rr, 'Going concern (annual report)').value = 'going-concern note present (継続企業の前提に関する注記; XBRL ' + ', '.join(e.split(':')[-1] for e in gce)[:160] + ')'; touched['EDINET XBRL:going concern note'] += 1
         if g and not g.get('error'):
             def put(field, val, ok_key, statecol, rbcol, srccol):
                 if not val: return
@@ -54,7 +55,7 @@ for ex in TABS:
             put('Share registrar', g.get('registrar'), 'registrar_ok', 'Share registrar State', 'Share registrar read by', 'Share registrar source')
             if g.get('registrar_evidence') and cell(rr, 'Share registrar').value == g.get('registrar'): cell(rr, 'Share registrar evidence').value = g['registrar_evidence'][:300]
             if g.get('period_end') and not (x and x.get('fiscal_year_end')): cell(rr, 'Accounts period end').value = g['period_end']; touched['Gemini:period end'] += 1
-            if g.get('going_concern') and not (x and x.get('going_concern_windows')): cell(rr, 'Going concern (annual report)').value = {'stated': 'material events stated (継続企業の前提に関する重要事象)', 'not_stated': 'none stated', 'unclear': 'unclear'}.get(g['going_concern'], g['going_concern']); touched['Gemini:going concern'] += 1
+            if g.get('going_concern') and not gce: cell(rr, 'Going concern (annual report)').value = {'stated': 'material events stated (継続企業の前提に関する重要事象)', 'not_stated': 'none stated', 'unclear': 'unclear'}.get(g['going_concern'], g['going_concern']); touched['Gemini:going concern'] += 1
         p = pp.get(k)
         if p and p.get('alias'):
             cell(rr, 'Also known as').value = p['alias']; cell(rr, 'Alias source').value = p.get('url', ''); cell(rr, 'Alias read by').value = p.get('alias_read_by', ''); touched['alias:issuer page <title>'] += 1
@@ -68,7 +69,7 @@ mt = wb['Method']; BOLD = Font(name='Arial', size=10, bold=True)
 mt.append([]); mt.append(['Fill pass (ORDER-017 re-cut, ' + TODAY.isoformat() + ')', 'Engine duty and count on the Japan issuers workbook'])
 for c in mt[mt.max_row]: c.font = BOLD
 mc = json.load(open('raw/mistral_count.json')) if os.path.exists('raw/mistral_count.json') else {}
-for a, b in [('EDINET (API v2)', f"Latest 有価証券報告書 per issuer: XBRL-to-CSV facts for {len(xb)} reports (audit firm as the tagged fact jpcrp_cor:AuditFirm1…, fiscal year end from jpdei, going-concern text blocks) written as sourced ({touched['EDINET XBRL:Auditor']} auditors, {touched['EDINET XBRL:period end']} period ends); the PDF reduced to Japanese text windows for {len(docs)} reports; the document page is the annual report link and the source of every filled field."),
+for a, b in [('EDINET (API v2)', f"Latest 有価証券報告書 per issuer: XBRL-to-CSV facts for {len(xb)} reports (audit firm as the tagged fact jpcrp_cor:AuditFirm1…, fiscal year end from jpdei, going-concern notes when a GoingConcern-named text block exists) written as sourced ({touched['EDINET XBRL:Auditor']} auditors, {touched['EDINET XBRL:period end']} period ends); the PDF reduced to Japanese text windows for {len(docs)} reports; the document page is the annual report link and the source of every filled field."),
              ('Google Gemini (gemini-flash-latest)', f"Primary reader of the Japanese windows: auditor written {touched['Gemini:Auditor']} (agrees with an existing value {touched['Gemini:Auditor agrees']}), share-register administrator written {touched['Gemini:Share registrar']}, period end {touched['Gemini:period end']}, going-concern statement {touched['Gemini:going concern']}. Label 'read by Gemini (ja)'. Values verbatim in Japanese; no translation."),
              ('Perplexity (Agent API, preset fast)', f"Search layer: company pages located for {sum(1 for d in pp.values() if d.get('verified'))} issuers (verified by fetch); page titles became sourced aliases ({touched['alias:issuer page <title>']})."),
              ('Grok (grok-4.6)', 'Second engine: live layer (halts, silent issuers) on the Disclosure workbook.'),
