@@ -106,6 +106,13 @@
    "records": "829",
    "events": "1512",
    "note": "records +0\u00b7events +127 (sweep 2026-09-12)"
+  },
+  {
+   "node": "fr-cm-kg",
+   "date": "2026-09-11",
+   "records": "712",
+   "events": "10469",
+   "note": "records +0\u00b7events +470 (sweep 2026-09-12)"
   }
  ]
 }

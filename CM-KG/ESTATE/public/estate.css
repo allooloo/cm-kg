@@ -31,3 +31,6 @@ button{padding:.4rem 1rem;border:1px solid var(--navy);border-radius:2px;backgro
 .bars{display:flex;align-items:flex-end;gap:2px;height:40px;margin:.3rem 0}.bars i{display:block;flex:1;background:var(--green);min-width:2px}
 footer{margin:2.2rem auto 1.5rem;padding-top:.8rem;border-top:1px solid var(--rule);font-size:.86em;color:var(--muted)}footer a{color:var(--green)}
 @media (max-width:640px){body{font-size:14px}dl{grid-template-columns:1fr}dt{margin-top:.3rem}}
+
+/* allooloo.io only (CEO, Sept 12 2026): content container 1040px; the scale grid 3 + 2; body text left-aligned, never justified */
+body.site header,body.site main,body.site footer{max-width:1040px}body.site .grid{grid-template-columns:repeat(3,1fr)}body.site p,body.site dd{text-align:left}

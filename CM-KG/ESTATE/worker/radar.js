@@ -54,7 +54,7 @@ export function radarBody(ctx, host, d) {
   const sp = d.spend;
   const w12 = W(12, 'Spend', 'spend.json — the standing spend line, as reported per order and per sweep; Azure from the Cost Management API when it answers', sp && sp.lines ? `<div class="wrap">${table(['line', 'node', 'figure', 'as of'], sp.lines.map(l => [esc(l.line), esc(l.node || ''), esc(l.figure), esc(l.as_of)]))}</div><p class="muted">${esc(sp.note || '')}</p>` : `<p class="muted">${esc((sp && sp.note) || 'no spend lines')}</p>`);
   const w13 = W(13, 'Broadcast', 'the operator', num(13, ['<a href="https://x.com/allooloo_io">@allooloo_io</a>', `<a href="mailto:${CONTACT2}">${CONTACT2}</a> — the agents that built this read their own mail`]));
-  const w14 = W(14, 'Contact', 'the form (Formspree) · ' + CONTACT, form(host));
+  const w14 = W(14, 'Contact', 'the form (Formspree) — the only support door', form(host));
   return `<p class="kicker">AGENTIC RADAR · The estate numbers · Allooloo Technologies Corp. · v1.0 · rendered ${esc(d.as_of.replace('T', ' ').slice(0, 19))} UTC</p>
 <p class="lead">Every figure on this page is a door, a log or a ledger; nothing is quoted from a third party. Machine twin: <a href="/radar.json"><code>/radar.json</code></a>.</p>${w01}${w02}${w03}${w04}${w05}${w06}${w07}${w08}${w09}${w10}${w11}${w12}${w13}${w14}`;
 }
