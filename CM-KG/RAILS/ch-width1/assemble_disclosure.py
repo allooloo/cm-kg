@@ -35,7 +35,7 @@ def take(rows, worker):
         for e in d.get('events', []): events.append(e)
         if d.get('ambiguous'): worker_notes[k].append(f"{d['ambiguous']} search hits named another issuer (not taken)")
         if d.get('note'): worker_notes[k].append(d['note'])
-for fn, w in (('raw/eqs_search.jsonl', 'eqs_search'), ('raw/shab_events.jsonl', 'shab_events'), ('raw/wire_search.jsonl', 'wire_search')):
+for fn, w in (('raw/eqs_search.jsonl', 'eqs_search'), ('raw/eqs_search_pass1.jsonl', 'eqs_search'), ('raw/shab_events.jsonl', 'shab_events'), ('raw/wire_search.jsonl', 'wire_search'), ('raw/wire_search_pass1.jsonl', 'wire_search')):
     take(load(fn), w)
 for d in load('raw/wire_search.jsonl'):
     r = byk.get(d.get('key'))

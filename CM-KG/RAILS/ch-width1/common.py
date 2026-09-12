@@ -51,6 +51,7 @@ def name_match(text, name, aliases=()):
         if w in uniq and w not in common: return 'distinctive', w
     return ('ambiguous', present[0]) if present else ('none', '')
 def name_in(text, name, aliases=()): return name_match(text, name, aliases)[0] in ('full', 'distinctive')
+_LEIREC = {d['key']: d for d in pond.read_jsonl_all(NODE, 'width0', 'lei_records.jsonl', key='key')}
 def load_issuers(types=('Corporate',)):
     """Corporate lines with a home-country ISIN from the Width 0 workbook (foreign-ISIN exchange lines, funds and certificates out)."""
     wb = openpyxl.load_workbook(ISSUERS_XLSX, read_only=True); out = []
@@ -60,8 +61,8 @@ def load_issuers(types=('Corporate',)):
         for r in it:
             d = dict(zip(hdr, r))
             if str(d['Security type']) not in types or not str(d.get('ISIN') or '').startswith(HOME_ISIN): continue
-            # GLEIF legal name (from the LEI record column set) is the fuller name for search; the exchange short name stays the display name
-            out.append({'exchange': ex, 'ticker': d[TICKER_COL], 'name': d['Legal name'], 'full_name': (d.get('Registered office read by') and d.get('Legal name')) or d['Legal name'], 'isin': d['ISIN'] or '', 'lei': d['LEI'] or '', 'reg_id': d.get(REG_COL) or '', 'acn': d.get(REG_COL) or '',
+            # the GLEIF legal name (LEI record in the Width 0 pond drop) is the fuller name for search; the exchange short name stays the display name
+            out.append({'exchange': ex, 'ticker': d[TICKER_COL], 'name': d['Legal name'], 'full_name': (_LEIREC.get(d['LEI'] or '') or {}).get('name') or d['Legal name'], 'isin': d['ISIN'] or '', 'lei': d['LEI'] or '', 'reg_id': d.get(REG_COL) or '', 'acn': d.get(REG_COL) or '',
                         'wire': (d['Newswire of habit'] or '').split(' (')[0], 'wire_urls': (d['Newswire releases seen'] or '').split('\n') if d['Newswire releases seen'] else [], 'website': d.get('Website') or '', 'legal_seat': d.get('Legal seat') or ''})
     return out
 def key(r): return r['exchange'] + '|' + r['ticker']
