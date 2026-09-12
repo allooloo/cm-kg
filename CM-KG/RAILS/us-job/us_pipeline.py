@@ -1,5 +1,5 @@
 """ORDER-018 — United States rail, run inside the East US container (the home address is blocked by EDGAR). Keyless EDGAR with the declared
-User-Agent "Allooloo Technologies Corp. <CONTACT>" (developers@allooloo.ai, the mailbox of record); under 8 requests a second. 0.1.1: a same-day re-run resumes from the finished stages in the pond drop; Gemini usage logged; door uploads in parallel.
+User-Agent "Allooloo Technologies Corp. <CONTACT>" (developers@allooloo.ai, the mailbox of record); under 8 requests a second. 0.1.1: a same-day re-run resumes from the finished stages in the pond drop; Gemini usage logged; door uploads in parallel. 0.1.2: the GLEIF extract is streamed to disk and only candidate LEIs are kept (2 GiB was not enough for the whole file).
   Width 0  company_tickers_exchange.json + submissions header per CIK (NYSE / Nasdaq / Cboe filers) -> roster; LEI by exact legal name against the
            GLEIF golden-copy US extract staged in the pond (registered-name route), ISIN from the GLEIF ISIN mapping zip; state of incorporation,
            SIC sector, business address, fiscal year end, latest annual report from the header
@@ -86,13 +86,24 @@ def width0():
 def norm(s): return ' '.join(re.sub(r'[^A-Z0-9 ]', ' ', (s or '').upper().replace('&', ' AND ')).split())
 def norm_loose(s): return ' '.join(w for w in norm(s).split() if w not in {'INC', 'INCORPORATED', 'CORP', 'CORPORATION', 'CO', 'COMPANY', 'LTD', 'LIMITED', 'PLC', 'LLC', 'LP', 'HOLDINGS', 'HOLDING', 'GROUP', 'THE', 'NV', 'SA', 'AG', 'SE'})
 def gleif(roster):
-    recs = {}; b = get_blob('estate/gleif-golden/2026-09-12/lei-US.jsonl')
-    if not b: log('no GLEIF extract in the pond; LEI blank'); return {}, {}
-    for line in b.decode('utf-8').splitlines():
-        try: d = json.loads(line); recs[d['lei']] = d
-        except Exception: pass
-    idx = json.loads(get_blob('estate/gleif-golden/2026-09-12/lei-index-US.json').decode('utf-8'))['name']; loose = {}
+    idx_b = get_blob('estate/gleif-golden/2026-09-12/lei-index-US.json')
+    if not idx_b: log('no GLEIF extract in the pond; LEI blank'); return {}, {}
+    idx = json.loads(idx_b.decode('utf-8'))['name']; del idx_b; loose = {}
     for k, v in idx.items(): loose.setdefault(norm_loose(k), []).extend(v)
+    want_lei = set()
+    for r in roster:
+        for nm in (r['name'], r['list_name']): want_lei.update(idx.get(norm(nm), []))
+        want_lei.update(loose.get(norm_loose(r['name']), []))
+    recs = {}; fp = os.path.join(W, 'lei-US.jsonl')
+    try:
+        with open(fp, 'wb') as f: cont.get_blob_client('estate/gleif-golden/2026-09-12/lei-US.jsonl').download_blob().readinto(f)
+    except Exception as e: log('no GLEIF extract in the pond; LEI blank', e); return {}, {}
+    with open(fp, encoding='utf-8') as f:
+        for line in f:
+            try: d = json.loads(line)
+            except Exception: continue
+            if d.get('lei') in want_lei: recs[d['lei']] = d
+    log('GLEIF candidates', len(want_lei), 'records kept', len(recs))
     match = {}
     for r in roster:
         st = (r.get('state_inc') or '').upper(); c = [recs[l] for l in idx.get(norm(r['name']), []) if l in recs] or [recs[l] for l in idx.get(norm(r['list_name']), []) if l in recs]
