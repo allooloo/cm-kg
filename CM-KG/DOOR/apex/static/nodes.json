@@ -1,0 +1,161 @@
+[
+ {
+  "node": "ca-cm-kg",
+  "country": "Canada",
+  "registry": "ca-cm-kg.org",
+  "door": "https://mcp.ca-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-09-10",
+  "records": 4820,
+  "exchanges": [
+   "TSX",
+   "TSXV",
+   "CSE",
+   "CBOE-CANADA"
+  ]
+ },
+ {
+  "node": "uk-cm-kg",
+  "country": "United Kingdom",
+  "registry": "uk-cm-kg.org",
+  "door": "https://mcp.uk-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-09-11",
+  "records": 1570,
+  "exchanges": [
+   "LSE",
+   "AIM",
+   "AQSE"
+  ]
+ },
+ {
+  "node": "au-cm-kg",
+  "country": "Australia",
+  "registry": "au-cm-kg.org",
+  "door": "https://mcp.au-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-09-11",
+  "records": 1874,
+  "exchanges": [
+   "ASX",
+   "NSX",
+   "TMX-AU"
+  ]
+ },
+ {
+  "node": "sg-cm-kg",
+  "country": "Singapore",
+  "registry": "sg-cm-kg.org",
+  "door": "https://mcp.sg-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-09-11",
+  "records": 639,
+  "exchanges": [
+   "SGX",
+   "SGX-CATALIST"
+  ]
+ },
+ {
+  "node": "ch-cm-kg",
+  "country": "Switzerland",
+  "registry": "ch-cm-kg.org",
+  "door": "https://mcp.ch-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-09-11",
+  "records": 829,
+  "exchanges": [
+   "SIX",
+   "BX"
+  ]
+ },
+ {
+  "node": "de-cm-kg",
+  "country": "Germany",
+  "registry": "de-cm-kg.org",
+  "door": "https://mcp.de-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-09-11",
+  "records": 3436,
+  "exchanges": [
+   "XETRA",
+   "EUREX"
+  ]
+ },
+ {
+  "node": "fr-cm-kg",
+  "country": "France",
+  "registry": "fr-cm-kg.org",
+  "door": "https://mcp.fr-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-09-11",
+  "records": 712,
+  "exchanges": [
+   "XPAR",
+   "ALXP",
+   "XMLI"
+  ]
+ },
+ {
+  "node": "nl-cm-kg",
+  "country": "Netherlands",
+  "registry": "nl-cm-kg.org",
+  "door": "https://mcp.nl-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-09-11",
+  "records": 123,
+  "exchanges": [
+   "XAMS",
+   "ALXA"
+  ]
+ },
+ {
+  "node": "hk-cm-kg",
+  "country": "Hong Kong",
+  "registry": "hk-cm-kg.org",
+  "door": "https://mcp.hk-cm-kg.ai",
+  "live": false,
+  "as_of": null,
+  "records": 0,
+  "exchanges": []
+ },
+ {
+  "node": "jp-cm-kg",
+  "country": "Japan",
+  "registry": "jp-cm-kg.org",
+  "door": "https://mcp.jp-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-09-12",
+  "records": 3964,
+  "exchanges": [
+   "TSE-PRIME",
+   "TSE-STANDARD",
+   "TSE-GROWTH",
+   "TSE-PRO",
+   "TSE-REIT"
+  ]
+ },
+ {
+  "node": "kr-cm-kg",
+  "country": "South Korea",
+  "registry": "kr-cm-kg.org",
+  "door": "https://mcp.kr-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-09-12",
+  "records": 2802,
+  "exchanges": [
+   "KOSPI",
+   "KOSDAQ",
+   "KONEX"
+  ]
+ },
+ {
+  "node": "us-cm-kg",
+  "country": "United States",
+  "registry": "us-cm-kg.org",
+  "door": "https://mcp.us-cm-kg.ai",
+  "live": false,
+  "as_of": null,
+  "records": 0,
+  "exchanges": []
+ }
+]
