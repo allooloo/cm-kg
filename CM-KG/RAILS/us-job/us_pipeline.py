@@ -15,7 +15,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 from azure.storage.blob import BlobServiceClient
 TODAY = datetime.date.today(); SINCE = (TODAY - datetime.timedelta(days=366)).isoformat(); STAMP = TODAY.isoformat()
-CONTACT = os.environ.get('CONTACT', 'allooloo@users.noreply.github.com'); UA = {'User-Agent': f'Allooloo Technologies Corp. {CONTACT}', 'Accept-Encoding': 'gzip, deflate'}
+CONTACT = os.environ.get('CONTACT', 'developers@allooloo.ai'); UA = {'User-Agent': f'Allooloo Technologies Corp. {CONTACT}', 'Accept-Encoding': 'gzip, deflate'}
 NODE = 'us-cm-kg'; REGION = os.environ.get('REGION', 'eastus'); HOST = 'https://mcp.us-cm-kg.ai'
 bsc = BlobServiceClient(f"https://{os.environ['STORAGE_ACCOUNT']}.blob.core.windows.net", credential=os.environ['STORAGE_KEY']); cont = bsc.get_container_client(os.environ.get('STORAGE_CONTAINER', 'pond'))
 W = '/job/work'; os.makedirs(W, exist_ok=True); LOG = []
