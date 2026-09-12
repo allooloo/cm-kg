@@ -1,4 +1,5 @@
-// ORDER-020 §0–§3 — the record-grade chrome: one nav, one kicker + mark, one form, one footer, identical on every surface. Only the record changes.
+// ORDER-020 §0–§3 + CEO corrections (Sept 12 2026) — the record-grade chrome: title line first, mark, nine-tab nav, state pill; one form; one footer.
+// Regions are never abbreviated: REGION_FULL is the list of record and is written out wherever residency appears. The kicker is never the opening line.
 export const OPERATOR = 'Allooloo Technologies Corp.';
 export const CORPORATE = 'https://allooloo.io';
 export const CONTACT = 'developers@allooloo.ai';
@@ -7,9 +8,11 @@ export const LEGAL = 'legal@allooloo.ai';
 export const APEX = 'https://mcp.capitalmarketsknowledgegraph.ai';
 export const APEX_AGENT = 'https://agent.capitalmarketsknowledgegraph.ai';
 export const FORM = 'https://formspree.io/f/moeqzgll';
-export const SURFACES_VERSION = '2026-09-12.4';   // bumped on every estate deploy; prior renders go to the pond (snapshot_surfaces.py)
-export const KICKER = 'Microsoft AI Cloud Partner · Microsoft Azure · eleven regions, in-country';
-export const REGIONS = ['Canada Central', 'East US', 'UK South', 'France Central', 'West Europe', 'Switzerland North', 'Germany West Central', 'Australia East', 'Southeast Asia', 'Japan East', 'Korea Central'];
+export const SURFACES_VERSION = '2026-09-12.5';   // bumped on every estate deploy; prior renders go to the pond (snapshot_surfaces.py)
+export const KICKER = 'Microsoft AI Cloud Partner · Microsoft Azure · eleven regions, in-country';   // Proof section first line and footer line only
+export const COMPANY_TITLE = 'AI Agents · MCP + A2A · Capital Markets Knowledge Graph — Allooloo';
+export const REGION_FULL = { ca: 'Canada Central (Toronto, Canada)', us: 'East US (Virginia, United States)', uk: 'UK South (London, United Kingdom)', fr: 'France Central (Paris, France)', nl: 'West Europe (Amsterdam, Netherlands)', ch: 'Switzerland North (Zurich, Switzerland)', de: 'Germany West Central (Frankfurt, Germany)', au: 'Australia East (Sydney, Australia)', sg: 'Southeast Asia (Singapore)', jp: 'Japan East (Tokyo, Japan)', kr: 'Korea Central (Seoul, South Korea)', hk: 'East Asia (Hong Kong — beacon, partner wanted)' };
+export const REGIONS_LIST = ['ca', 'us', 'uk', 'fr', 'nl', 'ch', 'de', 'au', 'sg', 'jp', 'kr', 'hk'].map(cc => REGION_FULL[cc]).join(' · ');
 export const NAV = [['HOME', 'https://allooloo.io/'], ['Trades', 'https://agentic-trades.ai/'], ['ASK', 'https://agentic-ask.ai/'], ['Coverage', 'https://agentic-coverage.ai/'], ['ESG', 'https://agentic-esg.ai/'], ['Issuers', 'https://agentic-issuers.ai/'], ['Disclosure', 'https://agentic-disclosure.ai/'], ['Registries', 'https://agentic-registries.ai/'], ['RADAR', 'https://agentic-radar.ai/']];
 export const CSP = "default-src 'none'; img-src 'self' data:; style-src 'self'; base-uri 'none'; form-action https://formspree.io; frame-ancestors 'none'; upgrade-insecure-requests";
 export const BOTS = ['GPTBot', 'ClaudeBot', 'Claude-User', 'Claude-SearchBot', 'Google-Extended', 'PerplexityBot', 'Perplexity-User', 'OAI-SearchBot', 'ChatGPT-User', 'Bingbot', 'Applebot', 'Applebot-Extended', 'Amazonbot', 'CCBot', 'DuckAssistBot', 'meta-externalagent', 'Bytespider', 'cohere-ai', 'Diffbot', 'YouBot', 'MistralAI-User', 'xAI-Grok'];
@@ -36,23 +39,24 @@ export const html = (body, meta) => new Response(body, { headers: headers(meta, 
 export const text = (body, meta, ct, cache) => new Response(body, { headers: headers(meta, { 'content-type': ct || 'text/plain; charset=utf-8', 'cache-control': cache || 'public, max-age=300' }) });
 export const json = (obj, meta, cache) => new Response(JSON.stringify(obj, null, 1), { headers: headers(meta, { 'content-type': 'application/json; charset=utf-8', 'cache-control': cache || 'public, max-age=300', 'access-control-allow-origin': '*' }) });
 export function sitemap(host, paths) { return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map(p => `<url><loc>https://${host}${p}</loc></url>`).join('')}</urlset>\n`; }
+export const scale = items => `<div class="grid">${items.map(([v, k, s]) => `<div class="tile"><div class="v">${v}</div><div class="k">${k}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`).join('')}</div>`;
 
-// The page: head (self-canonical, title, meta, og, JSON-LD WebSite "Allooloo", favicon set, one CSS), kicker + mark, nine-tab nav, state line, H1 + body, footer row + regions line.
-export function page({ host, title, desc, h1, body, asOf, version, state, jsonld, mono }) {
+// The page: title line (the <title>, first text on the page) → mark → nav → state pill line → H1 (mono) → body → footer (kicker line, then the full regions list, then the row with © last).
+export function page({ host, title, desc, h1, body, asOf, version, state, jsonld, path }) {
   const ld = [{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Allooloo', url: `https://${host}/`, publisher: { '@type': 'Organization', name: OPERATOR, url: CORPORATE } }].concat(jsonld || []);
-  const live = state === 'live';
+  const live = state === 'live'; const canonical = `https://${host}${path || '/'}`;
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)}</title><meta name="description" content="${esc(desc)}"><link rel="canonical" href="https://${host}/">
-<meta property="og:site_name" content="Allooloo"><meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="https://${host}/"><meta property="og:image" content="https://${host}/icon-512.png">
+<title>${esc(title)}</title><meta name="description" content="${esc(desc)}"><link rel="canonical" href="${canonical}">
+<meta property="og:site_name" content="Allooloo"><meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${canonical}"><meta property="og:image" content="https://${host}/icon-512.png">
 <meta name="robots" content="index,follow"><meta name="theme-color" content="#14213D">
 <link rel="stylesheet" href="/estate.css">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" type="image/png" sizes="48x48" href="/icon-48.png"><link rel="icon" type="image/png" sizes="96x96" href="/icon-96.png"><link rel="icon" type="image/png" sizes="144x144" href="/icon-144.png"><link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png"><link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt"><link rel="alternate" type="application/json" href="/facts.json" title="facts.json">
 <script type="application/ld+json">${JSON.stringify(ld)}</script></head><body>
-<header><p class="kicker">${esc(KICKER)}</p><a class="mark" href="${CORPORATE}/" aria-label="Allooloo"><img src="/mark.svg" width="36" height="36" alt="Allooloo mark"></a>
+<header><p class="title-line">${esc(title)}</p><a class="mark" href="${CORPORATE}/" aria-label="Allooloo"><img src="/mark.svg" width="40" height="40" alt="Allooloo mark"></a>
 <nav aria-label="Estate"><ul>${NAV.map(([t, u]) => `<li><a href="${u}"${u.startsWith(`https://${host}/`) ? ' aria-current="page"' : ''}>${t}</a></li>`).join('')}</ul></nav>
 <p class="state"><span class="pill${live ? ' live' : ''}">${esc(state || 'record')}</span> as of ${esc(asOf || today())} · version ${esc(version || SURFACES_VERSION)} · ${esc(host)}</p></header>
-<main><h1${mono ? ' class="mono"' : ''}>${esc(h1)}</h1>${body}</main>
-<footer><p><a href="mailto:${CONTACT}">Support</a> · <a href="https://allooloo.io/status">Status</a> · <a href="https://allooloo.io/terms">Terms of Use</a> · <a href="https://allooloo.io/privacy">Privacy</a> · <a href="https://allooloo.io/security">Report a Security Issue</a> · <a href="https://allooloo.io/no-cookies">No cookies</a> · <a href="/llms.txt">llms.txt</a> · Microsoft AI Cloud Partner · © 2026 ${OPERATOR}</p>
-<p class="muted">${REGIONS.join(' · ')} — in-country</p></footer></body></html>`;
+<main><h1>${esc(h1)}</h1>${body}</main>
+<footer><p class="kicker">${esc(KICKER)}</p><p class="regions">${esc(REGIONS_LIST)}</p>
+<p><a href="mailto:${CONTACT}">Support</a> · <a href="https://allooloo.io/status">Status</a> · <a href="https://allooloo.io/terms">Terms of Use</a> · <a href="https://allooloo.io/privacy">Privacy</a> · <a href="https://allooloo.io/security">Report a Security Issue</a> · <a href="https://allooloo.io/no-cookies">No cookies</a> · <a href="/llms.txt">llms.txt</a> · Microsoft AI Cloud Partner · © 2026 ${OPERATOR}</p></footer></body></html>`;
 }

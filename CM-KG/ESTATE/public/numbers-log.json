@@ -85,6 +85,13 @@
    "records": "not served (Width 0)",
    "events": "none",
    "note": "seed (ORDER-019; no door, no sweep until a local partner)"
+  },
+  {
+   "node": "nl-cm-kg",
+   "date": "2026-09-11",
+   "records": "123",
+   "events": "2742",
+   "note": "records +0\u00b7events +35 (sweep 2026-09-12)"
   }
  ]
 }
