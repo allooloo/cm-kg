@@ -12,7 +12,7 @@ nav ul{list-style:none;margin:0 0 .9rem;padding:.5rem 0;border-top:1px solid var
 nav a{display:inline-block;font:400 14px/1.4 var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--navy);text-decoration:none;padding-bottom:6px;border-bottom:2px solid transparent}nav a:hover{text-decoration:none;color:var(--navy)}nav a[aria-current]{color:var(--navy);border-bottom:2px solid var(--rule)}
 .state{font:12px/1.5 var(--mono);color:var(--muted);margin:0 0 1.2rem}
 .pill{display:inline-block;padding:.05rem .5rem;border-radius:2px;background:var(--navy);color:#fff;font:600 11px/1.6 var(--mono);letter-spacing:.04em;text-transform:uppercase}.pill.live{background:var(--green)}
-h1{font:600 1.25rem/1.35 var(--mono);color:var(--navy);margin:.2rem 0 .9rem;max-width:64ch}
+h1{font:600 1.25rem/1.35 var(--mono);color:var(--navy);margin:.2rem 0 .9rem}
 h2{font:600 .95rem/1.4 var(--mono);color:var(--navy);margin:2rem 0 .6rem;padding-top:.8rem;border-top:1px solid var(--rule)}
 .duty{border-left:3px solid var(--green);padding:.2rem 0 .2rem .9rem;margin:.8rem 0}.duty dl{margin:.2rem 0}
 p{margin:.5rem 0}.lead{color:var(--ink)}.muted,.src,.asof{color:var(--muted);font-size:.9em}
@@ -32,7 +32,7 @@ button{padding:.4rem 1rem;border:1px solid var(--navy);border-radius:2px;backgro
 footer{margin:2.2rem auto 1.5rem;padding-top:.8rem;border-top:1px solid var(--rule);font-size:.86em;color:var(--muted)}footer a{color:var(--green)}
 @media (max-width:640px){body{font-size:14px}dl{grid-template-columns:1fr}dt{margin-top:.3rem}}
 
-/* all 21 surfaces (CEO, Sept 12 2026): content container 1200px (the one value above); allooloo.io scale grid 3 + 2; body text left-aligned, never justified */
+/* WIDTH — FINAL (CEO, Sept 12 2026): one centred container, max-width 1200px, margin auto, all 21 surfaces; no separate prose measure — H1, body, lists, cards and tables fill the same column; allooloo.io scale grid 3 + 2; text left-aligned, never justified */
 body.site .grid{grid-template-columns:repeat(3,1fr)}p,dd,li{text-align:left}
 /* nodes table (CEO, Sept 12): node, drop and surface never break; region and market absorb the squeeze */
 .nw,td code{white-space:nowrap}

@@ -8,7 +8,7 @@ export const LEGAL = 'legal@allooloo.ai';
 export const APEX = 'https://mcp.capitalmarketsknowledgegraph.ai';
 export const APEX_AGENT = 'https://agent.capitalmarketsknowledgegraph.ai';
 export const FORM = 'https://formspree.io/f/moeqzgll';
-export const SURFACES_VERSION = '2026-09-12.14';   // bumped on every estate deploy; prior renders go to the pond (snapshot_surfaces.py)
+export const SURFACES_VERSION = '2026-09-12.16';   // bumped on every estate deploy; prior renders go to the pond (snapshot_surfaces.py)
 export const KICKER = 'Microsoft AI Cloud Partner · Microsoft Azure · eleven regions, in-country';   // Proof section first line and footer line only
 export const COMPANY_TITLE = 'AI Agents · MCP + A2A · Capital Markets Knowledge Graph — Allooloo';
 export const REGION_FULL = { ca: 'Canada Central (Toronto, Canada)', us: 'East US (Virginia, United States)', uk: 'UK South (London, United Kingdom)', fr: 'France Central (Paris, France)', nl: 'West Europe (Amsterdam, Netherlands)', ch: 'Switzerland North (Zurich, Switzerland)', de: 'Germany West Central (Frankfurt, Germany)', au: 'Australia East (Sydney, Australia)', sg: 'Southeast Asia (Singapore)', jp: 'Japan East (Tokyo, Japan)', kr: 'Korea Central (Seoul, South Korea)', hk: 'East Asia (Hong Kong — beacon, partner wanted)' };
@@ -61,5 +61,5 @@ export function page({ host, title, desc, h1, body, asOf, version, state, jsonld
 <nav aria-label="Estate"><ul>${NAV.map(([t, u]) => `<li><a href="${u}"${u.startsWith(`https://${host}/`) ? ' aria-current="page"' : ''}>${t}</a></li>`).join('')}</ul></nav>
 <p class="state"><span class="pill${live ? ' live' : ''}">${esc(state || 'record')}</span> as of ${esc(asOf || today())} · version ${esc(version || SURFACES_VERSION)} · ${esc(host)}</p></header>
 <main><h1>${esc(h1)}</h1>${body}</main>
-<footer><p>${host === 'allooloo.io' ? `The agents that built this read their own mail: ${CONTACT2} · ${OPERATOR} · Vancouver &amp; Toronto, Canada.` : `<a href="${CONTACT}">Support</a> · <a href="https://allooloo.io/status">Status</a> · <a href="https://allooloo.io/terms">Terms of Use</a> · <a href="https://allooloo.io/privacy">Privacy</a> · <a href="https://allooloo.io/security">Report a Security Issue</a> · <a href="https://allooloo.io/no-cookies">No cookies</a> · <a href="/llms.txt">llms.txt</a> · Microsoft AI Cloud Partner · © 2026 ${OPERATOR}`}</p></footer></body></html>`;
+<footer><p>${host === 'allooloo.io' ? `The agents that built this read their own mail: ${CONTACT2} · ${OPERATOR} · Vancouver &amp; Toronto, Canada.` : `<a href="${CONTACT}">Support</a> · <a href="https://allooloo.io/status">Status</a> · <a href="https://allooloo.io/terms">Terms of Use</a> · <a href="https://allooloo.io/privacy">Privacy</a> · <a href="https://allooloo.io/security">Report a Security Issue</a> · <a href="https://allooloo.io/no-cookies">No cookies</a> · <a href="/llms.txt">llms.txt</a> · <a href="https://x.com/allooloo_io">X @allooloo_io</a> · Microsoft AI Cloud Partner · © 2026 ${OPERATOR}`}</p></footer></body></html>`;
 }
