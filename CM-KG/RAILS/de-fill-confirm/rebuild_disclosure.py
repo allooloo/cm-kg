@@ -66,16 +66,16 @@ with open(J, 'w', encoding='utf-8') as f:
 wb = load_workbook(BX); ARIAL = Font(name='Arial', size=10); BOLD = Font(name='Arial', size=10, bold=True)
 ws = wb['Events']; ws.delete_rows(2, ws.max_row); CTRL = re.compile(r'[\x00-\x08\x0b\x0c\x0e-\x1f]')
 for e in events_all:
-    ws.append([CTRL.sub('', str(v)) if isinstance(v, str) else v for v in [e['exchange'], e['ticker'], e['isin'], e['lei'], e['issuer'], e['event_type'], e['date'], e['title'], e.get('category', ''), e.get('reference', ''), e['wire'], e['source'], e['url'], e['read_by'], e['detail'], e.get('state', 'sourced')]])
+    ws.append([CTRL.sub('', str(v)) if isinstance(v, str) else v for v in [e['exchange'], e['ticker'], e['isin'], e['lei'], e['issuer'], e['event_type'], e['date'], e['title'], e.get('category', ''), e.get('reference', ''), e.get('language', ''), e['wire'], e['source'], e['url'], e['read_by'], e['detail'], e.get('state', 'sourced')]])
 for row in ws.iter_rows(min_row=2):
     for c in row: c.font = ARIAL
-ws.auto_filter.ref = f'A1:{get_column_letter(16)}{len(events_all) + 1}'
+ws.auto_filter.ref = f'A1:{get_column_letter(17)}{len(events_all) + 1}'
 cv = wb['Coverage']; hdr = [c.value for c in cv[1]]; Hc = {h: i + 1 for i, h in enumerate(hdr)}
 per = Counter((e['exchange'], e['ticker']) for e in events_all); by_type = defaultdict(Counter)
 for e in events_all: by_type[(e['exchange'], e['ticker'])][e['event_type']] += 1
 n_ev = len(events_all) + 1
 for rr in range(2, cv.max_row + 1):
-    ex = cv.cell(row=rr, column=Hc['Market']).value; t = cv.cell(row=rr, column=Hc['Code']).value
+    ex = cv.cell(row=rr, column=Hc['Exchange']).value; t = cv.cell(row=rr, column=Hc['Code']).value
     if not ex or ex == 'TOTAL': continue
     cv.cell(row=rr, column=Hc['Events (live)']).value = f"=COUNTIFS(Events!$A$2:$A${n_ev},A{rr},Events!$B$2:$B${n_ev},B{rr})"; cv.cell(row=rr, column=Hc['Events (built)']).value = per.get((ex, t), 0)
     for h in hdr:
