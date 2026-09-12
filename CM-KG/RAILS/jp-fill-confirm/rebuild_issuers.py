@@ -10,14 +10,16 @@ import shutil
 from collections import Counter
 from openpyxl import load_workbook
 from openpyxl.styles import Font, Alignment
-X = ISSUERS_XLSX
-gem = {d['key']: d for d in jload('raw/gemini_reads.jsonl') if d.get('docID')}
-docs = {d['key']: d for d in jload('raw/edinet_docs.jsonl') if d.get('docID')}
+X = os.environ.get('BASE_XLSX') or ISSUERS_XLSX  # BASE_XLSX = the Width 0 assembled workbook, so a re-run never reads its own filled values back as agreement
+gem = {d['key']: d for d in jload('raw/gemini_reads.jsonl') if d.get('document_url')}
+docs = {d['key']: d for d in jload('raw/edinet_docs.jsonl') if d.get('document_url')}
 xb = {d['key']: d for d in jload('raw/edinet_xbrl.jsonl') if d.get('docID')}
 pp = {d['key']: d for d in jload('raw/perplexity_pages.jsonl')}
 mis = {}
+_u2k = {d['document_url']: d['key'] for d in gem.values() if d.get('document_url')}
 for d in jload('raw/mistral_reads.jsonl'):
-    if d.get('kind') == 'gemini_doc': mis[d['key']] = d
+    ik = d.get('issuer_key') or _u2k.get(d.get('url')) or (d['key'] if '|' in (d.get('key') or '') and not (d.get('key') or '').startswith(('gemini_doc|', 'perplexity_page|')) else None)
+    if d.get('kind') == 'gemini_doc' and ik: mis[ik] = d
 wb = load_workbook(X); ARIAL = Font(name='Arial', size=10); touched = Counter(); states = Counter(); gaps_new = []
 NEWCOLS = ['Accounts period end', 'Going concern (annual report)', 'Also known as', 'Alias source', 'Alias read by']
 aud_before = {}; aud_after = {}; reg_before = {}; reg_after = {}

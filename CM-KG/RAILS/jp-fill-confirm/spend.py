@@ -16,9 +16,9 @@ n, t = usage_sum(c1, ['input_tokens', 'output_tokens']); out['Claude (claude-son
 ur = json.load(open('raw/chatgpt_reports_usage.json')) if os.path.exists('raw/chatgpt_reports_usage.json') else {}
 ti = ur.get('usage', {}).get('input', 0); to = ur.get('usage', {}).get('output', 0)
 out['ChatGPT (gpt-4.1-mini, Batch)'] = {'calls': ur.get('n', 0), 'input_tokens': ti, 'output_tokens': to, 'est_usd': round(ti * 0.20 / 1e6 + to * 0.80 / 1e6, 2), 'note': 'batch pricing (50% of list); text windows from issuer-site PDFs'}
-n, t = usage_sum(jload('raw/gemini_agm.jsonl'), ['promptTokenCount', 'candidatesTokenCount']); out['Gemini (gemini-flash-latest)'] = {'calls': n, 'input_tokens': t['promptTokenCount'], 'output_tokens': t['candidatesTokenCount'], 'est_usd': round(t['promptTokenCount'] * 0.30 / 1e6 + t['candidatesTokenCount'] * 2.50 / 1e6, 2)}
+n, t = usage_sum(jload('raw/gemini_reads.jsonl'), ['promptTokenCount', 'candidatesTokenCount']); out['Gemini (gemini-flash-latest)'] = {'calls': n, 'input_tokens': t['promptTokenCount'], 'output_tokens': t['candidatesTokenCount'], 'est_usd': round(t['promptTokenCount'] * 0.30 / 1e6 + t['candidatesTokenCount'] * 2.50 / 1e6, 2)}
 pp = jload('raw/perplexity_pages.jsonl'); n, t = usage_sum(pp, ['input_tokens', 'output_tokens']); metered = sum(float((d.get('cost') or {}).get('total_cost') or 0) for d in pp)
-out['Perplexity (Agent API, low)'] = {'calls': n, 'input_tokens': t['input_tokens'], 'output_tokens': t['output_tokens'], 'est_usd': round(metered, 2), 'note': 'metered usage.cost'}
+out['Perplexity (Agent API, fast)'] = {'calls': n, 'input_tokens': t['input_tokens'], 'output_tokens': t['output_tokens'], 'est_usd': round(metered, 2), 'note': 'metered usage.cost'}
 g = json.load(open('raw/grok_live_usage.json')) if os.path.exists('raw/grok_live_usage.json') else {}; gu = Counter()
 for u in g.get('usage') or []:
     for k in ('input_tokens', 'output_tokens'): gu[k] += int((u or {}).get(k, 0) or 0)
