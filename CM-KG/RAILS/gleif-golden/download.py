@@ -2,7 +2,7 @@
 node rail that keys on registeredAs or on names without a national register API (Japan, Korea, United States, Hong Kong). Public, no key."""
 import requests, json, os, datetime
 os.makedirs('raw', exist_ok=True)
-meta = requests.get('https://goldencopy.gleif.org/api/v2/golden-copies/publishes/lei2/latest', headers={'Accept': 'application/json'}, timeout=60).json()
+_j = requests.get('https://goldencopy.gleif.org/api/v2/golden-copies/publishes/lei2/latest', headers={'Accept': 'application/json'}, timeout=60).json(); meta = _j.get('data', _j)
 csv = meta['full_file']['csv']; print('golden copy', meta['publish_date'], csv['record_count'], csv['size_human_readable'], flush=True)
 fn = 'raw/' + os.path.basename(csv['url'])
 if not os.path.exists(fn) or os.path.getsize(fn) < csv['size']:
