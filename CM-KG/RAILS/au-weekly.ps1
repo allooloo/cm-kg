@@ -2,6 +2,8 @@
 # Task Scheduler "Allooloo CM-KG AU weekly": Friday 02:00 build-machine time (Central Standard Time (Mexico)) = Friday 18:00 AEST, after the ASX close.
 # Skips while the node lock exists (a build order in flight). TMX Australia is not fetched (reCAPTCHA; HITL).
 $ErrorActionPreference = 'Continue'
+# global BUILD lock (SWEEPS.md, 2026-09-11): no scheduled sweep runs on any node while any build order is in flight
+if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\.build-lock') { "skipped: global BUILD lock present (a build order is in flight)" | Out-File -Append 'C:\ALLOOLOO\CM-KG\RAILS\logs\sweeps-skipped.log'; exit 0 }
 $root = 'C:\ALLOOLOO\CM-KG\RAILS'
 if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\au-cm-kg\.lock') { "AU weekly skipped: node lock present ($(Get-Content 'C:\ALLOOLOO\CM-KG\POND\au-cm-kg\.lock' -Raw))" | Out-File -Append (Join-Path $root 'logs\au-weekly-skipped.log'); exit 0 }
 $log = Join-Path $root ('logs\au-weekly-' + (Get-Date -Format 'yyyy-MM-dd') + '.log'); New-Item -ItemType Directory -Force (Join-Path $root 'logs') | Out-Null
