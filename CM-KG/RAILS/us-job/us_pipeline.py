@@ -1,5 +1,5 @@
 """ORDER-018 — United States rail, run inside the East US container (the home address is blocked by EDGAR). Keyless EDGAR with the declared
-User-Agent "Allooloo Technologies Corp. <CONTACT>" (developers@allooloo.ai, the mailbox of record); under 8 requests a second. 0.1.1: a same-day re-run resumes from the finished stages in the pond drop; Gemini usage logged; door uploads in parallel. 0.1.2: the GLEIF extract is streamed to disk and only candidate LEIs are kept (2 GiB was not enough for the whole file).
+User-Agent "Allooloo Technologies Corp. <CONTACT>" (developers@allooloo.ai, the mailbox of record); under 8 requests a second. 0.1.1: a same-day re-run resumes from the finished stages in the pond drop; Gemini usage logged; door uploads in parallel. 0.1.2: the GLEIF extract is streamed to disk and only candidate LEIs are kept (2 GiB was not enough for the whole file). 0.1.3: fill.json lands before the Perplexity pages; the pages are their own resumable stage (perplexity.json, checkpoint every 500).
   Width 0  company_tickers_exchange.json + submissions header per CIK (NYSE / Nasdaq / Cboe filers) -> roster; LEI by exact legal name against the
            GLEIF golden-copy US extract staged in the pond (registered-name route), ISIN from the GLEIF ISIN mapping zip; state of incorporation,
            SIC sector, business address, fiscal year end, latest annual report from the header
@@ -143,11 +143,11 @@ def width1(roster, subs):
     log('Width 1 events', n, 'issuers with events', sum(1 for v in events.values() if v)); return events
 # ---------------- Fill: auditor from the 10-K cover iXBRL tag; optional lab reads
 def fill(roster, subs):
-    fs = stage('fill')
+    fs = stage('fill'); out = {}; lock = threading.Lock(); cnt = [0]
     if fs:
         log('resume: fill from the pond drop', STAMP, len(fs)); GU.update(fs.get('_usage') or {})
-        return {tuple(k.split('|', 1)): v for k, v in fs.items() if not k.startswith('_')}
-    out = {}; lock = threading.Lock(); cnt = [0]
+        out = {tuple(k.split('|', 1)): v for k, v in fs.items() if not k.startswith('_')}
+        return perplexity_pages(roster, out)
     gem_key = os.environ.get('GEMINI_API_KEY', ''); pplx = os.environ.get('PERPLEXITY_API_KEY', ''); pmax = int(os.environ.get('PPLX_MAX', '0'))
     def gemini(prompt):
         try:
@@ -182,8 +182,17 @@ def fill(roster, subs):
     corp = [r for r in roster if r['security_type'] == 'Corporate']
     with ThreadPoolExecutor(max_workers=4) as ex: list(ex.map(one, corp))
     log('fill: auditor tags', sum(1 for v in out.values() if v.get('auditor')), 'period end', sum(1 for v in out.values() if v.get('period_end')), 'registrar (Gemini)', sum(1 for v in out.values() if v.get('registrar')), 'of', len(corp))
+    log('gemini usage', GU)
+    put(f'pond/width0/{STAMP}/fill.json', json.dumps({**{f'{k[0]}|{k[1]}': v for k, v in out.items()}, '_usage': GU}, ensure_ascii=False))
+    return perplexity_pages(roster, out)
+def perplexity_pages(roster, out):
+    lock = threading.Lock(); pplx = os.environ.get('PERPLEXITY_API_KEY', ''); pmax = int(os.environ.get('PPLX_MAX', '0'))
+    corp = [r for r in roster if r['security_type'] == 'Corporate']
     if pplx and pmax:
-        pp = {}
+        ps = stage('perplexity') or {}; pp = {tuple(k.split('|', 1)): v for k, v in ps.items()}
+        if pp: log('resume: perplexity pages from the pond drop', len(pp))
+        todo = [r for r in corp[:pmax] if (r['exchange'], r['ticker']) not in pp]; done = [0]
+        def checkpoint(): put(f'pond/width0/{STAMP}/perplexity.json', json.dumps({f'{k[0]}|{k[1]}': v for k, v in pp.items()}, ensure_ascii=False))
         def page(r):
             try:
                 rr = requests.post('https://api.perplexity.ai/v1/responses', headers={'Authorization': 'Bearer ' + pplx}, json={'preset': 'fast', 'input': f"Find the official investor-relations page of the US-listed company {r['name']} ({r['exchange']}: {r['ticker']}). Reply JSON only: {{\"url\": \"<page URL or empty>\", \"page_title\": \"<title>\"}}"}, timeout=120); j = rr.json(); txt = ''.join(c.get('text', '') for o in j.get('output', []) if o.get('type') == 'message' for c in o.get('content', []) if c.get('type') == 'output_text')
@@ -195,11 +204,13 @@ def fill(roster, subs):
                 with lock: pp[(r['exchange'], r['ticker'])] = {'url': u, 'page_title': jj.get('page_title', ''), 'alias': alias, 'usage': j.get('usage'), 'read_by': 'read by Perplexity (agent · fast)'}
             except Exception as e:
                 with lock: pp[(r['exchange'], r['ticker'])] = {'error': repr(e)[:120]}
-        with ThreadPoolExecutor(max_workers=6) as ex: list(ex.map(page, corp[:pmax]))
-        log('perplexity pages', len(pp), 'aliases', sum(1 for v in pp.values() if v.get('alias')))
+            with lock:
+                done[0] += 1
+                if done[0] % 500 == 0: log('perplexity pages', done[0], 'of', len(todo)); checkpoint()
+        with ThreadPoolExecutor(max_workers=6) as ex: list(ex.map(page, todo))
+        checkpoint(); log('perplexity pages', len(pp), 'aliases', sum(1 for v in pp.values() if v.get('alias')))
         for k, v in pp.items(): out.setdefault(k, {})['perplexity'] = v
-    log('gemini usage', GU)
-    put(f'pond/width0/{STAMP}/fill.json', json.dumps({**{f'{k[0]}|{k[1]}': v for k, v in out.items()}, '_usage': GU}, ensure_ascii=False)); return out
+    return out
 # ---------------- door render
 STATES = {'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota', 'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska', 'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming', 'DC': 'District of Columbia', 'PR': 'Puerto Rico'}
 def slug(t): return re.sub(r'[^A-Za-z0-9.\-]', '_', str(t))
