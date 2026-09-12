@@ -1,0 +1,310 @@
+{
+ "ca": {
+  "identifier": "TSX:SHOP",
+  "response": {
+   "matches": [
+    {
+     "cmr": "ca-cm-kg/TSX/SHOP",
+     "node": "ca-cm-kg",
+     "version": 1,
+     "as_of": "2026-09-10",
+     "name": "Shopify Inc.",
+     "ticker": "SHOP",
+     "exchange": "TSX",
+     "security_type": "Corporate",
+     "isin": "CA82509L1076",
+     "lei": "549300HGQ43STJLLP808",
+     "sector": "Technology",
+     "event_count": 2,
+     "events_url": "https://mcp.ca-cm-kg.ai/events/TSX/SHOP",
+     "record_url": "https://mcp.ca-cm-kg.ai/record/TSX/SHOP"
+    }
+   ],
+   "matched_by": "ticker",
+   "ambiguous": false,
+   "nodes_asked": [
+    "ca-cm-kg"
+   ]
+  }
+ },
+ "us": {
+  "identifier": "NASDAQ:AAPL",
+  "response": {
+   "matches": [
+    {
+     "cmr": "us-cm-kg/NASDAQ/AAPL",
+     "node": "us-cm-kg",
+     "version": 1,
+     "as_of": "2026-09-12",
+     "name": "Apple Inc.",
+     "ticker": "AAPL",
+     "exchange": "NASDAQ",
+     "security_type": "Corporate",
+     "isin": null,
+     "lei": "HWUPKR0MPOU8FGXBT394",
+     "sector": "3571 Electronic Computers",
+     "event_count": 83,
+     "events_url": "https://mcp.us-cm-kg.ai/events/NASDAQ/AAPL",
+     "record_url": "https://mcp.us-cm-kg.ai/record/NASDAQ/AAPL"
+    }
+   ],
+   "matched_by": "ticker",
+   "ambiguous": false,
+   "nodes_asked": [
+    "us-cm-kg"
+   ]
+  }
+ },
+ "uk": {
+  "identifier": "LSE:SHEL",
+  "response": {
+   "matches": [
+    {
+     "cmr": "uk-cm-kg/LSE/SHEL",
+     "node": "uk-cm-kg",
+     "version": 1,
+     "as_of": "2026-09-11",
+     "name": "SHELL PLC",
+     "ticker": "SHEL",
+     "exchange": "LSE Main Market",
+     "security_type": "Corporate",
+     "isin": "GB00BP6MXD84",
+     "lei": "21380068P1DRHMJ8KU70",
+     "sector": "Oil, Gas and Coal [601010]",
+     "event_count": 408,
+     "events_url": "https://mcp.uk-cm-kg.ai/events/LSE/SHEL",
+     "record_url": "https://mcp.uk-cm-kg.ai/record/LSE/SHEL"
+    }
+   ],
+   "matched_by": "ticker",
+   "ambiguous": false,
+   "nodes_asked": [
+    "uk-cm-kg"
+   ]
+  }
+ },
+ "fr": {
+  "identifier": "XPAR:FR0000120271",
+  "response": {
+   "matches": [
+    {
+     "cmr": "fr-cm-kg/XPAR/FR0000120271",
+     "node": "fr-cm-kg",
+     "version": 1,
+     "as_of": "2026-09-11",
+     "name": "TOTALENERGIES",
+     "ticker": "FR0000120271",
+     "exchange": "Euronext Paris",
+     "security_type": "Corporate",
+     "isin": "FR0000120271",
+     "lei": "529900S21EQ1BO4ESM68",
+     "sector": "NAF 70.10Z",
+     "event_count": 204,
+     "events_url": "https://mcp.fr-cm-kg.ai/events/XPAR/FR0000120271",
+     "record_url": "https://mcp.fr-cm-kg.ai/record/XPAR/FR0000120271"
+    }
+   ],
+   "matched_by": "ticker",
+   "ambiguous": false,
+   "nodes_asked": [
+    "fr-cm-kg"
+   ]
+  }
+ },
+ "nl": {
+  "identifier": "AMS:NL0000009165",
+  "response": {
+   "matches": [
+    {
+     "cmr": "nl-cm-kg/XAMS/NL0000009165",
+     "node": "nl-cm-kg",
+     "version": 1,
+     "as_of": "2026-09-11",
+     "name": "HEINEKEN",
+     "ticker": "NL0000009165",
+     "exchange": "Euronext Amsterdam",
+     "security_type": "Corporate",
+     "isin": "NL0000009165",
+     "lei": "724500K5PTPSST86UQ23",
+     "sector": null,
+     "event_count": 35,
+     "events_url": "https://mcp.nl-cm-kg.ai/events/XAMS/NL0000009165",
+     "record_url": "https://mcp.nl-cm-kg.ai/record/XAMS/NL0000009165"
+    }
+   ],
+   "matched_by": "ticker",
+   "ambiguous": false,
+   "nodes_asked": [
+    "nl-cm-kg"
+   ]
+  }
+ },
+ "ch": {
+  "identifier": "NESN.SW",
+  "response": {
+   "matches": [
+    {
+     "cmr": "ch-cm-kg/SIX/NESN",
+     "node": "ch-cm-kg",
+     "version": 1,
+     "as_of": "2026-09-11",
+     "name": "NESTLE N",
+     "ticker": "NESN",
+     "exchange": "SIX",
+     "security_type": "Corporate",
+     "isin": "CH0038863350",
+     "lei": "KY37LUS27QQX7BB93L28",
+     "sector": null,
+     "event_count": 15,
+     "events_url": "https://mcp.ch-cm-kg.ai/events/SIX/NESN",
+     "record_url": "https://mcp.ch-cm-kg.ai/record/SIX/NESN"
+    }
+   ],
+   "matched_by": "ticker",
+   "ambiguous": false,
+   "nodes_asked": [
+    "ch-cm-kg"
+   ]
+  }
+ },
+ "de": {
+  "identifier": "SAP.DE",
+  "response": {
+   "matches": [
+    {
+     "cmr": "de-cm-kg/XETRA/SAP",
+     "node": "de-cm-kg",
+     "version": 1,
+     "as_of": "2026-09-11",
+     "name": "SAP SE O.N.",
+     "ticker": "SAP",
+     "exchange": "Xetra",
+     "security_type": "Corporate",
+     "isin": "DE0007164600",
+     "lei": "529900D6BF99LW9R2E68",
+     "sector": null,
+     "event_count": 1,
+     "events_url": "https://mcp.de-cm-kg.ai/events/XETRA/SAP",
+     "record_url": "https://mcp.de-cm-kg.ai/record/XETRA/SAP"
+    }
+   ],
+   "matched_by": "ticker",
+   "ambiguous": false,
+   "nodes_asked": [
+    "de-cm-kg"
+   ]
+  }
+ },
+ "au": {
+  "identifier": "ASX:BHP",
+  "response": {
+   "matches": [
+    {
+     "cmr": "au-cm-kg/ASX/BHP",
+     "node": "au-cm-kg",
+     "version": 1,
+     "as_of": "2026-09-11",
+     "name": "BHP GROUP LIMITED",
+     "ticker": "BHP",
+     "exchange": "ASX",
+     "security_type": "Corporate",
+     "isin": "AU000000BHP4",
+     "lei": "WZE1WSENV6JSZFK0JC28",
+     "sector": "Materials",
+     "event_count": 60,
+     "events_url": "https://mcp.au-cm-kg.ai/events/ASX/BHP",
+     "record_url": "https://mcp.au-cm-kg.ai/record/ASX/BHP"
+    }
+   ],
+   "matched_by": "ticker",
+   "ambiguous": false,
+   "nodes_asked": [
+    "au-cm-kg"
+   ]
+  }
+ },
+ "sg": {
+  "identifier": "D05.SI",
+  "response": {
+   "matches": [
+    {
+     "cmr": "sg-cm-kg/SGX/D05",
+     "node": "sg-cm-kg",
+     "version": 1,
+     "as_of": "2026-09-11",
+     "name": "DBS GROUP HOLDINGS LTD",
+     "ticker": "D05",
+     "exchange": "Mainboard",
+     "security_type": "Corporate",
+     "isin": "SG1L01001701",
+     "lei": "5493007FKT78NKPM5V55",
+     "sector": "Financial Services",
+     "event_count": 7,
+     "events_url": "https://mcp.sg-cm-kg.ai/events/SGX/D05",
+     "record_url": "https://mcp.sg-cm-kg.ai/record/SGX/D05"
+    }
+   ],
+   "matched_by": "ticker",
+   "ambiguous": false,
+   "nodes_asked": [
+    "sg-cm-kg"
+   ]
+  }
+ },
+ "jp": {
+  "identifier": "7203.T",
+  "response": {
+   "matches": [
+    {
+     "cmr": "jp-cm-kg/TSE-PRIME/7203",
+     "node": "jp-cm-kg",
+     "version": 1,
+     "as_of": "2026-09-12",
+     "name": "TOYOTA MOTOR CORPORATION",
+     "ticker": "7203",
+     "exchange": "Prime Market",
+     "security_type": "Corporate",
+     "isin": "JP3633400001",
+     "lei": "5493006W3QUS5LMH6R84",
+     "sector": "3700 Transportation Equipment",
+     "event_count": 50,
+     "events_url": "https://mcp.jp-cm-kg.ai/events/TSE-PRIME/7203",
+     "record_url": "https://mcp.jp-cm-kg.ai/record/TSE-PRIME/7203"
+    }
+   ],
+   "matched_by": "ticker",
+   "ambiguous": false,
+   "nodes_asked": [
+    "jp-cm-kg"
+   ]
+  }
+ },
+ "kr": {
+  "identifier": "005930.KS",
+  "response": {
+   "matches": [
+    {
+     "cmr": "kr-cm-kg/KOSPI/005930",
+     "node": "kr-cm-kg",
+     "version": 1,
+     "as_of": "2026-09-12",
+     "name": "SAMSUNG ELECTRONICS CO,.LTD",
+     "ticker": "005930",
+     "exchange": "KOSPI",
+     "security_type": "Corporate",
+     "isin": null,
+     "lei": "9884007ER46L6N7EI764",
+     "sector": "통신 및 방송 장비 제조업",
+     "event_count": 2898,
+     "events_url": "https://mcp.kr-cm-kg.ai/events/KOSPI/005930",
+     "record_url": "https://mcp.kr-cm-kg.ai/record/KOSPI/005930"
+    }
+   ],
+   "matched_by": "ticker",
+   "ambiguous": false,
+   "nodes_asked": [
+    "kr-cm-kg"
+   ]
+  }
+ }
+}
