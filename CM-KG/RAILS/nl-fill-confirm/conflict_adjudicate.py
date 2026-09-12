@@ -3,7 +3,7 @@ newswire of habit. Claude sees both values with their sources and rules for one,
 Label: 'adjudicated by Claude'. Writes raw/conflict_rulings.jsonl (key#field)."""
 from fc_common import *
 issuers = load_issuers(); byk = {key(r): r for r in issuers}
-rows = {r['_tab'] + '|' + r['Symbol']: r for r in all_rows()}
+rows = {r['_tab'] + '|' + r['ISIN']: r for r in all_rows()}
 conf = {d['key']: d for d in jload('raw/confirm_fields.jsonl')}
 COL = {'Share registrar': ('Share registrar', 'Share registry source', 'Share registry read by'), 'Auditor': ('Auditor', 'Annual report (EQS News)', 'Annual report read by'), 'ISIN': ('ISIN', 'ISIN source', 'ISIN read by'), 'LEI': ('LEI', 'LEI source', 'LEI read by'), 'KVK number': ('KVK number', 'Register source', 'Register read by'), 'State': ('State', 'State source', 'State read by'), 'Newswire of habit': ('Newswire of habit', 'Newswire releases seen', 'Newswire read by')}
 SYS = 'You adjudicate between two sourced readings of one fact about a listed company. Rule only when one reading is clearly the fact for this issuer; otherwise say so. Never guess. JSON only.'

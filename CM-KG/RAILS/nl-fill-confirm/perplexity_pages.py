@@ -4,7 +4,7 @@ verified by fetch. Sources are read from the search_results output item. The pag
 import re
 from fc_common import *
 issuers = load_issuers(); byk = {key(r): r for r in issuers}
-rows = {r['_tab'] + '|' + r['Symbol']: r for r in all_rows()}
+rows = {r['_tab'] + '|' + r['ISIN']: r for r in all_rows()}
 EV = events(); has_ev = set(e['exchange'] + '|' + e['ticker'] for e in EV)
 LABEL = 'read by Perplexity (agent · low)'
 def fetch(r):

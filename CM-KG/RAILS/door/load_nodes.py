@@ -142,7 +142,38 @@ def load_node(cc, index, facts_nodes):
             if identity.get('isin', {}).get('value'): index['isin'].setdefault(identity['isin']['value'].upper(), []).append(key)
             if identity.get('lei', {}).get('value'): index['lei'].setdefault(identity['lei']['value'].upper(), []).append(key)
             counts[exs] = counts.get(exs, 0) + 1; n += 1
-    facts_nodes[node] = {'as_of': as_of, 'version': version, 'records': n, 'records_by_exchange': counts, 'events': sum(len(v) for v in ev_by.values()), 'issuers_with_events': len(ev_by), 'exchanges': list(M['tabs'].values())}
+    # Reference records beside the issuer records (Eurex on de-cm-kg, CEO go 2026-09-11): <cc>-ref-records.jsonl / <cc>-ref-events.jsonl in the latest
+    # assembled drop. Same record shape, own exchange code; their ISINs are not indexed (an ISIN lookup resolves to the issuer, never to a derivative);
+    # when a record names its underlying's CMR key, the issuer record gets the product list written on it with the same provenance.
+    rp = pond.latest_assembled(node, f'{cc}-ref-records.jsonl'); ep = pond.latest_assembled(node, f'{cc}-ref-events.jsonl'); ref_ev = {}; by_under = {}; extra_ex = []
+    if rp:
+        print(node, 'reference inputs:', rp, '|', ep)
+        if ep:
+            for line in open(ep, encoding='utf-8'):
+                e = json.loads(line); ref_ev.setdefault((e['exchange'], e['ticker']), []).append(e)
+        for line in open(rp, encoding='utf-8'):
+            r = json.loads(line); exs = r['exchange']; t = str(r['ticker']); key = r['cmr']
+            if exs not in extra_ex: extra_ex.append(exs); os.makedirs(os.path.join(OUT, 'records', node, exs), exist_ok=True); os.makedirs(os.path.join(OUT, 'events', node, exs), exist_ok=True)
+            evs = sorted(ref_ev.get((exs, t), []), key=lambda e: e['date'], reverse=True)
+            rec = {'cmr': key, 'node': node, 'as_of': r.get('as_of') or as_of, 'version': r.get('version', 1), 'kind': r.get('kind'), 'identity': r['identity'], 'aliases': r.get('aliases', []), 'events_url': f'{host}/events/{exs}/{t}', 'event_count': len(evs), 'gaps': r.get('gaps', []), 'sources': r.get('sources')}
+            json.dump(rec, open(os.path.join(OUT, 'records', node, exs, slug_ticker(t) + '.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+            json.dump([{k2: e.get(k2) for k2 in ('date', 'event_type', 'title', 'reference', 'category', 'language', 'wire', 'source', 'url', 'read_by', 'state', 'detail') if e.get(k2) not in (None, '')} for e in evs], open(os.path.join(OUT, 'events', node, exs, slug_ticker(t) + '.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+            index['keys'].append(key); index['ticker'].setdefault(t.upper(), []).append(key)
+            for a in rec['aliases']: index['alias'].setdefault(nkey(a['value']), []).append(key)
+            nm = (r['identity'].get('name') or {}).get('value') or r.get('name')
+            if nm: index['name'].setdefault(nkey(nm), []).append(key)
+            u = (r['identity'].get('underlying_cmr') or {}).get('value')
+            if u: by_under.setdefault(u, []).append({'cmr': key, 'product': t, 'name': nm, 'product_line': (r['identity'].get('product_line') or {}).get('value'), 'source_url': (r['identity'].get('underlying_cmr') or {}).get('source_url'), 'read_by': (r['identity'].get('underlying_cmr') or {}).get('read_by')})
+            counts[exs] = counts.get(exs, 0) + 1; n += 1
+            if evs: ev_by[(exs, t)] = evs
+        for ucmr, prods in by_under.items():
+            parts = ucmr.split('/'); fp = os.path.join(OUT, 'records', parts[0], parts[1], slug_ticker(parts[2]) + '.json')
+            if not os.path.exists(fp): continue
+            irec = json.load(open(fp, encoding='utf-8'))
+            irec['identity']['eurex_products'] = {'value': ', '.join(p['product'] for p in prods), 'records': [p['cmr'] for p in prods], 'source_url': prods[0]['source_url'], 'read_by': prods[0]['read_by'], 'state': 'sourced', 'note': 'Eurex products whose underlying ISIN is this issuer (reference-data door)'}
+            json.dump(irec, open(fp, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+        print(node, 'reference records', sum(counts.get(x, 0) for x in extra_ex), extra_ex, '| issuer records linked', len(by_under))
+    facts_nodes[node] = {'as_of': as_of, 'version': version, 'records': n, 'records_by_exchange': counts, 'events': sum(len(v) for v in ev_by.values()), 'issuers_with_events': len(ev_by), 'exchanges': list(M['tabs'].values()) + extra_ex}
     print(node, 'records', n, counts, '| events', facts_nodes[node]['events'], 'issuers with events', len(ev_by))
 def main():
     want = [a for a in sys.argv[1:] if a in MAPS] or [cc for cc in MAPS if os.path.exists(os.path.join(ROOT, rf'CM-KG\ISSUERS\{cc}-issuers.xlsx'))]

@@ -1,4 +1,4 @@
-// CM-KG door — one Worker, node hosts and the global door: mcp.ca-cm-kg.ai (Canada), mcp.uk-cm-kg.ai (United Kingdom, ORDER-010), mcp.au-cm-kg.ai (Australia, ORDER-013), mcp.sg-cm-kg.ai (Singapore, ORDER-014), mcp.ch-cm-kg.ai and mcp.de-cm-kg.ai (Switzerland, Germany, ORDER-015),
+// CM-KG door — one Worker, node hosts and the global door: mcp.ca-cm-kg.ai (Canada), mcp.uk-cm-kg.ai (United Kingdom, ORDER-010), mcp.au-cm-kg.ai (Australia, ORDER-013), mcp.sg-cm-kg.ai (Singapore, ORDER-014), mcp.ch-cm-kg.ai and mcp.de-cm-kg.ai (Switzerland, Germany, ORDER-015; the Germany node also carries Eurex reference-data records, exchange code EUREX, CEO go 2026-09-11),
 // mcp.capitalmarketsknowledgegraph.ai (global door: routes by identifier to the node that holds the name).
 // Read-only. No auth. Public-record only. Streamable HTTP MCP at /mcp (JSON-RPC 2.0, stateless). Data = Cloudflare D1 (one database cm-kg, node column;
 // tables records / events / idx / meta, loaded by CM-KG\RAILS\door\load_d1.py) since the CEO's D1 order of 2026-09-11; favicons stay on static assets.
@@ -35,8 +35,8 @@ function json(obj, status, node, asOf, version, cache) {
 }
 // ---- identifiers: exchange prefixes and suffixes per node; suffix L (London) covers LSE and AIM alike; AX (Australia) is ASX
 const SUFFIX = { TO: ['TSX'], V: ['TSXV'], CN: ['CSE'], C: ['CSE'], NE: ['CBOE-CANADA'], CB: ['CBOE-CANADA'], L: ['LSE', 'AIM'], LN: ['LSE', 'AIM'], AQ: ['AQSE'], AX: ['ASX'], AU: ['ASX'], NS: ['NSX'], SI: ['SGX', 'SGX-CATALIST'], SG: ['SGX', 'SGX-CATALIST'], SW: ['SIX'], VX: ['SIX'], BX: ['BX'], DE: ['XETRA'], F: ['XETRA'], XE: ['XETRA'] };
-const PREFIX = { TSX: 'TSX', TSXV: 'TSXV', 'TSX-V': 'TSXV', CVE: 'TSXV', CSE: 'CSE', CNSX: 'CSE', CNQ: 'CSE', NEO: 'CBOE-CANADA', CBOE: 'CBOE-CANADA', 'CBOE-CANADA': 'CBOE-CANADA', LSE: 'LSE', LON: 'LSE', MAIN: 'LSE', AIM: 'AIM', AQSE: 'AQSE', AQUIS: 'AQSE', NEX: 'AQSE', ASX: 'ASX', XASX: 'ASX', NSX: 'NSX', XNEC: 'NSX', SGX: 'SGX', XSES: 'SGX', SES: 'SGX', MAINBOARD: 'SGX', CATALIST: 'SGX-CATALIST', 'SGX-CATALIST': 'SGX-CATALIST', SIX: 'SIX', SWX: 'SIX', XSWX: 'SIX', VTX: 'SIX', BX: 'BX', XBRN: 'BX', XETRA: 'XETRA', XETR: 'XETRA', ETR: 'XETRA', FRA: 'XETRA', FWB: 'XETRA', DE: 'XETRA' };
-const EX_NODE = { TSX: 'ca-cm-kg', TSXV: 'ca-cm-kg', CSE: 'ca-cm-kg', 'CBOE-CANADA': 'ca-cm-kg', LSE: 'uk-cm-kg', AIM: 'uk-cm-kg', AQSE: 'uk-cm-kg', ASX: 'au-cm-kg', NSX: 'au-cm-kg', SGX: 'sg-cm-kg', 'SGX-CATALIST': 'sg-cm-kg', SIX: 'ch-cm-kg', BX: 'ch-cm-kg', XETRA: 'de-cm-kg' };
+const PREFIX = { TSX: 'TSX', TSXV: 'TSXV', 'TSX-V': 'TSXV', CVE: 'TSXV', CSE: 'CSE', CNSX: 'CSE', CNQ: 'CSE', NEO: 'CBOE-CANADA', CBOE: 'CBOE-CANADA', 'CBOE-CANADA': 'CBOE-CANADA', LSE: 'LSE', LON: 'LSE', MAIN: 'LSE', AIM: 'AIM', AQSE: 'AQSE', AQUIS: 'AQSE', NEX: 'AQSE', ASX: 'ASX', XASX: 'ASX', NSX: 'NSX', XNEC: 'NSX', SGX: 'SGX', XSES: 'SGX', SES: 'SGX', MAINBOARD: 'SGX', CATALIST: 'SGX-CATALIST', 'SGX-CATALIST': 'SGX-CATALIST', SIX: 'SIX', SWX: 'SIX', XSWX: 'SIX', VTX: 'SIX', BX: 'BX', XBRN: 'BX', XETRA: 'XETRA', XETR: 'XETRA', ETR: 'XETRA', FRA: 'XETRA', FWB: 'XETRA', DE: 'XETRA', EUREX: 'EUREX', XEUR: 'EUREX' };
+const EX_NODE = { TSX: 'ca-cm-kg', TSXV: 'ca-cm-kg', CSE: 'ca-cm-kg', 'CBOE-CANADA': 'ca-cm-kg', LSE: 'uk-cm-kg', AIM: 'uk-cm-kg', AQSE: 'uk-cm-kg', ASX: 'au-cm-kg', NSX: 'au-cm-kg', SGX: 'sg-cm-kg', 'SGX-CATALIST': 'sg-cm-kg', SIX: 'ch-cm-kg', BX: 'ch-cm-kg', XETRA: 'de-cm-kg', EUREX: 'de-cm-kg' };
 async function resolveKeys(env, idRaw, node) {
   const id = (idRaw || '').trim();
   if (!id) return { keys: [], kind: 'empty' };
@@ -50,6 +50,7 @@ async function resolveKeys(env, idRaw, node) {
   const sm = t.match(/^(.+)\.([A-Z]{1,2})$/); if (!exs && sm && SUFFIX[sm[2]] && !(await lookup(env, 'ticker', t)).length) { exs = SUFFIX[sm[2]]; t = sm[1]; }
   let keys = scope(await lookup(env, 'ticker', t));
   if (exs) keys = keys.filter(k => exs.includes(k.split('/')[1]));
+  else if (keys.length > 1) { const iss = keys.filter(k => k.split('/')[1] !== 'EUREX'); if (iss.length) keys = iss; }  // a bare code resolves to the issuer; derivative products need EUREX:<code>
   if (keys.length) return { keys, kind: 'ticker', exchange: exs ? exs.join('/') : null, ticker: t };
   const nk = id.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim();
   { const k = scope(await lookup(env, 'alias', nk)); if (k.length) return { keys: k, kind: 'alias', matched: id }; }
@@ -118,7 +119,7 @@ const NODE_COPY = {
   'au-cm-kg': { title: 'Capital Markets Knowledge Graph — Australia node door', scope: 'Scope: ASX, NSX (National Stock Exchange of Australia). TMX Australia listings await a machine-readable list.', example: 'ASX/BHP', exchanges: 'ASX, NSX', ids: 'BHP, ASX:BHP, BHP.AX, NSX:SBL' },
   'sg-cm-kg': { title: 'Capital Markets Knowledge Graph — Singapore node door', scope: 'Scope: SGX Mainboard and Catalist (corporates, REITs, business trusts, depositary receipts).', example: 'SGX/D05', exchanges: 'SGX, SGX-CATALIST', ids: 'D05, SGX:D05, D05.SI, CATALIST:5WH' },
   'ch-cm-kg': { title: 'Capital Markets Knowledge Graph — Switzerland node door', scope: 'Scope: SIX Swiss Exchange share lines and BX Swiss share lines with a Swiss ISIN.', example: 'SIX/NESN', exchanges: 'SIX, BX', ids: 'NESN, SIX:NESN, NESN.SW, ROG, BX:…' },
-  'de-cm-kg': { title: 'Capital Markets Knowledge Graph — Germany node door', scope: 'Scope: Xetra common shares in the German product groups (DAX, MDAX, SDAX, TecDAX, DEUTSCHLAND).', example: 'XETRA/SAP', exchanges: 'XETRA', ids: 'SAP, XETRA:SAP, SAP.DE, ETR:SAP' },
+  'de-cm-kg': { title: 'Capital Markets Knowledge Graph — Germany node door', scope: 'Scope: Xetra common shares in the German product groups (DAX, MDAX, SDAX, TecDAX, DEUTSCHLAND), plus Eurex derivatives reference data (products, contracts, expirations, trading hours, TES profiles) as EUREX records linked to their Xetra underlying.', example: 'XETRA/SAP', exchanges: 'XETRA, EUREX', ids: 'SAP, XETRA:SAP, SAP.DE, ETR:SAP, EUREX:FDAX, EUREX:ODAX, EUREX:SAP' },
 };
 function human(host, node) {
   const c = NODE_COPY[node] || { title: 'Capital Markets Knowledge Graph — global door', scope: `Routes by identifier to the node that holds the name. Live today: ${liveNodes().join(', ')}.`, example: 'uk-cm-kg/LSE/SHEL', exchanges: 'per node', ids: 'SHOP, SHEL, SHEL.L, AIM:4BB, BHP.AX, D05.SI, NESN.SW, SAP.DE' };
@@ -137,7 +138,7 @@ ${scope}
 Tools: resolve_issuer (ticker, ISIN or LEI -> record summary), get_record (full Capital Markets Record with per-field source_url, read_by and state), list_events_since (paged events since a date), list_aliases (sourced trade and former names), list_nodes (the twelve market nodes, which are live, record counts).
 Identifiers: ticker with or without exchange (${c ? c.ids : 'SHOP, TSX:SHOP, SHOP.TO, SHEL, SHEL.L, AIM:4BB, AQSE:DGQ, BHP.AX, D05.SI, NESN.SW, SAP.DE'}), ISIN, LEI. An ambiguous ticker returns every match; the door never guesses.
 Record spec: CMR v0 (cm-record.org, draft). Blank stays blank: a field with no value is present with value null and its reason. No signature key exists yet; it is omitted, not stubbed.
-GET paths: / (this door), /facts.json, /llms.txt, /nodes.json, /record/<EXCHANGE>/<TICKER> (node hosts) or /record/<node>/<EXCHANGE>/<TICKER> (any host), /events/… likewise with ?since=YYYY-MM-DD&cursor=0&limit=50. Exchanges: ${c ? c.exchanges : 'TSX, TSXV, CSE, CBOE-CANADA (ca-cm-kg); LSE, AIM, AQSE (uk-cm-kg); ASX, NSX (au-cm-kg); SGX, SGX-CATALIST (sg-cm-kg); SIX, BX (ch-cm-kg); XETRA (de-cm-kg)'}.
+GET paths: / (this door), /facts.json, /llms.txt, /nodes.json, /record/<EXCHANGE>/<TICKER> (node hosts) or /record/<node>/<EXCHANGE>/<TICKER> (any host), /events/… likewise with ?since=YYYY-MM-DD&cursor=0&limit=50. Exchanges: ${c ? c.exchanges : 'TSX, TSXV, CSE, CBOE-CANADA (ca-cm-kg); LSE, AIM, AQSE (uk-cm-kg); ASX, NSX (au-cm-kg); SGX, SGX-CATALIST (sg-cm-kg); SIX, BX (ch-cm-kg); XETRA, EUREX (de-cm-kg)'}.
 `;
 }
 export default {
