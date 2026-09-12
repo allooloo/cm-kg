@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.allooloo/cm-kg",
   "title": "Capital Markets Agents: MCP+A2A Canada",
-  "description": "Know every Canadian, United Kingdom, Australian, Singapore, Swiss, German, French, Dutch, Japanese and Korean issuer, agent-ready. Instantly. Provably.",
+  "description": "Know every Canadian and United Kingdom issuer, agent-ready. Instantly. Provably. Toronto to Tokyo.",
   "version": "0.10.0",
   "websiteUrl": "https://capitalmarketsknowledgegraph.ai",
   "repository": {
@@ -96,7 +96,9 @@
         }
       ],
       "facts": "https://mcp.capitalmarketsknowledgegraph.ai/facts.json",
-      "llms_txt": "https://mcp.capitalmarketsknowledgegraph.ai/llms.txt"
+      "llms_txt": "https://mcp.capitalmarketsknowledgegraph.ai/llms.txt",
+      "description_of_record": "Know every Canadian and United Kingdom issuer, agent-ready. Instantly. Provably. Ten markets on the same record — Toronto to Tokyo — served in-country.",
+      "description_note": "The registry caps description at 100 characters; the description of record (CEO, Sept 12 2026) is carried here in full."
     }
   }
 }
