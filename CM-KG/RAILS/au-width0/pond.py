@@ -12,7 +12,7 @@ mirrored to the canonical CM-KG\ISSUERS and CM-KG\DISCLOSURE paths). One lock fi
   assembled(node)              -> a new dated output folder POND\<node>\assembled\<date>[-n]\ (versioned outputs)
   lock(node, order) / unlock(node) / locked(node)
 """
-import os, json, datetime, shutil
+import re, os, json, datetime, shutil
 POND = r'C:\ALLOOLOO\CM-KG\POND'
 def _today(): return datetime.date.today().isoformat()
 def _new_dir(base):
@@ -23,7 +23,9 @@ def _new_dir(base):
 def drops(node, source):
     base = os.path.join(POND, node, source)
     if not os.path.isdir(base): return []
-    out = [(x, os.path.join(base, x)) for x in sorted(os.listdir(base)) if os.path.isdir(os.path.join(base, x))]
+    def _k(x):
+        m = re.match(r'^(\d{4}-\d{2}-\d{2})(?:-(\d+))?$', x); return (m.group(1), int(m.group(2) or 1)) if m else (x, 0)
+    out = [(x, os.path.join(base, x)) for x in sorted(os.listdir(base), key=_k) if os.path.isdir(os.path.join(base, x))]
     return out
 def open_drop(node, source):
     """the current open drop for this worker (resume within a run), else a new dated drop"""
