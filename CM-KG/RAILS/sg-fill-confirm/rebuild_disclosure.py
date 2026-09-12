@@ -92,7 +92,7 @@ for a, b in [('Claude (claude-sonnet-5)', f'Rematch collisions ruled from the re
              ('Google Gemini (gemini-flash-latest)', f'AGM / general-meeting / record dates stated in the announcement set: {gem_n} events written (dated on the announcement, stated date in Detail). Label "read by Gemini".'),
              ('Perplexity (Agent API, preset low)', f"Located company pages: {sum(1 for d in jload('raw/perplexity_pages.jsonl') if d.get('verified'))} verified; page titles became sourced aliases used by the rematch."),
              ('Grok (grok-4.6)', f"Live layer wired into the weekly refresh; validation run found {gl.get('halts', 0)} halt/suspension/reinstatement items and {gl.get('newswire', 0)} silent-issuer items."),
-             ('Mistral (mistral-small-latest)', f"Non-English announcements found: {mc.get('n_targets', 0)}; read {mc.get('n_targets', 0)}."),
+             ('Mistral (mistral-small-latest)', 'Zero on this node by rule (CEO, 2026-09-11): English-language filings only; Chinese-language announcements and reports are skipped, not read.'),
              ('Tavily (search)', f'Rematch on legal name OR sourced alias for zero-event and ambiguous issuers: {len(rm)} issuers searched, {rm_ev} events added.'),
              ('Cloudflare', 'Not used on this workbook.'),
              ('State', f'sourced = one source; filled = lab-derived row; confirmed = results / AGM rows seen on a second source family (exchange vs document vs wire) within 45 days: {conf_n} events confirmed.')]:

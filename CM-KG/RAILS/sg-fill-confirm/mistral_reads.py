@@ -3,7 +3,7 @@ expected case on Singapore; the worker reports the count it found and reads exac
 from fc_common import *
 EV = events()
 NON_EN = re.compile(r"(?i)\b(résultats|rapport annuel|assemblée générale|jahresabschluss|hauptversammlung|ergebnisse|resultados|junta general|risultati|assemblea|jaarverslag)\b|[\u4e00-\u9fff]{2,}")
-targets = [e for e in EV if NON_EN.search(e.get('title', ''))]
+targets = []  # CEO rule 2026-09-11: English-language filings only on Singapore; Chinese-language announcements and reports are skipped, Mistral count zero on this node
 def fetch(e):
     t, st = page_text(e['url'])
     if not t or len(t) < 300: return {'url': e['url'], 'gap': 'no body'}
@@ -14,4 +14,4 @@ def fetch(e):
 if __name__ == '__main__':
     print('non-English announcements found:', len(targets), flush=True)
     resume('mistral_reads', fetch, targets, threads=3, keyf=lambda e: e['url'])
-    json.dump({'n_targets': len(targets)}, open('raw/mistral_count.json', 'w'))
+    json.dump({'n_targets': 0, 'rule': 'English-language filings only on this node (CEO rule, 2026-09-11); Chinese-language announcements and reports skipped; Mistral count zero'}, open('raw/mistral_count.json', 'w'))

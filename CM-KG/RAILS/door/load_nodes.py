@@ -52,7 +52,19 @@ AU = {'tabs': {'ASX': 'ASX', 'NSX': 'NSX', 'TMX Australia': 'TMX-AU'}, 'ticker':
                  'asx_announcements_12m': ('ASX announcements (12 months)', 'ASX announcements link', 'Newswire read by', None, 'Newswire of habit'), 'asx_announcements_link': ('ASX announcements link', 'ASX announcements link', 'Newswire read by', None, 'Newswire of habit'),
                  'hq_city': ('HQ city', 'HQ source', 'HQ read by', 'HQ State', 'HQ city'), 'website': ('Website', 'Website source', 'Roster read by', None, None), 'listing_date': ('Listing date', 'Listing date source', 'Roster read by', None, 'Listing date')},
       'second': {'isin': 'ISIN', 'lei': 'LEI', 'acn': 'ACN', 'share_registry': 'Share registry', 'auditor': 'Auditor', 'newswire': 'Newswire of habit', 'state': 'State'}, 'prefixes': ['ASX', 'NSX']}
-MAPS = {'ca': CA, 'uk': UK, 'au': AU}
+SG = {'tabs': {'SGX Mainboard': 'SGX', 'SGX Catalist': 'SGX-CATALIST'}, 'ticker': 'SGX code', 'name': 'Legal name', 'default_as_of': '2026-09-11',
+      'fields': {'name': ('Legal name', 'Roster source', 'Roster read by', None, None), 'ticker': ('SGX code', 'Roster source', 'Roster read by', None, None), 'exchange': ('Market', 'Roster source', 'Roster read by', None, None),
+                 'security_type': ('Security type', 'Roster source', 'Roster read by', None, None), 'trading_name': ('Trading name', 'Roster source', 'Roster read by', None, None), 'manager': ('Manager / depositary (SGX metadata issuer name)', 'ISIN source', 'ISIN read by', None, None),
+                 'isin': ('ISIN', 'ISIN source', 'ISIN read by', 'ISIN State', 'ISIN'), 'fisn': ('FISN', 'ISIN source', 'ISIN read by', None, None), 'lei': ('LEI', 'LEI source', 'LEI read by', 'LEI State', 'LEI'), 'lei_registration_status': ('LEI registration status', 'LEI source', 'LEI read by', None, 'LEI'),
+                 'uen': ('UEN', 'ACRA source', 'ACRA read by', 'ACRA State', 'UEN'), 'acra_link': ('ACRA link (unverified — search entry)', None, 'ACRA read by', None, 'UEN'), 'acra_entity_type': ('ACRA entity type', 'ACRA source', 'ACRA read by', None, 'UEN'), 'acra_status': ('ACRA status', 'ACRA source', 'ACRA read by', None, 'UEN'), 'incorporation_date': ('Incorporation date', 'ACRA source', 'ACRA read by', None, 'UEN'),
+                 'registered_office': ('Registered office', 'Registered office source', 'Registered office read by', 'Registered office State', 'Registered office'), 'jurisdiction': ('Incorporation jurisdiction', 'Jurisdiction source', 'Jurisdiction read by', 'Jurisdiction State', 'Incorporation jurisdiction'),
+                 'sector': ('Sector (SGX)', 'Sector source', 'Sector read by', 'Sector State', 'Sector (SGX)'), 'ssic': ('Primary SSIC (ACRA)', 'ACRA source', 'ACRA read by', None, 'UEN'),
+                 'auditor': ('Auditor', 'Auditor source', 'Auditor read by', 'Auditor State', 'Auditor'), 'annual_report': ('Annual report (SGXNet)', 'Annual report source', 'Annual report read by', None, 'Annual report (SGXNet)'),
+                 'accounts_period_end': ('Accounts period end', 'Auditor source', 'Auditor read by', None, None), 'going_concern': ('Going concern (annual report)', 'Auditor source', 'Auditor read by', None, None),
+                 'registrar': ('Share registrar', 'Share registrar source', 'Share registrar read by', 'Share registrar State', 'Share registrar'), 'newswire': ('Newswire of habit', 'Newswire releases seen', 'Newswire read by', 'Newswire State', 'Newswire of habit'),
+                 'sgxnet_link': ('SGXNet announcements link', 'SGXNet announcements link', 'Newswire read by', None, None), 'hq_city': ('HQ city', 'HQ source', 'HQ read by', 'HQ State', 'HQ city'), 'listing_date': ('Listing date', 'Listing date source', 'Roster read by', None, 'Listing date'), 'trading_currency': ('Trading currency', 'Roster source', 'Roster read by', None, None)},
+      'second': {'isin': 'ISIN', 'lei': 'LEI', 'uen': 'UEN', 'registrar': 'Share registrar', 'auditor': 'Auditor', 'newswire': 'Newswire of habit'}, 'prefixes': ['SGX', 'SGX-CATALIST']}
+MAPS = {'ca': CA, 'uk': UK, 'au': AU, 'sg': SG}
 def field(d, spec, gaps):
     vcol, scol, rcol, stcol, glabel = spec
     v = d.get(vcol)
@@ -100,7 +112,7 @@ def load_node(cc, index, facts_nodes):
             evs = sorted(ev_by.get((tab, t), []), key=lambda e: e['date'], reverse=True)
             rec = {'cmr': key, 'node': node, 'as_of': as_of, 'version': version, 'identity': identity, 'aliases': aliases, 'events_url': f'{host}/events/{exs}/{t}', 'event_count': len(evs), 'gaps': [{'field': f, 'reason': w} for f, w in gaps.items()]}
             json.dump(rec, open(os.path.join(OUT, 'records', node, exs, slug_ticker(t) + '.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
-            json.dump([{k2: e.get(k2) for k2 in ('date', 'event_type', 'title', 'rns_category', 'ch_filing_type', 'asx_category', 'price_sensitive', 'wire', 'source', 'url', 'read_by', 'state', 'detail', 'second_source', 'second_read_by', 'period_end', 'statement_date', 'auditor_named', 'going_concern', 'extract_read_by') if e.get(k2) not in (None, '')} for e in evs],
+            json.dump([{k2: e.get(k2) for k2 in ('date', 'event_type', 'title', 'rns_category', 'ch_filing_type', 'asx_category', 'price_sensitive', 'sgx_category', 'reference', 'wire', 'source', 'url', 'read_by', 'state', 'detail', 'second_source', 'second_read_by', 'period_end', 'statement_date', 'auditor_named', 'going_concern', 'extract_read_by') if e.get(k2) not in (None, '')} for e in evs],
                       open(os.path.join(OUT, 'events', node, exs, slug_ticker(t) + '.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
             index['keys'].append(key); index['ticker'].setdefault(t.upper(), []).append(key)
             root = t.split('.')[0].upper()

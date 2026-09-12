@@ -1,0 +1,6 @@
+schema ok
+sg-cm-kg records 639
+sg-cm-kg statements 7674 events 3510 files 2
+   sg-cm-kg 1 / 2
+meta loaded
+DONE {'sg-cm-kg': (639, 3510)}

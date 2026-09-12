@@ -54,6 +54,10 @@ if _prev:
     print('merged prior assembled events', n_prior, 'from', _prev, flush=True)
 for e in events: e.pop('key', None)
 events = [e for e in events if e.get('url', '').startswith('http') and e.get('date')]
+CJK = re.compile(r'[一-鿿]')  # language rule (CEO, 2026-09-11): English-language filings only on this node
+n_cjk = sum(1 for e in events if CJK.search(e.get('title', '')))
+events = [e for e in events if not CJK.search(e.get('title', ''))]
+print('Chinese-language items skipped by rule', n_cjk, flush=True)
 kept = []; ambiguous = Counter()
 EXEMPT = ('links.sgx.com announcement page', 'ACRA', 'Grok')  # the exchange record, the register and the live layer are the issuer's own rows
 for e in events:
@@ -129,6 +133,7 @@ METHOD = [('Order', f'ORDER-014 Part A Singapore Width 1: Disclosure. Window {SI
           ('ACRA', 'Monthly bulk register (Width 0 drop, by UEN): annual return date as a dated filing; a status other than Live dated on the dataset build date and saying so; former names noted (undated).'),
           ('Newswire (search)', 'Tavily news search over PR Newswire, GlobeNewswire, Business Wire, ACCESS Newswire, Newsfile, Media OutReach, ACN Newswire with published_date; a general "<short name>" announces query; date from published_date or the release URL.'),
           ('Not sources', 'The Business Times and The Edge Singapore (paywalled) are not read. SGX company pages (403 / moved to a Flutter app) are not read.'),
+          ('Language rule', 'English-language filings only on this node (CEO rule, 2026-09-11): announcements and reports whose title carries Chinese characters are skipped at assembly, not read, not counted; Mistral count is zero on this node by rule.'),
           ('Idempotence', 'Dedupe key (market, code, event type, date, URL). Weekly refresh opens a new pond drop with WINDOW_DAYS=7 and re-assembles by merging every drop and the last versioned set.'),
           ('Read-by labels', 'links.sgx.com announcement page (SGXNet record; found by Tavily search) · Tavily search (links.sgx.com) + published_date · ACRA register bulk dataset (data.gov.sg, monthly) · Tavily search (wire domains) + published_date · Tavily search (wire domains) + URL date'),
           ('State', 'sourced = one source read. Fill and Confirm (ORDER-014 Part B) add filled / confirmed / conflict.')]
