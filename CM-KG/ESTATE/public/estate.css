@@ -2,7 +2,7 @@
 :root{--navy:#14213D;--green:#0B6E4F;--ink:#3A4256;--muted:#6B7280;--rule:#D9DDE6;--tint:#F3F5F9;--paper:#FFFFFF;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 *{box-sizing:border-box}html{color-scheme:light}
 body{margin:0;background:var(--paper);color:var(--navy);font:15px/1.55 var(--sans)}
-header,main,footer{max-width:92ch;margin:0 auto;padding:0 1.2rem}
+header,main,footer{max-width:1200px;margin:0 auto;padding:0 1.2rem}
 header{padding-top:1.1rem}
 .title-line{font:600 13px/1.5 var(--mono);color:var(--navy);margin:0 0 .7rem;letter-spacing:.01em}
 .kicker{font:12px/1.4 var(--mono);color:var(--muted);margin:0 0 .3rem}
@@ -32,5 +32,7 @@ button{padding:.4rem 1rem;border:1px solid var(--navy);border-radius:2px;backgro
 footer{margin:2.2rem auto 1.5rem;padding-top:.8rem;border-top:1px solid var(--rule);font-size:.86em;color:var(--muted)}footer a{color:var(--green)}
 @media (max-width:640px){body{font-size:14px}dl{grid-template-columns:1fr}dt{margin-top:.3rem}}
 
-/* allooloo.io only (CEO, Sept 12 2026): content container 1040px; the scale grid 3 + 2; body text left-aligned, never justified */
-body.site header,body.site main,body.site footer{max-width:1040px}body.site .grid{grid-template-columns:repeat(3,1fr)}body.site p,body.site dd{text-align:left}
+/* all 21 surfaces (CEO, Sept 12 2026): content container 1200px (the one value above); allooloo.io scale grid 3 + 2; body text left-aligned, never justified */
+body.site .grid{grid-template-columns:repeat(3,1fr)}p,dd,li{text-align:left}
+/* nodes table (CEO, Sept 12): node, drop and surface never break; region and market absorb the squeeze */
+.nw,td code{white-space:nowrap}
