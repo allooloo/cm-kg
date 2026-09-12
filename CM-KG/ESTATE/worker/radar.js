@@ -1,7 +1,8 @@
 // ORDER-020 §7 — Agentic RADAR widget index v1: fourteen widgets, each bound to a door, a log or a ledger; nothing quoted from a third party.
 // Sources: list_nodes (01, 03, 07), the §6 probe in KV (02), numbers-log.json (03, 06), calls.json (04, 05 — the Workers analytics rail), the registry API (09),
 // spend.json (12, as reported), filings.json (09). A widget whose source is not readable says so and shows no number.
-import { APEX, APEX_AGENT, CONTACT, CONTACT2, REGIONS, esc, int, num, table, form } from './chrome.js';
+import { APEX, APEX_AGENT, CONTACT, CONTACT2, REGION_FULL, REGIONS_LIST, esc, int, num, table, form } from './chrome.js';
+const REGIONS = REGIONS_LIST.split(' · ');
 import { ORDER, nodesTable, tiles, totals } from './products.js';
 import { statusRows } from './site.js';
 
@@ -27,7 +28,7 @@ export async function radarData(ctx, env, origin, st) {
     geography: (calls && calls.geography) || { note: 'calls by region need Zone Analytics Read on the token of record — HITL; not shown', source: 'Cloudflare zone analytics (not readable)' },
     motion: { numbers_log: log, source: 'NUMBERS LOG lines (one per sweep per node)' },
     provenance: { rule: 'every field served carries source_url, read_by and state; the door renders no field without source and read date (by construction of the record shape)', fields_with_source_and_read_date: '100% by construction', per_node_gaps: perNode.map(n => ({ node: n.node, gaps_note: n.gaps_note })), source: 'door record shape; rail README Gaps notes' },
-    residency: { regions: ORDER.map(cc => ({ node: `${cc}-cm-kg`, region: ctx.nodes[cc].region, in_country: cc !== 'hk' })), apex: 'index only, forwards', no_fallback: true, source: 'AZURE\\provision_region.py; apex router' },
+    residency: { regions: ORDER.map(cc => ({ node: `${cc}-cm-kg`, region: REGION_FULL[cc], in_country: cc !== 'hk' })), apex: 'index only, forwards', no_fallback: true, source: 'AZURE\\provision_region.py; apex router' },
     registry: { mcp_registry: reg, agent_cards: ORDER.filter(cc => cc !== 'hk').length + 1, filings: filings || { note: 'filings.json not written' }, source: 'registry.modelcontextprotocol.io; filings.json (as reported)' },
     machine_surfaces: ['https://agentic-radar.ai/radar.json', 'https://allooloo.io/status.json', 'https://allooloo.io/llms.txt', 'https://allooloo.io/facts.json', `${APEX_AGENT}/.well-known/agent-card.json`, `${APEX}/openapi.json`, `${APEX}/mcp.json`, 'https://agentic-radar.ai/sitemap.xml'],
     spend: spend || { note: 'spend.json not written' }, broadcast: { x: '@allooloo_io', mail: CONTACT2 }, contact: CONTACT };

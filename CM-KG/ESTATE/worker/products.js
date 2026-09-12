@@ -1,6 +1,6 @@
 // ORDER-020 §5 — the eight product pages (the agentic-*.ai roots). Heads of record as given by the CEO; bodies in the record-grade register.
 // Every number on these pages comes from the doors at render (ctx.live = list_nodes; ctx.status = the §6 probe); nothing typed.
-import { APEX, APEX_AGENT, CONTACT, CORPORATE, esc, int, num, table } from './chrome.js';
+import { APEX, APEX_AGENT, CONTACT, CORPORATE, REGION_FULL, esc, int, num, table } from './chrome.js';
 
 const ORDER = ['ca', 'us', 'uk', 'fr', 'nl', 'ch', 'de', 'au', 'sg', 'jp', 'kr', 'hk'];
 const DUTY = { ca: 'KYP (Know Your Product), NI 31-103', uk: 'product governance (FCA PROD sourcebook)', us: 'reasonable-basis suitability (FINRA Rule 2111)', au: 'DDO (Design and Distribution Obligations)', sg: 'MAS product due diligence', de: 'MiFID II product governance (Produktüberwachung)', fr: 'MiFID II product governance', nl: 'MiFID II product governance', ch: 'FinSA product duties', jp: 'suitability principle (FIEA Article 40)', kr: 'suitability and appropriateness (FSCMA Articles 46 and 46-2)', hk: 'suitability (SFC Code of Conduct paragraph 5.2)' };
@@ -8,7 +8,7 @@ const LICENCES = [['Dealer MCP access', 'the firm\'s agents call the record dire
 const EVENT_TYPES = ['results', 'agm_egm', 'director_change', 'directors_dealings', 'major_holder', 'takeover', 'prospectus', 'halt_suspension', 'corporate_news', 'ad_hoc', 'regulatory_filing', 'register_change'];
 
 function nodesTable(ctx) {
-  const rows = ORDER.map(cc => { const n = ctx.live[`${cc}-cm-kg`] || {}; const d = ctx.nodes[cc]; return [`<code>${cc}-cm-kg</code>`, esc(d.country), esc(d.region), n.live ? `<span class="pill live">live</span>` : `<span class="pill">${cc === 'hk' ? 'beacon' : 'not live'}</span>`, `<span class="n">${n.live ? int(n.records) : '—'}</span>`, `<span class="n">${n.live ? int(n.events) : '—'}</span>`, esc(n.live ? n.as_of : ''), `<a href="https://${cc}-cm-kg.ai/">${cc}-cm-kg.ai</a>`]; });
+  const rows = ORDER.map(cc => { const n = ctx.live[`${cc}-cm-kg`] || {}; const d = ctx.nodes[cc]; return [`<code>${cc}-cm-kg</code>`, esc(d.country), esc(REGION_FULL[cc]), n.live ? `<span class="pill live">live</span>` : `<span class="pill">${cc === 'hk' ? 'beacon' : 'not live'}</span>`, `<span class="n">${n.live ? int(n.records) : '—'}</span>`, `<span class="n">${n.live ? int(n.events) : '—'}</span>`, esc(n.live ? n.as_of : ''), `<a href="https://${cc}-cm-kg.ai/">${cc}-cm-kg.ai</a>`]; });
   return `<div class="wrap">${table(['node', 'market', 'region', 'state', 'records', 'events', 'drop', 'surface'], rows)}</div><p class="src">source: list_nodes at ${esc(APEX)}/mcp, read at render</p>`;
 }
 function totals(ctx) { const ln = Object.values(ctx.live).filter(n => n.live); return { nodes: ln.length, records: ln.reduce((a, n) => a + (n.records || 0), 0), events: ln.reduce((a, n) => a + (n.events || 0), 0), last: ln.map(n => n.as_of).sort().slice(-1)[0] || '' }; }
@@ -21,7 +21,7 @@ const contact = (ctx, host) => num(ctx.sec(), [`<a href="mailto:${CONTACT}">${CO
 
 export const PRODUCTS = {
   trades: {
-    title: 'Agentic Trades — the Allooloo product line', h1: 'The data systems agents trade on.',
+    title: 'Agentic Trades for AI agents — the product line', h1: 'The data systems agents trade on.',
     reason: 'Agentic Trades is the family name for Allooloo\'s products: the Capital Markets Knowledge Graph and its eleven sovereign doors, the ASK desk, Coverage, ESG, Issuers, Disclosure, Registries and RADAR. One record per listed company, source and read date on every field, stored and served in the issuer\'s jurisdiction. This page is the map; each product has its own.',
     body(ctx, host) {
       const products = [['Capital Markets Knowledge Graph', 'https://capitalmarketsknowledgegraph.ai/', 'the graph: issuers as nodes, insiders, holders, auditors, transfer agents, dual listings and wires as edges; eleven doors'], ['ASK', 'https://agentic-ask.ai/', 'the desk: one question, routed by identifier to the node that holds the name'], ['Coverage', 'https://agentic-coverage.ai/', 'a firm\'s list held against the record, weekly delta per name'], ['ESG', 'https://agentic-esg.ai/', 'the sustainability slice of the disclosure trail, as filed'], ['Issuers', 'https://agentic-issuers.ai/', 'the issuer side: a company\'s own record as every dealer agent reads it'], ['Disclosure', 'https://agentic-disclosure.ai/', 'the trail as a product: feeds, exports, provenance log, query log'], ['Registries', 'https://agentic-registries.ai/', 'who may call and what they did: agent identity, licences, receipts'], ['RADAR', 'https://agentic-radar.ai/', 'the estate numbers, live, on one page']];
@@ -35,7 +35,7 @@ export const PRODUCTS = {
     }
   },
   ask: {
-    title: 'Agentic ASK — ask about any listed company', h1: 'One question, one door, twelve markets.',
+    title: 'Agentic ASK for AI agents — ask about any listed company', h1: 'One question, one door, twelve markets.',
     reason: 'ASK is the desk over the Capital Markets Knowledge Graph. The identifier does the routing: a TSX name opens the Canada node, a Xetra name opens the German node. Default scope is the market the name belongs to; cross-border when it is the question. Every answer is a record with sources, never a summary. Runs at ask.allooloo.io.',
     body(ctx, host) {
       return `<h2>${ctx.h('Scope')}</h2>${num(ctx.sec(), ['Desk: <a href="https://ask.allooloo.io/">ask.allooloo.io</a> (answers ' + (ctx.askUp ? 'HTTP 200 at render' : 'no HTTP 200 at render') + ').', 'Question unit: one identifier or one legal name; the answer is the record, its aliases and its dated events, with the source on each field.', 'Markets: ' + ORDER.filter(cc => (ctx.live[`${cc}-cm-kg`] || {}).live).length + ' live nodes at render (list_nodes).'])}${tiles(ctx)}
@@ -47,10 +47,10 @@ export const PRODUCTS = {
     }
   },
   coverage: {
-    title: 'Agentic Coverage — a watchlist that reads the record', h1: 'Every product on the shelf, watched weekly.',
+    title: 'Agentic Coverage for AI agents — a watchlist that reads the record', h1: 'Every product on the shelf, watched weekly.',
     reason: 'Coverage is a firm\'s list of issuers held against the record: each sweep, what changed on every name — filings, results, holders, auditors, going-concern notes — dated and sourced. Built for the duty a dealer cannot decline: know every product on the shelf, continuously. Twelve markets, one list.',
     body(ctx, host) {
-      return `<h2>${ctx.h('Scope')}</h2>${num(ctx.sec(), ['Unit: a coverage list — the issuers a firm shelves, by identifier, across any of the twelve markets.', 'Motion: weekly per node (the sweep clock of each market); one delta per name per sweep.', 'State: the sweep motion is armed (ORDER-020 §10); the coverage-list product is offered under the Dealer MCP access licence.'])}${tiles(ctx)}
+      return `<p class="lead">Toronto first: investment dealers and wealth platforms under CIRO carry KYP, every product on the shelf known continuously and the file that proves it; Coverage is that file, held against the Canada node. London next: brokers, wealth managers and platforms under the FCA product governance rules (PROD) hold the same list against the UK node. Then the other nine markets, one list.</p><h2>${ctx.h('Scope')}</h2>${num(ctx.sec(), ['Unit: a coverage list — the issuers a firm shelves, by identifier, across any of the twelve markets.', 'Motion: weekly per node (the sweep clock of each market); one delta per name per sweep.', 'State: the sweep motion is armed (ORDER-020 §10); the coverage-list product is offered under the Dealer MCP access licence.'])}${tiles(ctx)}
 <h2>${ctx.h('What a coverage list is')}</h2>${num(ctx.sec(), ['A list of identifiers (ticker with exchange, ISIN or LEI) a firm holds against the record.', 'Each identifier resolves to one record on one node; a dual listing resolves to two records, each in its own jurisdiction.', 'The list is the firm\'s; the record is the estate\'s. Nothing about the list leaves the region the firm\'s agents call.'])}
 <h2>${ctx.h('What a weekly delta contains')}</h2>${num(ctx.sec(), ['New disclosure events since the last sweep, typed: ' + EVENT_TYPES.map(t => `<code>${t}</code>`).join(' · ') + '.', 'Identity fields that changed between drops (name, auditor, registrar, fiscal period, registration status), with the old and new value and the source of each.', 'Going-concern language where the annual report carries it, as filed.', 'Gaps opened or closed on the record.', 'The drop date and the record version on every line.'])}
 <h2>${ctx.h('The duty by jurisdiction')}</h2>${table(['market', 'duty'], ORDER.map(cc => [esc(ctx.nodes[cc].country), esc(DUTY[cc])]))}
@@ -59,7 +59,7 @@ export const PRODUCTS = {
     }
   },
   esg: {
-    title: 'Agentic ESG — the sustainability slice of the disclosure trail', h1: 'What issuers disclosed on sustainability, as filed.',
+    title: 'Agentic ESG for AI agents — sustainability disclosures as filed', h1: 'What issuers disclosed on sustainability, as filed.',
     reason: 'ESG is the slice of the disclosure trail that carries sustainability, climate and governance filings — each event dated, typed and linked to the regulator\'s copy. No score, no rating, no interpretation: the filing itself, with its source. Twelve markets on one record.',
     body(ctx, host) {
       const src = { ca: 'SEDAR+ filing links; issuer sustainability reports on the wires', us: 'EDGAR (10-K Item 1A and 7, proxy statements, 8-K Item 8.01)', uk: 'RNS; annual report (TCFD-aligned disclosure under LR 9.8.6R / DTR)', fr: 'AMF BDIF; rapport financier annuel (déclaration de performance extra-financière)', nl: 'AFM registers; jaarverslag (CSRD statements as filed)', ch: 'SIX ad hoc; annual report (Article 964a ff. CO non-financial report)', de: 'EQS; Geschäftsbericht (nichtfinanzielle Erklärung, CSRD)', au: 'ASX announcements; annual report (sustainability report where filed)', sg: 'SGX sustainability reports (Listing Rule 711A/B) reached via the wires', jp: 'EDINET securities report (有価証券報告書, sustainability section)', kr: 'DART business report (사업보고서)', hk: 'HKEXnews ESG reports — not read (Width 0)' };
@@ -71,7 +71,7 @@ export const PRODUCTS = {
     }
   },
   issuers: {
-    title: 'Agentic Issuers — your record, signed and live', h1: 'The record every dealer agent reads about your company.',
+    title: 'Agentic Issuers for AI agents — your record, signed and live', h1: 'The record every dealer agent reads about your company.',
     reason: 'Issuers is the issuer side of the graph: a listed company\'s own record — legal name, identifiers, auditor, registrar, fiscal period, disclosure trail — as every dealer agent sees it, with the source on each field. Confirm it, correct it at the source, and it is live to every agent on the estate. Signing lands with cm-record.org.',
     body(ctx, host) {
       return `<h2>${ctx.h('Scope')}</h2>${num(ctx.sec(), ['Unit: one issuer, one record, on the node of its listing (two records for a dual listing).', 'Records at render: ' + int(totals(ctx).records) + ' across ' + totals(ctx).nodes + ' live nodes (list_nodes).', 'State: confirmation is live (a field confirmed at its source of record reads <code>confirmed</code>); signing is not yet in service and is stated as such on every record.'])}${tiles(ctx)}
@@ -82,11 +82,11 @@ export const PRODUCTS = {
     }
   },
   disclosure: {
-    title: 'Agentic Disclosure — the trail as a product', h1: 'Every disclosure, dated, typed, sourced. Twelve markets.',
+    title: 'Agentic Disclosure for AI agents — the trail, dated and sourced', h1: 'Every disclosure, dated, typed, sourced. Twelve markets.',
     reason: 'Disclosure is the trail itself, offered as a product: per-node feed of what every issuer filed as it lands; jurisdiction exports of records and twelve-month trail; the provenance log — where each field came from, when it was read, what changed between drops; and the query log, kept in-region, of what a firm\'s agents asked and were answered. Public-record only; nothing a data licence could pull back.',
     body(ctx, host) {
       const rows = ORDER.map(cc => { const n = ctx.live[`${cc}-cm-kg`] || {}; return [`<code>${cc}-cm-kg</code>`, esc(ctx.nodes[cc].country), `<span class="n">${n.live ? int(n.events) : '—'}</span>`, `<span class="n">${n.live ? int(n.issuers_with_events) : '—'}</span>`, esc(n.live ? n.as_of : (cc === 'hk' ? 'Width 0' : ''))]; });
-      return `<h2>${ctx.h('Scope')}</h2>${num(ctx.sec(), ['Unit: the disclosure event — date, type, title as published, category, reference, URL of the regulator\'s or exchange\'s copy.', 'Window: trailing twelve months per issuer, refreshed by the weekly sweep of each node.', 'Events at render: ' + int(totals(ctx).events) + ' across ' + totals(ctx).nodes + ' live nodes (list_nodes).'])}
+      return `<p class="lead">London first: brokers, wealth managers and platforms under the FCA product governance rules (PROD) take the UK node's trail as the feed, RNS, the FCA National Storage Mechanism and Companies House as its sources, nothing licensed on the wire. Toronto next: the same feed from the Canada node for the KYP file. Then the other nine markets.</p><h2>${ctx.h('Scope')}</h2>${num(ctx.sec(), ['Unit: the disclosure event — date, type, title as published, category, reference, URL of the regulator\'s or exchange\'s copy.', 'Window: trailing twelve months per issuer, refreshed by the weekly sweep of each node.', 'Events at render: ' + int(totals(ctx).events) + ' across ' + totals(ctx).nodes + ' live nodes (list_nodes).'])}
 <h2>${ctx.h('The four shapes')}</h2>${num(ctx.sec(), ['<code>Feed</code>: per node, what every issuer filed as it lands — <code>list_events_since</code> with a date, paged.', '<code>Export</code>: per jurisdiction, the records and the twelve-month trail as JSON, cut at a drop date.', '<code>Provenance log</code>: per field, where it came from, when it was read, what changed between drops (the pond drops are the log; the surfaces snapshot is its page-level twin).', '<code>Query log</code>: kept in the region of the calling firm — what its agents asked and were answered; never leaves that region; not yet in service (stated).'])}
 <h2>${ctx.h('Counts per node')}</h2><div class="wrap">${table(['node', 'market', 'events', 'issuers with events', 'drop'], rows)}</div><p class="src">source: list_nodes at ${esc(APEX)}/mcp, read at render</p>
 <h2>${ctx.h('The residency rule')}</h2>${num(ctx.sec(), ['Every event list is stored and served in the jurisdiction of the issuer; the apex forwards and holds no body.', 'No fallback: a node that does not answer is reported unavailable; nothing is served from another region.', 'Exports are cut in-region and delivered from that region\'s door.'])}
@@ -95,7 +95,7 @@ export const PRODUCTS = {
     }
   },
   registries: {
-    title: 'Agentic Registries — who may call, and what they did', h1: 'The registry of agents on the estate.',
+    title: 'Agentic Registries for AI agents — who may call, and what they did', h1: 'The registry of agents on the estate.',
     reason: 'Registries is the security and confirms layer: which agents are known to the estate — identity, the Agent Card they present, what they are licensed to read, which nodes, until when, revoked or not — and the signed record of what they did: CMR signing, attestations, receipts. Eleven doors, one list. Registered once, known in every market.',
     body(ctx, host) {
       return `<h2>${ctx.h('Scope')}</h2>${num(ctx.sec(), ['Unit: one registration per agent (or per firm fleet), one receipt per call that produces a record.', 'State: <strong>gate not yet in service.</strong> The public doors answer any caller read-only today; the registration on-ramp, the licence check at the door and the receipts are built under their own order. Stated flatly.', 'Doors that will carry the gate: the eleven regional doors and the apex (' + totals(ctx).nodes + ' live at render).'])}
@@ -107,7 +107,7 @@ export const PRODUCTS = {
     }
   },
   radar: {
-    title: 'Agentic RADAR — the estate numbers', h1: 'The estate, live, on one page.',
+    title: 'Agentic RADAR for AI agents — the estate numbers', h1: 'The estate, live, on one page.',
     reason: 'RADAR is the numbers page: records and events per node, door response times, agent calls per door, sweep motion, provenance coverage, residency, registry state, machine surfaces, and the cost of the record. Every figure is a door, a log or a ledger; nothing quoted from a third party. radar.json beside it, free, no registration.',
     body() { return ''; }   // §7 body is rendered by radar.js
   }
