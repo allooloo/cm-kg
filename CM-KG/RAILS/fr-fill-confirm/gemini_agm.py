@@ -3,7 +3,7 @@ the category names, so the read is over the headline set plus any cached results
 registry, and returns meeting / record dates an announcement STATES and any registry named. Label: 'read by Gemini'."""
 from fc_common import *
 issuers = load_issuers(); byk = {key(r): r for r in issuers}
-rows = {r['_tab'] + '|' + r['Symbol']: r for r in all_rows()}
+rows = {r['_tab'] + '|' + r['ISIN']: r for r in all_rows()}
 EV = events(); have = set(e['exchange'] + '|' + e['ticker'] for e in EV if e['event_type'] == 'agm_egm')
 by_iss = {}
 for e in EV:

@@ -5,7 +5,7 @@ function Step($name, $cmd) { "== $name $(Get-Date -Format 'HH:mm')" | Out-File -
 Step 'aliases' { $env:THREADS = '5'; python alias_sources.py }
 Step 'claude adjudicate' { python claude_adjudicate.py }
 Step 'annual reports' { $env:THREADS = '4'; python annual_reports.py }
-Step 'chatgpt submit' { python chatgpt_batch.py submit }
+Step 'chatgpt submit' { if (Test-Path raw\openai_batch_reports.json) { 'batch already submitted (resume)' } else { python chatgpt_batch.py submit } }
 Step 'gemini agm' { $env:THREADS = '6'; python gemini_agm.py }
 Step 'perplexity' { $env:THREADS = '4'; $env:PPLX_MAX = '400'; python perplexity_pages.py }
 Step 'rematch' { $env:THREADS = '4'; python rematch.py }

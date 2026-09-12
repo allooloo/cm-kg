@@ -13,7 +13,7 @@ import re
 from fc_common import *
 from collections import Counter
 issuers = load_issuers(); byk = {key(r): r for r in issuers}
-rows = {r['_tab'] + '|' + r['Symbol']: r for r in all_rows()}
+rows = {r['_tab'] + '|' + r['ISIN']: r for r in all_rows()}
 isin_lei = pond.read_json_latest(NODE, 'width0', 'isin_lei_hits.json') or {}; lei_rec = {d['key']: d for d in pond.read_jsonl_all(NODE, 'width0', 'lei_records.jsonl', key='key')}
 RCS = {d['key']: d for d in pond.read_jsonl_all(NODE, 'width0', 'lei_records.jsonl', key='key')}
 claude_lei = {d['key']: d for d in jload('raw/claude_lei.jsonl')}; claude_acn = {d['key']: d for d in jload('raw/claude_acn.jsonl')}

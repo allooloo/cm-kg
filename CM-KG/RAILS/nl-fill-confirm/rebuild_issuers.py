@@ -37,7 +37,7 @@ for ex in TABS:
     col = {h: base + 1 + i for i, h in enumerate(new)}
     def cell(rr, name): return ws.cell(row=rr, column=H[name]) if name in H else ws.cell(row=rr, column=col[name])
     for rr in range(2, ws.max_row + 1):
-        k = ex + '|' + str(cell(rr, 'Symbol').value); d = conf.get(k, {}); c = d.get('fields', {}); rp = d.get('report') or {}; tick = k.split('|')[1]
+        k = ex + '|' + str(cell(rr, 'ISIN').value); d = conf.get(k, {}); c = d.get('fields', {}); rp = d.get('report') or {}; tick = k.split('|')[1]
         aud_before[ex] += 1 if cell(rr, 'Auditor').value else 0; reg_before[ex] += 1 if cell(rr, 'Share registrar').value else 0
         cl = claude_lei.get(k)
         if cl is not None:
