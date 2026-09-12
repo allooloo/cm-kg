@@ -6,7 +6,7 @@
 // Agent Card at agent.capitalmarketsknowledgegraph.ai describes the router and lists the node agents.
 const OPERATOR = 'Allooloo Technologies Corp.'; const SERVER_VERSION = '0.11.0'; const PROTOCOL = '2025-06-18';
 const REGIONAL = {  // node -> regional door origin (Container Apps FQDN; direct to the origin, not through the node's Cloudflare hostname)
-  'ca-cm-kg': 'https://cmkg-door-ca.nicemushroom-8b4ba259.canadacentral.azurecontainerapps.io', 'uk-cm-kg': 'https://cmkg-door-uk.__UK_FQDN__', 'au-cm-kg': 'https://cmkg-door-au.politeplant-e73e0a46.australiaeast.azurecontainerapps.io',
+  'ca-cm-kg': 'https://cmkg-door-ca.nicemushroom-8b4ba259.canadacentral.azurecontainerapps.io', 'uk-cm-kg': 'https://cmkg-door-uk.livelybay-3553b0b4.uksouth.azurecontainerapps.io', 'au-cm-kg': 'https://cmkg-door-au.politeplant-e73e0a46.australiaeast.azurecontainerapps.io',
   'sg-cm-kg': 'https://cmkg-door-sg.ambitioussand-03ccaab5.southeastasia.azurecontainerapps.io', 'ch-cm-kg': 'https://cmkg-door-ch.gentledune-3c70acd2.switzerlandnorth.azurecontainerapps.io', 'de-cm-kg': 'https://cmkg-door-de.greensand-6ae55941.germanywestcentral.azurecontainerapps.io',
   'fr-cm-kg': 'https://cmkg-door-fr.agreeablehill-d2a7639b.francecentral.azurecontainerapps.io', 'nl-cm-kg': 'https://cmkg-door-nl.purpleisland-61490c7a.westeurope.azurecontainerapps.io', 'jp-cm-kg': 'https://cmkg-door-jp.calmpebble-18a3633a.japaneast.azurecontainerapps.io',
   'kr-cm-kg': 'https://cmkg-door-kr.calmpond-68249885.koreacentral.azurecontainerapps.io', 'us-cm-kg': 'https://cmkg-door-us.purpleglacier-e6bfd21c.eastus.azurecontainerapps.io' };

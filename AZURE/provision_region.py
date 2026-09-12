@@ -173,6 +173,46 @@ elif step == 'go':
             recs = cf('GET', f'/zones/{zone}/dns_records?name={h}&type=CNAME', tok=tok).get('result') or []
             for r0 in recs: r = cf('PATCH', f'/zones/{zone}/dns_records/{r0["id"]}', {'proxied': True}, tok=tok); log(f"CNAME {h} proxied: {r.get('success')}")
     z = cf('PATCH', f'/zones/{zone}/settings/ssl', {'value': 'strict'}, tok=tok); log(f"zone SSL strict: {z.get('success')}")
+elif step in ('stage', 'check'):
+    # CEO rule (Sept 12): no polling. stage = for each hostname: TXT asuid, Workers binding off mcp.*, placeholder records off, DNS-only CNAME to the app,
+    # hostname added, ONE bind attempt, move on. check = one look: certificate Succeeded -> bind once if needed and turn the record proxied; otherwise
+    # report pending. Scheduled once at +30 minutes per region; still pending at +60 is reported as pending, never retried.
+    zone = ZONES.get(cc)
+    if not zone: raise SystemExit(f'zone id for {cc} not on file (HITL)')
+    a = az('containerapp', 'show', '-n', app, '-g', rg); fqdn = a['properties']['configuration']['ingress']['fqdn']
+    e = az('containerapp', 'env', 'show', '-n', env_name, '-g', rg); vid = e['properties']['customDomainConfiguration']['customDomainVerificationId']
+    tok = open(r'C:\ALLOOLOO\AGENT KEYS\cloudflare.txt', encoding='utf-8').read().strip(); d1 = open(r'C:\ALLOOLOO\AGENT KEYS\cloudflare-d1.txt', encoding='utf-8').read().strip()
+    hosts = (f'agent.{node}.ai', host)
+    if step == 'stage':
+        for h in hosts:
+            recs = cf('GET', f'/zones/{zone}/dns_records?name=asuid.{h}&type=TXT', tok=tok).get('result') or []
+            if not any(r.get('content', '').strip('"') == vid for r in recs): cf('POST', f'/zones/{zone}/dns_records', {'type': 'TXT', 'name': f'asuid.{h}', 'content': vid, 'ttl': 300}, tok=tok); log(f'TXT asuid.{h} created')
+            if h == host:
+                for d in (cf('GET', f'/accounts/{CF_ACCT}/workers/domains?hostname={host}', tok=d1).get('result') or []):
+                    r = cf('DELETE', f'/accounts/{CF_ACCT}/workers/domains/{d["id"]}', tok=d1); log(f"workers custom-domain binding for {host} removed: {r.get('success')} (the Worker stays deployed)")
+            recs = cf('GET', f'/zones/{zone}/dns_records?name={h}', tok=tok).get('result') or []
+            for r0 in [r for r in recs if r['type'] in ('A', 'AAAA')]:
+                r = cf('DELETE', f'/zones/{zone}/dns_records/{r0["id"]}', tok=tok); log(f"{h}: placeholder {r0['type']} {r0['content']} removed: {r.get('success')}")
+            cn = [r for r in recs if r['type'] == 'CNAME']
+            if not cn: r = cf('POST', f'/zones/{zone}/dns_records', {'type': 'CNAME', 'name': h, 'content': fqdn, 'proxied': False, 'ttl': 300}, tok=tok); log(f"CNAME {h} -> {fqdn} (DNS only): {r.get('success')}")
+            elif cn[0]['content'] != fqdn: r = cf('PATCH', f'/zones/{zone}/dns_records/{cn[0]["id"]}', {'content': fqdn}, tok=tok); log(f"CNAME {h} repointed -> {fqdn}: {r.get('success')}")
+            hn = az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or []
+            if not any(x.get('name') == h for x in hn): az('containerapp', 'hostname', 'add', '-n', app, '-g', rg, '--hostname', h, check=False); log(f'hostname {h} add attempted')
+            b = az('containerapp', 'hostname', 'bind', '-n', app, '-g', rg, '--hostname', h, '--environment', env_name, '--validation-method', 'TXT', check=False)
+            log(f"hostname {h}: one bind attempt {'succeeded' if b is not None else 'returned pending (certificate provisioning)'} — check at +30 minutes")
+    else:
+        certs = {c['properties'].get('subjectName'): c['properties'].get('provisioningState') for c in (az('containerapp', 'env', 'certificate', 'list', '-g', rg, '-n', env_name, '--managed-certificates-only', check=False) or [])}
+        hn = {x.get('name'): x.get('bindingType') for x in (az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or [])}
+        for h in hosts:
+            st = certs.get(h); bt = hn.get(h)
+            if bt != 'SniEnabled' and st == 'Succeeded': az('containerapp', 'hostname', 'bind', '-n', app, '-g', rg, '--hostname', h, '--environment', env_name, '--validation-method', 'TXT', check=False); hn2 = {x.get('name'): x.get('bindingType') for x in (az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or [])}; bt = hn2.get(h)
+            if bt == 'SniEnabled':
+                recs = cf('GET', f'/zones/{zone}/dns_records?name={h}&type=CNAME', tok=tok).get('result') or []
+                for r0 in recs:
+                    if not r0.get('proxied'): r = cf('PATCH', f'/zones/{zone}/dns_records/{r0["id"]}', {'proxied': True}, tok=tok); log(f"{h}: certificate Succeeded, bound, CNAME now proxied: {r.get('success')}")
+                    else: log(f'{h}: bound and proxied')
+            else: log(f"{h}: certificate {st or 'not created'}, binding {bt or 'none'} — PENDING (reported, not retried)")
+        z = cf('PATCH', f'/zones/{zone}/settings/ssl', {'value': 'strict'}, tok=tok); log(f"zone SSL strict: {z.get('success')}")
 elif step == 'status':
     a = az('containerapp', 'show', '-n', app, '-g', rg); fqdn = a['properties']['configuration']['ingress']['fqdn']
     hn = az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or []
