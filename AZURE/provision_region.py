@@ -10,9 +10,10 @@ Tenant guard: refuses unless az account show is the tenant and subscription of r
 import json, os, sys, subprocess, glob, re, time, urllib.request
 TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-41ee6d087b41'; ACR = 'allooloocmkg'; ACR_SERVER = 'allooloocmkg.azurecr.io'
 CF_ACCT = 'dd2832b36f171b815f84c8487aada36b'
-ZONES = {'ca': None, 'uk': None, 'au': None, 'sg': '0d4ae29fdde22945ffd2858bc2922576', 'ch': '0ea4358fbd0c1dc5ccf069448ccefe48', 'de': '0e7b54741212fb036c2cf18b9392ed25', 'fr': '645c30886df97804e3b793399e303c2b', 'nl': 'e5a042d3df88b7e170d5225ecfacb008', 'jp': 'f1c120f9d544c4af28bd6029ce071b96', 'kr': 'cd87134802ca140f4767253f39453ce1', 'us': '64516e94b82d13781980dff99c20c8b0'}
+ZONES = {'ca': '4d2c6dc2f534dd8c013f6e66544eed4c', 'uk': '999f8cab6ae570a878379f0e37cd87b0', 'au': '8732370fd5742f40dba657be3eab5d37', 'sg': '0d4ae29fdde22945ffd2858bc2922576', 'ch': '0ea4358fbd0c1dc5ccf069448ccefe48', 'de': '0e7b54741212fb036c2cf18b9392ed25', 'fr': '645c30886df97804e3b793399e303c2b', 'nl': 'e5a042d3df88b7e170d5225ecfacb008', 'jp': 'f1c120f9d544c4af28bd6029ce071b96', 'kr': 'cd87134802ca140f4767253f39453ce1', 'us': '64516e94b82d13781980dff99c20c8b0'}
 cc, region, step = sys.argv[1], sys.argv[2], sys.argv[3]; tag = sys.argv[4] if len(sys.argv) > 4 else 'latest'
-node = f'{cc}-cm-kg'; rg = f'allooloo-cmkg-{region}'; sa = f'allooloocmkg{cc}pond'; env_name = f'cmkg-env-{region}'; app = f'cmkg-door-{cc}'; host = f'mcp.{node}.ai'
+node = f'{cc}-cm-kg'; rg = f'allooloo-cmkg-{region}'; sa = f'allooloocmkg{cc}pond'; app = f'cmkg-door-{cc}'; host = f'mcp.{node}.ai'
+env_name = open(rf'C:\ALLOOLOO\AZURE\env-{cc}.txt').read().strip() if os.path.exists(rf'C:\ALLOOLOO\AZURE\env-{cc}.txt') else f'cmkg-env-{region}'
 LOG = r'C:\ALLOOLOO\AZURE\provision.log'
 def log(msg):
     line = f"{time.strftime('%Y-%m-%d %H:%M')} [{cc} {region} {step}] {msg}"; print(line, flush=True); open(LOG, 'a', encoding='utf-8').write(line + '\n')
@@ -73,9 +74,16 @@ elif step == 'upload':
         az('storage', 'blob', 'upload', '--account-name', sa, '--account-key', k, '-c', 'pond', '-n', f'door/{fn}', '-f', os.path.join(tmp, fn), '--overwrite', 'true', '--content-type', 'application/json', '--no-progress', check=False)
     log(f"door index: {len(idx['keys'])} keys, {len(idx['ticker'])} tickers, {len(idx['isin'])} isins, {len(idx['alias'])} aliases; facts + nodes uploaded")
 elif step == 'app':
-    e = az('containerapp', 'env', 'show', '-n', env_name, '-g', rg, check=False)
-    if not e: e = az('containerapp', 'env', 'create', '-n', env_name, '-g', rg, '-l', region, '--logs-destination', 'none', '--tags', 'order=ORDER-018'); log(f"environment {env_name} {e['properties']['provisioningState']}")
-    else: log(f"environment {env_name} present ({e['properties']['provisioningState']})")
+    # a failed environment is left standing (Rule One) and the next name is used: cmkg-env-<region>, -2, -3 …
+    for suffix in ('', '-2', '-3'):
+        cand = env_name + suffix; e = az('containerapp', 'env', 'show', '-n', cand, '-g', rg, check=False)
+        if e and e['properties']['provisioningState'] in ('Succeeded', 'InProgress', 'Waiting', 'Updating'): env_name = cand; log(f"environment {cand} present ({e['properties']['provisioningState']})"); break
+        if e: log(f"environment {cand} is {e['properties']['provisioningState']} — left standing, trying the next name"); continue
+        e = az('containerapp', 'env', 'create', '-n', cand, '-g', rg, '-l', region, '--tags', 'order=ORDER-018', check=False)
+        if e and e['properties']['provisioningState'] == 'Succeeded': env_name = cand; log(f"environment {cand} {e['properties']['provisioningState']} (Log Analytics workspace auto-created by the CLI)"); break
+        log(f"environment {cand} create returned {(e or {}).get('properties', {}).get('provisioningState')}")
+    else: raise SystemExit('no usable environment')
+    open(rf'C:\ALLOOLOO\AZURE\env-{cc}.txt', 'w').write(env_name)
     k = storage_key(); acr_pw = az('acr', 'credential', 'show', '-n', ACR, '--query', 'passwords[0].value', '-o', 'tsv', raw=True)
     a = az('containerapp', 'show', '-n', app, '-g', rg, check=False)
     image = f'{ACR_SERVER}/cmkg-door:{tag}'
@@ -100,8 +108,13 @@ elif step in ('bind', 'flip'):
             if not any(r.get('content', '').strip('"') == vid for r in recs):
                 r = cf('POST', f'/zones/{zone}/dns_records', {'type': 'TXT', 'name': f'asuid.{h}', 'content': vid, 'ttl': 300}, tok=tok); log(f"TXT asuid.{h} {'created' if r.get('success') else r}")
             else: log(f'TXT asuid.{h} present')
+            for attempt in range(6):  # the add validates the asuid TXT record, which takes a minute to propagate
+                hn = az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or []
+                if any(x.get('name') == h for x in hn): break
+                az('containerapp', 'hostname', 'add', '-n', app, '-g', rg, '--hostname', h, check=False); time.sleep(15)
             hn = az('containerapp', 'hostname', 'list', '-n', app, '-g', rg, check=False) or []
-            if not any(x.get('name') == h for x in hn): az('containerapp', 'hostname', 'add', '-n', app, '-g', rg, '--hostname', h, check=False); log(f'hostname {h} added')
+            if not any(x.get('name') == h for x in hn): log(f'hostname {h} could not be added (TXT not visible yet) — rerun bind'); continue
+            log(f'hostname {h} added')
             b = az('containerapp', 'hostname', 'bind', '-n', app, '-g', rg, '--hostname', h, '--environment', env_name, '--validation-method', 'TXT', check=False)
             log(f"hostname {h} bind: {'ok' if b is not None else 'pending/failed — rerun bind'}")
     else:

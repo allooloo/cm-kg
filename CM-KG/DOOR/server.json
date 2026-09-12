@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.allooloo/cm-kg",
   "title": "Capital Markets Agents: MCP+A2A Canada",
-  "description": "Know every Canadian and United Kingdom issuer, agent-ready. Instantly. Provably. Toronto to Tokyo.",
-  "version": "0.10.0",
+  "description": "Know every Canadian and UK issuer, agent-ready. Instantly. Provably. Ten markets served in-country.",
+  "version": "0.10.1",
   "websiteUrl": "https://capitalmarketsknowledgegraph.ai",
   "repository": {
     "url": "https://github.com/allooloo/cm-kg",
