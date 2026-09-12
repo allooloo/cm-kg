@@ -12,7 +12,7 @@ for line in open('raw/dart_company.jsonl', encoding='utf-8'):
     try: j = json.loads(line)
     except Exception: continue
     if j.get('corp_code'): prof[j['corp_code']] = j
-MKT = {'유가증권': 'KOSPI', '코스닥': 'KOSDAQ', '코넥스': 'KONEX', 'KOSPI': 'KOSPI', 'KOSDAQ': 'KOSDAQ', 'KONEX': 'KONEX'}
+MKT = {'유가증권': 'KOSPI', '유가': 'KOSPI', '코스닥': 'KOSDAQ', '코넥스': 'KONEX', 'KOSPI': 'KOSPI', 'KOSDAQ': 'KOSDAQ', 'KONEX': 'KONEX'}
 rows = []; skipped = Counter()
 for x in K['rows']:
     m = MKT.get((x.get('시장구분') or '').strip())
