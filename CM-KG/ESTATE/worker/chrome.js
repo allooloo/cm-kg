@@ -2,13 +2,13 @@
 // Regions are never abbreviated: REGION_FULL is the list of record and is written out wherever residency appears. The kicker is never the opening line.
 export const OPERATOR = 'Allooloo Technologies Corp.';
 export const CORPORATE = 'https://allooloo.io';
-export const CONTACT = 'developers@allooloo.ai';
+export const CONTACT = 'https://allooloo.io/#contact';   // the contact form is the only support door (CEO, Sept 12 2026)
 export const CONTACT2 = 'allooloo@hey.com';
 export const LEGAL = 'legal@allooloo.ai';
 export const APEX = 'https://mcp.capitalmarketsknowledgegraph.ai';
 export const APEX_AGENT = 'https://agent.capitalmarketsknowledgegraph.ai';
 export const FORM = 'https://formspree.io/f/moeqzgll';
-export const SURFACES_VERSION = '2026-09-12.7';   // bumped on every estate deploy; prior renders go to the pond (snapshot_surfaces.py)
+export const SURFACES_VERSION = '2026-09-12.8';   // bumped on every estate deploy; prior renders go to the pond (snapshot_surfaces.py)
 export const KICKER = 'Microsoft AI Cloud Partner · Microsoft Azure · eleven regions, in-country';   // Proof section first line and footer line only
 export const COMPANY_TITLE = 'AI Agents · MCP + A2A · Capital Markets Knowledge Graph — Allooloo';
 export const REGION_FULL = { ca: 'Canada Central (Toronto, Canada)', us: 'East US (Virginia, United States)', uk: 'UK South (London, United Kingdom)', fr: 'France Central (Paris, France)', nl: 'West Europe (Amsterdam, Netherlands)', ch: 'Switzerland North (Zurich, Switzerland)', de: 'Germany West Central (Frankfurt, Germany)', au: 'Australia East (Sydney, Australia)', sg: 'Southeast Asia (Singapore)', jp: 'Japan East (Tokyo, Japan)', kr: 'Korea Central (Seoul, South Korea)', hk: 'East Asia (Hong Kong — beacon, partner wanted)' };
@@ -17,7 +17,7 @@ export const NAV = [['HOME', 'https://allooloo.io/'], ['Trades', 'https://agenti
 export const CSP = "default-src 'none'; img-src 'self' data:; style-src 'self'; base-uri 'none'; form-action https://formspree.io; frame-ancestors 'none'; upgrade-insecure-requests";
 export const BOTS = ['GPTBot', 'ClaudeBot', 'Claude-User', 'Claude-SearchBot', 'Google-Extended', 'PerplexityBot', 'Perplexity-User', 'OAI-SearchBot', 'ChatGPT-User', 'Bingbot', 'Applebot', 'Applebot-Extended', 'Amazonbot', 'CCBot', 'DuckAssistBot', 'meta-externalagent', 'Bytespider', 'cohere-ai', 'Diffbot', 'YouBot', 'MistralAI-User', 'xAI-Grok'];
 export const ROBOTS = host => ['User-agent: *\nAllow: /'].concat(BOTS.map(u => `User-agent: ${u}\nAllow: /`)).join('\n\n') + `\n\nSitemap: https://${host}/sitemap.xml\n`;
-export const SECURITY = host => `Contact: mailto:${CONTACT}\nContact: https://allooloo.io/security\nExpires: 2027-09-12T00:00:00.000Z\nPreferred-Languages: en\nCanonical: https://${host}/.well-known/security.txt\nPolicy: https://allooloo.io/security\n`;
+export const SECURITY = host => `Contact: ${CONTACT}\nContact: https://allooloo.io/security\nExpires: 2027-09-12T00:00:00.000Z\nPreferred-Languages: en\nCanonical: https://${host}/.well-known/security.txt\nPolicy: https://allooloo.io/security\n`;
 export const ICONS = ['/favicon.ico', '/favicon.svg', '/apple-touch-icon.png', '/icon-48.png', '/icon-96.png', '/icon-144.png', '/icon-192.png', '/icon-512.png', '/site.webmanifest', '/mark.svg', '/allooloo-logo.svg', '/allooloo-logo-dark.svg', '/allooloo-logo-1200.png', '/estate.css'];
 export const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 export const int = n => (typeof n === 'number' && isFinite(n)) ? String(Math.trunc(n)) : '';
@@ -29,7 +29,7 @@ export const table = (cols, rows, cls) => `<table${cls ? ` class="${cls}"` : ''}
 export function form(host) {
   return `<form action="${FORM}" method="POST"><input type="hidden" name="_subject" value="${esc(host)} contact"><input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true"><input type="hidden" name="_next" value="${CORPORATE}">
 <label>email <input type="email" name="email" required></label><label>message <textarea name="message" rows="4" required></textarea></label><button type="submit">send</button></form>
-<p class="muted">${CONTACT} · the agents that built this read their own mail: ${CONTACT2}</p>`;
+<p class="muted">The agents that built this read their own mail: ${CONTACT2}</p>`;
 }
 export function headers(meta, extra) {
   return { 'Content-Security-Policy': CSP, 'Strict-Transport-Security': 'max-age=31536000; includeSubDomains', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-Frame-Options': 'DENY', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
@@ -52,10 +52,10 @@ export function page({ host, title, desc, h1, body, asOf, version, state, jsonld
 <link rel="stylesheet" href="/estate.css">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" type="image/png" sizes="48x48" href="/icon-48.png"><link rel="icon" type="image/png" sizes="96x96" href="/icon-96.png"><link rel="icon" type="image/png" sizes="144x144" href="/icon-144.png"><link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png"><link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt"><link rel="alternate" type="application/json" href="/facts.json" title="facts.json">
-<script type="application/ld+json">${JSON.stringify(ld)}</script></head><body>
+<script type="application/ld+json">${JSON.stringify(ld)}</script></head><body${host === 'allooloo.io' ? ' class="site"' : ''}>
 <header><p class="title-line">${esc(title)}</p><a class="logo" href="${CORPORATE}/" aria-label="Allooloo"><img src="/allooloo-logo.svg" width="200" height="50" alt="Allooloo"></a>
 <nav aria-label="Estate"><ul>${NAV.map(([t, u]) => `<li><a href="${u}"${u.startsWith(`https://${host}/`) ? ' aria-current="page"' : ''}>${t}</a></li>`).join('')}</ul></nav>
 <p class="state"><span class="pill${live ? ' live' : ''}">${esc(state || 'record')}</span> as of ${esc(asOf || today())} · version ${esc(version || SURFACES_VERSION)} · ${esc(host)}</p></header>
 <main><h1>${esc(h1)}</h1>${body}</main>
-<footer><p><a href="mailto:${CONTACT}">Support</a> · <a href="https://allooloo.io/status">Status</a> · <a href="https://allooloo.io/terms">Terms of Use</a> · <a href="https://allooloo.io/privacy">Privacy</a> · <a href="https://allooloo.io/security">Report a Security Issue</a> · <a href="https://allooloo.io/no-cookies">No cookies</a> · <a href="/llms.txt">llms.txt</a> · Microsoft AI Cloud Partner · © 2026 ${OPERATOR}</p></footer></body></html>`;
+<footer><p>${host === 'allooloo.io' ? `The agents that built this read their own mail: ${CONTACT2} · ${OPERATOR} · Vancouver &amp; Toronto, Canada.` : `<a href="${CONTACT}">Support</a> · <a href="https://allooloo.io/status">Status</a> · <a href="https://allooloo.io/terms">Terms of Use</a> · <a href="https://allooloo.io/privacy">Privacy</a> · <a href="https://allooloo.io/security">Report a Security Issue</a> · <a href="https://allooloo.io/no-cookies">No cookies</a> · <a href="/llms.txt">llms.txt</a> · Microsoft AI Cloud Partner · © 2026 ${OPERATOR}`}</p></footer></body></html>`;
 }
