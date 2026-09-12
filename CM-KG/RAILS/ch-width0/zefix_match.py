@@ -7,6 +7,25 @@ from concurrent.futures import ThreadPoolExecutor
 UA = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36', 'Content-Type': 'application/json', 'Origin': 'https://www.zefix.ch', 'Referer': 'https://www.zefix.ch/en/search/entity/welcome'}
 LF = {x['id']: x['name']['en'] for x in json.load(open('raw/zefix_legalform.json', encoding='utf-8'))}
 rows = json.load(open('raw/roster.json', encoding='utf-8'))
+# second route (2026-09-11): SIX short names are abbreviated, so the GLEIF legal name (LEI per ISIN mapping or name-exact) is the second query, and a
+# candidate whose UID equals the LEI record's registeredAs is exact by the registry itself
+ISIN_LEI = json.load(open('raw/isin_lei_hits.json', encoding='utf-8')) if os.path.exists('raw/isin_lei_hits.json') else {}
+LEIREC = {}
+if os.path.exists('raw/lei_records.jsonl'):
+    for line in open('raw/lei_records.jsonl', encoding='utf-8'):
+        try: d = json.loads(line); LEIREC[d['key']] = d
+        except Exception: pass
+LEIMATCH = {}
+if os.path.exists('raw/lei_match.jsonl'):
+    for line in open('raw/lei_match.jsonl', encoding='utf-8'):
+        try: d = json.loads(line); LEIMATCH[d['name']] = d
+        except Exception: pass
+def lei_rec_for(r):
+    lei = (ISIN_LEI.get(r['isin']) or '').split('|')[0]
+    if not lei:
+        m = (LEIMATCH.get(r['name']) or {}).get('matches') or []
+        lei = m[0][0] if m else ''
+    return LEIREC.get(lei) or {}
 def name_key(s):
     s = (s or '').upper().replace('&', ' AND ').replace('.', '').replace(',', '').replace('-', ' ')
     s = re.sub(r'\b(AG|SA|LTD|LIMITED|INC|PLC|N|I|N\.V|NV|HOLDING|HOLDINGS|GROUP|GROUPE|GRUPPE|SOCIETE ANONYME|AKTIENGESELLSCHAFT|CORP|CORPORATION|CO)\b', ' ', s)
@@ -29,7 +48,18 @@ def match(r):
     nk = name_key(q); exact = [c for c in cands if name_key(c.get('name')) == nk and c.get('legalFormId') == 3]
     near = [c for c in cands if c.get('legalFormId') == 3 and (name_key(c.get('name')).startswith(nk) or nk.startswith(name_key(c.get('name'))))] if not exact else []
     pick = exact[0] if len(exact) == 1 else (exact[0] if exact and all(c['uid'] == exact[0]['uid'] for c in exact) else None)
-    out = {'query': q, 'n_cands': len(cands), 'exact': [(c['name'], c['uidFormatted'], c['legalSeat'], c['status']) for c in exact][:5], 'near': [(c['name'], c['uidFormatted'], c['legalSeat']) for c in near][:5]}
+    route = 'SIX short name = Zefix name (corporation)' if pick else ''
+    if not pick:
+        rec = lei_rec_for(r); gname = rec.get('name') or ''; ras = re.sub(r'[^A-Z0-9]', '', (rec.get('registeredAs') or '').upper())
+        if gname:
+            cands2, st2 = search(gname[:60])
+            if cands2:
+                by_uid = [c for c in cands2 if ras and re.sub(r'[^A-Z0-9]', '', (c.get('uid') or '').upper()) == ras]
+                nk2 = name_key(gname); exact2 = [c for c in cands2 if name_key(c.get('name')) == nk2 and c.get('legalFormId') == 3]
+                if by_uid: pick = by_uid[0]; route = 'GLEIF legal name -> Zefix candidate whose UID equals the LEI record registeredAs'
+                elif len(exact2) == 1 or (exact2 and all(c['uid'] == exact2[0]['uid'] for c in exact2)): pick = exact2[0]; route = 'GLEIF legal name = Zefix name (corporation)'
+                cands = cands + cands2; q = q + ' | ' + gname
+    out = {'query': q, 'route': route, 'n_cands': len(cands), 'exact': [(c['name'], c['uidFormatted'], c['legalSeat'], c['status']) for c in exact][:5], 'near': [(c['name'], c['uidFormatted'], c['legalSeat']) for c in near][:5]}
     if pick:
         out.update({'uid': pick.get('uidFormatted'), 'uid_raw': pick.get('uid'), 'chid': pick.get('chidFormatted'), 'name': pick.get('name'), 'legal_seat': pick.get('legalSeat'), 'register_office_id': pick.get('registerOfficeId'), 'legal_form': LF.get(pick.get('legalFormId'), str(pick.get('legalFormId'))), 'status': pick.get('status'), 'shab_date': pick.get('shabDate'), 'excerpt_url': pick.get('cantonalExcerptWeb'), 'src': 'https://www.zefix.ch/en/search/entity/list?name=' + requests.utils.quote(q)})
     return out
@@ -37,7 +67,9 @@ if __name__ == '__main__':
     fn_out = 'raw/zefix.jsonl'; done = set()
     if os.path.exists(fn_out):
         for line in open(fn_out, encoding='utf-8'):
-            try: done.add(json.loads(line)['key'])
+            try:
+                d = json.loads(line)
+                if d.get('uid'): done.add(d['key'])  # rows without a match are retried (the assembler takes the newest row per key)
             except Exception: pass
     todo = [r for r in rows if r['security_type'] in ('Corporate', 'Participation certificate') and r['exchange'] + '|' + r['symbol'] not in done and r['isin'].startswith('CH')]
     print('todo', len(todo), 'done', len(done), flush=True)
