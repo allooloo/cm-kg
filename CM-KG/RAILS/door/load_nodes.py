@@ -134,7 +134,8 @@ def load_node(cc, index, facts_nodes):
     lei_legal_names = {}
     if M.get('alias_from_lei_record'):
         for lr in pond.read_jsonl_all(node, 'width0', 'lei_records.jsonl'):
-            if lr.get('lei') and lr.get('name'): lei_legal_names[lr['lei']] = (lr['name'], lr.get('src') or f"https://api.gleif.org/api/v1/lei-records/{lr['lei']}")
+            lid = lr.get('lei') or lr.get('key')
+            if lid and lr.get('name'): lei_legal_names[lid] = (lr['name'], lr.get('src') or f'https://api.gleif.org/api/v1/lei-records/{lid}')
     wb = openpyxl.load_workbook(xlsx, read_only=True); n = 0; counts = {}
     for tab, exs in M['tabs'].items():
         ws = wb[tab]; it = ws.iter_rows(values_only=True); hdr = next(it)
