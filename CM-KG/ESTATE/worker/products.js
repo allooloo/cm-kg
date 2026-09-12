@@ -17,7 +17,7 @@ const access = (ctx, extra) => num(ctx.sec(), [`Apex door (MCP, streamable-http,
 const provenance = (ctx) => num(ctx.sec(), ['Every field carries its source URL, the reader (registry, exchange list, filing tag or named engine) and a state (sourced · filled · confirmed); none is served without source and read date.', 'Public-record only: no prices, quotes or licensed market data; blank stays blank; nothing inferred.', 'Records are versioned and never deleted; the record <code>as_of</code> and the field read dates are separate fields.', '"Confirmed" is the word; signing is reserved for CMR (cm-record.org) and is not yet in service.']);
 const estate = (ctx) => `${num(ctx.sec(), ['Eleven doors in eleven Azure regions, records stored and served in the issuer\'s jurisdiction; the apex holds an index only and forwards; no fallback across borders.', 'Hong Kong: a beacon at Width 0, local partner wanted, no door.'])}${nodesTable(ctx)}`;
 const kit = (ctx, host, more) => num(ctx.sec(), [`<a href="/llms.txt"><code>/llms.txt</code></a> · <a href="/facts.json"><code>/facts.json</code></a> · <a href="/.well-known/agent-card.json"><code>/.well-known/agent-card.json</code></a> · <a href="/.well-known/security.txt"><code>/.well-known/security.txt</code></a> · <a href="/sitemap.xml"><code>/sitemap.xml</code></a> · <a href="/robots.txt"><code>/robots.txt</code></a>`, 'Headers on every response: Content-Security-Policy (strict), Strict-Transport-Security, X-Content-Type-Options, Referrer-Policy, X-Frame-Options, X-CMR-Node, X-CMR-As-Of, X-CMR-Version, X-CMR-Source, X-CMR-Operator, X-Surface-Version.'].concat(more || []));
-const contact = (ctx, host) => num(ctx.sec(), ['The contact form is the only support door.', `Form: ${ctx.form(host)}`]);
+const contact = (ctx, host) => ctx.form(host);
 
 export const PRODUCTS = {
   trades: {
@@ -31,7 +31,7 @@ export const PRODUCTS = {
 <h2>${ctx.h('Access')}</h2>${access(ctx)}
 <h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}
 <h2>${ctx.h('Licence shapes')}</h2>${num(ctx.sec(), LICENCES.map(([n, l]) => `<code>${esc(n)}</code>: ${esc(l)}.`).concat(['Licence only; no services. The licensee operates; the operator does not consult, integrate or run the licensee\'s motion.']))}
-<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>${ctx.h('Contact')}</h2>${contact(ctx, host)}`;
+<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>Contact Us</h2>${contact(ctx, host)}`;
     }
   },
   ask: {
@@ -43,7 +43,7 @@ export const PRODUCTS = {
 <h2>${ctx.h('What an answer contains')}</h2>${num(ctx.sec(), ['The Capital Markets Record: identity fields (name, ticker, exchange, ISIN, LEI, sector, jurisdiction, auditor, registrar, fiscal period …), each with <code>source_url</code>, <code>read_by</code> and <code>state</code>.', 'Aliases: every name the issuer has traded or filed under, each sourced.', 'Events: dated, typed disclosure events over the trailing twelve months, each with the regulator\'s or exchange\'s URL.', 'Gaps: the fields that could not be read, with the reason.', 'Never: a summary, a price, a quote, an opinion.'])}
 <h2>${ctx.h('Duty')}</h2>${num(ctx.sec(), ['The desk exists for the duty a dealer cannot decline: know every product on the shelf, continuously.', 'By jurisdiction: ' + ORDER.map(cc => `${ctx.nodes[cc].country} — ${DUTY[cc]}`).join('; ') + '.'])}
 <h2>${ctx.h('Access')}</h2>${access(ctx, ['Desk: <a href="https://ask.allooloo.io/">https://ask.allooloo.io/</a>'])}
-<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>${ctx.h('Contact')}</h2>${contact(ctx, host)}`;
+<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>Contact Us</h2>${contact(ctx, host)}`;
     }
   },
   coverage: {
@@ -55,7 +55,7 @@ export const PRODUCTS = {
 <h2>${ctx.h('What a weekly delta contains')}</h2>${num(ctx.sec(), ['New disclosure events since the last sweep, typed: ' + EVENT_TYPES.map(t => `<code>${t}</code>`).join(' · ') + '.', 'Identity fields that changed between drops (name, auditor, registrar, fiscal period, registration status), with the old and new value and the source of each.', 'Going-concern language where the annual report carries it, as filed.', 'Gaps opened or closed on the record.', 'The drop date and the record version on every line.'])}
 <h2>${ctx.h('The duty by jurisdiction')}</h2>${table(['market', 'duty'], ORDER.map(cc => [esc(ctx.nodes[cc].country), esc(DUTY[cc])]))}
 <h2>${ctx.h('Access')}</h2>${access(ctx, ['Coverage lists ride on <code>list_events_since</code> per identifier and on the Numbers Log per node; the list itself is held by the firm.'])}
-<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>${ctx.h('Contact')}</h2>${contact(ctx, host)}`;
+<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>Contact Us</h2>${contact(ctx, host)}`;
     }
   },
   esg: {
@@ -67,7 +67,7 @@ export const PRODUCTS = {
 <h2>${ctx.h('Which event types')}</h2>${num(ctx.sec(), ['Annual and integrated reports carrying a sustainability, non-financial or TCFD-aligned section (typed <code>regulatory_filing</code> today).', 'Standalone sustainability, climate or ESG reports filed with the regulator or the exchange.', 'Governance filings: proxy and meeting circulars (<code>agm_egm</code>), director changes (<code>director_change</code>).', 'Not in the slice: press releases without a filed document behind them.'])}
 <h2>${ctx.h('Sources per market')}</h2>${table(['market', 'source of the filing'], ORDER.map(cc => [esc(ctx.nodes[cc].country), esc(src[cc])]))}
 <h2>${ctx.h('What is not carried')}</h2>${num(ctx.sec(), ['No score, rating, ranking or label from any provider.', 'No interpretation, summary or extraction of the filing\'s content beyond its date, type, title and URL.', 'No data licensed from a third party; nothing on the wire a data licence could pull back.'])}
-<h2>${ctx.h('Access')}</h2>${access(ctx)}<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>${ctx.h('Contact')}</h2>${contact(ctx, host)}`;
+<h2>${ctx.h('Access')}</h2>${access(ctx)}<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>Contact Us</h2>${contact(ctx, host)}`;
     }
   },
   issuers: {
@@ -78,7 +78,7 @@ export const PRODUCTS = {
 <h2>${ctx.h('What an issuer record carries')}</h2>${num(ctx.sec(), ['Identity: legal name as filed, ticker, exchange, security type, ISIN, LEI and its registration status, sector, jurisdiction of incorporation, registered office and head office.', 'Agents of the issuer: auditor (name, location, firm identifier where the filing tags it), registrar or transfer agent, newswire of record.', 'Periods: fiscal year end, latest annual report (URL), accounts period end.', 'Aliases: former names and other entity names, each sourced.', 'Trail: dated disclosure events over the trailing twelve months, typed, with the regulator\'s URL.', 'Gaps: what could not be read, with the reason, on the record itself.'])}
 <h2>${ctx.h('How corrections work')}</h2>${num(ctx.sec(), ['A record is corrected at its source of record — the exchange list, the corporate register, the LEI record, the filing — never by request to the operator.', 'The next sweep reads the corrected source; the field changes state and carries the new read date; the prior version stays in the pond.', 'An issuer that disputes a reading names the source; the operator re-reads that source and nothing else.'])}
 <h2>${ctx.h('The issuer licence shape')}</h2>${num(ctx.sec(), ['<code>Issuer record</code>: a listed company\'s own record, confirmed and live to every dealer agent on the estate.', 'Licence only; no services. The issuer confirms; the operator serves.'])}
-<h2>${ctx.h('Access')}</h2>${access(ctx)}<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>${ctx.h('Contact')}</h2>${contact(ctx, host)}`;
+<h2>${ctx.h('Access')}</h2>${access(ctx)}<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>Contact Us</h2>${contact(ctx, host)}`;
     }
   },
   disclosure: {
@@ -91,7 +91,7 @@ export const PRODUCTS = {
 <h2>${ctx.h('Counts per node')}</h2><div class="wrap">${table(['node', 'market', 'events', 'issuers with events', 'drop'], rows)}</div><p class="src">source: list_nodes at ${esc(APEX)}/mcp, read at render</p>
 <h2>${ctx.h('The residency rule')}</h2>${num(ctx.sec(), ['Every event list is stored and served in the jurisdiction of the issuer; the apex forwards and holds no body.', 'No fallback: a node that does not answer is reported unavailable; nothing is served from another region.', 'Exports are cut in-region and delivered from that region\'s door.'])}
 <h2>${ctx.h('Access')}</h2>${access(ctx, ['Feeds and exports sit behind the Registries layer (agent identity and licence); the public doors serve the record and the trail read-only to any caller.'])}
-<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>${ctx.h('Contact')}</h2>${contact(ctx, host)}`;
+<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>Contact Us</h2>${contact(ctx, host)}`;
     }
   },
   registries: {
@@ -103,7 +103,7 @@ export const PRODUCTS = {
 <h2>${ctx.h('What a registration carries')}</h2>${num(ctx.sec(), ['Identity: firm, agent name, the Agent Card URL presented, the public key it signs with.', 'Licence: shape (Dealer MCP access, Issuer record, Knowledge Graph API, Node operator), nodes covered, valid-from and valid-until dates.', 'State: active, expired, revoked — with the date of each change.'])}
 <h2>${ctx.h('What a receipt carries')}</h2>${num(ctx.sec(), ['Which agent called which door, the tool, the identifier, the record version served, the date and time, the region of the call.', 'For a CMR signing or attestation: the record hash, the signer, the signature, the date.', 'Receipts are kept in the region of the call and are readable by the firm that made it.'])}
 <h2>${ctx.h('Revocation')}</h2>${num(ctx.sec(), ['A registration is revoked by the operator on the firm\'s instruction, on licence expiry, or on misuse; the revocation is dated and the agent is refused on every door from that date.', 'Nothing is deleted: revoked registrations and their receipts stay on the registry.'])}
-<h2>${ctx.h('Access')}</h2>${access(ctx)}<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>${ctx.h('Contact')}</h2>${contact(ctx, host)}`;
+<h2>${ctx.h('Access')}</h2>${access(ctx)}<h2>${ctx.h('Provenance')}</h2>${provenance(ctx)}<h2>${ctx.h('Estate')}</h2>${estate(ctx)}<h2>${ctx.h('Machine kit')}</h2>${kit(ctx, host)}<h2>Contact Us</h2>${contact(ctx, host)}`;
     }
   },
   radar: {
