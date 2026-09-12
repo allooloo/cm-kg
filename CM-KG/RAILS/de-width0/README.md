@@ -27,3 +27,6 @@ Answered machines: xetra.com CSV, GLEIF (API, mapping, RA list), Tavily. Refused
 
 ## Refresh
 No scheduled task (global BUILD lock; sweeps disabled until the 014–018 chain reports). `run_refresh.ps1` to be written with the Width 1 rail.
+
+## Standing flag — Deutsche Börse data (CEO, 2026-09-11): review, not needed
+Deutsche Börse Market Data + Services and the Börse Frankfurt API are marked "revisit at build end and regularly thereafter". They are never paid for on terminal or feed terms. The Xetra Scale segment column stays blank with its reason (the Xetra instruments file carries product groups, not the Regulated Market / Scale split; the Börse Frankfurt API refuses plain clients). Listed on the HITL tab as "review, not needed".

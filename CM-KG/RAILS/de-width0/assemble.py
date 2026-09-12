@@ -151,7 +151,7 @@ for row in gd.iter_rows(min_row=2):
     for cell in row: cell.font = ARIAL
 gd.freeze_panes = 'A2'; gd.auto_filter.ref = f'A1:F{len(gap_detail) + 1}'
 HITL = [('Handelsregister', 'handelsregister.de is a public search form (no API, no deep links); the register sheet (HRA/HRB) and court are taken from the GLEIF LEI record instead. A register API key (e.g. the Common Register Portal bulk service) would give per-company sheets, officers and documents.'),
-        ('Regulated Market vs Scale', "The Xetra instruments file carries index and country groups, not the Frankfurt segment (Regulated Market / Scale); the Börse Frankfurt API refuses plain clients (403 CORS). The Segment column shows the Xetra group; the Regulated Market / Scale split needs the exchange."),
+        ('Regulated Market vs Scale — review, not needed', "Standing flag (CEO, 2026-09-11): Deutsche Börse Market Data + Services and the Börse Frankfurt API are marked 'revisit at build end and regularly thereafter' and are never paid for on terminal or feed terms. The Xetra instruments file carries index and country groups, not the Frankfurt segment (Regulated Market / Scale); the Börse Frankfurt API refuses plain clients (403 CORS). The Segment column shows the Xetra group; the Scale column stays blank with this reason."),
         ('Bundesanzeiger', 'Scrape-hostile: the annual-report column is the public search entry, link only, unverified per issuer.'),
         ('Anthropic Admin API key', 'Balance and cost reads for the spend line need an Admin API key; the Messages key answers 401.')]
 hs = wb.create_sheet('HITL — needs MK'); hs.append(['Item', 'What is needed'])
