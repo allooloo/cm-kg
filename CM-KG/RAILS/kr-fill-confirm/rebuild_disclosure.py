@@ -17,6 +17,11 @@ for e in base: e.setdefault('state', 'sourced')
 new = []
 for d in jload('raw/rematch.jsonl'):
     for e in d.get('events', []): e['state'] = 'sourced'; new.append(e)
+_gl = pond.latest(NODE, 'width1', 'grok_live.jsonl')
+if _gl:
+    for line in open(_gl, encoding='utf-8'):
+        try: e = json.loads(line); e.setdefault('state', 'sourced'); new.append(e)
+        except Exception: pass
 gem_n = 0
 for d in jload('raw/gemini_agm.jsonl'):
     r = byk.get(d['key'])
