@@ -1,5 +1,5 @@
 """ORDER-018 — United States rail, run inside the East US container (the home address is blocked by EDGAR). Keyless EDGAR with the declared
-User-Agent "Allooloo Technologies Corp. <CONTACT>"; under 8 requests a second.
+User-Agent "Allooloo Technologies Corp. <CONTACT>" (developers@allooloo.ai, the mailbox of record); under 8 requests a second. 0.1.1: a same-day re-run resumes from the finished stages in the pond drop; Gemini usage logged; door uploads in parallel.
   Width 0  company_tickers_exchange.json + submissions header per CIK (NYSE / Nasdaq / Cboe filers) -> roster; LEI by exact legal name against the
            GLEIF golden-copy US extract staged in the pond (registered-name route), ISIN from the GLEIF ISIN mapping zip; state of incorporation,
            SIC sector, business address, fiscal year end, latest annual report from the header
@@ -27,6 +27,11 @@ def put(name, data, ct='application/json'):
 def get_blob(name):
     try: return cont.get_blob_client(name).download_blob().readall()
     except Exception as e: log('blob miss', name, e); return None
+def stage(name):
+    """A finished stage of today's drop, when it exists (a re-run on the same day resumes; nothing is re-fetched or overwritten)."""
+    try: return json.loads(cont.get_blob_client(f'pond/width0/{STAMP}/{name}.json').download_blob().readall().decode('utf-8'))
+    except Exception: return None
+GU = {'calls': 0, 'prompt_tokens': 0, 'output_tokens': 0}
 _gate = threading.Lock(); _last = [0.0]
 def edgar(url, tries=4, **kw):
     for i in range(tries):
@@ -42,6 +47,8 @@ def edgar(url, tries=4, **kw):
     return None
 # ---------------- Width 0
 def width0():
+    ss, ro = stage('submissions'), stage('roster')
+    if ss and ro: log('resume: submissions and roster from the pond drop', STAMP, len(ss), len(ro)); return ro, {int(k): v for k, v in ss.items()}
     r = edgar('https://www.sec.gov/files/company_tickers_exchange.json')
     if r is None or r.status_code != 200: raise SystemExit(f'EDGAR roster refused: {r.status_code if r is not None else None} — the container address is blocked too (HITL)')
     j = r.json(); rows = [dict(zip(j['fields'], d)) for d in j['data']]; put(f'pond/width0/{STAMP}/company_tickers_exchange.json', r.text)
@@ -125,12 +132,19 @@ def width1(roster, subs):
     log('Width 1 events', n, 'issuers with events', sum(1 for v in events.values() if v)); return events
 # ---------------- Fill: auditor from the 10-K cover iXBRL tag; optional lab reads
 def fill(roster, subs):
+    fs = stage('fill')
+    if fs:
+        log('resume: fill from the pond drop', STAMP, len(fs)); GU.update(fs.get('_usage') or {})
+        return {tuple(k.split('|', 1)): v for k, v in fs.items() if not k.startswith('_')}
     out = {}; lock = threading.Lock(); cnt = [0]
     gem_key = os.environ.get('GEMINI_API_KEY', ''); pplx = os.environ.get('PERPLEXITY_API_KEY', ''); pmax = int(os.environ.get('PPLX_MAX', '0'))
     def gemini(prompt):
         try:
             rr = requests.post(f'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={gem_key}', json={'contents': [{'parts': [{'text': prompt}]}], 'generationConfig': {'temperature': 0, 'responseMimeType': 'application/json'}}, timeout=120)
-            return rr.json()['candidates'][0]['content']['parts'][0]['text'] if rr.ok else ''
+            if not rr.ok: return ''
+            jj = rr.json(); um = jj.get('usageMetadata') or {}
+            with lock: GU['calls'] += 1; GU['prompt_tokens'] += um.get('promptTokenCount', 0) or 0; GU['output_tokens'] += um.get('candidatesTokenCount', 0) or 0
+            return jj['candidates'][0]['content']['parts'][0]['text']
         except Exception: return ''
     def one(r):
         a = r.get('annual'); res = {}
@@ -173,7 +187,8 @@ def fill(roster, subs):
         with ThreadPoolExecutor(max_workers=6) as ex: list(ex.map(page, corp[:pmax]))
         log('perplexity pages', len(pp), 'aliases', sum(1 for v in pp.values() if v.get('alias')))
         for k, v in pp.items(): out.setdefault(k, {})['perplexity'] = v
-    put(f'pond/width0/{STAMP}/fill.json', json.dumps({f'{k[0]}|{k[1]}': v for k, v in out.items()}, ensure_ascii=False)); return out
+    log('gemini usage', GU)
+    put(f'pond/width0/{STAMP}/fill.json', json.dumps({**{f'{k[0]}|{k[1]}': v for k, v in out.items()}, '_usage': GU}, ensure_ascii=False)); return out
 # ---------------- door render
 STATES = {'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware', 'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas', 'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MD': 'Maryland', 'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota', 'MS': 'Mississippi', 'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska', 'NV': 'Nevada', 'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NY': 'New York', 'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio', 'OK': 'Oklahoma', 'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina', 'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah', 'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia', 'WI': 'Wisconsin', 'WY': 'Wyoming', 'DC': 'District of Columbia', 'PR': 'Puerto Rico'}
 def slug(t): return re.sub(r'[^A-Za-z0-9.\-]', '_', str(t))
@@ -184,6 +199,7 @@ def F(v, src, rb, state='sourced', note=None):
     return o
 def render(roster, match, isins, events, fills):
     idx = {'ticker': {}, 'isin': {}, 'lei': {}, 'alias': {}, 'name': {}, 'cmr': {}, 'keys': []}; n = 0; ev_total = 0; counts = {}
+    todo = []
     RB_H = 'EDGAR submissions API (issuer header as filed)'; RB_L = 'EDGAR company_tickers_exchange.json (SEC list of exchange-listed filers)'
     for r in roster:
         key = f"{NODE}/{r['exchange']}/{r['ticker']}"; m = match.get(r['cik']) or {}; lei = m.get('lei') or ''; rec = m.get('rec') or {}; fl = fills.get((r['exchange'], r['ticker'])) or {}
@@ -206,7 +222,7 @@ def render(roster, match, isins, events, fills):
         if pa and not any(nkey(pa) == nkey(a['value']) for a in aliases): aliases.append({'value': pa, 'source_url': fl['perplexity'].get('url', ''), 'read_by': 'issuer page <title> (found by Perplexity (agent · fast))'})
         evs = events.get((r['exchange'], r['ticker'])) or []; gaps = [{'field': k, 'reason': v['reason']} for k, v in ident.items() if v.get('reason')]
         recd = {'cmr': key, 'node': NODE, 'as_of': STAMP, 'version': 1, 'identity': ident, 'aliases': aliases, 'events_url': f"{HOST}/events/{r['exchange']}/{r['ticker']}", 'event_count': len(evs), 'gaps': gaps}
-        put(f"door/records/{r['exchange']}/{slug(r['ticker'])}.json", json.dumps(recd, ensure_ascii=False, separators=(',', ':'))); put(f"door/events/{r['exchange']}/{slug(r['ticker'])}.json", json.dumps(evs, ensure_ascii=False, separators=(',', ':')))
+        todo.append((f"door/records/{r['exchange']}/{slug(r['ticker'])}.json", json.dumps(recd, ensure_ascii=False, separators=(',', ':')))); todo.append((f"door/events/{r['exchange']}/{slug(r['ticker'])}.json", json.dumps(evs, ensure_ascii=False, separators=(',', ':'))))
         idx['keys'].append(key); idx['cmr'][key.upper()] = [key]; idx['ticker'].setdefault(r['ticker'].upper(), []).append(key); root = r['ticker'].split('.')[0].upper()
         if root != r['ticker'].upper(): idx['ticker'].setdefault(root, []).append(key)
         if ident['isin']['value']: idx['isin'].setdefault(ident['isin']['value'], []).append(key)
@@ -215,6 +231,8 @@ def render(roster, match, isins, events, fills):
         for a in aliases: idx['alias'].setdefault(nkey(a['value']), []).append(key)
         counts[r['exchange']] = counts.get(r['exchange'], 0) + 1; n += 1; ev_total += len(evs)
         if n % 500 == 0: log('rendered', n)
+    with ThreadPoolExecutor(max_workers=8) as ex: list(ex.map(lambda t: put(*t), todo))
+    log('door blobs uploaded', len(todo))
     facts = {'as_of': STAMP, 'records': n, 'events': ev_total, 'nodes': {NODE: {'as_of': STAMP, 'version': 1, 'records': n, 'records_by_exchange': counts, 'events': ev_total, 'issuers_with_events': sum(1 for v in events.values() if v), 'exchanges': ['NYSE', 'NASDAQ', 'CBOE']}}, 'source': 'public-record', 'operator': 'Allooloo Technologies Corp.', 'store': f'Azure Storage (regional pond, {REGION}) — blob per record and per issuer event list', 'tools': ['resolve_issuer', 'get_record', 'list_events_since', 'list_aliases', 'list_nodes'], 'mcp': '/mcp (Streamable HTTP, JSON-RPC 2.0, no auth)', 'region': REGION}
     nodes_b = get_blob('door/nodes.json'); nodes = json.loads(nodes_b.decode('utf-8')) if nodes_b else []
     for x in nodes:
@@ -224,4 +242,4 @@ def render(roster, match, isins, events, fills):
 if __name__ == '__main__':
     t0 = time.time(); log('US rail start', STAMP, 'UA', UA['User-Agent'])
     roster, subs = width0(); match, isins = gleif(roster); events = width1(roster, subs); fills = fill(roster, subs); render(roster, match, isins, events, fills)
-    put(f'pond/width0/{STAMP}/job.log', '\n'.join(LOG), 'text/plain'); log('US rail DONE in', round((time.time() - t0) / 60, 1), 'minutes')
+    log('spend: gemini', GU); put(f'pond/width0/{STAMP}/job-{int(t0)}.log', '\n'.join(LOG), 'text/plain'); log('US rail DONE in', round((time.time() - t0) / 60, 1), 'minutes')
