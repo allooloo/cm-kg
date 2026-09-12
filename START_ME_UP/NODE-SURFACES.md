@@ -108,7 +108,8 @@ The log is the perpetual-motion record. Nothing else needs writing.
 ### head
 
 ```
-<title>United Kingdom Capital Markets Knowledge Graph — uk-cm-kg</title>
+<title>United Kingdom Capital Markets Knowledge Graph for AI agents — uk-cm-kg</title>
+<!-- title grammar amended by ORDER-020 §5.0 (CEO, Sept 12 2026): <Country> Capital Markets Knowledge Graph for AI agents — <node-id> -->
 <meta name="description" content="Agentic capital markets record: {{live_issuer_count}} UK issuers, {{live_event_count}} dated disclosures, every field sourced and read-dated. Served from London over MCP and A2A.">
 <link rel="canonical" href="https://uk-cm-kg.ai/">
 ```
