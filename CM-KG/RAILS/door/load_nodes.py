@@ -94,7 +94,7 @@ FR = {'tabs': {'Euronext Paris': 'XPAR', 'Euronext Growth Paris': 'ALXP', 'Euron
                  'hq_city': ('HQ city', 'HQ source', 'HQ read by', 'HQ State', 'HQ city'), 'listing_date': ('Listing date', 'Listing date source', 'Roster read by', None, 'Listing date'), 'trading_currency': ('Trading currency', 'Roster source', 'Roster read by', None, None), 'status': ('Status', 'Roster source', 'Roster read by', None, None),
                  'siren': ('SIREN', 'Register source', 'Register read by', 'Register State', 'SIREN'), 'register_link': ('Register link (Annuaire des entreprises)', 'Register source', 'Register read by', None, 'SIREN'), 'infogreffe_link': ('Infogreffe link (unverified — search entry)', None, 'Register read by', None, 'SIREN'), 'legal_form': ('Legal form (nature juridique)', 'Register source', 'Register read by', None, 'SIREN'), 'register_status': ('Register status', 'Register source', 'Register read by', None, 'SIREN'), 'date_of_creation': ('Date of creation', 'Register source', 'Register read by', None, 'SIREN'), 'naf_code': ('NAF code', 'Register source', 'Register read by', None, 'SIREN'),
                  'amf_filer_token': ('AMF filer token (BDIF)', 'AMF source', 'AMF read by', None, 'AMF filer token (BDIF)'), 'amf_bdif_link': ('AMF BDIF link', 'AMF source', 'AMF read by', None, 'AMF filer token (BDIF)')},
-      'second': {'isin': 'ISIN', 'lei': 'LEI', 'siren': 'SIREN', 'registrar': 'Share registrar', 'auditor': 'Auditor', 'newswire': 'Newswire of habit'}, 'prefixes': ['XPAR', 'ALXP', 'XMLI']}
+      'second': {'isin': 'ISIN', 'lei': 'LEI', 'siren': 'SIREN', 'registrar': 'Share registrar', 'auditor': 'Auditor', 'newswire': 'Newswire of habit'}, 'prefixes': ['XPAR', 'ALXP', 'XMLI'], 'alias_from_lei_record': True}
 NL = {'tabs': {'Euronext Amsterdam': 'XAMS', 'Euronext Growth Amsterdam': 'ALXA'}, 'ticker': 'ISIN', 'name': 'Legal name', 'default_as_of': '2026-09-11',
       'fields': {'name': ('Legal name', 'Roster source', 'Roster read by', None, None), 'ticker': ('ISIN', 'Roster source', 'Roster read by', None, None), 'exchange': ('Exchange', 'Roster source', 'Roster read by', None, None),
                  'security_type': ('Security type', 'Roster source', 'Roster read by', None, None), 'cfi': ('CFI', 'Roster source', 'Roster read by', None, None), 'mic': ('MIC', 'Roster source', 'Roster read by', None, None), 'firds_short_name': ('FIRDS short name', 'Roster source', 'Roster read by', None, None),
@@ -104,7 +104,7 @@ NL = {'tabs': {'Euronext Amsterdam': 'XAMS', 'Euronext Growth Amsterdam': 'ALXA'
                  'registrar': ('Share registrar', 'Share registrar source', 'Share registrar read by', 'Share registrar State', 'Share registrar'), 'newswire': ('Newswire of habit', 'Newswire releases seen', 'Newswire read by', 'Newswire State', 'Newswire of habit'),
                  'hq_city': ('HQ city', 'HQ source', 'HQ read by', 'HQ State', 'HQ city'), 'listing_date': ('Listing date', 'Listing date source', 'Roster read by', None, 'Listing date'), 'trading_currency': ('Trading currency', 'Roster source', 'Roster read by', None, None), 'status': ('Status', 'Roster source', 'Roster read by', None, None),
                  'kvk_number': ('KVK number', 'Register source', 'Register read by', 'Register State', 'KVK number'), 'kvk_link': ('KVK link (unverified — search entry)', None, 'Register read by', None, 'KVK number'), 'legal_form': ('Legal form (GLEIF ELF code)', 'Register source', 'Register read by', None, 'KVK number'), 'afm_register_link': ('AFM issuer register link (unverified — search entry)', None, 'Register read by', None, None)},
-      'second': {'isin': 'ISIN', 'lei': 'LEI', 'kvk_number': 'KVK number', 'registrar': 'Share registrar', 'auditor': 'Auditor', 'newswire': 'Newswire of habit'}, 'prefixes': ['XAMS', 'ALXA']}
+      'second': {'isin': 'ISIN', 'lei': 'LEI', 'kvk_number': 'KVK number', 'registrar': 'Share registrar', 'auditor': 'Auditor', 'newswire': 'Newswire of habit'}, 'prefixes': ['XAMS', 'ALXA'], 'alias_from_lei_record': True}
 MAPS = {'ca': CA, 'uk': UK, 'au': AU, 'sg': SG, 'ch': CH, 'de': DE, 'fr': FR, 'nl': NL}
 def field(d, spec, gaps):
     vcol, scol, rcol, stcol, glabel = spec
@@ -131,6 +131,10 @@ def load_node(cc, index, facts_nodes):
     if os.path.exists(evfn):
         for line in open(evfn, encoding='utf-8'):
             e = json.loads(line); ev_by.setdefault((e['exchange'], e['ticker']), []).append(e)
+    lei_legal_names = {}
+    if M.get('alias_from_lei_record'):
+        for lr in pond.read_jsonl_all(node, 'width0', 'lei_records.jsonl'):
+            if lr.get('lei') and lr.get('name'): lei_legal_names[lr['lei']] = (lr['name'], lr.get('src') or f"https://api.gleif.org/api/v1/lei-records/{lr['lei']}")
     wb = openpyxl.load_workbook(xlsx, read_only=True); n = 0; counts = {}
     for tab, exs in M['tabs'].items():
         ws = wb[tab]; it = ws.iter_rows(values_only=True); hdr = next(it)
@@ -150,6 +154,10 @@ def load_node(cc, index, facts_nodes):
                 names = [a.strip() for a in str(d['Also known as']).split(' | ')]; srcs = str(d.get('Alias source') or '').split('\n'); rbs = str(d.get('Alias read by') or '').split('\n')
                 for i, a in enumerate(names):
                     if a: aliases.append({'value': a, 'source_url': srcs[i] if i < len(srcs) else None, 'read_by': rbs[i] if i < len(rbs) else None})
+            # Euronext nodes (FIRDS names carry no legal suffix): the GLEIF legal name rides as a sourced alias so 'TotalEnergies SE' resolves
+            lei_v = (identity.get('lei') or {}).get('value')
+            if M.get('alias_from_lei_record') and lei_v and lei_v in lei_legal_names and nkey(lei_legal_names[lei_v][0]) != nkey(d[M['name']]) and not any(nkey(a['value']) == nkey(lei_legal_names[lei_v][0]) for a in aliases):
+                aliases.append({'value': lei_legal_names[lei_v][0], 'source_url': lei_legal_names[lei_v][1], 'read_by': 'GLEIF LEI record (legal name)'})
             evs = sorted(ev_by.get((tab, t), []), key=lambda e: e['date'], reverse=True)
             rec = {'cmr': key, 'node': node, 'as_of': as_of, 'version': version, 'identity': identity, 'aliases': aliases, 'events_url': f'{host}/events/{exs}/{t}', 'event_count': len(evs), 'gaps': [{'field': f, 'reason': w} for f, w in gaps.items()]}
             json.dump(rec, open(os.path.join(OUT, 'records', node, exs, slug_ticker(t) + '.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
