@@ -17,7 +17,7 @@ def by_key(source, fn, k='key'): return {d[k]: d for d in pond.read_jsonl_all(NO
 LEIM = by_key('width0', 'lei_match.jsonl'); E_LEIREC = by_key('width0', 'lei_records.jsonl')
 def is_corp(r): return r['security_type'].startswith('Corporate')
 RB = {'jpx': 'JPX listed-issuers workbook (data_e.xlsx, English)', 'edinet': 'EDINET code list (Edinetcode.zip, filer master with corporate number)', 'gleif_rec': 'GLEIF LEI record (LEI per the LEI column)', 'gleif_isin': 'GLEIF ISIN list for the LEI (lei-records/<lei>/isins)'}
-EQ_ISIN = re.compile(r'^JP3\d{6}000\d$')
+EQ_ISIN = re.compile(r'^JP3\d{6}00\d$')
 COLS = ['Legal name (English, as published)', 'Legal name (Japanese)', 'Name (kana)', 'Exchange', 'JPX section', 'Symbol', 'Security type', 'Size (TOPIX index series)',
         'ISIN', 'ISIN source', 'ISIN read by', 'ISIN State', 'ISINs on the LEI (all)',
         'LEI', 'LEI source', 'LEI read by', 'LEI State', 'LEI registration status',
@@ -52,7 +52,7 @@ def build(r):
     isins = rec.get('isins') if rec else None
     if isins:
         eq = [i for i in isins if EQ_ISIN.match(i)]; o['ISINs on the LEI (all)'] = ', '.join(isins)
-        if len(eq) == 1: o['ISIN'] = eq[0]; o['ISIN source'] = rec.get('isins_src', ''); o['ISIN read by'] = RB['gleif_isin'] + ' (the one equity-pattern ISIN JP3…000x)'; o['ISIN State'] = 'sourced'
+        if len(eq) == 1: o['ISIN'] = eq[0]; o['ISIN source'] = rec.get('isins_src', ''); o['ISIN read by'] = RB['gleif_isin'] + ' (the one equity-pattern ISIN JP3…00x)'; o['ISIN State'] = 'sourced'
         elif len(eq) > 1: gaps.append(('ISIN', f'{len(eq)} equity-pattern ISINs on the LEI (share classes / preferred); all listed in the next column; the Fill pass ties the ISIN to the code'))
         else: gaps.append(('ISIN', 'the LEI maps only non-equity ISINs (bonds); the Fill pass reads the ISIN from the JPX issuer page'))
     elif lei and isins is not None: gaps.append(('ISIN', 'GLEIF maps no ISIN to this LEI; the Fill pass reads the ISIN from the JPX issuer page'))
@@ -146,7 +146,7 @@ METHOD = [('Order', 'ORDER-017 (re-cut Sept 11 2026) Japan Width 0 sweep, node j
           ('Roster', 'JPX listed-issuers workbook (data_e.xlsx): every listed line with local code, English name as JPX publishes it, market section, 33- and 17-sector codes and the TOPIX size series. Tabs = Prime, Standard, Growth, PRO Market, REITs and funds; ETFs / ETNs counted, not carried.'),
           ('Register', 'EDINET code list (Edinetcode.zip): the filer master joined on the securities code — Japanese legal name, kana, English name as filed, address, industry, filer type, consolidation, capital, fiscal year end and the 13-digit corporate number (法人番号).'),
           ('LEI', 'GLEIF by the register key: registeredAs = the 12-digit company registration number inside the corporate number, at RA000412 (exact, no name matching). Fallback for lines without a corporate number: fuzzycompletions on the English name, accepted only on an exact name match (jurisdiction JP for domestic lines).'),
-          ('ISIN', 'GLEIF ISIN list for the matched LEI; the one ISIN of the equity pattern (JP3 + 6 digits + 000 + check digit) fills the cell; bonds and multiple share classes are listed and left to the Fill pass.'),
+          ('ISIN', 'GLEIF ISIN list for the matched LEI; the one ISIN of the equity pattern (JP3 + 6 digits + 00 + check digit) fills the cell; bonds and multiple share classes are listed and left to the Fill pass.'),
           ('Sector', 'JPX 33-sector classification (and the 17-sector roll-up); the EDINET industry text is carried beside it in Japanese.'),
           ('Auditor / registrar / newswire', 'Blank at Width 0 by design (Fill pass: EDINET securities report through the API, Gemini Japanese reads, Perplexity Search + preset fast, Tavily extraction only; Mistral review only).'),
           ('Sources that answered machines', 'JPX (data_e.xlsx) · EDINET (Edinetcode.zip; documents API keyed, for Width 1) · GLEIF.'),
