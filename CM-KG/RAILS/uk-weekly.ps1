@@ -2,6 +2,8 @@
 # Task Scheduler "Allooloo CM-KG UK weekly": Friday 12:00 build-machine time (Central Standard Time (Mexico), no daylight shift) = 18:00 London in summer (19:00 in winter), after the LSE close.
 # Aquis announcements are not fetched by machine (aquis.eu refuses plain clients): the browser-session read of the feed is a standing HITL item; the assembler keeps the last ingested rows.
 $ErrorActionPreference = 'Continue'
+# global BUILD lock (SWEEPS.md, 2026-09-11): no scheduled sweep runs on any node while any build order is in flight
+if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\.build-lock') { "skipped: global BUILD lock present (a build order is in flight)" | Out-File -Append 'C:\ALLOOLOO\CM-KG\RAILS\logs\sweeps-skipped.log'; exit 0 }
 $root = 'C:\ALLOOLOO\CM-KG\RAILS'
 # pond rule 4: skip when a build order holds the node lock
 if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\uk-cm-kg\.lock') { "UK weekly skipped: node lock present ($(Get-Content 'C:\ALLOOLOO\CM-KG\POND\uk-cm-kg\.lock' -Raw))" | Out-File -Append (Join-Path $root 'logs\uk-weekly-skipped.log'); exit 0 }

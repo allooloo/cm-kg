@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); import pond
 RAILS = r'C:\ALLOOLOO\CM-KG\RAILS'
 node, rail = sys.argv[1], sys.argv[2]; source = sys.argv[3] if len(sys.argv) > 3 else rail.split('-', 1)[1]
 if pond.locked(node) and os.environ.get('POND_IGNORE_LOCK') != '1': raise SystemExit(f'{node} is locked (build order in flight); the sweep skips')
+if os.path.exists(r'C:\ALLOOLOO\CM-KG\POND\.build-lock') and os.environ.get('POND_IGNORE_LOCK') != '1': raise SystemExit('global BUILD lock present (a build order is in flight); the sweep skips')
 pond.close_drop(node, source)
 d = pond.open_drop(node, source)
 raw = os.path.join(RAILS, rail, 'raw')

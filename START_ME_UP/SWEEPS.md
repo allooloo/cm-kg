@@ -32,6 +32,10 @@ Monthly identity re-harvest: CM-KG\RAILSu-width0
 un_refresh.ps1, run on order until the first month turns. TMX Australia: no machine-readable list (standing HITL).
 Alias channels: ASIC previous names · GLEIF other names · ASX company record · issuer page <title> · wire release pages.
 
+## Global BUILD lock (CEO rule, Sept 11 2026)
+No scheduled sweep runs on any node while any build order is in flight. The lock is the file CM-KG\POND\.build-lock (set at the start of a build chain, removed when the chain has reported and the CEO re-enables the sweeps); every sweep script and pond_open.py check it first and skip. It sits above the per-node lock (POND\<node>\.lock), which still guards a single node between orders. Why: on Sept 11 the Canada weekly fired at 18:00 in the middle of the 014–018 chain and shared the Tavily plan and the labs with the build; the UK weekly had already collided with a build earlier that day.
+Sept 11 2026: every scheduled sweep (Canada weekly and monthly, United Kingdom weekly, Australia weekly) is DISABLED until the 014–018 chain reports; re-enabled on the CEO's word.
+
 ## Node clock
 Every node sweeps in its own market's business day, in the market's time zone, after close. Twelve nodes = twelve clocks.
 Never a global run at one hour.

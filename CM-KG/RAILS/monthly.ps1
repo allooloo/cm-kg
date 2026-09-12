@@ -2,6 +2,8 @@
 # unclassified fund rows out of corporate scope, then the Fill + Confirm columns re-applied.
 # Scheduled: 15th of the month 18:00 machine time = 19:00 EST / 20:00 EDT America/Toronto, after TSX close and after the TMX monthly listed-companies workbook is out.
 $ErrorActionPreference = 'Continue'
+# global BUILD lock (SWEEPS.md, 2026-09-11): no scheduled sweep runs on any node while any build order is in flight
+if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\.build-lock') { "skipped: global BUILD lock present (a build order is in flight)" | Out-File -Append 'C:\ALLOOLOO\CM-KG\RAILS\logs\sweeps-skipped.log'; exit 0 }
 # pond rule 4: skip when a build order holds the node lock
 if (Test-Path 'C:\ALLOOLOO\CM-KG\POND\ca-cm-kg\.lock') { "Canada monthly skipped: node lock present" | Out-File -Append 'C:\ALLOOLOO\CM-KG\RAILS\logs\monthly-skipped.log'; exit 0 }
 $log = "C:\ALLOOLOO\CM-KG\RAILS\logs\monthly-$(Get-Date -Format yyyyMMdd-HHmm).log"
