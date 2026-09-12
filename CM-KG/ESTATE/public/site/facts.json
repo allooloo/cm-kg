@@ -1,0 +1,604 @@
+{
+ "record": "allooloo-facts",
+ "as_of": "2026-09-11",
+ "legal_name": "Allooloo Technologies Corp.",
+ "jurisdiction": "Canada",
+ "city": "Vancouver",
+ "country": "CA",
+ "positioning": "Agentic Capital Markets Global Desk",
+ "masthead": "2027, today.",
+ "url": "https://allooloo.io",
+ "contact": "https://allooloo.io/#contact",
+ "products": [
+  {
+   "name": "CM-KG",
+   "long_name": "Capital Markets Knowledge Graph",
+   "root_domain": "capitalmarketsknowledgegraph.ai",
+   "served_over": "MCP (Model Context Protocol)"
+  },
+  {
+   "name": "CMR",
+   "long_name": "Capital Markets Record",
+   "spec_domain": "cm-record.org",
+   "keys": [
+    "ISIN",
+    "ticker",
+    "LEI"
+   ],
+   "rule": "one signed, versioned record per listed company; superseded, never deleted; every field names the registry it came from or the engine that read it"
+  },
+  {
+   "name": "AI ASK",
+   "long_name": "AI assistant ask",
+   "door": "ask.allooloo.io",
+   "status": "named, not yet live"
+  }
+ ],
+ "nodes": [
+  {
+   "code": "ca",
+   "country": "Canada",
+   "registry": "ca-cm-kg.org",
+   "door": "ca-cm-kg.ai",
+   "brand": "ca-cm-kg.com"
+  },
+  {
+   "code": "uk",
+   "country": "United Kingdom",
+   "registry": "uk-cm-kg.org",
+   "door": "uk-cm-kg.ai",
+   "brand": "uk-cm-kg.com"
+  },
+  {
+   "code": "au",
+   "country": "Australia",
+   "registry": "au-cm-kg.org",
+   "door": "au-cm-kg.ai",
+   "brand": "au-cm-kg.com"
+  },
+  {
+   "code": "sg",
+   "country": "Singapore",
+   "registry": "sg-cm-kg.org",
+   "door": "sg-cm-kg.ai",
+   "brand": "sg-cm-kg.com"
+  },
+  {
+   "code": "ch",
+   "country": "Switzerland",
+   "registry": "ch-cm-kg.org",
+   "door": "ch-cm-kg.ai",
+   "brand": "ch-cm-kg.com"
+  },
+  {
+   "code": "de",
+   "country": "Germany",
+   "registry": "de-cm-kg.org",
+   "door": "de-cm-kg.ai",
+   "brand": "de-cm-kg.com"
+  },
+  {
+   "code": "fr",
+   "country": "France",
+   "registry": "fr-cm-kg.org",
+   "door": "fr-cm-kg.ai",
+   "brand": "fr-cm-kg.com"
+  },
+  {
+   "code": "nl",
+   "country": "Netherlands",
+   "registry": "nl-cm-kg.org",
+   "door": "nl-cm-kg.ai",
+   "brand": "nl-cm-kg.com"
+  },
+  {
+   "code": "hk",
+   "country": "Hong Kong",
+   "registry": "hk-cm-kg.org",
+   "door": "hk-cm-kg.ai",
+   "brand": "hk-cm-kg.com"
+  },
+  {
+   "code": "jp",
+   "country": "Japan",
+   "registry": "jp-cm-kg.org",
+   "door": "jp-cm-kg.ai",
+   "brand": "jp-cm-kg.com"
+  },
+  {
+   "code": "kr",
+   "country": "South Korea",
+   "registry": "kr-cm-kg.org",
+   "door": "kr-cm-kg.ai",
+   "brand": "kr-cm-kg.com"
+  },
+  {
+   "code": "us",
+   "country": "United States",
+   "registry": "us-cm-kg.org",
+   "door": "us-cm-kg.ai",
+   "brand": "us-cm-kg.com"
+  }
+ ],
+ "engines": [
+  {
+   "name": "Claude",
+   "duty": "reader of record, CMR schema, adjudication"
+  },
+  {
+   "name": "ChatGPT",
+   "duty": "structured extraction at scale, second opinion"
+  },
+  {
+   "name": "Google Gemini",
+   "duty": "long-context filing reads"
+  },
+  {
+   "name": "Perplexity",
+   "duty": "grounded cold reads; search harvest"
+  },
+  {
+   "name": "Grok",
+   "duty": "real-time newswire, halt and resume signal"
+  },
+  {
+   "name": "Mistral",
+   "duty": "EU-node readers in their own languages; document AI on scanned filings"
+  },
+  {
+   "name": "Tavily",
+   "duty": "general web search layer"
+  },
+  {
+   "name": "Cloudflare",
+   "duty": "the network: Workers, embeddings, edge cache, every door"
+  }
+ ],
+ "licence_shapes": [
+  {
+   "name": "Dealer MCP access licence"
+  },
+  {
+   "name": "Issuer record licence"
+  },
+  {
+   "name": "Knowledge Graph API licence"
+  },
+  {
+   "name": "Node operator licence"
+  }
+ ],
+ "rules": [
+  "licence only, no services",
+  "public-record only: no prices, no quotes, no licensed market data",
+  "blank is blank: nothing inferred; every enriched field carries a source and a reader",
+  "no engine is trusted alone; a person cuts the record before it is signed"
+ ],
+ "proof": {
+  "canada_width0": {
+   "date": "2026-09-10",
+   "securities": 4820,
+   "corporate_issuers": 2851,
+   "exchanges": [
+    "TSX",
+    "TSXV",
+    "CSE",
+    "Cboe Canada"
+   ]
+  }
+ },
+ "domains": [
+  {
+   "domain": "allooloo.io",
+   "group": "Company",
+   "role": "New corporate site — ground-up Cloudflare build; allooloo.ai forwards here",
+   "tld": ".io",
+   "country": null,
+   "status": "Live"
+  },
+  {
+   "domain": "allooloo.ai",
+   "group": "Company",
+   "role": "Brand — cards, decks, footer; forwards to .io",
+   "tld": ".ai",
+   "country": null,
+   "status": "Live"
+  },
+  {
+   "domain": "allooloo.org",
+   "group": "Company",
+   "role": "Forward to .io",
+   "tld": ".org",
+   "country": null,
+   "status": "Owned — transfer pending"
+  },
+  {
+   "domain": "allooloo.com",
+   "group": "Company",
+   "role": "Forward to .io",
+   "tld": ".com",
+   "country": null,
+   "status": "Owned — transfer pending"
+  },
+  {
+   "domain": "capitalmarketsknowledgegraph.ai",
+   "group": "Root — CM-KG",
+   "role": "The graph; mcp. door",
+   "tld": ".ai",
+   "country": null,
+   "status": "Live"
+  },
+  {
+   "domain": "capitalmarketsknowledgegraph.org",
+   "group": "Root — CM-KG",
+   "role": "Standard mirror of the long form",
+   "tld": ".org",
+   "country": null,
+   "status": "Owned"
+  },
+  {
+   "domain": "capitalmarketsknowledgegraph.com",
+   "group": "Root — CM-KG",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": null,
+   "status": "Owned"
+  },
+  {
+   "domain": "cm-kg.ai",
+   "group": "Root — CM-KG",
+   "role": "Short brand; forwards to long form",
+   "tld": ".ai",
+   "country": null,
+   "status": "Owned"
+  },
+  {
+   "domain": "cm-kg.com",
+   "group": "Root — CM-KG",
+   "role": "Short brand; forwards to long form",
+   "tld": ".com",
+   "country": null,
+   "status": "Owned"
+  },
+  {
+   "domain": "cm-kg.org",
+   "group": "Root — CM-KG",
+   "role": "Standard and beacon",
+   "tld": ".org",
+   "country": null,
+   "status": "Owned"
+  },
+  {
+   "domain": "cm-kg.io",
+   "group": "Root — CM-KG",
+   "role": "Machine twin",
+   "tld": ".io",
+   "country": null,
+   "status": "Owned"
+  },
+  {
+   "domain": "cm-record.org",
+   "group": "Root — CMR",
+   "role": "Capital Markets Record — the object standard: schema, signing, versions",
+   "tld": ".org",
+   "country": null,
+   "status": "Owned"
+  },
+  {
+   "domain": "cm-record.ai",
+   "group": "Root — CMR",
+   "role": "CMR resolver door (by ISIN / ticker / LEI)",
+   "tld": ".ai",
+   "country": null,
+   "status": "Owned"
+  },
+  {
+   "domain": "cm-record.io",
+   "group": "Root — CMR",
+   "role": "Machine twin",
+   "tld": ".io",
+   "country": null,
+   "status": "Owned"
+  },
+  {
+   "domain": "cm-record.com",
+   "group": "Root — CMR",
+   "role": "Brand; forwards to .org",
+   "tld": ".com",
+   "country": null,
+   "status": "Owned"
+  },
+  {
+   "domain": "ca-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry — The wedge",
+   "tld": ".org",
+   "country": "Canada",
+   "status": "Owned"
+  },
+  {
+   "domain": "ca-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "Canada",
+   "status": "Live"
+  },
+  {
+   "domain": "ca-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "Canada",
+   "status": "Owned"
+  },
+  {
+   "domain": "us-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry — The scale claim",
+   "tld": ".org",
+   "country": "United States",
+   "status": "Owned"
+  },
+  {
+   "domain": "us-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "United States",
+   "status": "Owned"
+  },
+  {
+   "domain": "us-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "United States",
+   "status": "Owned"
+  },
+  {
+   "domain": "uk-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry",
+   "tld": ".org",
+   "country": "United Kingdom",
+   "status": "Owned"
+  },
+  {
+   "domain": "uk-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "United Kingdom",
+   "status": "Owned"
+  },
+  {
+   "domain": "uk-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "United Kingdom",
+   "status": "Owned"
+  },
+  {
+   "domain": "sg-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry — AI-market flag; cleanest APAC regulator to stand a node under",
+   "tld": ".org",
+   "country": "Singapore",
+   "status": "Owned"
+  },
+  {
+   "domain": "sg-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "Singapore",
+   "status": "Owned"
+  },
+  {
+   "domain": "sg-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "Singapore",
+   "status": "Owned"
+  },
+  {
+   "domain": "au-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry — Partners on the ground; GSC Agentic Pty Ltd as operating licensee",
+   "tld": ".org",
+   "country": "Australia",
+   "status": "Owned"
+  },
+  {
+   "domain": "au-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "Australia",
+   "status": "Owned"
+  },
+  {
+   "domain": "au-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "Australia",
+   "status": "Owned"
+  },
+  {
+   "domain": "ch-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry — Wealth money; private banks are dealer-grade buyers",
+   "tld": ".org",
+   "country": "Switzerland",
+   "status": "Owned"
+  },
+  {
+   "domain": "ch-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "Switzerland",
+   "status": "Owned"
+  },
+  {
+   "domain": "ch-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "Switzerland",
+   "status": "Owned"
+  },
+  {
+   "domain": "de-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry — Xetra plus the largest EU issuer base",
+   "tld": ".org",
+   "country": "Germany",
+   "status": "Owned"
+  },
+  {
+   "domain": "de-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "Germany",
+   "status": "Owned — page live"
+  },
+  {
+   "domain": "de-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "Germany",
+   "status": "Owned"
+  },
+  {
+   "domain": "jp-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry",
+   "tld": ".org",
+   "country": "Japan",
+   "status": "Owned"
+  },
+  {
+   "domain": "jp-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "Japan",
+   "status": "Owned"
+  },
+  {
+   "domain": "jp-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "Japan",
+   "status": "Owned"
+  },
+  {
+   "domain": "hk-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry",
+   "tld": ".org",
+   "country": "Hong Kong",
+   "status": "Owned"
+  },
+  {
+   "domain": "hk-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "Hong Kong",
+   "status": "Owned"
+  },
+  {
+   "domain": "hk-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "Hong Kong",
+   "status": "Owned"
+  },
+  {
+   "domain": "fr-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry",
+   "tld": ".org",
+   "country": "France",
+   "status": "Owned"
+  },
+  {
+   "domain": "fr-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "France",
+   "status": "Owned"
+  },
+  {
+   "domain": "fr-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "France",
+   "status": "Owned"
+  },
+  {
+   "domain": "nl-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry",
+   "tld": ".org",
+   "country": "Netherlands",
+   "status": "Owned"
+  },
+  {
+   "domain": "nl-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "Netherlands",
+   "status": "Owned"
+  },
+  {
+   "domain": "nl-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "Netherlands",
+   "status": "Owned"
+  },
+  {
+   "domain": "kr-cm-kg.org",
+   "group": "Node",
+   "role": "Standard / registry",
+   "tld": ".org",
+   "country": "South Korea",
+   "status": "Owned"
+  },
+  {
+   "domain": "kr-cm-kg.ai",
+   "group": "Node",
+   "role": "Operating door",
+   "tld": ".ai",
+   "country": "South Korea",
+   "status": "Owned"
+  },
+  {
+   "domain": "kr-cm-kg.com",
+   "group": "Node",
+   "role": "Brand; forwards to .ai",
+   "tld": ".com",
+   "country": "South Korea",
+   "status": "Owned"
+  }
+ ],
+ "social": {
+  "x": "https://x.com/allooloo_io",
+  "github": "https://github.com/allooloo"
+ }
+}

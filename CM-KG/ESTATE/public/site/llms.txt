@@ -1,0 +1,79 @@
+# Allooloo Technologies Corp.
+
+> Agentic Capital Markets Global Desk. 2027, today.
+> Vancouver, Canada. https://allooloo.io
+
+## Who Allooloo is
+
+Allooloo Technologies Corp. builds the Capital Markets Knowledge Graph (CM-KG) and serves it live to AI agents over MCP (Model Context Protocol). On top of the graph sits the Agentic Capital Markets Global Desk: one desk, twelve sovereign nodes, one door. Allooloo licenses; it does not consult, integrate, or run anyone's operations.
+
+## What the Capital Markets Record is
+
+The CMR (Capital Markets Record) is one signed, versioned record per listed company, keyed on ISIN, ticker and LEI. Records are superseded, never deleted. Every field names the public registry it came from or the engine that read it, with a source URL and a read-by label. Blank is blank: nothing is inferred. The specification lives at cm-record.org; the resolver at cm-record.ai; the machine twin at cm-record.io.
+
+A rendered example is on the home page: a real issuer record from the Canada node, showing legal name, ticker, ISIN, LEI, sector, incorporation jurisdiction, head office, transfer agent, auditor, newswire of habit and SEDAR+ profile, each with its source and its reader.
+
+## Why it exists
+
+Investment dealers, banks and brokers carry a continuing legal duty to know every product they shelve: KYP (know your product) under NI 31-103 in Canada, product governance in the United Kingdom and under MiFID II in the European Union, reasonable-basis suitability in the United States, the Design and Distribution Obligations (DDO) in Australia, product due diligence under MAS rules in Singapore, and FinSA in Switzerland. Today that duty is discharged with PDFs and analyst hours. A signed, current Capital Markets Record over MCP discharges it for the compliance function and for the AI agents that function now runs. Continuous disclosure, insider filings, early-warning filings and issuer identity are read from public registries and carried as facts with dates and locations.
+
+## The Capital Markets Knowledge Graph
+
+Issuers are nodes. Edges are insiders across boards, holders across names, shared auditors and transfer agents, parent and subsidiary, dual listings across markets, sector peers, and the newswire each issuer actually uses. The graph is served live to AI agents over MCP. The root of the graph is capitalmarketsknowledgegraph.ai; the standard is cm-kg.org; the machine twin is cm-kg.io.
+
+## The twelve nodes
+
+Each node is a public registry (.org), an operating door (.ai) and a brand (.com):
+
+- Canada: ca-cm-kg.org / ca-cm-kg.ai (first node; registries addressed: SEDAR+, SEDI, NRD, CSA, CIRO, OSC, BCSC, AMF, ASC, TSX, TSXV, CSE, Cboe Canada, CDS)
+- United Kingdom: uk-cm-kg.org / uk-cm-kg.ai (Companies House, RNS)
+- Australia: au-cm-kg.org / au-cm-kg.ai (ASX)
+- Singapore: sg-cm-kg.org / sg-cm-kg.ai (SGX)
+- Switzerland: ch-cm-kg.org / ch-cm-kg.ai (SIX)
+- Germany: de-cm-kg.org / de-cm-kg.ai (Xetra)
+- France: fr-cm-kg.org / fr-cm-kg.ai
+- Netherlands: nl-cm-kg.org / nl-cm-kg.ai
+- Hong Kong: hk-cm-kg.org / hk-cm-kg.ai
+- Japan: jp-cm-kg.org / jp-cm-kg.ai
+- South Korea: kr-cm-kg.org / kr-cm-kg.ai
+- United States: us-cm-kg.org / us-cm-kg.ai (EDGAR; built last)
+
+Build order: Canada, United Kingdom, Australia, Singapore, Switzerland and Germany, France and Netherlands, Hong Kong, Japan and Korea, United States last.
+
+## The desk
+
+AI ASK (the "AI assistant ask") is the desk: one door over twelve corpora. The identifier does the routing. A TSX name opens the Canada node; a Xetra name opens the German node, in German if asked in German. Default scope is the market the identifier belongs to; cross-border (dual listings, foreign parents, a holder present in several markets) is available on request. The desk door and the MCP doors are named here and will be published when they answer.
+
+## The public-record rule
+
+Public-record only: SEDAR+, SEDI, Companies House, RNS, ASX, SGX, SIX, Xetra, EDGAR and their peers. No prices. No quotes. No tick. No index data. No analyst estimates. No licensed market data. Nothing on the wire that a data licence could pull back.
+
+## The orchestra
+
+Eight engines with named duties, and a human cut before any record is signed. Claude reads and adjudicates. ChatGPT extracts at scale. Gemini reads whole filings. Perplexity grounds the cold read. Grok carries the live newswire, halt and resume signal. Mistral reads the European nodes in their own languages. Tavily is the search net. Cloudflare is the network. No engine is trusted alone; every field carries who read it.
+
+## Licence shapes (licence only, no services)
+
+1. Dealer MCP access licence: a dealer's agents call the record directly, firm-wide.
+2. Issuer record licence: a listed company's own record, signed and live to every dealer agent.
+3. Knowledge Graph API licence: the graph, for agents a firm is already building.
+4. Node operator licence: run a market under the standard, in your jurisdiction, under your regulator.
+
+## Proof
+
+Canada Width 0 sweep, 10 September 2026: 4,820 listed securities across TSX, TSXV, CSE and Cboe Canada, of which 2,851 corporate issuers, every enriched cell carrying a source URL and a read-by label. Identity fields: legal name, ticker, ISIN, LEI, exchange, listing tier, sector, incorporation jurisdiction, SEDAR+ profile, transfer agent, auditor, newswire of habit, head office.
+
+## Machine paths
+
+- https://allooloo.io/llms.txt (this file)
+- https://allooloo.io/facts.json (the company as a record: legal name, jurisdiction, city, 51 domains, products, 12 nodes, 8 engines, 4 licence shapes, dated as_of)
+- https://allooloo.io/.well-known/allooloo.json (the same facts at the well-known path)
+- https://allooloo.io/hero.json (the rendered example record, as data)
+- https://allooloo.io/sitemap.xml
+
+## Contact
+
+https://allooloo.io/#contact. Tell us what you trade. We reply within one business day.
+Allooloo Technologies Corp., Vancouver, Canada.
+
+Keywords: capital markets knowledge graph, MCP server, AI agents finance, agentic capital markets, issuer record, KYP, product governance, continuous disclosure, ISIN, LEI, SEDAR+, listed companies, investment dealer compliance, Model Context Protocol.

@@ -1,0 +1,34 @@
+{
+ "as_of": "2026-09-12",
+ "source": "Cloudflare Workers analytics (workersInvocationsAdaptive, GraphQL) read by RAILS\\calls_analytics.py on the build machine",
+ "window_days": 14,
+ "daily": [
+  {
+   "day": "2026-09-10",
+   "apex": 0,
+   "estate": 0,
+   "allooloo_io": 148,
+   "ask": 0
+  },
+  {
+   "day": "2026-09-11",
+   "apex": 0,
+   "estate": 59399,
+   "allooloo_io": 1394,
+   "ask": 421
+  },
+  {
+   "day": "2026-09-12",
+   "apex": 3189,
+   "estate": 34166,
+   "allooloo_io": 504,
+   "ask": 83
+  }
+ ],
+ "tool_mix": null,
+ "per_door_note": "regional doors sit behind Cloudflare zones; per-door and per-country counts need Zone Analytics Read on the token of record (not granted) \u2014 HITL",
+ "geography": {
+  "note": "calls by region need Zone Analytics Read on the token of record \u2014 HITL; not shown",
+  "source": "Cloudflare zone analytics (not readable with the tokens on record)"
+ }
+}
