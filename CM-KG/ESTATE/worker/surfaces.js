@@ -4,7 +4,8 @@
 // Scheduled: the §6 probe every five minutes → KV. Counts and dates are live from list_nodes on every render; nothing typed. Previous Workers kept beside (index.js, index-v1-*.js).
 import NODE_DATA from './nodes.js';
 import EXAMPLES from './examples.js';
-import { OPERATOR, CORPORATE, CONTACT, CONTACT2, APEX, APEX_AGENT, SURFACES_VERSION, COMPANY_TITLE, REGION_FULL, ROBOTS, SECURITY, ICONS, esc, int, today, dl, num, table, form, headers, html, text, json, sitemap, page, scale } from './chrome.js';
+import { OPERATOR, CORPORATE, CONTACT, CONTACT2, APEX, APEX_AGENT, SURFACES_VERSION, COMPANY_TITLE, REGION_FULL, ROBOTS, SECURITY, ICONS, esc, int, today, dl, num, table, form, contactSection, headers, html, markdown, notFound, text, json, sitemap, page, scale } from './chrome.js';
+import * as AEO from './aeo.js';
 import { PRODUCTS, ORDER, DUTY, nodesTable, totals } from './products.js';
 import { heroRecord, homeBody, homeMeta, recordPageBody, PAGES, readStatus, statusBody, statusJson, probe } from './site.js';
 const HOME_H1 = 'Every listed company in eleven markets, as a record an agent can call.';
@@ -67,8 +68,8 @@ function nodeBody(host, cc, live) {
   const s7 = num(7, ORDER.filter(x => x !== cc).map(x => { const ov = nodeVals(x, live); return x === 'hk' ? `<code>hk-cm-kg</code> · ${esc(REGION_FULL.hk)} · Width 0 · no endpoint · <a href="https://hk-cm-kg.ai/">hk-cm-kg.ai</a>` : `<code>${x}-cm-kg</code> · ${esc(REGION_FULL[x])} · <code>https://mcp.${x}-cm-kg.ai/mcp</code> · ${ov.live ? `${ov.issuers} records · ${ov.events} events` : 'door not live'} · <a href="https://${x}-cm-kg.ai/">${x}-cm-kg.ai</a>`; }));
   const focus = FOCUS[cc] ? `${scale([[esc(v.issuers), 'issuer records', 'list_nodes'], [esc(v.events), 'dated disclosure events', 'list_nodes'], [esc(v.drop || 'none'), 'drop date', 'list_nodes']])}<div class="duty">${dl([['buyer', esc(FOCUS[cc].buyer)], ['duty', esc(FOCUS[cc].duty)], ['pain', esc(FOCUS[cc].pain)], ['first product', esc(FOCUS[cc].first)], ['proof they check first', esc(FOCUS[cc].proof)]])}</div>` : '';
   const s8 = num(8, ['Machine instructions: <a href="/llms.txt"><code>/llms.txt</code></a>', 'Facts: <a href="/facts.json"><code>/facts.json</code></a>', partner ? 'Agent Card: none (no door). <a href="/.well-known/agent-card.json"><code>/.well-known/agent-card.json</code></a> on this host states that.' : `Agent Card: <a href="https://agent.${cc}-cm-kg.ai/.well-known/agent-card.json"><code>https://agent.${cc}-cm-kg.ai</code></a> (pointer at <code>/.well-known/agent-card.json</code> on this host)`, `Registry: <code>${REGISTRY}</code>`, partner ? 'Door descriptors: none.' : `Door descriptors: <a href="https://mcp.${cc}-cm-kg.ai/mcp.json"><code>mcp.json</code></a> · <a href="https://mcp.${cc}-cm-kg.ai/openapi.json"><code>openapi.json</code></a> (pointers at <code>/mcp.json</code> and <code>/openapi.json</code> here)`, 'Also on this host: <a href="/.well-known/security.txt"><code>/.well-known/security.txt</code></a> · <a href="/sitemap.xml"><code>/sitemap.xml</code></a> · <a href="/robots.txt"><code>/robots.txt</code></a>']);
-  const s9 = num(9, ['The contact form is the only support door.', `<a href="mailto:${CONTACT2}">${CONTACT2}</a> — the agents that built this read their own mail`, `Form: ${form(host)}`]);
-  return `${focus}<p class="lead">${esc(fill(d.reason, v))}</p><h2>1 Scope</h2>${s1}<h2>2 Access</h2>${s2}<h2>3 Residency</h2>${s3}<h2>4 Provenance</h2>${s4}<h2>5 Known gaps</h2>${s5}<h2>6 Market particulars</h2>${s6}<h2>7 Estate</h2>${s7}<h2>8 Machine kit</h2>${s8}<h2>9 Contact</h2>${s9}`;
+  const s9 = contactSection(host);
+  return `${focus}<p class="lead">${esc(fill(d.reason, v))}</p><h2>1 Scope</h2>${s1}<h2>2 Access</h2>${s2}<h2>3 Residency</h2>${s3}<h2>4 Provenance</h2>${s4}<h2>5 Known gaps</h2>${s5}<h2>6 Market particulars</h2>${s6}<h2>7 Estate</h2>${s7}<h2>8 Machine kit</h2>${s8}${s9}`;
 }
 function nodeFacts(host, cc, live) {
   const d = NODE_DATA[cc]; const v = nodeVals(cc, live); const node = `${cc}-cm-kg`;
@@ -115,8 +116,8 @@ function rootFacts(host, c, live) {
   return { ...base, kind: { standard: 'Capital Markets Record — the object standard (schema, signing, versions)', resolver: 'CMR resolver door', twin: 'CMR machine twin' }[c.role], spec: 'CMR v0 (draft)', signing: 'not yet live; no signature is stubbed', resolver_live: false, records_served_by: `${APEX}/mcp` };
 }
 function rootBody(host, c, f, live) {
-  if (c.kind === 'root') return `<p class="lead">${esc(f.kind)}. Issuers as nodes; insiders, holders, auditors, transfer agents, parents and subsidiaries, dual listings and newswires as edges. Twelve sovereign market nodes, one apex router that holds an index and forwards. Public-record only.</p><p><strong>Live nodes: ${f.live_nodes.length ? esc(f.live_nodes.join(', ')) : 'none'}.</strong> The apex answers at <code>${esc(f.global_door)}</code> (Streamable HTTP MCP, no auth) and forwards by identifier to the node that holds the name.</p>${nodesTable(ctxOf(live))}<p><a href="${APEX}/">Apex door</a> · <a href="${APEX_AGENT}/.well-known/agent-card.json">Apex Agent Card</a> · <a href="${APEX}/openapi.json">openapi.json</a> · <a href="${APEX}/mcp.json">mcp.json</a></p><h2>Contact</h2>${form(host)}`;
-  return `<p class="lead">${esc(f.kind)}. One record per listed company, keyed on ISIN, ticker and LEI. Versioned, sourced, never deleted; every field names the registry it came from or the engine that read it and carries a state.</p><p><strong>Status: ${c.role === 'resolver' ? 'resolver not live' : 'draft standard (CMR v0)'}.</strong> Signing is not yet live and no signature is stubbed. Records are served today by the apex at <code>${esc(f.records_served_by)}</code>.</p><h2>Contact</h2>${form(host)}`;
+  if (c.kind === 'root') return `<p class="lead">${esc(f.kind)}. Issuers as nodes; insiders, holders, auditors, transfer agents, parents and subsidiaries, dual listings and newswires as edges. Twelve sovereign market nodes, one apex router that holds an index and forwards. Public-record only.</p><p><strong>Live nodes: ${f.live_nodes.length ? esc(f.live_nodes.join(', ')) : 'none'}.</strong> The apex answers at <code>${esc(f.global_door)}</code> (Streamable HTTP MCP, no auth) and forwards by identifier to the node that holds the name.</p>${nodesTable(ctxOf(live))}<p><a href="${APEX}/">Apex door</a> · <a href="${APEX_AGENT}/.well-known/agent-card.json">Apex Agent Card</a> · <a href="${APEX}/openapi.json">openapi.json</a> · <a href="${APEX}/mcp.json">mcp.json</a></p>${contactSection(host)}`;
+  return `<p class="lead">${esc(f.kind)}. One record per listed company, keyed on ISIN, ticker and LEI. Versioned, sourced, never deleted; every field names the registry it came from or the engine that read it and carries a state.</p><p><strong>Status: ${c.role === 'resolver' ? 'resolver not live' : 'draft standard (CMR v0)'}.</strong> Signing is not yet live and no signature is stubbed. Records are served today by the apex at <code>${esc(f.records_served_by)}</code>.</p>${contactSection(host)}`;
 }
 const rootTitle = c => c.kind === 'root' ? { graph: 'Capital Markets Knowledge Graph', standard: 'Capital Markets Knowledge Graph — standard', 'cmkg-standard': 'CM-KG — standard and beacon', 'cmkg-twin': 'CM-KG — machine twin' }[c.role] : { standard: 'Capital Markets Record — the standard', resolver: 'Capital Markets Record — resolver', twin: 'Capital Markets Record — machine twin' }[c.role];
 const rootLlms = (host, c, f) => [`# ${host}`, `Operator: ${OPERATOR}. Corporate: ${CORPORATE}. Contact: ${CONTACT}.`, `What this domain is: ${f.kind}.`, c.kind === 'root' ? `Live nodes: ${f.live_nodes.join(', ') || 'none'}. Apex door (Streamable HTTP MCP, no auth): ${f.global_door}. Tools: resolve_issuer, get_record, list_events_since, list_aliases, list_nodes. Node surfaces: ${ORDER.map(cc => `https://${cc}-cm-kg.ai/`).join(' ')}` : `Spec: ${f.spec}. Signing: ${f.signing}. Records served by ${f.records_served_by}.`, 'Rules: public-record only; no prices, quotes or licensed market data; blank stays blank; nothing published before it answers.', 'Machine paths: /llms.txt, /facts.json, /.well-known/agent-card.json, /.well-known/security.txt, /sitemap.xml, /robots.txt', `Surface version: ${SURFACES_VERSION}.`].join('\n') + '\n';
@@ -130,37 +131,52 @@ export default {
     if (host !== apex) return Response.redirect(`https://${apex}${url.pathname}${url.search}`, 301);
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method Not Allowed', { status: 405, headers: headers({}, { 'content-type': 'text/plain' }) });
     const p = url.pathname.replace(/\/+$/, '') || '/';
-    if (ICONS.includes(p)) { const a = await env.ASSETS.fetch(new Request(url.origin + p)); const h = new Headers(a.headers); for (const [k, v] of Object.entries(headers({}))) h.set(k, v); h.set('cache-control', 'public, max-age=86400'); return new Response(a.body, { status: a.status, headers: h }); }
+    if (ICONS.includes(p)) { const a = await env.ASSETS.fetch(new Request(url.origin + p)); const h = new Headers(a.headers); for (const [k, v] of Object.entries(headers({}))) h.set(k, v); h.set('cache-control', p === '/estate.css' ? 'public, max-age=300' : 'public, max-age=86400'); return new Response(a.body, { status: a.status, headers: h }); }
     if (p === '/robots.txt') return text(ROBOTS(host), {}, 'text/plain; charset=utf-8', 'public, max-age=86400');
     if (p === '/.well-known/security.txt') return text(SECURITY(host), {}, 'text/plain; charset=utf-8', 'public, max-age=86400');
     const live = await liveNodes(); const ctx = ctxOf(live);
+    // ---- agent readiness kit (aeo.js): the same paths on every surface, pointing at the node door, the apex, or the beacon
+    const cc0 = c.kind === 'node' ? c.cc : null; const T = AEO.target(c, cc0); const kmeta = { node: c.kind === 'node' ? `${c.cc}-cm-kg` : (c.kind === 'site' ? 'allooloo' : 'estate'), as_of: today() };
+    const LINK = AEO.linkHeader(host, T);
+    const label = c.kind === 'node' ? `${NODE_DATA[c.cc].country} node — Capital Markets Knowledge Graph` : c.kind === 'product' ? PRODUCTS[c.product].title : c.kind === 'site' ? 'Allooloo Technologies Corp. — Capital Markets Knowledge Graph' : `${host} — Capital Markets Knowledge Graph`;
+    const desc0 = c.kind === 'node' ? fill(NODE_DATA[c.cc].meta, nodeVals(c.cc, live)) : c.kind === 'product' ? PRODUCTS[c.product].reason : c.kind === 'site' ? homeMeta(ctx) : 'Estate host of the Capital Markets Knowledge Graph; the apex router answers for every market.';
+    const HTML = (body, m) => AEO.wantsMarkdown(request) ? markdown(AEO.toMarkdown(body, host), m, LINK) : html(body, m, LINK);
+    if (p === '/.well-known/api-catalog') return json(AEO.apiCatalog(host, T), kmeta, 'public, max-age=3600', 200, 'application/linkset+json');
+    if (p === '/.well-known/oauth-protected-resource') return json(AEO.protectedResource(host, T), kmeta, 'public, max-age=3600');
+    if (p === '/auth.md') return markdown(AEO.authMd(host, T), kmeta, LINK);
+    if (p === '/.well-known/mcp/server-card.json' || p === '/.well-known/mcp/server-cards.json' || p === '/.well-known/mcp.json') return json(AEO.mcpServerCard(host, T, live), kmeta);
+    if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json') return json(AEO.agentCard(host, T, label, desc0, live, cc0), kmeta);
+    if (p === '/.well-known/agent-skills/index.json') return json(AEO.skillsIndex(host, T), kmeta);
+    const sk = p.match(/^\/\.well-known\/agent-skills\/([a-z-]+)\/SKILL\.md$/); if (sk) { const md = AEO.skillMd(host, T, sk[1]); return md ? markdown(md, kmeta, LINK) : notFound([], kmeta); }
+    if (p === '/.well-known/ai-catalog.json') return json(AEO.aiCatalog(host, T, label, desc0), kmeta);
+    if (p.startsWith('/.well-known/') && p !== '/.well-known/allooloo.json') return notFound(['/.well-known/agent-card.json', '/.well-known/mcp/server-card.json', '/.well-known/api-catalog', '/.well-known/oauth-protected-resource', '/.well-known/agent-skills/index.json', '/.well-known/ai-catalog.json', '/.well-known/security.txt'], kmeta);
     if (c.kind === 'site') {
       const meta = { node: 'allooloo', as_of: today() }; const t = totals(ctx);
       const paths = ['/', '/status', '/terms', '/privacy', '/security', '/no-cookies', '/llms.txt', '/facts.json', '/status.json', '/.well-known/allooloo.json', '/.well-known/agent-card.json', '/.well-known/security.txt'];
       if (p === '/radar') return Response.redirect('https://agentic-radar.ai/' + url.search, 308);
       if (p === '/contact') return Response.redirect(CORPORATE + '/#contact', 302);
-      if (p === '/') return html(page({ host, title: COMPANY_TITLE, desc: homeMeta(ctx), h1: HOME_H1, state: 'live', asOf: t.last || today(), body: homeBody(ctx, host), jsonld: [{ '@context': 'https://schema.org', '@type': 'Organization', name: OPERATOR, url: CORPORATE, logo: `${CORPORATE}/icon-512.png`, address: { '@type': 'PostalAddress', addressLocality: 'Vancouver', addressRegion: 'BC', addressCountry: 'CA' }, contactPoint: { '@type': 'ContactPoint', url: CONTACT, contactType: 'support' } }] }), meta);
-      if (p === '/record') { const rec = await heroRecord(); return html(page({ host, title: 'What a record looks like — a live Capital Markets Record for AI agents — Allooloo', desc: 'One live Capital Markets Record from the Canada door, every field with its value, source, reader and state — the shape AI agents read on every node.', h1: 'What a record looks like: one live Capital Markets Record from the Canada door.', state: rec ? 'live' : 'record', asOf: rec ? rec.as_of : today(), version: rec ? `${SURFACES_VERSION} · record v${rec.version}` : SURFACES_VERSION, path: '/record', body: recordPageBody(rec) }), { node: 'ca-cm-kg', as_of: rec ? rec.as_of : today(), version: rec ? rec.version : '' }); }
-      if (p === '/status') { const st = await readStatus(env); return html(page({ host, title: 'Status — Allooloo estate doors', desc: 'Eleven doors probed every five minutes with one real resolve_issuer; response times, 24h median, last drop. Hong Kong a beacon.', h1: 'Status — the eleven doors', state: 'live', asOf: today(), body: statusBody(ctx, st) }), meta); }
+      if (p === '/') return HTML(page({ host, title: COMPANY_TITLE, desc: homeMeta(ctx), h1: HOME_H1, state: 'live', asOf: t.last || today(), body: homeBody(ctx, host), jsonld: [{ '@context': 'https://schema.org', '@type': 'Organization', name: OPERATOR, url: CORPORATE, logo: `${CORPORATE}/icon-512.png`, address: { '@type': 'PostalAddress', addressLocality: 'Vancouver', addressRegion: 'BC', addressCountry: 'CA' }, contactPoint: { '@type': 'ContactPoint', url: CONTACT, contactType: 'support' } }] }), meta);
+      if (p === '/record') { const rec = await heroRecord(); return HTML(page({ host, title: 'What a record looks like — a live Capital Markets Record for AI agents — Allooloo', desc: 'One live Capital Markets Record from the Canada door, every field with its value, source, reader and state — the shape AI agents read on every node.', h1: 'What a record looks like: one live Capital Markets Record from the Canada door.', state: rec ? 'live' : 'record', asOf: rec ? rec.as_of : today(), version: rec ? `${SURFACES_VERSION} · record v${rec.version}` : SURFACES_VERSION, path: '/record', body: recordPageBody(rec) }), { node: 'ca-cm-kg', as_of: rec ? rec.as_of : today(), version: rec ? rec.version : '' }); }
+      if (p === '/status') { const st = await readStatus(env); return HTML(page({ host, title: 'Status — Allooloo estate doors', desc: 'Eleven doors probed every five minutes with one real resolve_issuer; response times, 24h median, last drop. Hong Kong a beacon.', h1: 'Status — the eleven doors', state: 'live', asOf: today(), body: statusBody(ctx, st) }), meta); }
       if (p === '/status.json') { const st = await readStatus(env); return json(statusJson(ctx, st), meta, 'public, max-age=60'); }
-      const pg = PAGES[p.slice(1)]; if (pg) return html(page({ host, title: pg.title, desc: `${pg.h1}. ${OPERATOR}, record-grade page, as of 2026-09-12.`, h1: pg.h1, state: pg.state, asOf: '2026-09-12', version: '0.1', body: pg.body() }), meta);
+      const pg = PAGES[p.slice(1)]; if (pg) return HTML(page({ host, title: pg.title, desc: `${pg.h1}. ${OPERATOR}, record-grade page, as of 2026-09-12.`, h1: pg.h1, state: pg.state, asOf: '2026-09-12', version: '0.1', body: pg.body() }), meta);
       if (p === '/llms.txt') return text(siteLlms(live), meta);
       if (p === '/facts.json') return json(siteFacts(live), meta);
       if (p === '/.well-known/allooloo.json') { const a = await env.ASSETS.fetch(new Request(url.origin + '/site/.well-known/allooloo.json')); return json(a.ok ? await a.json() : { error: 'not_found' }, meta, 'public, max-age=3600'); }
       if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json') return json(siteCard(), meta);
       if (p === '/sitemap.xml') return text(sitemap(host, paths.filter(x => !x.endsWith('.json') && !x.endsWith('.txt'))), meta, 'application/xml; charset=utf-8', 'public, max-age=3600');
-      return json({ error: 'not_found', paths }, meta, 'no-store');
+      return notFound(paths, meta);
     }
     if (c.kind === 'node') {
       const cc = c.cc; const v = nodeVals(cc, live); const d = NODE_DATA[cc]; const meta = { node: `${cc}-cm-kg`, as_of: v.drop || today(), version: v.version };
       const paths = ['/', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt'].concat(d.partner ? [] : ['/mcp.json', '/openapi.json']);
-      if (p === '/') return html(page({ host, title: d.title, desc: fill(d.meta, v), h1: d.h1, state: v.live ? 'live' : (d.partner ? 'width 0' : 'not live'), asOf: v.drop || today(), version: v.live ? `${SURFACES_VERSION} · record v${v.version}` : SURFACES_VERSION, body: nodeBody(host, cc, live), jsonld: [{ '@context': 'https://schema.org', '@type': 'Dataset', name: d.title, description: fill(d.meta, v), url: `https://${host}/`, creator: { '@type': 'Organization', name: OPERATOR, url: CORPORATE }, license: 'public-record only', spatialCoverage: d.country, ...(v.live ? { distribution: [{ '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: `https://mcp.${cc}-cm-kg.ai/mcp` }] } : {}) }] }), meta);
+      if (p === '/') return HTML(page({ host, title: d.title, desc: fill(d.meta, v), h1: d.h1, state: v.live ? 'live' : (d.partner ? 'width 0' : 'not live'), asOf: v.drop || today(), version: v.live ? `${SURFACES_VERSION} · record v${v.version}` : SURFACES_VERSION, body: nodeBody(host, cc, live), jsonld: [{ '@context': 'https://schema.org', '@type': 'Dataset', name: d.title, description: fill(d.meta, v), url: `https://${host}/`, creator: { '@type': 'Organization', name: OPERATOR, url: CORPORATE }, license: 'public-record only', spatialCoverage: d.country, ...(v.live ? { distribution: [{ '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: `https://mcp.${cc}-cm-kg.ai/mcp` }] } : {}) }] }), meta);
       if (p === '/llms.txt') return text(nodeLlms(host, cc, live), meta);
       if (p === '/facts.json') return json(nodeFacts(host, cc, live), meta);
       if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json') return json(nodeCard(host, cc, live), meta);
       if (p === '/sitemap.xml') return text(sitemap(host, paths), meta, 'application/xml; charset=utf-8', 'public, max-age=3600');
       if ((p === '/mcp.json' || p === '/openapi.json') && !d.partner) return json(nodePointer(p.slice(1, -5), cc), meta);
-      return json({ error: 'not_found', paths }, meta, 'no-store');
+      return notFound(paths, meta);
     }
     if (c.kind === 'product') {
       const key = c.product; const pr = PRODUCTS[key]; const meta = { node: 'estate', as_of: today() }; const t = totals(ctx);
@@ -170,24 +186,25 @@ export default {
         if (p === '/radar.json') return json(d, meta, 'public, max-age=60');
         if (p === '/radar.csv') return text(radarCsv(d), meta, 'text/csv; charset=utf-8', 'public, max-age=60');
         const body = page({ host, title: pr.title, desc: pr.reason, h1: pr.h1, state: 'live', asOf: d.as_of.slice(0, 10), version: 'v1.0 · ' + SURFACES_VERSION, body: `<p class="lead">${esc(pr.reason)}</p>${radarBody(ctx, host, d)}`, mono: true });
-        return new Response(body, { headers: headers(meta, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=60', 'Content-Security-Policy': "default-src 'none'; img-src 'self' data:; style-src 'self'; base-uri 'none'; form-action https://formspree.io; frame-ancestors *; upgrade-insecure-requests", 'X-Frame-Options': 'ALLOWALL' }) });
+        if (AEO.wantsMarkdown(request)) return markdown(AEO.toMarkdown(body, host), meta, LINK);
+        return new Response(body, { headers: headers(meta, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=60', 'Vary': 'Accept', 'Link': LINK, 'Content-Security-Policy': "default-src 'none'; img-src 'self' data:; style-src 'self'; base-uri 'none'; form-action https://formspree.io https://allooloo.io; frame-ancestors *; upgrade-insecure-requests", 'X-Frame-Options': 'ALLOWALL' }) });
       }
-      if (p === '/') { const ask = key === 'ask' ? await askUp() : false; return html(page({ host, title: pr.title, desc: pr.reason, h1: pr.h1, state: 'live', asOf: t.last || today(), body: `<p class="lead">${esc(pr.reason)}</p>${pr.body(ctxOf(live, { askUp: ask }), host)}` }), meta); }
+      if (p === '/') { const ask = key === 'ask' ? await askUp() : false; return HTML(page({ host, title: pr.title, desc: pr.reason, h1: pr.h1, state: 'live', asOf: t.last || today(), body: `<p class="lead">${esc(pr.reason)}</p>${pr.body(ctxOf(live, { askUp: ask }), host)}` }), meta); }
       if (p === '/facts.json') return json(productFacts(host, key, live), meta);
       if (p === '/llms.txt') return text(productLlms(host, key, live), meta);
       if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json') return json(productCard(host, key), meta);
       if (p === '/sitemap.xml') return text(sitemap(host, paths), meta, 'application/xml; charset=utf-8', 'public, max-age=3600');
-      return json({ error: 'not_found', paths }, meta, 'no-store');
+      return notFound(paths, meta);
     }
     if (c.kind === 'root' || c.kind === 'record') {
       const f = rootFacts(host, c, live); const meta = { node: c.kind === 'root' ? 'global' : 'cm-record', as_of: f.as_of }; const paths = ['/', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt'];
-      if (p === '/') return html(page({ host, title: rootTitle(c), desc: `${rootTitle(c)}. Operator: ${OPERATOR}. Public-record only.`, h1: rootTitle(c), state: c.kind === 'root' ? 'live' : 'draft', asOf: today(), body: rootBody(host, c, f, live) }), meta);
+      if (p === '/') return HTML(page({ host, title: rootTitle(c), desc: `${rootTitle(c)}. Operator: ${OPERATOR}. Public-record only.`, h1: rootTitle(c), state: c.kind === 'root' ? 'live' : 'draft', asOf: today(), body: rootBody(host, c, f, live) }), meta);
       if (p === '/llms.txt') return text(rootLlms(host, c, f), meta);
       if (p === '/facts.json') return json(f, meta);
       if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json') return json(rootCard(host, c, f), meta);
       if (p === '/sitemap.xml') return text(sitemap(host, paths), meta, 'application/xml; charset=utf-8', 'public, max-age=3600');
-      return json({ error: 'not_found', paths }, meta, 'no-store');
+      return notFound(paths, meta);
     }
-    return json({ error: 'not_found', note: 'an Allooloo Technologies Corp. domain with no page of its own', corporate: CORPORATE }, {}, 'no-store');
+    return json({ error: 'not_found', note: 'an Allooloo Technologies Corp. domain with no page of its own', corporate: CORPORATE }, {}, 'no-store', 404);
   }
 };

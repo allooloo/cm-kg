@@ -1,0 +1,1541 @@
+{
+ "url": "https://allooloo.io",
+ "targetUrl": "https://allooloo.io",
+ "scannedAt": "2026-09-12T23:19:08.819Z",
+ "level": 5,
+ "levelName": "Agent-Native",
+ "checks": {
+  "discoverability": {
+   "robotsTxt": {
+    "status": "pass",
+    "message": "robots.txt exists with valid format",
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /robots.txt",
+      "request": {
+       "url": "https://allooloo.io/robots.txt",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "text/plain; charset=utf-8",
+        "content-length": "867",
+        "cf-ray": "a3a2a271ce451f84-QRO"
+       },
+       "bodyPreview": "User-agent: *\nAllow: /\nContent-Signal: search=yes, ai-input=yes, ai-train=yes\n\nUser-agent: GPTBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: Claude-User\nAllow: /\n\nUser-agent: Claude-SearchBot\nAllow: /\n\nUser-agent: Google-Extended\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: Perplexity-User\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: ChatGPT-User\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nUser-agent: Applebot\nAllow: /\n\nUser-agent: Applebot-Extended\nAllow: /\n\nUse..."
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Received valid robots.txt (200, text/plain; charset=utf-8)"
+      }
+     },
+     {
+      "action": "parse",
+      "label": "Validate robots.txt structure",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Contains valid User-agent directive(s)"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "robots.txt exists with valid format"
+      }
+     }
+    ],
+    "durationMs": 0
+   },
+   "sitemap": {
+    "status": "pass",
+    "message": "sitemap.xml exists with valid structure",
+    "details": {
+     "url": "https://allooloo.io/sitemap.xml",
+     "fromRobotsTxt": true,
+     "format": "xml"
+    },
+    "evidence": [
+     {
+      "action": "parse",
+      "label": "Extract Sitemap directives from robots.txt",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found 1 Sitemap directive(s) in robots.txt"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "GET /sitemap.xml",
+      "request": {
+       "url": "https://allooloo.io/sitemap.xml",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/xml; charset=utf-8",
+        "content-length": "397",
+        "cf-ray": "a3a2a271ee661f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found valid xml sitemap at https://allooloo.io/sitemap.xml"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "sitemap.xml exists with valid structure"
+      }
+     }
+    ],
+    "durationMs": 10
+   },
+   "linkHeaders": {
+    "status": "pass",
+    "message": "Found agent-useful Link relations: alternate, api-catalog, service-desc",
+    "details": {
+     "relationsFound": [
+      {
+       "rel": "alternate",
+       "href": "https://allooloo.io/",
+       "type": "text/markdown"
+      },
+      {
+       "rel": "api-catalog",
+       "href": "https://allooloo.io/.well-known/api-catalog",
+       "type": "application/linkset+json"
+      },
+      {
+       "rel": "service-desc",
+       "href": "https://mcp.capitalmarketsknowledgegraph.ai/openapi.json",
+       "type": "application/json"
+      }
+     ],
+     "totalLinks": 6
+    },
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /",
+      "request": {
+       "url": "https://allooloo.io",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "content-length": "15275",
+        "link": "<https://allooloo.io/llms.txt>; rel=\"llms-txt\"; type=\"text/plain\", <https://allooloo.io/>; rel=\"alternate\"; type=\"text/markdown\", <https://allooloo.io/.well-known/agent-card.json>; rel=\"agent-card\"; type=\"application/json\", <https://allooloo.io/.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\", <https://allooloo.io/.well-known/mcp/server-card.json>; rel=\"mcp-server-card\"; type=\"application/json\", <https://mcp.capitalmarketsknowledgegraph.ai/openapi.json>; rel=\"service-desc\"; type=\"application/json\"",
+        "cf-ray": "a3a2a2727f241f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Target page returned 200 with Link header"
+      }
+     },
+     {
+      "action": "parse",
+      "label": "Parse Link header (RFC 8288)",
+      "finding": {
+       "outcome": "neutral",
+       "summary": "Parsed 6 link(s) from header"
+      }
+     },
+     {
+      "action": "parse",
+      "label": "Match agent-useful relations",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found agent-useful relations: alternate, api-catalog, service-desc"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found agent-useful Link relations: alternate, api-catalog, service-desc"
+      }
+     }
+    ],
+    "durationMs": 101
+   },
+   "dnsAid": {
+    "status": "fail",
+    "message": "DNS for AI Discovery (DNS-AID) well-known entrypoint records not found",
+    "details": {
+     "domainsChecked": [
+      "allooloo.io"
+     ],
+     "queriesAttempted": [
+      "SVCB _index._agents.allooloo.io",
+      "HTTPS _index._agents.allooloo.io",
+      "SVCB _a2a._agents.allooloo.io",
+      "HTTPS _a2a._agents.allooloo.io",
+      "SVCB _mcp._agents.allooloo.io",
+      "HTTPS _mcp._agents.allooloo.io",
+      "TXT _index._agents.allooloo.io"
+     ],
+     "dnssecValidated": false,
+     "serviceRecordCount": 0,
+     "aliasRecordCount": 0,
+     "txtIndexEntryCount": 0,
+     "txtIndexEntries": [],
+     "records": []
+    },
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "DoH SVCB _index._agents.allooloo.io",
+      "request": {
+       "url": "https://cloudflare-dns.com/dns-query?name=_index._agents.allooloo.io&type=SVCB&do=1",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/dns-json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/dns-json"
+       },
+       "bodyPreview": "{\"Status\":3,\"TC\":false,\"RD\":true,\"RA\":true,\"AD\":false,\"CD\":false,\"Question\":[{\"name\":\"_index._agents.allooloo.io\",\"type\":64}],\"Authority\":[{\"name\":\"allooloo.io\",\"type\":6,\"TTL\":1015,\"data\":\"henrik.ns.cloudflare.com. dns.cloudflare.com. 2414714411 10000 2400 604800 1800\"}]}"
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No SVCB answers (NXDOMAIN)"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "DoH HTTPS _index._agents.allooloo.io",
+      "request": {
+       "url": "https://cloudflare-dns.com/dns-query?name=_index._agents.allooloo.io&type=HTTPS&do=1",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/dns-json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/dns-json"
+       },
+       "bodyPreview": "{\"Status\":3,\"TC\":false,\"RD\":true,\"RA\":true,\"AD\":false,\"CD\":false,\"Question\":[{\"name\":\"_index._agents.allooloo.io\",\"type\":65}],\"Authority\":[{\"name\":\"allooloo.io\",\"type\":6,\"TTL\":1015,\"data\":\"henrik.ns.cloudflare.com. dns.cloudflare.com. 2414714411 10000 2400 604800 1800\"}]}"
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No HTTPS answers (NXDOMAIN)"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "DoH SVCB _a2a._agents.allooloo.io",
+      "request": {
+       "url": "https://cloudflare-dns.com/dns-query?name=_a2a._agents.allooloo.io&type=SVCB&do=1",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/dns-json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/dns-json"
+       },
+       "bodyPreview": "{\"Status\":3,\"TC\":false,\"RD\":true,\"RA\":true,\"AD\":false,\"CD\":false,\"Question\":[{\"name\":\"_a2a._agents.allooloo.io\",\"type\":64}],\"Authority\":[{\"name\":\"allooloo.io\",\"type\":6,\"TTL\":1015,\"data\":\"henrik.ns.cloudflare.com. dns.cloudflare.com. 2414714411 10000 2400 604800 1800\"}]}"
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No SVCB answers (NXDOMAIN)"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "DoH HTTPS _a2a._agents.allooloo.io",
+      "request": {
+       "url": "https://cloudflare-dns.com/dns-query?name=_a2a._agents.allooloo.io&type=HTTPS&do=1",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/dns-json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/dns-json"
+       },
+       "bodyPreview": "{\"Status\":3,\"TC\":false,\"RD\":true,\"RA\":true,\"AD\":false,\"CD\":false,\"Question\":[{\"name\":\"_a2a._agents.allooloo.io\",\"type\":65}],\"Authority\":[{\"name\":\"allooloo.io\",\"type\":6,\"TTL\":1015,\"data\":\"henrik.ns.cloudflare.com. dns.cloudflare.com. 2414714411 10000 2400 604800 1800\"}]}"
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No HTTPS answers (NXDOMAIN)"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "DoH SVCB _mcp._agents.allooloo.io",
+      "request": {
+       "url": "https://cloudflare-dns.com/dns-query?name=_mcp._agents.allooloo.io&type=SVCB&do=1",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/dns-json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/dns-json"
+       },
+       "bodyPreview": "{\"Status\":3,\"TC\":false,\"RD\":true,\"RA\":true,\"AD\":false,\"CD\":false,\"Question\":[{\"name\":\"_mcp._agents.allooloo.io\",\"type\":64}],\"Authority\":[{\"name\":\"allooloo.io\",\"type\":6,\"TTL\":1015,\"data\":\"henrik.ns.cloudflare.com. dns.cloudflare.com. 2414714411 10000 2400 604800 1800\"}]}"
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No SVCB answers (NXDOMAIN)"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "DoH HTTPS _mcp._agents.allooloo.io",
+      "request": {
+       "url": "https://cloudflare-dns.com/dns-query?name=_mcp._agents.allooloo.io&type=HTTPS&do=1",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/dns-json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/dns-json"
+       },
+       "bodyPreview": "{\"Status\":3,\"TC\":false,\"RD\":true,\"RA\":true,\"AD\":false,\"CD\":false,\"Question\":[{\"name\":\"_mcp._agents.allooloo.io\",\"type\":65}],\"Authority\":[{\"name\":\"allooloo.io\",\"type\":6,\"TTL\":1015,\"data\":\"henrik.ns.cloudflare.com. dns.cloudflare.com. 2414714411 10000 2400 604800 1800\"}]}"
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No HTTPS answers (NXDOMAIN)"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "DoH TXT _index._agents.allooloo.io",
+      "request": {
+       "url": "https://cloudflare-dns.com/dns-query?name=_index._agents.allooloo.io&type=TXT&do=1",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/dns-json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/dns-json"
+       },
+       "bodyPreview": "{\"Status\":3,\"TC\":false,\"RD\":true,\"RA\":true,\"AD\":false,\"CD\":false,\"Question\":[{\"name\":\"_index._agents.allooloo.io\",\"type\":16}],\"Authority\":[{\"name\":\"allooloo.io\",\"type\":6,\"TTL\":1015,\"data\":\"henrik.ns.cloudflare.com. dns.cloudflare.com. 2414714411 10000 2400 604800 1800\"}]}"
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No TXT answers (NXDOMAIN)"
+      }
+     },
+     {
+      "action": "parse",
+      "label": "Parse DNS for AI Discovery (DNS-AID) SVCB/HTTPS records",
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No DNS for AI Discovery (DNS-AID) SVCB or HTTPS records found at well-known entrypoints"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "negative",
+       "summary": "DNS for AI Discovery (DNS-AID) well-known entrypoint records not found"
+      }
+     }
+    ],
+    "durationMs": 5
+   }
+  },
+  "contentAccessibility": {
+   "markdownNegotiation": {
+    "status": "pass",
+    "message": "Site supports Markdown for Agents",
+    "details": {
+     "contentType": "text/markdown; charset=utf-8"
+    },
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET target page (Accept: text/markdown)",
+      "request": {
+       "url": "https://allooloo.io",
+       "method": "GET",
+       "headers": {
+        "accept": "text/markdown",
+        "cache-control": "no-cache"
+       }
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Response content-type is text/markdown; charset=utf-8 -- site supports markdown negotiation"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "text/markdown; charset=utf-8",
+        "cf-ray": "a3a2a28bcd50345b-DFW"
+       }
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Site supports Markdown for Agents"
+      }
+     }
+    ],
+    "durationMs": 1106
+   }
+  },
+  "botAccessControl": {
+   "robotsTxtAiRules": {
+    "status": "pass",
+    "message": "Found rules for AI bots: gptbot, chatgpt-user, google-extended, ccbot, bytespider, perplexitybot, cohere-ai, applebot-extended, amazonbot, meta-externalagent, diffbot",
+    "details": {
+     "botsFound": [
+      "gptbot",
+      "chatgpt-user",
+      "google-extended",
+      "ccbot",
+      "bytespider",
+      "perplexitybot",
+      "cohere-ai",
+      "applebot-extended",
+      "amazonbot",
+      "meta-externalagent",
+      "diffbot"
+     ]
+    },
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /robots.txt",
+      "request": {
+       "url": "https://allooloo.io/robots.txt",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "text/plain; charset=utf-8",
+        "content-length": "867",
+        "cf-ray": "a3a2a271ce451f84-QRO"
+       },
+       "bodyPreview": "User-agent: *\nAllow: /\nContent-Signal: search=yes, ai-input=yes, ai-train=yes\n\nUser-agent: GPTBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: Claude-User\nAllow: /\n\nUser-agent: Claude-SearchBot\nAllow: /\n\nUser-agent: Google-Extended\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: Perplexity-User\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: ChatGPT-User\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nUser-agent: Applebot\nAllow: /\n\nUser-agent: Applebot-Extended\nAllow: /\n\nUse..."
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Received valid robots.txt (200, text/plain; charset=utf-8)"
+      }
+     },
+     {
+      "action": "parse",
+      "label": "Scan for AI bot User-agent directives",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found rules for AI bots: gptbot, chatgpt-user, google-extended, ccbot, bytespider, perplexitybot, cohere-ai, applebot-extended, amazonbot, meta-externalagent, diffbot"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found rules for 11 AI bots"
+      }
+     }
+    ],
+    "durationMs": 0
+   },
+   "contentSignals": {
+    "status": "pass",
+    "message": "Content Signals found in robots.txt",
+    "details": {
+     "signals": [
+      {
+       "userAgent": "*",
+       "path": null,
+       "aiTrain": "yes",
+       "search": "yes",
+       "aiInput": "yes"
+      }
+     ],
+     "signalCount": 1
+    },
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /robots.txt",
+      "request": {
+       "url": "https://allooloo.io/robots.txt",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "text/plain; charset=utf-8",
+        "content-length": "867",
+        "cf-ray": "a3a2a271ce451f84-QRO"
+       },
+       "bodyPreview": "User-agent: *\nAllow: /\nContent-Signal: search=yes, ai-input=yes, ai-train=yes\n\nUser-agent: GPTBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: Claude-User\nAllow: /\n\nUser-agent: Claude-SearchBot\nAllow: /\n\nUser-agent: Google-Extended\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: Perplexity-User\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: ChatGPT-User\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nUser-agent: Applebot\nAllow: /\n\nUser-agent: Applebot-Extended\nAllow: /\n\nUse..."
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Received valid robots.txt (200, text/plain; charset=utf-8)"
+      }
+     },
+     {
+      "action": "parse",
+      "label": "Parse Content-Signal directives",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found 1 Content-Signal directive(s)"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Content Signals found in robots.txt"
+      }
+     }
+    ],
+    "durationMs": 0
+   },
+   "webBotAuth": {
+    "status": "neutral",
+    "message": "Web Bot Auth directory not found (informational only)",
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/http-message-signatures-directory",
+      "request": {
+       "url": "https://allooloo.io/.well-known/http-message-signatures-directory",
+       "method": "GET"
+      },
+      "response": {
+       "status": 404,
+       "statusText": "Not Found",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "309",
+        "cf-ray": "a3a2a271ee681f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "negative",
+       "summary": "Server returned 404 -- Web Bot Auth directory not found"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "negative",
+       "summary": "Web Bot Auth directory not found"
+      }
+     }
+    ],
+    "durationMs": 8
+   }
+  },
+  "discovery": {
+   "apiCatalog": {
+    "status": "pass",
+    "message": "API Catalog found with 2 APIs listed",
+    "details": {
+     "apiCount": 2,
+     "linksetEntries": 2,
+     "hasItems": false,
+     "hasNestedCatalogs": false,
+     "correctContentType": true
+    },
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/api-catalog",
+      "request": {
+       "url": "https://allooloo.io/.well-known/api-catalog",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/linkset+json, application/json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/linkset+json",
+        "content-length": "1276",
+        "cf-ray": "a3a2a2725f001f84-QRO"
+       },
+       "bodyPreview": "{\"linkset\":[{\"anchor\":\"https://allooloo.io/\",\"service-doc\":[{\"href\":\"https://allooloo.io/llms.txt\",\"type\":\"text/plain\"},{\"href\":\"https://allooloo.io/auth.md\",\"type\":\"text/markdown\"}],\"service-meta\":[{\"href\":\"https://allooloo.io/.well-known/mcp/server-card.json\",\"type\":\"application/json\"},{\"href\":\"https://allooloo.io/.well-known/agent-card.json\",\"type\":\"application/json\"}],\"service-desc\":[{\"href\":\"https://mcp.capitalmarketsknowledgegraph.ai/openapi.json\",\"type\":\"application/json\"}]},{\"anchor\":\"ht..."
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Received 200 with valid JSON response"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Validate Linkset structure",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found \"linkset\" array with 2 entries"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Analyze linkset entries",
+      "finding": {
+       "outcome": "positive",
+       "summary": "2 APIs listed, correct content-type"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "API Catalog found with 2 APIs listed"
+      }
+     }
+    ],
+    "durationMs": 83
+   },
+   "oauthDiscovery": {
+    "status": "fail",
+    "message": "No OAuth/OIDC discovery metadata found",
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/openid-configuration",
+      "request": {
+       "url": "https://allooloo.io/.well-known/openid-configuration",
+       "method": "GET"
+      },
+      "response": {
+       "status": 404,
+       "statusText": "Not Found",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "309",
+        "cf-ray": "a3a2a271ee671f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "negative",
+       "summary": "openid-configuration returned 404"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/oauth-authorization-server",
+      "request": {
+       "url": "https://allooloo.io/.well-known/oauth-authorization-server",
+       "method": "GET"
+      },
+      "response": {
+       "status": 404,
+       "statusText": "Not Found",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "309",
+        "cf-ray": "a3a2a271ee6e1f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "negative",
+       "summary": "oauth-authorization-server returned 404"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "negative",
+       "summary": "No OAuth/OIDC discovery metadata found at either well-known path"
+      }
+     }
+    ],
+    "durationMs": 75
+   },
+   "oauthProtectedResource": {
+    "status": "pass",
+    "message": "OAuth Protected Resource Metadata found (well-known)",
+    "details": {
+     "discoveryMethod": "well-known",
+     "resource": "https://allooloo.io",
+     "authorizationServers": [],
+     "scopesSupported": [],
+     "bearerMethodsSupported": [],
+     "resourceName": "allooloo.io \u2014 Allooloo Technologies Corp.",
+     "resourceDocumentation": "https://allooloo.io/auth.md"
+    },
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/oauth-protected-resource",
+      "request": {
+       "url": "https://allooloo.io/.well-known/oauth-protected-resource",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "465",
+        "cf-ray": "a3a2a271ee711f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Received JSON response (200)"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Validate resource metadata",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Valid metadata with resource: https://allooloo.io"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "GET /",
+      "request": {
+       "url": "https://allooloo.io",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "content-length": "15275",
+        "link": "<https://allooloo.io/llms.txt>; rel=\"llms-txt\"; type=\"text/plain\", <https://allooloo.io/>; rel=\"alternate\"; type=\"text/markdown\", <https://allooloo.io/.well-known/agent-card.json>; rel=\"agent-card\"; type=\"application/json\", <https://allooloo.io/.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\", <https://allooloo.io/.well-known/mcp/server-card.json>; rel=\"mcp-server-card\"; type=\"application/json\", <https://mcp.capitalmarketsknowledgegraph.ai/openapi.json>; rel=\"service-desc\"; type=\"application/json\"",
+        "cf-ray": "a3a2a271ee791f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "Target resource returned 200 (no WWW-Authenticate header)"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "OAuth Protected Resource Metadata found (well-known)"
+      }
+     }
+    ],
+    "durationMs": 75
+   },
+   "authMd": {
+    "status": "fail",
+    "message": "auth.md exists but OAuth Protected Resource Metadata was not found",
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /auth.md",
+      "request": {
+       "url": "https://allooloo.io/auth.md",
+       "method": "GET",
+       "headers": {
+        "Accept": "text/markdown, text/plain, */*"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "text/markdown; charset=utf-8",
+        "content-length": "1085",
+        "link": "<https://allooloo.io/llms.txt>; rel=\"llms-txt\"; type=\"text/plain\", <https://allooloo.io/>; rel=\"alternate\"; type=\"text/markdown\", <https://allooloo.io/.well-known/agent-card.json>; rel=\"agent-card\"; type=\"application/json\", <https://allooloo.io/.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\", <https://allooloo.io/.well-known/mcp/server-card.json>; rel=\"mcp-server-card\"; type=\"application/json\", <https://mcp.capitalmarketsknowledgegraph.ai/openapi.json>; rel=\"service-desc\"; type=\"application/json\"",
+        "cf-ray": "a3a2a271ee7a1f84-QRO"
+       },
+       "bodyPreview": "# Auth.md \u2014 allooloo.io\n\n1. Authentication on this host: none. The surface and its machine kit are public-record documents.\n2. Authentication on the doors: none. The MCP door `https://mcp.capitalmarketsknowledgegraph.ai/mcp` answers Streamable HTTP JSON-RPC to any caller, read-only, under the rate the door states.\n3. OAuth / OIDC: no authorization server is published (`/.well-known/openid-configuration` and `/.well-known/oauth-authorization-server` answer 404 on purpose). `/.well-known/oauth-pro..."
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Received 200 response with content-type: text/markdown; charset=utf-8"
+      }
+     },
+     {
+      "action": "parse",
+      "label": "Detect Auth.md registration markers",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found 1 Auth.md marker(s)"
+      }
+     },
+     {
+      "action": "parse",
+      "label": "Detect self-contained Auth.md registration flow",
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No complete standalone registration flow found in auth.md"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/oauth-protected-resource",
+      "request": {
+       "url": "https://allooloo.io/.well-known/oauth-protected-resource",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "465",
+        "cf-ray": "a3a2a2727f281f84-QRO"
+       },
+       "bodyPreview": "{\"resource\":\"https://allooloo.io\",\"authorization_servers\":[],\"bearer_methods_supported\":[],\"scopes_supported\":[],\"resource_name\":\"allooloo.io \u2014 Allooloo Technologies Corp.\",\"resource_documentation\":\"https://allooloo.io/auth.md\",\"resource_policy_uri\":\"https://allooloo.io/terms\",\"note\":\"open resource: the public doors and surfaces require no authentication; the Registries gate (agent identity, licences, receipts) is not yet in service\"}"
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Received JSON response (200)"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Validate Protected Resource Metadata",
+      "finding": {
+       "outcome": "negative",
+       "summary": "Missing authorization_servers array"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "negative",
+       "summary": "auth.md exists but OAuth Protected Resource Metadata was not found"
+      }
+     }
+    ],
+    "durationMs": 104
+   },
+   "mcpServerCard": {
+    "status": "pass",
+    "message": "MCP Server Card found at /.well-known/mcp/server-card.json",
+    "details": {
+     "path": "/.well-known/mcp/server-card.json",
+     "format": "sep",
+     "name": "cm-kg",
+     "hasVersion": true,
+     "hasTransport": true,
+     "hasCapabilities": false,
+     "hasTools": true,
+     "hasDescription": true
+    },
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/mcp/server-card.json",
+      "request": {
+       "url": "https://allooloo.io/.well-known/mcp/server-card.json",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "2103",
+        "cf-ray": "a3a2a271fe7f1f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found valid MCP Server Card (sep format) at /.well-known/mcp/server-card.json"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/mcp.json",
+      "request": {
+       "url": "https://allooloo.io/.well-known/mcp.json",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "2103",
+        "cf-ray": "a3a2a271fe861f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found valid MCP Server Card (sep format) at /.well-known/mcp.json"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/mcp/server-cards.json",
+      "request": {
+       "url": "https://allooloo.io/.well-known/mcp/server-cards.json",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "2103",
+        "cf-ray": "a3a2a271fe851f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Found valid MCP Server Card (sep format) at /.well-known/mcp/server-cards.json"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Validate Server Card",
+      "finding": {
+       "outcome": "positive",
+       "summary": "SEP-format card found at /.well-known/mcp/server-card.json"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "MCP Server Card found at /.well-known/mcp/server-card.json"
+      }
+     }
+    ],
+    "durationMs": 76
+   },
+   "a2aAgentCard": {
+    "status": "pass",
+    "message": "A2A Agent Card found: \"Allooloo Technologies Corp. \u2014 Capital Markets Knowledge Graph\" (v0.11.0)",
+    "details": {
+     "name": "Allooloo Technologies Corp. \u2014 Capital Markets Knowledge Graph",
+     "description": "28479 listed companies, 2386465 dated disclosures, eleven markets served in-country. Every field sourced and read-dated. MCP and A2A for AI agents.",
+     "version": "0.11.0",
+     "providerName": "Allooloo Technologies Corp.",
+     "skillCount": 5,
+     "skillNames": [
+      "Resolve an issuer",
+      "Read the record",
+      "List the names",
+      "Disclosure events since a date",
+      "The twelve nodes"
+     ],
+     "hasStreaming": false,
+     "hasPushNotifications": false,
+     "hasExtensions": false,
+     "interfaceCount": 1,
+     "transportProtocols": [],
+     "serviceUrl": "https://mcp.capitalmarketsknowledgegraph.ai/mcp",
+     "hasSecurity": false,
+     "inputModes": [
+      "application/json",
+      "text/plain"
+     ],
+     "outputModes": [
+      "application/json"
+     ],
+     "ap2Supported": false
+    },
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/agent-card.json",
+      "request": {
+       "url": "https://allooloo.io/.well-known/agent-card.json",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "3967",
+        "cf-ray": "a3a2a2725efc1f84-QRO"
+       },
+       "bodyPreview": "{\"name\":\"Allooloo Technologies Corp. \u2014 Capital Markets Knowledge Graph\",\"description\":\"28479 listed companies, 2386465 dated disclosures, eleven markets served in-country. Every field sourced and read-dated. MCP and A2A for AI agents.\",\"url\":\"https://mcp.capitalmarketsknowledgegraph.ai/mcp\",\"preferredTransport\":\"JSONRPC\",\"supportedInterfaces\":[{\"url\":\"https://mcp.capitalmarketsknowledgegraph.ai/mcp\",\"transport\":\"JSONRPC\"}],\"additionalInterfaces\":[{\"url\":\"https://mcp.capitalmarketsknowledgegraph...."
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Received 200 with valid JSON response"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Validate AgentCard structure",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Valid AgentCard: \"Allooloo Technologies Corp. \u2014 Capital Markets Knowledge Graph\", version 0.11.0, 5 skills, 1 interface"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Check AP2 extension",
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No AP2 extension declared"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "A2A Agent Card found: \"Allooloo Technologies Corp. \u2014 Capital Markets Knowledge Graph\" (v0.11.0)"
+      }
+     }
+    ],
+    "durationMs": 82
+   },
+   "agentSkills": {
+    "status": "pass",
+    "message": "Agent Skills index exists with valid JSON",
+    "details": {
+     "skillCount": 5,
+     "specVersion": "0.1.0",
+     "path": "/.well-known/agent-skills/index.json"
+    },
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/agent-skills/index.json",
+      "request": {
+       "url": "https://allooloo.io/.well-known/agent-skills/index.json",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "1783",
+        "cf-ray": "a3a2a2725efd1f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Received 200 response with content-type: application/json; charset=utf-8"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Detect spec version",
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No $schema field \u2014 treating as v0.1.0 format"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Count skills",
+      "finding": {
+       "outcome": "neutral",
+       "summary": "Found \"skills\" array with 5 entries"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Validate skill count",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Index contains 5 skills"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "Agent Skills index exists with valid JSON"
+      }
+     }
+    ],
+    "durationMs": 85
+   },
+   "webMcp": {
+    "status": "fail",
+    "message": "No WebMCP tools detected on page load",
+    "evidence": [
+     {
+      "action": "parse",
+      "label": "WebMCP detection",
+      "finding": {
+       "outcome": "neutral",
+       "summary": "Checking page for WebMCP tool registrations"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "Navigate to https://allooloo.io",
+      "request": {
+       "url": "https://allooloo.io",
+       "method": "GET"
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "Loading page to detect WebMCP tool registrations"
+      }
+     },
+     {
+      "action": "parse",
+      "label": "Check imperative WebMCP API",
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No tools registered via navigator.modelContext"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "negative",
+       "summary": "No WebMCP tools detected on page load"
+      }
+     }
+    ],
+    "durationMs": 4986
+   },
+   "ard": {
+    "status": "pass",
+    "message": "ARD capability manifest found with 3 agentic resources",
+    "details": {
+     "manifestSource": "well-known",
+     "contentType": "application/json; charset=utf-8",
+     "correctMediaType": false,
+     "specVersion": "1.0",
+     "hostDisplayName": null,
+     "hostIdentifier": null,
+     "entryCount": 3,
+     "entriesInspected": 3,
+     "validEntryCount": 3,
+     "entryTypes": {
+      "mcp": 1,
+      "a2a": 1,
+      "openapi": 1
+     },
+     "urnConformantCount": 0,
+     "withTrustManifest": 0,
+     "withRepresentativeQueries": 0,
+     "nestedCatalogCount": 0,
+     "registryEndpointCount": 0,
+     "hasCollections": false,
+     "entryIssues": [],
+     "entryIssueCount": 0,
+     "discoveryMechanisms": [
+      "well-known"
+     ],
+     "searchEndpoints": []
+    },
+    "evidence": [
+     {
+      "action": "parse",
+      "label": "Extract Agentmap directives from robots.txt",
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No Agentmap directives found"
+      }
+     },
+     {
+      "action": "parse",
+      "label": "Extract <link rel=\"ai-catalog\"> from page head",
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No catalog links found"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/ai-catalog.json",
+      "request": {
+       "url": "https://allooloo.io/.well-known/ai-catalog.json",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "2293",
+        "cf-ray": "a3a2a271ee691f84-QRO"
+       },
+       "bodyPreview": "{\"specVersion\":\"1.0\",\"name\":\"Allooloo Technologies Corp. \u2014 Capital Markets Knowledge Graph\",\"description\":\"28479 listed companies, 2386465 dated disclosures, eleven markets served in-country. Every field sourced and read-dated. MCP and A2A for AI agents.\",\"publisher\":{\"name\":\"Allooloo Technologies Corp.\",\"url\":\"https://allooloo.io\"},\"url\":\"https://allooloo.io/\",\"updated\":\"2026-09-12\",\"entries\":[{\"identifier\":\"mcp\",\"displayName\":\"Capital Markets Knowledge Graph \u2014 apex router\",\"id\":\"mcp\",\"type\":\"m..."
+      },
+      "finding": {
+       "outcome": "positive",
+       "summary": "Received 200 with valid JSON response"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Validate manifest entries",
+      "finding": {
+       "outcome": "positive",
+       "summary": "3 of 3 inspected entries valid; 0 use a conformant urn:air identifier"
+      }
+     },
+     {
+      "action": "validate",
+      "label": "Review identifier format",
+      "finding": {
+       "outcome": "neutral",
+       "summary": "3 entries do not use the urn:air:<domain>:...:<name> format (spec \u00a74.2.1)"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "positive",
+       "summary": "ARD capability manifest found with 3 agentic resources"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "DoH TXT _catalog._agents.allooloo.io",
+      "request": {
+       "url": "https://cloudflare-dns.com/dns-query?name=_catalog._agents.allooloo.io&type=TXT&do=1",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/dns-json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/dns-json"
+       },
+       "bodyPreview": "{\"Status\":3,\"TC\":false,\"RD\":true,\"RA\":true,\"AD\":false,\"CD\":false,\"Question\":[{\"name\":\"_catalog._agents.allooloo.io\",\"type\":16}],\"Authority\":[{\"name\":\"allooloo.io\",\"type\":6,\"TTL\":1015,\"data\":\"henrik.ns.cloudflare.com. dns.cloudflare.com. 2414714411 10000 2400 604800 1800\"}]}"
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No TXT answers (NXDOMAIN)"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "DoH SRV _search._agents.allooloo.io",
+      "request": {
+       "url": "https://cloudflare-dns.com/dns-query?name=_search._agents.allooloo.io&type=SRV&do=1",
+       "method": "GET",
+       "headers": {
+        "Accept": "application/dns-json"
+       }
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/dns-json"
+       },
+       "bodyPreview": "{\"Status\":3,\"TC\":false,\"RD\":true,\"RA\":true,\"AD\":false,\"CD\":false,\"Question\":[{\"name\":\"_search._agents.allooloo.io\",\"type\":33}],\"Authority\":[{\"name\":\"allooloo.io\",\"type\":6,\"TTL\":1015,\"data\":\"henrik.ns.cloudflare.com. dns.cloudflare.com. 2414714411 10000 2400 604800 1800\"}]}"
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "No SRV answers (NXDOMAIN)"
+      }
+     }
+    ],
+    "durationMs": 9
+   }
+  },
+  "commerce": {
+   "x402": {
+    "status": "neutral",
+    "message": "x402 payment protocol not detected (not a commerce site)",
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /",
+      "request": {
+       "url": "https://allooloo.io/",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "text/html; charset=utf-8",
+        "content-length": "15275",
+        "link": "<https://allooloo.io/llms.txt>; rel=\"llms-txt\"; type=\"text/plain\", <https://allooloo.io/>; rel=\"alternate\"; type=\"text/markdown\", <https://allooloo.io/.well-known/agent-card.json>; rel=\"agent-card\"; type=\"application/json\", <https://allooloo.io/.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\", <https://allooloo.io/.well-known/mcp/server-card.json>; rel=\"mcp-server-card\"; type=\"application/json\", <https://mcp.capitalmarketsknowledgegraph.ai/openapi.json>; rel=\"service-desc\"; type=\"application/json\"",
+        "cf-ray": "a3a2a2726f061f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "/ returned 200 (not 402)"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "GET /api",
+      "request": {
+       "url": "https://allooloo.io/api",
+       "method": "GET"
+      },
+      "response": {
+       "status": 404,
+       "statusText": "Not Found",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "281",
+        "cf-ray": "a3a2a2726f0f1f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "/api returned 404 (not 402)"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "GET /api/v1",
+      "request": {
+       "url": "https://allooloo.io/api/v1",
+       "method": "GET"
+      },
+      "response": {
+       "status": 404,
+       "statusText": "Not Found",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "281",
+        "cf-ray": "a3a2a2726f141f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "/api/v1 returned 404 (not 402)"
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "GET /platform/v2/x402/discovery/resources",
+      "request": {
+       "url": "https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources?limit=500",
+       "method": "GET"
+      },
+      "response": {
+       "status": 200,
+       "statusText": "OK",
+       "headers": {
+        "content-type": "application/json",
+        "cf-ray": "a3a2a2725f051f84-QRO"
+       }
+      }
+     },
+     {
+      "action": "fetch",
+      "label": "GET Bazaar discovery API",
+      "request": {
+       "url": "https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources?limit=500",
+       "method": "GET"
+      },
+      "finding": {
+       "outcome": "negative",
+       "summary": "Network error querying Bazaar API"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "negative",
+       "summary": "x402 payment protocol not detected"
+      }
+     }
+    ],
+    "durationMs": 1085
+   },
+   "mpp": {
+    "status": "neutral",
+    "message": "MPP payment discovery not detected (not a commerce site)",
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /openapi.json",
+      "request": {
+       "url": "https://allooloo.io/openapi.json",
+       "method": "GET"
+      },
+      "response": {
+       "status": 404,
+       "statusText": "Not Found",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "281",
+        "cf-ray": "a3a2a2726f161f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "neutral",
+       "summary": "/openapi.json returned 404"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "negative",
+       "summary": "MPP payment discovery not detected"
+      }
+     }
+    ],
+    "durationMs": 93
+   },
+   "ucp": {
+    "status": "neutral",
+    "message": "UCP profile not found (not a commerce site)",
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/ucp",
+      "request": {
+       "url": "https://allooloo.io/.well-known/ucp",
+       "method": "GET"
+      },
+      "response": {
+       "status": 404,
+       "statusText": "Not Found",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "309",
+        "cf-ray": "a3a2a2725f041f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "negative",
+       "summary": "Server returned 404 -- UCP profile not found"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "negative",
+       "summary": "UCP profile not found"
+      }
+     }
+    ],
+    "durationMs": 83
+   },
+   "acp": {
+    "status": "neutral",
+    "message": "ACP discovery document not found (not a commerce site)",
+    "evidence": [
+     {
+      "action": "fetch",
+      "label": "GET /.well-known/acp.json",
+      "request": {
+       "url": "https://allooloo.io/.well-known/acp.json",
+       "method": "GET"
+      },
+      "response": {
+       "status": 404,
+       "statusText": "Not Found",
+       "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "content-length": "309",
+        "cf-ray": "a3a2a2726f1b1f84-QRO"
+       }
+      },
+      "finding": {
+       "outcome": "negative",
+       "summary": "Server returned 404 -- ACP discovery document not found"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "negative",
+       "summary": "ACP discovery document not found"
+      }
+     }
+    ],
+    "durationMs": 98
+   },
+   "ap2": {
+    "status": "neutral",
+    "message": "AP2 not declared in A2A Agent Card (not a commerce site)",
+    "evidence": [
+     {
+      "action": "validate",
+      "label": "Check AP2 extension",
+      "finding": {
+       "outcome": "negative",
+       "summary": "A2A Agent Card found but no AP2 extension declared"
+      }
+     },
+     {
+      "action": "conclude",
+      "label": "Conclusion",
+      "finding": {
+       "outcome": "negative",
+       "summary": "AP2 not declared in A2A Agent Card extensions"
+      }
+     }
+    ]
+   }
+  }
+ },
+ "isCommerce": false,
+ "commerceSignals": []
+}
