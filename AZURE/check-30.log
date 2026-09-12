@@ -1,0 +1,31 @@
+2026-09-12 10:28 [ca canadacentral check] agent.ca-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:28 [ca canadacentral check] mcp.ca-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:28 [ca canadacentral check] zone SSL strict: True
+2026-09-12 10:29 [uk uksouth check] agent.uk-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [uk uksouth check] mcp.uk-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [uk uksouth check] zone SSL strict: True
+2026-09-12 10:29 [fr francecentral check] agent.fr-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [fr francecentral check] mcp.fr-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [fr francecentral check] zone SSL strict: True
+2026-09-12 10:29 [nl westeurope check] agent.nl-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [nl westeurope check] mcp.nl-cm-kg.ai: certificate Failed, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [nl westeurope check] zone SSL strict: True
+2026-09-12 10:29 [de germanywestcentral check] agent.de-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [de germanywestcentral check] mcp.de-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [de germanywestcentral check] zone SSL strict: True
+2026-09-12 10:29 [au australiaeast check] agent.au-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [au australiaeast check] mcp.au-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:29 [au australiaeast check] zone SSL strict: True
+2026-09-12 10:30 [sg southeastasia check] agent.sg-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [sg southeastasia check] mcp.sg-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [sg southeastasia check] zone SSL strict: True
+2026-09-12 10:30 [jp japaneast check] agent.jp-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [jp japaneast check] mcp.jp-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [jp japaneast check] zone SSL strict: True
+2026-09-12 10:30 [kr koreacentral check] agent.kr-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [kr koreacentral check] mcp.kr-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [kr koreacentral check] zone SSL strict: True
+2026-09-12 10:30 [us eastus check] agent.us-cm-kg.ai: certificate Pending, binding Disabled — PENDING (reported, not retried)
+2026-09-12 10:30 [us eastus check] mcp.us-cm-kg.ai: certificate not created, binding none — PENDING (reported, not retried)
+2026-09-12 10:30 [us eastus check] zone SSL strict: True
+== CHECK +30 DONE 10:30

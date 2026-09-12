@@ -8,7 +8,7 @@ and public; every request carries the declared User-Agent EDGAR asks for and sta
 No ISIN, LEI, auditor, registrar or newswire comes from EDGAR at this step; LEI and ISIN follow through GLEIF (lei_match.py, lei_records.py)."""
 import requests, json, os, sys, time, threading, datetime
 from concurrent.futures import ThreadPoolExecutor
-UA = {'User-Agent': 'Allooloo Technologies Corp. allooloo@users.noreply.github.com', 'Accept-Encoding': 'gzip, deflate', 'Accept': 'application/json'}
+UA = {'User-Agent': 'Allooloo Technologies Corp. developers@allooloo.ai', 'Accept-Encoding': 'gzip, deflate', 'Accept': 'application/json'}
 os.makedirs('raw', exist_ok=True)
 TODAY = datetime.date.today(); SINCE = (TODAY - datetime.timedelta(days=366)).isoformat()
 _gate = threading.Lock(); _last = [0.0]
