@@ -1,120 +1,151 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.allooloo/cm-kg",
-  "title": "Capital Markets Agents: MCP+A2A Canada",
-  "description": "Know every Canadian and UK issuer, agent-ready. Instantly. Provably. Eleven markets, in-country.",
-  "version": "0.11.0",
-  "websiteUrl": "https://capitalmarketsknowledgegraph.ai",
-  "repository": {
-    "url": "https://github.com/allooloo/cm-kg",
-    "source": "github"
-  },
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.capitalmarketsknowledgegraph.ai/mcp"
-    }
-  ],
-  "_meta": {
-    "io.modelcontextprotocol.registry/publisher-provided": {
-      "operator": "Allooloo Technologies Corp.",
-      "category": "agentic market dataset",
-      "keywords": [
-        "agentic market dataset",
-        "capital markets",
-        "issuer record",
-        "ISIN",
-        "LEI",
-        "KYP",
-        "Canada",
-        "TSX",
-        "United Kingdom",
-        "LSE",
-        "AIM",
-        "Companies House",
-        "Australia",
-        "ASX",
-        "NSX",
-        "ASIC",
-        "Singapore",
-        "SGX",
-        "ACRA",
-        "Switzerland",
-        "SIX",
-        "Zefix",
-        "Germany",
-        "Xetra",
-        "Handelsregister",
-        "France",
-        "Euronext Paris",
-        "AMF",
-        "Netherlands",
-        "Euronext Amsterdam",
-        "AFM",
-        "Japan",
-        "Tokyo Stock Exchange",
-        "EDINET",
-        "South Korea",
-        "KRX",
-        "DART"
-      ],
-      "authentication": "none",
-      "access": "read-only, public-record only; no prices, quotes or licensed market data",
-      "record_spec": "CMR v0 (cm-record.org, draft)",
-      "nodes_live": [
-        "ca-cm-kg",
-        "uk-cm-kg",
-        "au-cm-kg",
-        "sg-cm-kg",
-        "ch-cm-kg",
-        "de-cm-kg",
-        "fr-cm-kg",
-        "nl-cm-kg",
-        "jp-cm-kg",
-        "kr-cm-kg",
-        "us-cm-kg"
-      ],
-      "tools": [
-        {
-          "name": "resolve_issuer",
-          "description": "Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version."
-        },
-        {
-          "name": "get_record",
-          "description": "Return the full Capital Markets Record for an issuer, with per-field source, reader and state; optionally a prior version."
-        },
-        {
-          "name": "list_events_since",
-          "description": "Return dated, URL'd disclosure events for an issuer (releases, bulletins, halts, corporate actions, statement and record dates) since a date."
-        },
-        {
-          "name": "list_aliases",
-          "description": "Return the sourced trade and former names an issuer releases under."
-        },
-        {
-          "name": "list_nodes",
-          "description": "Return the twelve market nodes and which are live."
-        }
-      ],
-      "facts": "https://mcp.capitalmarketsknowledgegraph.ai/facts.json",
-      "llms_txt": "https://mcp.capitalmarketsknowledgegraph.ai/llms.txt",
-      "description_of_record": "Know every Canadian and United Kingdom issuer, agent-ready. Instantly. Provably. Ten markets on the same record — Toronto to Tokyo — served in-country.",
-      "description_note": "The registry caps description at 100 characters; the description of record (CEO, Sept 12 2026) is carried here in full.",
-      "estate": "ORDER-018 sovereign estate: eleven regional doors on Azure Container Apps (records and events served in their own jurisdiction), apex router index-only on Cloudflare, an A2A Agent Card per node at agent.<node>-cm-kg.ai and at agent.capitalmarketsknowledgegraph.ai",
-      "agent_cards": [
-        "https://agent.ca-cm-kg.ai/.well-known/agent-card.json",
-        "https://agent.uk-cm-kg.ai/.well-known/agent-card.json",
-        "https://agent.au-cm-kg.ai/.well-known/agent-card.json",
-        "https://agent.sg-cm-kg.ai/.well-known/agent-card.json",
-        "https://agent.ch-cm-kg.ai/.well-known/agent-card.json",
-        "https://agent.de-cm-kg.ai/.well-known/agent-card.json",
-        "https://agent.fr-cm-kg.ai/.well-known/agent-card.json",
-        "https://agent.nl-cm-kg.ai/.well-known/agent-card.json",
-        "https://agent.jp-cm-kg.ai/.well-known/agent-card.json",
-        "https://agent.kr-cm-kg.ai/.well-known/agent-card.json",
-        "https://agent.us-cm-kg.ai/.well-known/agent-card.json",
-        "https://agent.capitalmarketsknowledgegraph.ai/.well-known/agent-card.json"
-      ]
-    }
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+ "name": "io.github.allooloo/cm-kg",
+ "title": "Capital Markets Agents: MCP+A2A Canada",
+ "description": "Know every Canadian and UK issuer, agent-ready. Instantly. Provably. Eleven markets, in-country.",
+ "version": "0.12.0",
+ "websiteUrl": "https://capitalmarketsknowledgegraph.ai",
+ "repository": {
+  "url": "https://github.com/allooloo/cm-kg",
+  "source": "github"
+ },
+ "remotes": [
+  {
+   "type": "streamable-http",
+   "url": "https://mcp.capitalmarketsknowledgegraph.ai/mcp"
   }
+ ],
+ "_meta": {
+  "io.modelcontextprotocol.registry/publisher-provided": {
+   "operator": "Allooloo Technologies Corp.",
+   "category": "agentic market dataset",
+   "keywords": [
+    "agentic market dataset",
+    "capital markets",
+    "issuer record",
+    "ISIN",
+    "LEI",
+    "KYP",
+    "Canada",
+    "TSX",
+    "United Kingdom",
+    "LSE",
+    "AIM",
+    "Companies House",
+    "Australia",
+    "ASX",
+    "NSX",
+    "ASIC",
+    "Singapore",
+    "SGX",
+    "ACRA",
+    "Switzerland",
+    "SIX",
+    "Zefix",
+    "Germany",
+    "Xetra",
+    "Handelsregister",
+    "France",
+    "Euronext Paris",
+    "AMF",
+    "Netherlands",
+    "Euronext Amsterdam",
+    "AFM",
+    "Japan",
+    "Tokyo Stock Exchange",
+    "EDINET",
+    "South Korea",
+    "KRX",
+    "DART"
+   ],
+   "authentication": "none",
+   "access": "read-only, public-record only; no prices, quotes or licensed market data",
+   "record_spec": "CMR v0 (cm-record.org, draft)",
+   "nodes_live": [
+    "ca-cm-kg",
+    "uk-cm-kg",
+    "au-cm-kg",
+    "sg-cm-kg",
+    "ch-cm-kg",
+    "de-cm-kg",
+    "fr-cm-kg",
+    "nl-cm-kg",
+    "jp-cm-kg",
+    "kr-cm-kg",
+    "us-cm-kg"
+   ],
+   "tools": [
+    {
+     "name": "resolve_issuer",
+     "description": "Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version."
+    },
+    {
+     "name": "get_record",
+     "description": "Return the full Capital Markets Record for an issuer, with per-field source, reader and state; optionally a prior version."
+    },
+    {
+     "name": "list_events_since",
+     "description": "Return dated, URL'd disclosure events for an issuer (releases, bulletins, halts, corporate actions, statement and record dates) since a date."
+    },
+    {
+     "name": "list_aliases",
+     "description": "Return the sourced trade and former names an issuer releases under."
+    },
+    {
+     "name": "list_nodes",
+     "description": "Return the twelve market nodes and which are live."
+    }
+   ],
+   "facts": "https://mcp.capitalmarketsknowledgegraph.ai/facts.json",
+   "llms_txt": "https://mcp.capitalmarketsknowledgegraph.ai/llms.txt",
+   "description_of_record": "Know every Canadian and United Kingdom issuer, agent-ready. Instantly. Provably. Ten markets on the same record — Toronto to Tokyo — served in-country.",
+   "description_note": "The registry caps description at 100 characters; the description of record (CEO, Sept 12 2026) is carried here in full.",
+   "estate": "ORDER-018 sovereign estate: eleven regional doors on Azure Container Apps (records and events served in their own jurisdiction), apex router index-only on Cloudflare, an A2A Agent Card per node at agent.<node>-cm-kg.ai and at agent.capitalmarketsknowledgegraph.ai",
+   "agent_cards": [
+    "https://agent.ca-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.uk-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.au-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.sg-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.ch-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.de-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.fr-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.nl-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.jp-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.kr-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.us-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.capitalmarketsknowledgegraph.ai/.well-known/agent-card.json"
+   ],
+   "confirmed": "Card confirmed current by the operator on Sept 13 2026: apex door, five tools, eleven live nodes; records are confirmed against the public filing, not signed by it.",
+   "x402": {
+    "endpoint": "https://agentic-x402.ai/api",
+    "surface": "https://agentic-x402.ai/",
+    "price_usdc": "0.01",
+    "network": "eip155:8453",
+    "scheme": "exact (EIP-3009)",
+    "trades_record_route": "https://agentic-trades.ai/x402/record/{node}/{exchange}/{code}",
+    "receipts": "https://agentic-x402.ai/x402/receipt/{nonce}",
+    "jwks": "https://agentic-x402.ai/x402/jwks.json",
+    "openapi": "https://agentic-x402.ai/openapi.json",
+    "note": "the MCP door above is free; the paid routes buy a receipted call for the same public-record data"
+   },
+   "registries_gate": {
+    "authorization_server": "https://agentic-registries.ai",
+    "metadata": "https://agentic-registries.ai/.well-known/oauth-authorization-server",
+    "register": "https://agentic-registries.ai/oauth/register",
+    "token": "https://agentic-registries.ai/oauth/token",
+    "jwks": "https://agentic-registries.ai/oauth/jwks.json",
+    "auth_md": "https://agentic-registries.ai/auth.md",
+    "grants": [
+     "client_credentials",
+     "urn:ietf:params:oauth:grant-type:jwt-bearer"
+    ],
+    "licensed_routes": [
+     "https://agentic-trades.ai/licensed/record/{node}/{exchange}/{code}",
+     "https://agentic-registries.ai/registry/whoami"
+    ],
+    "note": "public routes, this MCP door included, need no token"
+   },
+   "surfaces_version": "2026-09-13.9"
+  }
+ }
 }

@@ -14,14 +14,31 @@ const b64 = o => btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 const unb64 = s => JSON.parse(decodeURIComponent(escape(atob(s))));
 
 export function netKey(env, url) { return url && url.hostname === 'agentic-x402.ai' ? (env.X402_API_NETWORK || 'base-sepolia') : (env.X402_NETWORK || 'base-sepolia'); }
+const IS_API = url => url && url.hostname === 'agentic-x402.ai';
+export function describe(url) {
+  return IS_API(url)
+    ? 'Allooloo Capital Markets estate index for $0.01 USDC: every market node (Canada, United Kingdom, United States, Germany, France, Netherlands, Switzerland, Australia, Singapore, Japan, South Korea), issuer and disclosure-event counts, drop date; add ?record=node/exchange/code (e.g. uk-cm-kg/LSE/BARC) for one Capital Markets Record, sourced per field, public-record only. Every settlement answers with an EdDSA-signed receipt that resolves forever at /x402/receipt/{nonce}.'
+    : 'One Capital Markets Record for $0.01 USDC — a listed issuer\'s identity, registry identifiers, aliases, listing, disclosure events, auditor and transfer agent, each field sourced to the public filing, served from the node of the issuer\'s own market (eleven markets, in-country). Path: /x402/record/{node}/{exchange}/{code}, e.g. uk-cm-kg/LSE/BARC. The same record the free MCP door serves; the payment buys the receipted call.';
+}
+// x402 Bazaar discovery extension (CDP facilitator indexes the resource on its first settlement)
+export function bazaar(url) {
+  const api = IS_API(url);
+  const input = api
+    ? { type: 'http', method: 'GET', queryParams: { record: { type: 'string', required: false, description: 'optional node/exchange/code — returns that Capital Markets Record instead of the estate index', example: 'uk-cm-kg/LSE/BARC' } } }
+    : { type: 'http', method: 'GET', pathParams: { node: { type: 'string', required: true, description: 'market node, e.g. uk-cm-kg', example: 'uk-cm-kg' }, exchange: { type: 'string', required: true, description: 'exchange code, e.g. LSE', example: 'LSE' }, code: { type: 'string', required: true, description: 'ticker, ISIN or LEI', example: 'BARC' } } };
+  const example = api
+    ? { receipt: { receipt_url: 'https://agentic-x402.ai/x402/receipt/{nonce}', settled: true, amount_usdc: '0.01', network: 'eip155:8453' }, data: { nodes: [{ node: 'uk-cm-kg', live: true, records: 1930, events: 6100, as_of: '2026-09-11' }] } }
+    : { cmr: 'v0', node: 'uk-cm-kg', identity: { name: 'Barclays PLC', lei: '213800LBQA1Y9L22JB70' }, aliases: [], events: [] };
+  return { bazaar: { info: { input, output: { type: 'json', example } }, schema: { '$schema': 'https://json-schema.org/draft/2020-12/schema', type: 'object', properties: { input: { type: 'object', properties: { type: { type: 'string', const: 'http' }, method: { type: 'string', enum: ['GET', 'HEAD', 'DELETE'] }, queryParams: { type: 'object' }, pathParams: { type: 'object' } }, required: ['type', 'method'] }, output: { type: 'object', properties: { type: { type: 'string' }, example: { type: 'object' } } } }, required: ['input'] } } };
+}
 export function requirements(env, url) {
   const net = NETWORKS[netKey(env, url)] || NETWORKS['base-sepolia'];
   return { scheme: 'exact', network: net.caip2, amount: PRICE_ATOMIC, maxAmountRequired: PRICE_ATOMIC, asset: net.usdc, payTo: env.X402_PAYTO, maxTimeoutSeconds: url && url.hostname === 'agentic-x402.ai' ? 60 : 300,
-    resource: url.origin + url.pathname, description: 'Capital Markets Record (paid route, $0.01 USDC) — the same record the free route serves', mimeType: 'application/json', extra: { name: 'USDC', version: '2' } };
+    resource: url.origin + url.pathname, description: describe(url), mimeType: 'application/json', extra: { name: 'USDC', version: '2' } };
 }
 function paymentRequired(env, url, error) {
   const req = requirements(env, url);
-  const body = { x402Version: 2, error: error || 'Payment required: $0.01 USDC on ' + req.network, accepts: [req], resource: { url: req.resource, description: req.description, mimeType: req.mimeType }, free_route: `${APEX}${url.pathname.replace('/x402', '')}`, operator: OPERATOR };
+  const body = { x402Version: 2, error: error || 'Payment required: $0.01 USDC on ' + req.network, accepts: [req], resource: { url: req.resource, description: req.description, mimeType: req.mimeType }, extensions: bazaar(url), free_route: `${APEX}${url.pathname.replace('/x402', '')}`, operator: OPERATOR };
   return new Response(JSON.stringify(body, null, 1), { status: 402, headers: headers({ node: 'x402' }, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'PAYMENT-REQUIRED': b64(body), 'access-control-allow-origin': '*', 'access-control-expose-headers': 'PAYMENT-REQUIRED, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE' }) });
 }
 // ---- Coinbase CDP per-request JWT (Secret API key: Ed25519 base64 64-byte secret, or legacy ES256 PEM). Never logged.
@@ -110,4 +127,18 @@ export async function handleApi(request, env, url) {
   const pr = { x402Version: 2, success: settled, transaction: tx, network: req.network, amount: req.amount, asset: req.asset, payer: claims.sub, receipt: claims.receipt_url, errorReason: settled ? null : (s.body && (s.body.errorReason || s.body.error)) || null };
   const enc = b64(pr);
   return new Response(JSON.stringify({ receipt, data }, null, 1), { status: settled ? dataStatus : 402, headers: headers({ node: 'x402' }, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'PAYMENT-RESPONSE': enc, 'X-PAYMENT-RESPONSE': enc, 'X-X402-Receipt': claims.receipt_url, 'access-control-allow-origin': '*', 'access-control-expose-headers': 'PAYMENT-REQUIRED, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE, X-X402-Receipt' }) });
+}
+
+export function openapi() {
+  const R = { type: 'object', description: 'EdDSA-signed receipt (kid allooloo-x402-receipts-2026-09); jwt verifies against /x402/jwks.json', properties: { iss: { type: 'string' }, sub: { type: 'string', description: 'payer address' }, jti: { type: 'string', description: 'nonce' }, iat: { type: 'integer' }, resource: { type: 'string' }, network: { type: 'string', example: 'eip155:8453' }, asset: { type: 'string' }, amount: { type: 'string', example: '10000' }, amount_usdc: { type: 'string', example: '0.01' }, payTo: { type: 'string' }, transaction: { type: 'string', nullable: true }, explorer: { type: 'string', nullable: true }, settled: { type: 'boolean' }, facilitator: { type: 'string' }, receipt_url: { type: 'string' }, jwt: { type: 'string' }, kid: { type: 'string' }, jwks: { type: 'string' } } };
+  const PR = { type: 'object', description: 'x402 v2 PaymentRequired', properties: { x402Version: { type: 'integer', const: 2 }, error: { type: 'string' }, accepts: { type: 'array', items: { type: 'object', properties: { scheme: { type: 'string', const: 'exact' }, network: { type: 'string', example: 'eip155:8453' }, amount: { type: 'string', example: '10000' }, asset: { type: 'string' }, payTo: { type: 'string' }, maxTimeoutSeconds: { type: 'integer', example: 60 }, resource: { type: 'string' }, description: { type: 'string' } } } }, extensions: { type: 'object' } } };
+  return { openapi: '3.1.0', info: { title: 'Agentic x402 — a paid call with a signed receipt', version: '1.0.0', description: 'One call, one cent, one receipt. GET /api answers 402 Payment Required (x402 v2, scheme exact = EIP-3009 transferWithAuthorization, $0.01 USDC on Base, 60 s window); repeat the call with PAYMENT-SIGNATURE to receive the data and an EdDSA-signed receipt that resolves forever. Public-record only. Operator: Allooloo Technologies Corp.', contact: { name: 'Allooloo Technologies Corp.', url: 'https://allooloo.io/#contact' }, termsOfService: 'https://allooloo.io/terms' },
+    servers: [{ url: 'https://agentic-x402.ai' }], externalDocs: { description: 'agentic-x402.ai', url: 'https://agentic-x402.ai/' },
+    paths: {
+      '/api': { get: { operationId: 'paidCall', summary: 'Paid call: the estate index, or one Capital Markets Record with ?record=', description: 'Without payment: 402 with the offer (body + PAYMENT-REQUIRED header). With a valid PAYMENT-SIGNATURE: 200 { receipt, data }; headers PAYMENT-RESPONSE and X-X402-Receipt.', parameters: [{ name: 'record', in: 'query', required: false, schema: { type: 'string' }, example: 'uk-cm-kg/LSE/BARC', description: 'node/exchange/code — returns that record instead of the index' }, { name: 'PAYMENT-SIGNATURE', in: 'header', required: false, schema: { type: 'string' }, description: 'base64 x402 v2 payment payload (X-PAYMENT accepted)' }],
+        responses: { '200': { description: 'settled: the data and the receipt', headers: { 'PAYMENT-RESPONSE': { schema: { type: 'string' } }, 'X-X402-Receipt': { schema: { type: 'string' } } }, content: { 'application/json': { schema: { type: 'object', properties: { receipt: R, data: { type: 'object' } } } } } }, '402': { description: 'payment required — the offer', headers: { 'PAYMENT-REQUIRED': { schema: { type: 'string' } } }, content: { 'application/json': { schema: PR } } }, '503': { description: 'receiver not configured' } } } },
+      '/x402/jwks.json': { get: { operationId: 'receiptJwks', summary: 'Receipt signing key (Ed25519, kid allooloo-x402-receipts-2026-09)', responses: { '200': { description: 'JWKS', content: { 'application/json': { schema: { type: 'object', properties: { keys: { type: 'array', items: { type: 'object' } } } } } } } } } },
+      '/x402/receipt/{nonce}': { get: { operationId: 'receipt', summary: 'Resolve a receipt, forever', parameters: [{ name: 'nonce', in: 'path', required: true, schema: { type: 'string', pattern: '^[a-f0-9]{32}$' } }], responses: { '200': { description: 'the receipt', content: { 'application/json': { schema: R } } }, '404': { description: 'unknown nonce' } } } }
+    },
+    'x-cmr': { operator: 'Allooloo Technologies Corp.', identity_headers: ['X-CMR-X402: ready', 'X-CMR-Operator', 'X-CMR-Contact', 'X-CMR-Node', 'X-CMR-Version', 'X-CMR-Source: public-record'], receipts_kid: 'allooloo-x402-receipts-2026-09', trades_record_route: 'https://agentic-trades.ai/x402/record/{node}/{exchange}/{code}' } };
 }
