@@ -39,7 +39,7 @@ node x402_pay.mjs https://agentic-x402.ai/api
 
 ## HITL
 
-1. Bazaar: `/api` listed. One $0.01 call on `agentic-trades.ai/x402/record/uk-cm-kg/LSE/BARC` lists the second resource.
+1. Bazaar: both resources indexed by CDP (validate `index.active`); the public list shows `/api`, the trades route pending in the list — scheduled check 21:30 UTC.
 2. `swagger-petstore` in API Center — sample entry, delete on your paste.
 3. Standing from earlier: DNSSEC landing check (fires 18:30 UTC), webMcp, Web Analytics beacon, door image agent cards, legal sign-off, Zone Analytics scope, ch/kr gap, Azure cost, Anthropic admin key.
 
@@ -48,4 +48,4 @@ node x402_pay.mjs https://agentic-x402.ai/api
 - Registry: 1 card, version 0.12.0, 5 tools, 11 live nodes, 2 new metadata blocks.
 - API Center: 13 entries · 13 OpenAPI imports · 12 doc-link corrections · 1 title correction · 0 deletions.
 - Bazaar: 2 resources validated; `agentic-x402.ai/api` INDEXED after the CEO's mainnet call (18:10 UTC; in the discovery list); the trades record route lists on its own first settled call (CEO's hand).
-- Spend: no engine calls; Azure API Center within the free tier; Cloudflare $0 incremental; x402 mainnet settled $0.01 (one call, receipt 772c00ad…).
+- Spend: no engine calls; Azure API Center within the free tier; Cloudflare $0 incremental; x402 mainnet settled $0.02 (two calls: /api receipt 772c00ad…, trades route tx 0xcea5…7f10).

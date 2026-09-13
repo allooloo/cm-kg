@@ -48,11 +48,18 @@ It prints the status, the PAYMENT-RESPONSE (tx hash, network, amount) and the re
 - RADAR: paid-calls line at **2 settled** (one Sepolia, one mainnet), last tx and receipt URL shown.
 - Bazaar: `https://agentic-x402.ai/api` is indexed (CDP validate `index.active: true`; present in the public discovery list `https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources`). The trades record route lists on its own first settled mainnet call: `node x402_pay.mjs https://agentic-trades.ai/x402/record/uk-cm-kg/LSE/BARC` — your hand, $0.01.
 
+## TRADES ROUTE SETTLED — lane closed (Sept 13 2026, ~18:25 UTC)
+
+- Your call on `agentic-trades.ai/x402/record/uk-cm-kg/LSE/BARC`: Base mainnet tx `0xcea55b25f437e292a8e44140457b5b8db60f423cb21aa403adbefd8de28c7f10`, block 51265147, status success — https://basescan.org/tx/0xcea55b25f437e292a8e44140457b5b8db60f423cb21aa403adbefd8de28c7f10 — $0.01 USDC, facilitator Coinbase CDP. Confirmed from KV as the last settled call.
+- RADAR: **3 settled**.
+- Bazaar: CDP's index is active for **both** resources (validate: `/api` and the trades route). The public discovery list shows `/api` now; the trades route is not yet in the public list (the list lags the index). One later check is scheduled at 21:30 UTC, no polling; result in `AZUREazaar-check-<stamp>.txt`.
+- Lane closed: two paid routes on Base mainnet, three settlements, receipts kept forever, RADAR counting, Bazaar indexing both.
+
 ## Counts
 
 - 23 surfaces at 2026-09-13.6 · 4 zones bound · 3 forwards · 1 new endpoint · 2 receipt routes · 1 new header estate-wide · agent cards updated: 23
 - Secrets on the Worker: X402_PAYTO, X402_NETWORK, X402_RECEIPT_JWK, CDP_API_KEY_ID, CDP_API_KEY_SECRET, OAUTH_JWK (values never printed except the flagged CDP secret)
-- Settled calls: 2 (Base Sepolia test + Base mainnet, receipts above)
+- Settled calls: 3 (Base Sepolia test + two Base mainnet)
 
 ## HITL
 
