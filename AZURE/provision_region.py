@@ -7,7 +7,7 @@ Usage: python provision_region.py <cc> <region> <step> [image_tag]
   flip      hostname mcp.<node>-cm-kg.ai: TXT asuid record + proxied CNAME at Cloudflare, the Workers custom-domain binding removed (the Worker stays deployed), managed certificate bound by TXT validation
   status    print the app FQDN, replicas, hostname state
 Tenant guard: refuses unless az account show is the tenant and subscription of record. Keys and storage keys are read into memory only."""
-import json, os, sys, subprocess, glob, re, time, urllib.request
+import datetime, json, os, sys, subprocess, glob, re, time, urllib.request
 TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-41ee6d087b41'; ACR = 'allooloocmkg'; ACR_SERVER = 'allooloocmkg.azurecr.io'
 CF_ACCT = 'dd2832b36f171b815f84c8487aada36b'
 ZONES = {'ca': '4d2c6dc2f534dd8c013f6e66544eed4c', 'uk': '999f8cab6ae570a878379f0e37cd87b0', 'au': '8732370fd5742f40dba657be3eab5d37', 'sg': '0d4ae29fdde22945ffd2858bc2922576', 'ch': '0ea4358fbd0c1dc5ccf069448ccefe48', 'de': '0e7b54741212fb036c2cf18b9392ed25', 'fr': '645c30886df97804e3b793399e303c2b', 'nl': 'e5a042d3df88b7e170d5225ecfacb008', 'jp': 'f1c120f9d544c4af28bd6029ce071b96', 'kr': 'cd87134802ca140f4767253f39453ce1', 'us': '64516e94b82d13781980dff99c20c8b0'}
@@ -45,9 +45,18 @@ if step == 'storage':
     k = storage_key(); az('storage', 'container', 'create', '--account-name', sa, '--account-key', k, '-n', 'pond', check=False); log("container 'pond' present")
 elif step == 'upload':
     k = storage_key(); src = rf'C:\ALLOOLOO\CM-KG\POND\{node}'
+    # PAUSE ORDER (CEO, Sept 13 2026): upload only the newest drop per source, not the whole pond — earlier drops are already in the store (immutable, never overwritten)
     if os.path.isdir(src):
-        r = az('storage', 'blob', 'upload-batch', '--account-name', sa, '--account-key', k, '--destination', 'pond', '--destination-path', 'pond', '--source', src, '--overwrite', 'false', '--no-progress', check=False)
-        n = len(r) if isinstance(r, list) else 'see log'; log(f'pond drops uploaded: {n} blobs from {src}')
+        total = 0
+        for source in sorted(os.listdir(src)):
+            sdir = os.path.join(src, source)
+            if not os.path.isdir(sdir) or source.startswith('.'): continue
+            drops = [d for d in os.listdir(sdir) if re.match(r'^\d{4}-\d{2}-\d{2}(-\d+)?$', d) and os.path.isdir(os.path.join(sdir, d))]
+            if not drops: continue
+            newest = max(drops, key=lambda d: (d[:10], int(d[11:] or 0)))
+            r = az('storage', 'blob', 'upload-batch', '--account-name', sa, '--account-key', k, '--destination', 'pond', '--destination-path', f'pond/{source}/{newest}', '--source', os.path.join(sdir, newest), '--overwrite', 'false', '--no-progress', check=False)
+            n = len(r) if isinstance(r, list) else 0; total += n; log(f'pond drop uploaded: {source}/{newest} — {n} new blobs')
+        log(f'pond drops uploaded: {total} new blobs (newest drop per source only)')
     data = r'C:\ALLOOLOO\CM-KG\DOOR\data'; recs = glob.glob(os.path.join(data, 'records', node, '*', '*.json')); log(f'door records to upload: {len(recs)}')
     for sub in ('records', 'events'):
         d = os.path.join(data, sub, node)
@@ -69,7 +78,7 @@ elif step == 'upload':
             if a.get('value'): idx['alias'].setdefault(nkey(a['value']), []).append(key)
     tmp = rf'C:\ALLOOLOO\AZURE\tmp-{node}'; os.makedirs(tmp, exist_ok=True)
     json.dump(idx, open(os.path.join(tmp, 'index.json'), 'w', encoding='utf-8'), separators=(',', ':'))
-    facts = json.load(open(os.path.join(data, 'facts.json'), encoding='utf-8')); nf = {**facts, 'nodes': {node: facts['nodes'].get(node, {})}, 'store': f'Azure Storage (regional pond, {region}) — blob per record and per issuer event list', 'region': region}
+    facts = json.load(open(os.path.join(data, 'facts.json'), encoding='utf-8')); nf = {**facts, 'store_reloaded_at': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'), 'nodes': {node: facts['nodes'].get(node, {})}, 'store': f'Azure Storage (regional pond, {region}) — blob per record and per issuer event list', 'region': region}
     json.dump(nf, open(os.path.join(tmp, 'facts.json'), 'w', encoding='utf-8'), indent=1)
     json.dump(json.load(open(os.path.join(data, 'nodes.json'), encoding='utf-8')), open(os.path.join(tmp, 'nodes.json'), 'w', encoding='utf-8'), indent=1)
     for fn in ('index.json', 'facts.json', 'nodes.json'):
