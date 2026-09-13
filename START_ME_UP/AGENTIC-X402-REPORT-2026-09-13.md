@@ -1,6 +1,6 @@
 # AGENTIC-X402.AI — 23rd surface — report (CC to CEO, Sept 13 2026, ~15:40 UTC)
 
-Build log: `START_ME_UP\X402-TO100-BUILD-LOG.md` items 20–27. Commits `e6842ea`, next. Surfaces 2026-09-13.6 on all 23; snapshots `2026-09-13-6`, `-7`.
+Build log: `START_ME_UP\X402-TO100-BUILD-LOG.md` items 20–30. Commits `e6842ea` … `1b7f17e`. Surfaces 2026-09-13.6 on all 23; snapshots `2026-09-13-6`, `-7`.
 
 ## FLAG FIRST — CDP secret exposed in the transcript, rotate it
 
@@ -21,21 +21,19 @@ While reading the shape of `AGENT KEYS\cdp-api-key-secret.txt` (to tell Ed25519 
 - Receipts: EdDSA-signed JWT, kid `allooloo-x402-receipts-2026-09`, public key at `/x402/jwks.json`, stored forever, resolve at `/x402/receipt/{nonce}` (immutable, 404 for unknown). Every settlement counts on RADAR's paid-calls line with the receipt URL.
 - Coinbase CDP is now the facilitator of record on Base mainnet (key id + secret loaded as Worker secrets; a dummy payment through the trades route reached CDP and was refused as invalid payload, not as unauthorized). The trades route `agentic-trades.ai/x402/record/…` rides mainnet; `/api` rides testnet until you say.
 
-## One settled test with receipt URL — your leg
+## The client
 
-CC holds no wallet key and signs no transfer. The client is on disk: `CM-KG\RAILS\x402_pay.mjs`. From `C:\ALLOOLOO\CM-KG\RAILS`:
+`CM-KG\RAILS\x402_pay.mjs` (v2 packages installed in that folder; the payer key is read from `AGENT KEYS\x402-payer-key.txt`, env `X402_PRIVATE_KEY` overrides). One command from `C:\ALLOOLOO\CM-KG\RAILS`:
 
 ```
-npm i x402-fetch viem
-set X402_PRIVATE_KEY=<your Base Sepolia wallet key>
 node x402_pay.mjs https://agentic-x402.ai/api
 ```
 
-It prints the status, the PAYMENT-RESPONSE (tx hash, network, amount) and the receipt URL, never the key. Test USDC on Base Sepolia: the Circle faucet. For the mainnet trades route use a Base wallet with $0.01 USDC. When the first call lands, the receipt URL and RADAR line close this report.
+It prints the status, the PAYMENT-RESPONSE (tx hash, network, amount) and the receipt URL, never the key. For the mainnet trades route the same wallet needs $0.01 real USDC on Base.
 
 ## SETTLED TEST — done (Sept 13 2026, ~16:15 UTC)
 
-- Client: `RAILS@2_pay.mjs` moved to the x402-foundation v2 packages (`@x402/fetch` + `@x402/evm` 2.25.0); the v1 `x402-fetch` package expected "base-sepolia" and could not read the v2 CAIP-2 offer. Payer wallet `0x510EF4d831fba1248D430d932FeD6c8e0BEbF339` (key in `AGENT KEYS@2-payer-key.txt`, never printed).
+- Client: `RAILS\x402_pay.mjs` moved to the x402-foundation v2 packages (`@x402/fetch` + `@x402/evm` 2.25.0); the v1 `x402-fetch` package expected "base-sepolia" and could not read the v2 CAIP-2 offer. Payer wallet `0x510EF4d831fba1248D430d932FeD6c8e0BEbF339` (key in `AGENT KEYS\x402-payer-key.txt`, never printed).
 - Exchange: `GET https://agentic-x402.ai/api` → 402 → signed EIP-3009 authorization → **200** with the estate index and a receipt.
 - Settlement: Base Sepolia tx `0xe9b6efaf2d84b14fb164de92a7d659d0308e530edcfbb1187b937096196df60d`, block 46771508, status success — https://sepolia.basescan.org/tx/0xe9b6efaf2d84b14fb164de92a7d659d0308e530edcfbb1187b937096196df60d — amount 10000 units = **$0.01 USDC** to your pay-to address, facilitator x402.org.
 - Receipt URL: **https://agentic-x402.ai/x402/receipt/b38b7093612b101fdaa4a85ae6d6fc2d** — resolves, `settled: true`, EdDSA JWT verified against `/x402/jwks.json` (kid `allooloo-x402-receipts-2026-09`).
@@ -50,7 +48,7 @@ It prints the status, the PAYMENT-RESPONSE (tx hash, network, amount) and the re
 
 ## HITL
 
-1. **Rotate the CDP secret** (flag above); new file → one re-upload.
+1. CDP secret: rotated by the CEO and re-uploaded (~15:50 UTC); the facilitator accepts the new key. Closed.
 2. Mainnet switch for `/api` on your word; the mainnet call on the trades route is yours.
 3. Door images: the Azure door agent cards (`agent.<cc>-cm-kg.ai`) get the x402 link at the next image build; the estate-served cards have it now.
 4. Standing: Cloudflare Web Analytics beacon (the second `<script>` on every product page), webMcp, DNSSEC landing check at 18:30 UTC, listings, legal sign-off, Zone Analytics scope, ch/kr gap, Azure cost, Anthropic admin key, door `booted` rename.
