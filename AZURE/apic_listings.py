@@ -14,8 +14,7 @@ def az(method, path, body=None):
     if r.returncode != 0: return {'error': (r.stderr or r.stdout).strip()[:300]}
     try: return json.loads(r.stdout) if r.stdout.strip() else {}
     except Exception: return {'raw': r.stdout[:200]}
-acct = json.loads(subprocess.run(['az', 'account', 'show', '-o', 'json'], capture_output=True, text=True, shell=True).stdout)
-assert acct['tenantId'].startswith('04a24e43'), 'wrong tenant — STOP'
+sys.path.insert(0, r'C:\ALLOOLOO\AZURE'); from az_guard import require_allooloo; require_allooloo()   # STANDING RULE Sept 13 2026: tenant + subscription + user, stop on mismatch
 NODES = {'ca': 'Canada', 'uk': 'United Kingdom', 'us': 'United States', 'de': 'Germany', 'fr': 'France', 'nl': 'Netherlands', 'ch': 'Switzerland', 'au': 'Australia', 'sg': 'Singapore', 'jp': 'Japan', 'kr': 'South Korea'}
 doors = {f'cm-kg-{cc}': (f'https://mcp.{cc}-cm-kg.ai', f'https://{cc}-cm-kg.ai', f'Capital Markets Agents: MCP+A2A {n}') for cc, n in NODES.items()}
 doors['cm-kg-apex'] = ('https://mcp.capitalmarketsknowledgegraph.ai', 'https://capitalmarketsknowledgegraph.ai', 'Capital Markets Agents: MCP+A2A apex router')
