@@ -108,7 +108,7 @@ export const PRODUCTS = {
   },
   radar: {
     title: 'Agentic RADAR for AI agents — the estate numbers', h1: 'The estate, live, on one page.',
-    reason: 'RADAR is the numbers page: records and events per node, door response times, agent calls per door, sweep motion, provenance coverage, residency, registry state, machine surfaces, and the cost of the record. Every figure is a door, a log or a ledger; nothing quoted from a third party. radar.json beside it, free, no registration.',
+    reason: 'RADAR is Allooloo published analytics across its agentic stack. RADAR is the numbers page: records and events per node, door response times, agent calls per door, sweep motion, provenance coverage, residency, registry state, machine surfaces, and the cost of the record. Every figure is a door, a log or a ledger; nothing quoted from a third party. radar.json beside it, free, no registration.',
     body() { return ''; }   // §7 body is rendered by radar.js
   }
 };
