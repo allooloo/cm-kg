@@ -290,5 +290,10 @@ ch-cm-kg · 2026-09-11 · 829 · 1385 · records +0 · events +0 (sweep 2026-09-
 ch-cm-kg · 2026-09-11 · 829 · 1512 · records +0 · events +127 (sweep 2026-09-12)
 fr-cm-kg · 2026-09-11 · 712 · 10469 · records +0 · events +470 (sweep 2026-09-12)
 de-cm-kg · 2026-09-11 · 3436 · 35570 · records +0 · events +167 (sweep 2026-09-12)
+sg-cm-kg · 2026-09-11 · 639 · 3510 · records +0 · events +0 (sweep 2026-09-12)
+sg-cm-kg · 2026-09-12 · not served (Width 0) · none · sweep: no door
+au-cm-kg · 2026-09-11 · 1874 · 124581 · records +0 · events +281 (sweep 2026-09-12)
+uk-cm-kg · 2026-09-11 · 1570 · 128191 · records +0 · events -202 (sweep 2026-09-12)
+sg-cm-kg · 2026-09-12 · 639 · 3620 · first line (sweep 2026-09-13)
 ```
 
