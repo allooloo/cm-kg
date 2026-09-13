@@ -2,8 +2,8 @@
  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
  "name": "io.github.allooloo/cm-kg",
  "title": "Capital Markets Agents: MCP+A2A Canada",
- "description": "KYP Agentic Trading with the Capital Markets Knowledge Graph — eleven markets, in-country.",
- "version": "0.12.1",
+ "description": "Know every Canadian and UK issuer, agent-ready. Instantly. Provably. Eleven markets, in-country.",
+ "version": "0.12.0",
  "websiteUrl": "https://capitalmarketsknowledgegraph.ai",
  "repository": {
   "url": "https://github.com/allooloo/cm-kg",
@@ -98,10 +98,23 @@
    ],
    "facts": "https://mcp.capitalmarketsknowledgegraph.ai/facts.json",
    "llms_txt": "https://mcp.capitalmarketsknowledgegraph.ai/llms.txt",
-   "description_of_record": "What: KYP Agentic Trading with the Capital Markets Knowledge Graph — one public-record file per listed company across eleven national markets, identity through disclosure trail, each field carrying its source and the date it was read, served from the issuer's own jurisdiction over the Model Context Protocol and the Agent-to-Agent protocol. Why: So an agent acting for a licensed capital markets participant with a Know Your Product (KYP) obligation hands back a fact that can be defended. The KYP model runs on this record. No prices, no quotes, no licensed data.",
-   "estate": "Eleven regional doors on Azure Container Apps, apex router on Cloudflare, an A2A Agent Card per node.",
-   "agent_cards": "https://agent.<node>-cm-kg.ai/.well-known/agent-card.json for each live node (ca uk us de fr nl ch au sg jp kr) and https://agent.capitalmarketsknowledgegraph.ai/.well-known/agent-card.json",
-   "confirmed": "Confirmed current by the operator, Sept 13 2026; records confirmed against the public filing, not signed by it.",
+   "description_of_record": "Know every Canadian and United Kingdom issuer, agent-ready. Instantly. Provably. Ten markets on the same record — Toronto to Tokyo — served in-country.",
+   "estate": "ORDER-018 sovereign estate: eleven regional doors on Azure Container Apps (records served in their own jurisdiction), apex router on Cloudflare, an A2A Agent Card per node.",
+   "agent_cards": [
+    "https://agent.ca-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.uk-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.au-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.sg-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.ch-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.de-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.fr-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.nl-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.jp-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.kr-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.us-cm-kg.ai/.well-known/agent-card.json",
+    "https://agent.capitalmarketsknowledgegraph.ai/.well-known/agent-card.json"
+   ],
+   "confirmed": "Card confirmed current by the operator, Sept 13 2026: apex door, five tools, eleven live nodes; records confirmed against the public filing, not signed by it.",
    "x402": {
     "endpoint": "https://agentic-x402.ai/api",
     "surface": "https://agentic-x402.ai/",
@@ -127,7 +140,7 @@
      "https://agentic-registries.ai/registry/whoami"
     ]
    },
-   "surfaces_version": "2026-09-13.12"
+   "surfaces_version": "2026-09-13.9"
   }
  }
 }
