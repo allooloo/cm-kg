@@ -4,7 +4,7 @@
 // at the apex. No fallback: if a node's regional door does not answer, the apex returns unavailable for that node — never a record from
 // another store. The old shared Worker + D1 door (cm-kg-door) stays deployed beside this one and is listed for CEO deletion at end of scope.
 // Agent Card at agent.capitalmarketsknowledgegraph.ai describes the router and lists the node agents.
-const OPERATOR = 'Allooloo Technologies Corp.'; const SERVER_VERSION = '0.11.0'; const PROTOCOL = '2025-06-18';
+const OPERATOR = 'Allooloo Technologies Corp.'; const SERVER_VERSION = '0.12.0'; const PROTOCOL = '2025-06-18';
 const REGIONAL = {  // node -> regional door origin (Container Apps FQDN; direct to the origin, not through the node's Cloudflare hostname)
   'ca-cm-kg': 'https://cmkg-door-ca.nicemushroom-8b4ba259.canadacentral.azurecontainerapps.io', 'uk-cm-kg': 'https://cmkg-door-uk.livelybay-3553b0b4.uksouth.azurecontainerapps.io', 'au-cm-kg': 'https://cmkg-door-au.politeplant-e73e0a46.australiaeast.azurecontainerapps.io',
   'sg-cm-kg': 'https://cmkg-door-sg.ambitioussand-03ccaab5.southeastasia.azurecontainerapps.io', 'ch-cm-kg': 'https://cmkg-door-ch.gentledune-3c70acd2.switzerlandnorth.azurecontainerapps.io', 'de-cm-kg': 'https://cmkg-door-de.greensand-6ae55941.germanywestcentral.azurecontainerapps.io',
