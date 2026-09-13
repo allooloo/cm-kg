@@ -8,7 +8,7 @@ export const LEGAL = 'legal@allooloo.ai';
 export const APEX = 'https://mcp.capitalmarketsknowledgegraph.ai';
 export const APEX_AGENT = 'https://agent.capitalmarketsknowledgegraph.ai';
 export const FORM = 'https://formspree.io/f/moeqzgll';
-export const SURFACES_VERSION = '2026-09-13.5';   // bumped on every estate deploy; prior renders go to the pond (snapshot_surfaces.py)
+export const SURFACES_VERSION = '2026-09-13.6';   // bumped on every estate deploy; prior renders go to the pond (snapshot_surfaces.py)
 export const KICKER = 'Microsoft AI Cloud Partner · Microsoft Azure · eleven regions, in-country';   // Proof section first line and footer line only
 export const COMPANY_TITLE = 'AI Agents · MCP + A2A · Capital Markets Knowledge Graph — Allooloo';
 export const REGION_FULL = { ca: 'Canada Central (Toronto, Canada)', us: 'East US (Virginia, United States)', uk: 'UK South (London, United Kingdom)', fr: 'France Central (Paris, France)', nl: 'West Europe (Amsterdam, Netherlands)', ch: 'Switzerland North (Zurich, Switzerland)', de: 'Germany West Central (Frankfurt, Germany)', au: 'Australia East (Sydney, Australia)', sg: 'Southeast Asia (Singapore)', jp: 'Japan East (Tokyo, Japan)', kr: 'Korea Central (Seoul, South Korea)', hk: 'East Asia (Hong Kong — beacon, partner wanted)' };
@@ -35,7 +35,7 @@ export function form(host) {
 export const contactSection = host => `<h2>Contact Us</h2>${form(host)}`;
 export function headers(meta, extra) {
   return { 'Content-Security-Policy': CSP, 'Strict-Transport-Security': 'max-age=31536000; includeSubDomains', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-Frame-Options': 'DENY', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-    'X-CMR-Node': meta.node || 'estate', 'X-CMR-As-Of': meta.as_of || '', 'X-CMR-Version': String(meta.version || SURFACES_VERSION), 'X-CMR-Source': 'public-record', 'X-CMR-Operator': OPERATOR, 'X-CMR-Contact': 'CEO mk@allooloo.ai', 'X-Surface-Version': SURFACES_VERSION, ...(extra || {}) };
+    'X-CMR-Node': meta.node || 'estate', 'X-CMR-As-Of': meta.as_of || '', 'X-CMR-Version': String(meta.version || SURFACES_VERSION), 'X-CMR-Source': 'public-record', 'X-CMR-X402': 'ready', 'X-CMR-Operator': OPERATOR, 'X-CMR-Contact': 'CEO mk@allooloo.ai', 'X-Surface-Version': SURFACES_VERSION, ...(extra || {}) };
 }
 export const html = (body, meta, link) => new Response(body, { headers: headers(meta, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=60, must-revalidate', 'Vary': 'Accept', ...(link ? { 'Link': link } : {}) }) });
 export const markdown = (body, meta, link) => new Response(body, { headers: headers(meta, { 'content-type': 'text/markdown; charset=utf-8', 'cache-control': 'public, max-age=60, must-revalidate', 'Vary': 'Accept', ...(link ? { 'Link': link } : {}) }) });
