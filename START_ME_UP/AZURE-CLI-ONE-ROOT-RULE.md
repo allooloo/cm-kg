@@ -20,7 +20,7 @@ On Sept 13 2026 the CLI context was found switched to the GreenCore tenant (a `m
 5. **Before any registry publish or git push, confirm the active GitHub account is the estate's own and switch if not, in the same command as the token read.** Allooloo = `allooloo`; GreenCore = `greencore-solutions`. The `gh` keyring holds both and the active account flips whenever the other estate logs in.
    - Allooloo, one command: `gh auth switch --user allooloo && mcp-publisher login github --token "$(gh auth token)" && mcp-publisher publish` — the switch and the token read never run as separate steps.
    - Pushes: `gh auth switch --user allooloo && git push …`; commits carry the estate identity (`-c user.name=allooloo -c user.email=268771525+allooloo@users.noreply.github.com`).
-   - Guard for rails: `C:\ALLOOLOO\AZUREz_guard.py` now also has `require_github('allooloo')` — reads `gh auth status`, switches to the estate's account if another is active, and stops if the account is not in the keyring.
+   - Guard for rails: `C:\ALLOOLOO\AZURE\az_guard.py` now also has `require_github('allooloo')` — reads `gh auth status`, switches to the estate's account if another is active, and stops if the account is not in the keyring. Run bare (`python az_guard.py`) it reports both: the az context and the gh account.
 
 ## Why (the second incident)
 
