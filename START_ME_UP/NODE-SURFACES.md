@@ -288,5 +288,7 @@ hk-cm-kg · 2026-09-12 · not served (Width 0) · none · seed (ORDER-019; no do
 nl-cm-kg · 2026-09-11 · 123 · 2742 · records +0 · events +35 (sweep 2026-09-12)
 ch-cm-kg · 2026-09-11 · 829 · 1385 · records +0 · events +0 (sweep 2026-09-12)
 ch-cm-kg · 2026-09-11 · 829 · 1512 · records +0 · events +127 (sweep 2026-09-12)
+fr-cm-kg · 2026-09-11 · 712 · 10469 · records +0 · events +470 (sweep 2026-09-12)
+de-cm-kg · 2026-09-11 · 3436 · 35570 · records +0 · events +167 (sweep 2026-09-12)
 ```
 

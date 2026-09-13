@@ -16,7 +16,7 @@ Every dealer agent that recommends, approves or trades a product now has to show
 ## 1 The dataset
 1.1 Allooloo developed the KYP model artificial-intelligence (AI) agent dataset: the Capital Markets Knowledge Graph (CM-KG). One record per listed company on the exchanges of eleven national markets, every field carrying the registry or filing it came from and the date it was read, served in the issuer's own jurisdiction over the Model Context Protocol (MCP) and the Agent-to-Agent protocol (A2A).
 1.2 At render: {records} issuer records, {events} dated disclosure events over the trailing twelve months, {live_nodes} live nodes, one beacon (list_nodes).
-1.3 The record is version 1. Versions 3 through 5 are where the model compounds: same schema across jurisdictions, longer event history per issuer, each weekly sweep adding a dated layer the last one did not have. Confidence in that release path is high because the input is public record on a fixed cadence — it does not depend on a counterparty.
+1.3 The record is version 2.0. Versions 3.0 through 5.0 are where the model compounds: persistent sweeps, filtering and quality control, each adding a dated layer the last one did not have, on the same schema across all jurisdictions. Allooloo's unique dataset, models and insight methodology empower the individual trader with economics that work for them.
 1.4 The patterns the Allooloo team identifies in that set are proprietary. Disclosure cadence per regime, record staleness, auditor concentration, registry disagreement, late filing against a market's own rhythm — these are read from the normalized record and nowhere else. You need to know the edge exists. How it works is not published.
 
 ## 2 The anchor: tasks, not systems

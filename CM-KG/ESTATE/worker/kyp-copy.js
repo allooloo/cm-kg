@@ -21,7 +21,7 @@ export default {
     ],
     [
      "1.3",
-     "The record is version 1. Versions 3 through 5 are where the model compounds: same schema across jurisdictions, longer event history per issuer, each weekly sweep adding a dated layer the last one did not have. Confidence in that release path is high because the input is public record on a fixed cadence — it does not depend on a counterparty."
+     "The record is version 2.0. Versions 3.0 through 5.0 are where the model compounds: persistent sweeps, filtering and quality control, each adding a dated layer the last one did not have, on the same schema across all jurisdictions. Allooloo's unique dataset, models and insight methodology empower the individual trader with economics that work for them."
     ],
     [
      "1.4",
