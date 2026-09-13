@@ -6,8 +6,8 @@
 import { APEX, OPERATOR, headers, json } from './chrome.js';
 
 const NETWORKS = {
-  'base-sepolia': { caip2: 'eip155:84532', usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e', facilitator: 'https://x402.org/facilitator', explorer: 'https://sepolia.basescan.org/tx/' },
-  'base': { caip2: 'eip155:8453', usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', facilitator: 'https://api.cdp.coinbase.com/platform/v2/x402', fallback: 'https://facilitator.payai.network', explorer: 'https://basescan.org/tx/' }
+  'base-sepolia': { caip2: 'eip155:84532', usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e', name: 'USDC', facilitator: 'https://x402.org/facilitator', explorer: 'https://sepolia.basescan.org/tx/' },
+  'base': { caip2: 'eip155:8453', usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', name: 'USD Coin', facilitator: 'https://api.cdp.coinbase.com/platform/v2/x402', fallback: 'https://facilitator.payai.network', explorer: 'https://basescan.org/tx/' }
 };
 export const PRICE_ATOMIC = '10000';   // $0.01 in USDC (6 decimals)
 const b64 = o => btoa(unescape(encodeURIComponent(JSON.stringify(o))));
@@ -34,7 +34,7 @@ export function bazaar(url) {
 export function requirements(env, url) {
   const net = NETWORKS[netKey(env, url)] || NETWORKS['base-sepolia'];
   return { scheme: 'exact', network: net.caip2, amount: PRICE_ATOMIC, maxAmountRequired: PRICE_ATOMIC, asset: net.usdc, payTo: env.X402_PAYTO, maxTimeoutSeconds: url && url.hostname === 'agentic-x402.ai' ? 60 : 300,
-    resource: url.origin + url.pathname, description: describe(url), mimeType: 'application/json', extra: { name: 'USDC', version: '2' } };
+    resource: url.origin + url.pathname, description: describe(url), mimeType: 'application/json', extra: { name: net.name, version: '2' } };   // EIP-712 domain of the USDC contract per network: Base mainnet 'USD Coin', Base Sepolia test contract 'USDC'
 }
 function paymentRequired(env, url, error) {
   const req = requirements(env, url);
