@@ -1,1 +1,1 @@
-{"name":"allooloo-rails","private":true,"type":"module","dependencies":{"viem":"^2.56.5","x402-fetch":"^1.2.0"}}
+{"name":"allooloo-rails","private":true,"type":"module","dependencies":{"@x402/core":"^2.25.0","@x402/evm":"^2.25.0","@x402/fetch":"^2.25.0","viem":"^2.56.5"}}
