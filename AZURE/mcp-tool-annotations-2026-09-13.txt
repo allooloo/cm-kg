@@ -1,0 +1,13 @@
+mcp.capitalmarketsknowledgegraph.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+mcp.ca-cm-kg.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+mcp.uk-cm-kg.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+mcp.us-cm-kg.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+mcp.de-cm-kg.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+mcp.fr-cm-kg.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+mcp.nl-cm-kg.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+mcp.ch-cm-kg.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+mcp.au-cm-kg.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+mcp.sg-cm-kg.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+mcp.jp-cm-kg.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+mcp.kr-cm-kg.ai: 5 tools · title+annotations.title+readOnlyHint on all five: yes
+12 of 12 doors conform
