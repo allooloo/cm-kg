@@ -99,8 +99,7 @@
    "facts": "https://mcp.capitalmarketsknowledgegraph.ai/facts.json",
    "llms_txt": "https://mcp.capitalmarketsknowledgegraph.ai/llms.txt",
    "description_of_record": "Know every Canadian and United Kingdom issuer, agent-ready. Instantly. Provably. Ten markets on the same record — Toronto to Tokyo — served in-country.",
-   "description_note": "The registry caps description at 100 characters; the description of record (CEO, Sept 12 2026) is carried here in full.",
-   "estate": "ORDER-018 sovereign estate: eleven regional doors on Azure Container Apps (records and events served in their own jurisdiction), apex router index-only on Cloudflare, an A2A Agent Card per node at agent.<node>-cm-kg.ai and at agent.capitalmarketsknowledgegraph.ai",
+   "estate": "ORDER-018 sovereign estate: eleven regional doors on Azure Container Apps (records served in their own jurisdiction), apex router on Cloudflare, an A2A Agent Card per node.",
    "agent_cards": [
     "https://agent.ca-cm-kg.ai/.well-known/agent-card.json",
     "https://agent.uk-cm-kg.ai/.well-known/agent-card.json",
@@ -115,7 +114,7 @@
     "https://agent.us-cm-kg.ai/.well-known/agent-card.json",
     "https://agent.capitalmarketsknowledgegraph.ai/.well-known/agent-card.json"
    ],
-   "confirmed": "Card confirmed current by the operator on Sept 13 2026: apex door, five tools, eleven live nodes; records are confirmed against the public filing, not signed by it.",
+   "confirmed": "Card confirmed current by the operator, Sept 13 2026: apex door, five tools, eleven live nodes; records confirmed against the public filing, not signed by it.",
    "x402": {
     "endpoint": "https://agentic-x402.ai/api",
     "surface": "https://agentic-x402.ai/",
@@ -124,16 +123,13 @@
     "scheme": "exact (EIP-3009)",
     "trades_record_route": "https://agentic-trades.ai/x402/record/{node}/{exchange}/{code}",
     "receipts": "https://agentic-x402.ai/x402/receipt/{nonce}",
-    "jwks": "https://agentic-x402.ai/x402/jwks.json",
-    "openapi": "https://agentic-x402.ai/openapi.json",
-    "note": "the MCP door above is free; the paid routes buy a receipted call for the same public-record data"
+    "jwks": "https://agentic-x402.ai/x402/jwks.json"
    },
    "registries_gate": {
     "authorization_server": "https://agentic-registries.ai",
     "metadata": "https://agentic-registries.ai/.well-known/oauth-authorization-server",
     "register": "https://agentic-registries.ai/oauth/register",
     "token": "https://agentic-registries.ai/oauth/token",
-    "jwks": "https://agentic-registries.ai/oauth/jwks.json",
     "auth_md": "https://agentic-registries.ai/auth.md",
     "grants": [
      "client_credentials",
@@ -142,8 +138,7 @@
     "licensed_routes": [
      "https://agentic-trades.ai/licensed/record/{node}/{exchange}/{code}",
      "https://agentic-registries.ai/registry/whoami"
-    ],
-    "note": "public routes, this MCP door included, need no token"
+    ]
    },
    "surfaces_version": "2026-09-13.9"
   }
