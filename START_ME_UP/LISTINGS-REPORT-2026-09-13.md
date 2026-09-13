@@ -35,11 +35,11 @@ Tenant checked (04a24e43…). No cross-estate entries added. Entries now:
 node x402_pay.mjs https://agentic-x402.ai/api
 ```
 
-- Listing URLs (public, no key): `https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources` (all; paginated) — the entries will show `resource: https://agentic-x402.ai/api` and `resource: https://agentic-trades.ai/x402/record/…`; per-merchant view via the CDP SDK `listX402DiscoveryMerchant` with your pay-to address. Not yet present (no mainnet settlement yet). Delisting rule: 30 days without a settlement.
+- Listing URLs (public, no key): `https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources` (all; paginated) — the entries will show `resource: https://agentic-x402.ai/api` and `resource: https://agentic-trades.ai/x402/record/…`; per-merchant view via the CDP SDK `listX402DiscoveryMerchant` with your pay-to address. `agentic-x402.ai/api` present since the 18:10 UTC settlement; the trades route follows its own first settled call. Delisting rule: 30 days without a settlement.
 
 ## HITL
 
-1. **One mainnet call** through CDP to trigger the Bazaar index (your wallet needs $0.01 USDC on Base). CC checks the discovery list on the next pass and closes the listing line.
+1. Bazaar: `/api` listed. One $0.01 call on `agentic-trades.ai/x402/record/uk-cm-kg/LSE/BARC` lists the second resource.
 2. `swagger-petstore` in API Center — sample entry, delete on your paste.
 3. Standing from earlier: DNSSEC landing check (fires 18:30 UTC), webMcp, Web Analytics beacon, door image agent cards, legal sign-off, Zone Analytics scope, ch/kr gap, Azure cost, Anthropic admin key.
 
@@ -47,5 +47,5 @@ node x402_pay.mjs https://agentic-x402.ai/api
 
 - Registry: 1 card, version 0.12.0, 5 tools, 11 live nodes, 2 new metadata blocks.
 - API Center: 13 entries · 13 OpenAPI imports · 12 doc-link corrections · 1 title correction · 0 deletions.
-- Bazaar: 2 resources validated, 0 indexed (awaiting the mainnet settlement).
-- Spend: no engine calls; Azure API Center within the free tier; Cloudflare $0 incremental; x402 mainnet settled $0.00.
+- Bazaar: 2 resources validated; `agentic-x402.ai/api` INDEXED after the CEO's mainnet call (18:10 UTC; in the discovery list); the trades record route lists on its own first settled call (CEO's hand).
+- Spend: no engine calls; Azure API Center within the free tier; Cloudflare $0 incremental; x402 mainnet settled $0.01 (one call, receipt 772c00ad…).

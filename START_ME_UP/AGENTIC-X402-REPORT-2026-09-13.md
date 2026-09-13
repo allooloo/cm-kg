@@ -40,11 +40,19 @@ It prints the status, the PAYMENT-RESPONSE (tx hash, network, amount) and the re
 - RADAR: paid-calls line reads **1 settled**, with the tx and the receipt URL, on the page and in `radar.json`.
 - Testnet only: CC ran the Sepolia test because test USDC has no monetary value; the Base mainnet call on the trades route stays your hand. Mainnet for `/api` on your word (one secret).
 
+## MAINNET SETTLED — x402 lane closed (Sept 13 2026, ~18:10 UTC)
+
+- Cause of the first refusal and the fix: the offer's EIP-712 domain name was "USDC" on every network; Base mainnet USDC is "USD Coin" v2. Fixed per network (surfaces 2026-09-13.10); no funds moved on the refused attempt.
+- Your re-run: **200**. Base mainnet tx `0x925d3d63fdede5f00af2b2ef777586784586b994607a887a9874da92c9266d03`, block 51264818, status success — https://basescan.org/tx/0x925d3d63fdede5f00af2b2ef777586784586b994607a887a9874da92c9266d03 — $0.01 USDC (10000 units) to your pay-to address, facilitator Coinbase CDP.
+- Receipt from KV: **https://agentic-x402.ai/x402/receipt/772c00ad2b43355529186825bff6201c** — resolves, `settled: true`, EdDSA JWT verified against `/x402/jwks.json`.
+- RADAR: paid-calls line at **2 settled** (one Sepolia, one mainnet), last tx and receipt URL shown.
+- Bazaar: `https://agentic-x402.ai/api` is indexed (CDP validate `index.active: true`; present in the public discovery list `https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources`). The trades record route lists on its own first settled mainnet call: `node x402_pay.mjs https://agentic-trades.ai/x402/record/uk-cm-kg/LSE/BARC` — your hand, $0.01.
+
 ## Counts
 
 - 23 surfaces at 2026-09-13.6 · 4 zones bound · 3 forwards · 1 new endpoint · 2 receipt routes · 1 new header estate-wide · agent cards updated: 23
 - Secrets on the Worker: X402_PAYTO, X402_NETWORK, X402_RECEIPT_JWK, CDP_API_KEY_ID, CDP_API_KEY_SECRET, OAUTH_JWK (values never printed except the flagged CDP secret)
-- Settled calls: 1 (Base Sepolia, receipt above)
+- Settled calls: 2 (Base Sepolia test + Base mainnet, receipts above)
 
 ## HITL
 
