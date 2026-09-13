@@ -13,6 +13,7 @@ const HOME_H1 = 'Every listed company in eleven markets, as a record an agent ca
 const FOCUS = { ca: { buyer: 'investment dealers and wealth platforms under CIRO; the fund managers who feed them', duty: 'KYP — every product on the shelf, known continuously, and the file that proves it', pain: 'a 15-to-30-person data floor doing it by hand across TSX, TSXV, CSE and Cboe Canada', first: 'Dealer MCP access to the Canada node + Coverage on their shelf', proof: 'served from Canada Central (Toronto, Canada); public-record only; source and read date on every field' },
   uk: { buyer: 'brokers, wealth managers and platforms under the FCA product governance rules (PROD); the compliance consultancies that serve them', duty: 'know the product and its target market, and show your work', pain: 'the same data floor across Main Market, AIM and Aquis, with RNS as the firehose', first: 'Dealer MCP access to the UK node + Disclosure as the feed', proof: 'served from UK South (London, United Kingdom); FCA NSM and Companies House as sources; nothing licensed on the wire' } };
 import { radarData, radarBody, radarCsv } from './radar.js';
+import { KYP_COPY, kypBody, kypFacts, kypLlms, kypVals } from './kyp.js';
 
 const REGISTRY = 'registry.modelcontextprotocol.io · io.github.allooloo/cm-kg';
 let LIVE = null, LIVE_AT = 0;
@@ -30,7 +31,9 @@ async function askUp() { if (ASK_UP !== null && Date.now() - ASK_AT < 600000) re
 function classify(host) {
   const h = host.replace(/^www\./, ''); let m;
   if (h === 'allooloo.io') return { kind: 'site' };
-  if (h === 'allooloo.ai') return { kind: 'redirect', canonical: 'https://allooloo.io', status: 308 };   // CEO forward, Sept 12 2026: allooloo.ai + www → 308 → allooloo.io, path + query kept
+  if (h === 'allooloo.ai') return { kind: 'redirect', canonical: 'https://allooloo.io', status: 308 };
+  if (h === 'kyp-model.ai') return { kind: 'kyp' };
+  if (/^(kyp-model|kypmodel)\.(com|org|io)$/.test(h)) return { kind: 'redirect', canonical: 'https://kyp-model.ai', status: 301 };   // six kyp zones → 301 → kyp-model.ai, path preserved, one hop (CEO, Sept 12 2026)   // CEO forward, Sept 12 2026: allooloo.ai + www → 308 → allooloo.io, path + query kept
   if ((m = h.match(/^([a-z]{2})-cm-kg\.(ai|org|com)$/)) && NODE_DATA[m[1]]) return { kind: 'node', cc: m[1], tld: m[2], canonical: m[2] === 'ai' ? null : `https://${m[1]}-cm-kg.ai` };
   if ((m = h.match(/^agentic-([a-z]+)\.(ai|com|org|io)$/)) && PRODUCTS[m[1]]) return { kind: 'product', product: m[1], tld: m[2], canonical: m[2] === 'ai' ? null : `https://agentic-${m[1]}.ai` };
   if (h === 'capitalmarketsknowledgegraph.ai') return { kind: 'root', role: 'graph' };
@@ -138,8 +141,8 @@ export default {
     // ---- agent readiness kit (aeo.js): the same paths on every surface, pointing at the node door, the apex, or the beacon
     const cc0 = c.kind === 'node' ? c.cc : null; const T = AEO.target(c, cc0); const kmeta = { node: c.kind === 'node' ? `${c.cc}-cm-kg` : (c.kind === 'site' ? 'allooloo' : 'estate'), as_of: today() };
     const LINK = AEO.linkHeader(host, T);
-    const label = c.kind === 'node' ? `${NODE_DATA[c.cc].country} node — Capital Markets Knowledge Graph` : c.kind === 'product' ? PRODUCTS[c.product].title : c.kind === 'site' ? 'Allooloo Technologies Corp. — Capital Markets Knowledge Graph' : `${host} — Capital Markets Knowledge Graph`;
-    const desc0 = c.kind === 'node' ? fill(NODE_DATA[c.cc].meta, nodeVals(c.cc, live)) : c.kind === 'product' ? PRODUCTS[c.product].reason : c.kind === 'site' ? homeMeta(ctx) : 'Estate host of the Capital Markets Knowledge Graph; the apex router answers for every market.';
+    const label = c.kind === 'node' ? `${NODE_DATA[c.cc].country} node — Capital Markets Knowledge Graph` : c.kind === 'product' ? PRODUCTS[c.product].title : c.kind === 'site' ? 'Allooloo Technologies Corp. — Capital Markets Knowledge Graph' : c.kind === 'kyp' ? KYP_COPY.title : `${host} — Capital Markets Knowledge Graph`;
+    const desc0 = c.kind === 'node' ? fill(NODE_DATA[c.cc].meta, nodeVals(c.cc, live)) : c.kind === 'product' ? PRODUCTS[c.product].reason : c.kind === 'site' ? homeMeta(ctx) : c.kind === 'kyp' ? KYP_COPY.meta.replace(/\{records\}/g, kypVals(ctx).records).replace(/\{events\}/g, kypVals(ctx).events).replace(/\{live_nodes\}/g, kypVals(ctx).live_nodes) : 'Estate host of the Capital Markets Knowledge Graph; the apex router answers for every market.';
     const HTML = (body, m) => AEO.wantsMarkdown(request) ? markdown(AEO.toMarkdown(body, host), m, LINK) : html(body, m, LINK);
     if (p === '/.well-known/api-catalog') return json(AEO.apiCatalog(host, T), kmeta, 'public, max-age=3600', 200, 'application/linkset+json');
     if (p === '/.well-known/oauth-protected-resource') return json(AEO.protectedResource(host, T), kmeta, 'public, max-age=3600');
@@ -150,6 +153,14 @@ export default {
     const sk = p.match(/^\/\.well-known\/agent-skills\/([a-z-]+)\/SKILL\.md$/); if (sk) { const md = AEO.skillMd(host, T, sk[1]); return md ? markdown(md, kmeta, LINK) : notFound([], kmeta); }
     if (p === '/.well-known/ai-catalog.json') return json(AEO.aiCatalog(host, T, label, desc0), kmeta);
     if (p.startsWith('/.well-known/') && p !== '/.well-known/allooloo.json') return notFound(['/.well-known/agent-card.json', '/.well-known/mcp/server-card.json', '/.well-known/api-catalog', '/.well-known/oauth-protected-resource', '/.well-known/agent-skills/index.json', '/.well-known/ai-catalog.json', '/.well-known/security.txt'], kmeta);
+    if (c.kind === 'kyp') {
+      const v = kypVals(ctx); const meta = { node: 'kyp-model', as_of: v.last || today() }; const paths = ['/', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt'];
+      if (p === '/') return HTML(page({ host, title: KYP_COPY.title, desc: desc0, h1: KYP_COPY.h1, state: 'live', asOf: v.last || today(), body: kypBody(ctx, host), jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: KYP_COPY.h1, name: KYP_COPY.title, description: desc0, url: `https://${host}/`, datePublished: '2026-09-12', author: { '@type': 'Person', name: 'Matthew Keddy', jobTitle: 'CEO', worksFor: { '@type': 'Organization', name: OPERATOR, url: CORPORATE } }, publisher: { '@type': 'Organization', name: OPERATOR, url: CORPORATE } }] }), meta);
+      if (p === '/llms.txt') return text(kypLlms(host, ctx), meta);
+      if (p === '/facts.json') return json(kypFacts(host, ctx), meta);
+      if (p === '/sitemap.xml') return text(sitemap(host, paths), meta, 'application/xml; charset=utf-8', 'public, max-age=3600');
+      return notFound(paths, meta);
+    }
     if (c.kind === 'site') {
       const meta = { node: 'allooloo', as_of: today() }; const t = totals(ctx);
       const paths = ['/', '/status', '/terms', '/privacy', '/security', '/no-cookies', '/llms.txt', '/facts.json', '/status.json', '/.well-known/allooloo.json', '/.well-known/agent-card.json', '/.well-known/security.txt'];

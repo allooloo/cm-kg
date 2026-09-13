@@ -1,0 +1,7 @@
+kyp-model.ai | AI bots disabled · Bot Fight False · managed robots False · pay-per-crawl disabled | already off | SSL strict | kyp-model.ai:bound www.kyp-model.ai:bound
+kyp-model.com | AI bots disabled · Bot Fight False · managed robots False · pay-per-crawl disabled | already off | SSL strict | kyp-model.com:bound www.kyp-model.com:bound
+kyp-model.org | AI bots disabled · Bot Fight False · managed robots False · pay-per-crawl disabled | already off | SSL strict | kyp-model.org:bound www.kyp-model.org:bound
+kyp-model.io | AI bots disabled · Bot Fight False · managed robots False · pay-per-crawl disabled | already off | SSL strict | kyp-model.io:bound www.kyp-model.io:bound
+kypmodel.com | AI bots disabled · Bot Fight False · managed robots False · pay-per-crawl disabled | already off | SSL strict | kypmodel.com:bound www.kypmodel.com:bound
+kypmodel.org | AI bots disabled · Bot Fight False · managed robots False · pay-per-crawl disabled | already off | SSL strict | kypmodel.org:bound www.kypmodel.org:bound
+kypmodel.io | AI bots disabled · Bot Fight False · managed robots False · pay-per-crawl disabled | already off | SSL strict | kypmodel.io:bound www.kypmodel.io:bound

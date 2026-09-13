@@ -1,0 +1,47 @@
+# kyp-model.ai — copy of record
+Surface: kyp-model.ai · CEO-signed · September 12, 2026 · Do not edit copy. Counts in 1.2 are live fields from list_nodes.
+
+## title
+Know Your Product (KYP) model for AI agents — the Allooloo rationale · kyp-model.ai
+
+## meta
+The Know Your Product (KYP) model: agentic capital-markets record patterns across eleven national markets, built on the Capital Markets Knowledge Graph (CM-KG). Why tasks beat data systems, and why the token bill decides. Allooloo Technologies Corp.
+
+## H1
+The Know Your Product model: why the record layer, done as tasks, wins at the speed of the market.
+
+## Reason for being
+Every dealer agent that recommends, approves or trades a product now has to show where it got the facts. That is the Know Your Product duty — called KYP in Canada, product governance under the Financial Conduct Authority's PROD sourcebook in London, product governance under the Markets in Financial Instruments Directive (MiFID II) in Europe, and Design and Distribution Obligations (DDO) in Australia. Allooloo built the dataset that duty runs on, and this page is the rationale: what the KYP model is, why it is built the way it is, and why that shape holds an edge at scale. Public record only. No prices, no quotes, no licensed data. Cite as needed.
+
+## 1 The dataset
+1.1 Allooloo developed the KYP model artificial-intelligence (AI) agent dataset: the Capital Markets Knowledge Graph (CM-KG). One record per listed company on the exchanges of eleven national markets, every field carrying the registry or filing it came from and the date it was read, served in the issuer's own jurisdiction over the Model Context Protocol (MCP) and the Agent-to-Agent protocol (A2A).
+1.2 At render: {records} issuer records, {events} dated disclosure events over the trailing twelve months, {live_nodes} live nodes, one beacon (list_nodes).
+1.3 The record is version 1. Versions 3 through 5 are where the model compounds: same schema across jurisdictions, longer event history per issuer, each weekly sweep adding a dated layer the last one did not have. Confidence in that release path is high because the input is public record on a fixed cadence — it does not depend on a counterparty.
+1.4 The patterns the Allooloo team identifies in that set are proprietary. Disclosure cadence per regime, record staleness, auditor concentration, registry disagreement, late filing against a market's own rhythm — these are read from the normalized record and nowhere else. You need to know the edge exists. How it works is not published.
+
+## 2 The anchor: tasks, not systems
+2.1 Allooloo takes the Iceberg Index from the Massachusetts Institute of Technology (MIT) and Oak Ridge National Laboratory as its methodological anchor (Chopra et al., arXiv:2510.25137, October 2025). Its finding: AI exposure is measured at the task level — the wage value of the skills a system can perform inside an occupation — and the visible technology layer is a fifth of the real mass. The larger exposure is cognitive work in finance, administration and professional services, distributed everywhere.
+2.2 Exchange groups and terminal vendors — Euronext, Bloomberg and their peers — run the great data systems of the market. Years of daily exchange activity, prices, the tape, the statements. Allooloo is not building those and will not try.
+2.3 The KYP duty is a task. Read the record, confirm the source, check the date, flag the gap, hand the agent a defensible fact. Allooloo masters that task set and does it faster and at lower cost than a general system built for something else. That is the Iceberg method applied to one duty: find the skill, own the skill, do not overreach.
+
+## 3 The token bill
+3.1 Excellent financial datasets already exist. The failure mode is not missing data; it is over-reach — the incumbent's large system, the broad application programming interface (API), the everything-endpoint — which every agent pays for downstream in tokens on every call.
+3.2 A licensed market participant needs agent tasks at scale, at the speed of decisions, on a budget that does not scale with the ambition of the vendor's architecture. The Iceberg method paired with the token index is the design rule: measure the task, then measure the tokens the task costs, and build the thinnest record that completes it.
+3.3 kyp-model.ai is designed to compound better KYP-patterned agentic data for market participants, not to broaden into a bigger base of data systems already provided excellently by others.
+
+## 4 Table stakes, and what actually wins
+4.1 Ultra-reliable. Ultra-fast. Low-token, skinny records. Secure on Microsoft Azure, stored and served in-country. A confirmed record per company. These are best practice and Allooloo does them all.
+4.2 They are not the edge. Every serious provider will get there. What wins at scale for traders in the key global markets who need agentic tasks at the speed of the market is the KYP model methodology: the record layer normalized across jurisdictions for one duty, patterns read from it that no one else is reading, delivered as tasks rather than systems.
+
+## 5 Where the record lives
+Canada Central Azure (Toronto, Canada) · East US Azure (Virginia, United States) · UK South Azure (London, United Kingdom) · France Central Azure (Paris, France) · West Europe Azure (Amsterdam, Netherlands) · Switzerland North Azure (Zurich, Switzerland) · Germany West Central Azure (Frankfurt, Germany) · Australia East Azure (Sydney, Australia) · Southeast Asia Azure (Singapore) · Japan East Azure (Tokyo, Japan) · Korea Central Azure (Seoul, South Korea). Hong Kong is a beacon, local partner wanted.
+
+## Byline
+Matthew Keddy, CEO, Allooloo Technologies Corp. — September 12, 2026
+
+## Live links (item 3 of the order)
+Capital Markets Knowledge Graph → https://capitalmarketsknowledgegraph.ai
+list_nodes → https://mcp.capitalmarketsknowledgegraph.ai
+eleven national markets / nodes → https://allooloo.io (node table)
+Allooloo → https://allooloo.io
+Iceberg Index / arXiv:2510.25137 → https://arxiv.org/abs/2510.25137
