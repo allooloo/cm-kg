@@ -120,6 +120,27 @@
    "records": "3436",
    "events": "35570",
    "note": "records +0\u00b7events +167 (sweep 2026-09-12)"
+  },
+  {
+   "node": "sg-cm-kg",
+   "date": "2026-09-11",
+   "records": "639",
+   "events": "3510",
+   "note": "records +0\u00b7events +0 (sweep 2026-09-12)"
+  },
+  {
+   "node": "sg-cm-kg",
+   "date": "2026-09-12",
+   "records": "not served (Width 0)",
+   "events": "none",
+   "note": "sweep: no door"
+  },
+  {
+   "node": "au-cm-kg",
+   "date": "2026-09-11",
+   "records": "1874",
+   "events": "124581",
+   "note": "records +0\u00b7events +281 (sweep 2026-09-12)"
   }
  ]
 }
