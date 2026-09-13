@@ -37,7 +37,122 @@ export function protectedResource(host, t) {
   return { resource: `https://${host}`, authorization_servers: ['https://agentic-registries.ai'], bearer_methods_supported: ['header'], scopes_supported: ['records:read', 'events:read', 'licensed:read'], resource_name: `${host} — ${OPERATOR}`, resource_documentation: `https://${host}/auth.md`, resource_policy_uri: 'https://allooloo.io/terms', note: 'public routes (every MCP door, record and event path, every surface) require no authentication; licensed routes take a bearer token from the Registries authorization server (client_credentials)' };
 }
 export function authMd(host, t) {
-  return `# Auth.md — ${host}\n\n1. Public routes: none required. This surface, its machine kit, every MCP door (${t.mcp ? '`' + t.mcp + '`' : 'the apex ' + APEX + '/mcp'}), every record and event path answer any caller, read-only, public-record only.\n2. Authorization server (the Registries gate, in service Sept 13 2026): \`https://agentic-registries.ai\` — metadata at \`/.well-known/oauth-authorization-server\` on every surface (also served as \`/.well-known/openid-configuration\`).\n3. Register an agent (RFC 7591): \`POST https://agentic-registries.ai/oauth/register\` with JSON \`{ "client_name": "...", "agent_card": "https://.../.well-known/agent-card.json", "scope": "records:read events:read licensed:read", "contacts": ["..."] }\` → \`client_id\`, \`client_secret\` (shown once).\n4. Get a token (OAuth 2.1 client_credentials): \`POST https://agentic-registries.ai/oauth/token\` with \`grant_type=client_credentials&client_id=...&client_secret=...&scope=...\` (form or HTTP Basic) → ES256 JWT, 3600 s, audience \`${APEX}\`; keys at \`/oauth/jwks.json\` (kid allooloo-registry-2026-09-13); \`/oauth/introspect\` answers active or not.\n5. Licensed routes (bearer token required, 401 with WWW-Authenticate otherwise): \`https://agentic-trades.ai/licensed/record/{node}/{exchange}/{code}\` (the same record as the free route, receipted per client) and \`https://agentic-registries.ai/registry/whoami\`. The paid x402 route on agentic-trades.ai takes payment instead of a token.\n6. Protected-resource metadata: \`/.well-known/oauth-protected-resource\` on every surface names the authorization server and the scopes.\n7. Revocation: a registration is set inactive by the operator on the firm's instruction, on licence expiry (\`valid_until\`) or on misuse; tokens stop at their next request. Nothing is deleted; registrations and receipts stay on the registry.\n8. Operator: ${OPERATOR}. The agents that built this read their own mail: ${CONTACT2}. On-ramp questions: the contact form at ${CONTACT}.\n9. Surface version: ${SURFACES_VERSION}; as of ${today()}.\n`;
+  const AS = 'https://agentic-registries.ai'; const door = t.mcp ? t.mcp : APEX + '/mcp';
+  return `# auth.md
+
+This service supports agentic registration. Resource server: \`https://${host}\` (this surface; its MCP door is \`${door}\`). Authorization server: \`${AS}\` (the Registries gate, in service Sept 13 2026). Public routes — every surface, every MCP door, every record and event path — answer without a token, read-only, public-record only. Licensed routes take a bearer token.
+
+## Discover
+
+1. Read \`WWW-Authenticate: Bearer resource_metadata="https://${host}/.well-known/oauth-protected-resource"\` on a 401, or fetch \`/.well-known/oauth-protected-resource\` directly: \`resource\`, \`resource_name\`, \`authorization_servers\` (\`${AS}\`), \`scopes_supported\` (\`records:read\`, \`events:read\`, \`licensed:read\`), \`bearer_methods_supported\` (\`header\`).
+2. Fetch \`${AS}/.well-known/oauth-authorization-server\` (also served on every surface): \`issuer\`, \`token_endpoint\`, \`registration_endpoint\`, \`revocation_endpoint\`, \`jwks_uri\`, \`grant_types_supported\` and the \`agent_auth\` block (\`identity_endpoint\`, \`claim_endpoint\`, \`events_endpoint\`, \`identity_types_supported\`).
+
+## Pick a method
+
+- Session with an ID-JAG → not offered here (\`identity_assertion\` is not in \`identity_types_supported\`).
+- Email only → not offered here (\`service_auth\` is not in \`identity_types_supported\`).
+- Neither → \`anonymous\`: register below. Registrations are active on issue; no claim ceremony is required.
+- A plain OAuth client → \`POST ${AS}/oauth/register\` (RFC 7591) then \`client_credentials\`.
+
+## Register
+
+### anonymous
+
+\`\`\`http
+POST /agent/identity HTTP/1.1
+Host: agentic-registries.ai
+Content-Type: application/json
+
+{
+  "type": "anonymous",
+  "client_name": "my agent",
+  "agent_card": "https://my-agent.example/.well-known/agent-card.json",
+  "scope": "records:read events:read licensed:read"
+}
+\`\`\`
+
+Response (201):
+
+\`\`\`json
+{
+  "identity_type": "anonymous",
+  "identity_assertion": "<JWT, typ identity_assertion, 30 days>",
+  "assertion_expires": "<ISO 8601>",
+  "claim_token": "<opaque>",
+  "client_id": "cmkg_…",
+  "client_secret": "<shown once>",
+  "scopes": ["records:read", "events:read", "licensed:read"]
+}
+\`\`\`
+
+### client_credentials (RFC 7591 registration)
+
+\`\`\`http
+POST /oauth/register HTTP/1.1
+Host: agentic-registries.ai
+Content-Type: application/json
+
+{ "client_name": "my agent", "agent_card": "https://…/.well-known/agent-card.json", "scope": "records:read events:read licensed:read", "contacts": ["…"] }
+\`\`\`
+
+Response (201): \`client_id\`, \`client_secret\` (shown once), \`scope\`, \`registration_client_uri\`.
+
+## Claim ceremony
+
+Optional. Registrations are active on issue. To attach a contact to an anonymous registration:
+
+\`\`\`http
+POST /agent/identity/claim HTTP/1.1
+Host: agentic-registries.ai
+Content-Type: application/json
+
+{ "claim_token": "<from registration>", "email": "agent-owner@example" }
+\`\`\`
+
+Response: \`{ "claim_attempt": { "status": "complete", "client_id": "cmkg_…" } }\` — no user code, no verification URI, no polling.
+
+## Exchange the assertion
+
+\`\`\`http
+POST /oauth/token HTTP/1.1
+Host: agentic-registries.ai
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=<identity_assertion>&scope=licensed:read
+\`\`\`
+
+or, with client credentials:
+
+\`\`\`http
+POST /oauth/token HTTP/1.1
+Host: agentic-registries.ai
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id=cmkg_…&client_secret=…&scope=licensed:read
+\`\`\`
+
+Response: \`{ "access_token": "<ES256 JWT>", "token_type": "Bearer", "expires_in": 3600, "scope": "licensed:read" }\`. Audience \`${APEX}\`; keys at \`${AS}/oauth/jwks.json\` (kid allooloo-registry-2026-09-13); \`POST ${AS}/oauth/introspect\` with \`token=\` answers \`active\`.
+
+## Use the access_token
+
+\`Authorization: Bearer <access_token>\` on the licensed routes: \`https://agentic-trades.ai/licensed/record/{node}/{exchange}/{code}\` (the same record as the free route, receipted per client) and \`${AS}/registry/whoami\`. Tokens last 3600 s; get a new one with the same grant — there is no refresh token. The paid x402 route on agentic-trades.ai takes payment instead of a token. Public routes never need the header.
+
+## Errors
+
+| Code | Endpoint | Action |
+|------|----------|--------|
+| \`invalid_client\` | \`/oauth/token\` | client_id, client_secret or licence wrong or expired: register again or write to the operator |
+| \`invalid_grant\` | \`/oauth/token\`, \`/agent/identity/claim\` | assertion or claim_token invalid, expired or revoked: register again |
+| \`unsupported_grant_type\` | \`/oauth/token\` | use \`client_credentials\` or \`urn:ietf:params:oauth:grant-type:jwt-bearer\` |
+| \`unsupported_identity_type\` | \`/agent/identity\` | use \`anonymous\` |
+| \`missing_token\`, \`expired\`, \`revoked\`, \`bad_signature\` | licensed routes (401 + \`WWW-Authenticate\`) | get a new access token |
+
+## Revocation
+
+Credential layer: \`POST ${AS}/oauth/revoke\` with \`token=<access_token or identity_assertion>\` (RFC 7009; always 200). Registration layer: a registration is set inactive by the operator on the firm's instruction, on licence expiry (\`valid_until\`) or on misuse; its tokens stop at their next request. Revocation events for registered agents are accepted at \`${AS}/agent/event/notify\` (RFC 8935, \`application/secevent+jwt\`). Nothing is deleted; registrations and receipts stay on the registry.
+
+Operator: ${OPERATOR}. The agents that built this read their own mail: ${CONTACT2}. Questions: the contact form at ${CONTACT}. Surface version ${SURFACES_VERSION}; as of ${today()}.
+`;
 }
 export function mcpServerCard(host, t, live) {
   const base = { name: t.name, serverInfo: { name: t.kind === 'node' ? t.name.replace(' door', '') : 'cm-kg', version: '0.11.0' }, description: t.kind === 'beacon' ? t.note : 'Capital Markets Knowledge Graph: one record per listed company, source and read date on every field, served in the issuer\'s jurisdiction. Read-only, public-record only, no auth.', transport: t.mcp ? 'streamable-http' : null, url: t.mcp, endpoints: t.mcp ? [{ type: 'streamable-http', url: t.mcp }] : [], authentication: { type: 'none' }, tools: TOOLS.map(([n, tt, d]) => ({ name: n, title: tt, description: d })), agentCard: t.agent, openapi: t.openapi, descriptor: t.mcpjson, registry: 'io.github.allooloo/cm-kg', documentation: `https://${host}/llms.txt`, provider: { organization: OPERATOR, url: CORPORATE }, surface: `https://${host}/`, as_of: today() };

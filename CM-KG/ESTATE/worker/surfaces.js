@@ -143,6 +143,11 @@ export default {
       if (p === '/oauth/register' && request.method === 'POST') return OAUTH.register(request, env);
       if (p === '/oauth/token' && request.method === 'POST') return OAUTH.token(request, env);
       if (p === '/oauth/introspect' && request.method === 'POST') return OAUTH.introspect(request, env);
+      if (p === '/oauth/revoke' && request.method === 'POST') return OAUTH.revoke(request, env);
+      if (p === '/agent/identity' && request.method === 'POST') return OAUTH.identity(request, env);
+      if (p === '/agent/identity/claim' && request.method === 'POST') return OAUTH.claim(request, env);
+      if (p === '/agent/event/notify' && request.method === 'POST') return OAUTH.events(request, env);
+      if ((p.startsWith('/oauth/') || p.startsWith('/agent/')) && request.method === 'OPTIONS') return new Response(null, { status: 204, headers: headers({}, { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'GET, POST, OPTIONS' }) });
       if (p === '/oauth/jwks.json') return json(await OAUTH.jwks(env), { node: 'registry' }, 'public, max-age=300');
       if (p.startsWith('/oauth/register/') && request.method === 'GET') { const v = await OAUTH.verify(request, env); const id = p.split('/').pop(); if (!v.ok || v.claims.sub !== id) return OAUTH.challenge(host, v.error); const ci = await OAUTH.clientInfo(env, id); return ci ? json(ci, { node: 'registry' }, 'no-store') : notFound([], { node: 'registry' }); }
       if (p === '/registry/whoami') { const v = await OAUTH.verify(request, env); if (!v.ok) return OAUTH.challenge(host, v.error); return json({ licensed: true, ...v.claims, note: 'a licensed call; receipted in the region of the call' }, { node: 'registry' }, 'no-store'); }

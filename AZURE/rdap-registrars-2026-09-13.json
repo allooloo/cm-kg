@@ -1,0 +1,94 @@
+{
+ "allooloo.io": {
+  "error": "HTTP Error 404: Not Found"
+ },
+ "kyp-model.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "agentic-trades.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "agentic-ask.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "agentic-coverage.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "agentic-esg.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "agentic-issuers.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "agentic-disclosure.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "agentic-registries.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "agentic-radar.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "ca-cm-kg.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "uk-cm-kg.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "us-cm-kg.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "de-cm-kg.ai": {
+  "registrar": "Cloudflare, Inc",
+  "delegationSigned": false,
+  "ds": 0
+ },
+ "fr-cm-kg.ai": {
+  "error": "HTTP Error 429: Too Many Requests"
+ },
+ "nl-cm-kg.ai": {
+  "error": "HTTP Error 429: Too Many Requests"
+ },
+ "ch-cm-kg.ai": {
+  "error": "HTTP Error 429: Too Many Requests"
+ },
+ "au-cm-kg.ai": {
+  "error": "HTTP Error 429: Too Many Requests"
+ },
+ "sg-cm-kg.ai": {
+  "error": "HTTP Error 429: Too Many Requests"
+ },
+ "jp-cm-kg.ai": {
+  "error": "HTTP Error 429: Too Many Requests"
+ },
+ "kr-cm-kg.ai": {
+  "error": "HTTP Error 429: Too Many Requests"
+ },
+ "hk-cm-kg.ai": {
+  "error": "HTTP Error 429: Too Many Requests"
+ }
+}

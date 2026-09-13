@@ -1,0 +1,284 @@
+{
+ "allooloo.io": {
+  "zone_id": "44182090354e25f3e63bdc763cf2e1ae",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "kyp-model.ai": {
+  "zone_id": "796320b77fcfe464551a32e780b8e649",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "agentic-radar.ai": {
+  "zone_id": "6457148542dfbd315d5cdd7b56e8d39c",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "agentic-trades.ai": {
+  "zone_id": "1b92309d59e5b7080e11b46b1e1b6531",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "agentic-registries.ai": {
+  "zone_id": "93332eedf6e5c50e3e6c5422cb1cc449",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "agentic-issuers.ai": {
+  "zone_id": "143545c1147b5138f3d9a3089dcc8b61",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "agentic-filings.ai": {
+  "zone": null
+ },
+ "agentic-exchanges.ai": {
+  "zone": null
+ },
+ "agentic-disclosures.ai": {
+  "zone": null
+ },
+ "agentic-listings.ai": {
+  "zone": null
+ },
+ "ca-cm-kg.ai": {
+  "zone_id": "4d2c6dc2f534dd8c013f6e66544eed4c",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "uk-cm-kg.ai": {
+  "zone_id": "999f8cab6ae570a878379f0e37cd87b0",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "us-cm-kg.ai": {
+  "zone_id": "64516e94b82d13781980dff99c20c8b0",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "de-cm-kg.ai": {
+  "zone_id": "0e7b54741212fb036c2cf18b9392ed25",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "fr-cm-kg.ai": {
+  "zone_id": "645c30886df97804e3b793399e303c2b",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "nl-cm-kg.ai": {
+  "zone_id": "e5a042d3df88b7e170d5225ecfacb008",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "ch-cm-kg.ai": {
+  "zone_id": "0ea4358fbd0c1dc5ccf069448ccefe48",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "au-cm-kg.ai": {
+  "zone_id": "8732370fd5742f40dba657be3eab5d37",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "sg-cm-kg.ai": {
+  "zone_id": "0d4ae29fdde22945ffd2858bc2922576",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "jp-cm-kg.ai": {
+  "zone_id": "f1c120f9d544c4af28bd6029ce071b96",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "kr-cm-kg.ai": {
+  "zone_id": "cd87134802ca140f4767253f39453ce1",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ },
+ "hk-cm-kg.ai": {
+  "zone_id": "eccfebad4729da2b3ab6411bf739acb4",
+  "status": "active",
+  "registrar": null,
+  "name_servers": [
+   "henrik.ns.cloudflare.com",
+   "maisie.ns.cloudflare.com"
+  ],
+  "dnssec_status": "disabled",
+  "ds": null,
+  "digest_type": null,
+  "key_tag": null,
+  "algorithm": null,
+  "errors": []
+ }
+}

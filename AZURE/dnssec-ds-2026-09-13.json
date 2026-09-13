@@ -1,0 +1,222 @@
+{
+ "allooloo.io": {
+  "zone_id": "44182090354e25f3e63bdc763cf2e1ae",
+  "dnssec_status": "pending",
+  "ds": "allooloo.io. 3600 IN DS 2371 13 2 708C23C5741AA982129E0E4C91CA1E4976038329EB571276B7B9BA9D3F65DD4F",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "708C23C5741AA982129E0E4C91CA1E4976038329EB571276B7B9BA9D3F65DD4F",
+  "modified_on": "2026-09-13T14:00:43.528895+00:00"
+ },
+ "kyp-model.ai": {
+  "zone_id": "796320b77fcfe464551a32e780b8e649",
+  "dnssec_status": "pending",
+  "ds": "kyp-model.ai. 3600 IN DS 2371 13 2 86F59F921020A0B5C05231CB2D12CB9711D8DB8FA503FF27FA69FD0FF72668A3",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "86F59F921020A0B5C05231CB2D12CB9711D8DB8FA503FF27FA69FD0FF72668A3",
+  "modified_on": "2026-09-13T14:00:44.729904+00:00"
+ },
+ "agentic-trades.ai": {
+  "zone_id": "1b92309d59e5b7080e11b46b1e1b6531",
+  "dnssec_status": "pending",
+  "ds": "agentic-trades.ai. 3600 IN DS 2371 13 2 C32EB3A6E7DCECB553E512D8C444CDD1BC23F71920D1F4C94D94CBE653FCD77D",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "C32EB3A6E7DCECB553E512D8C444CDD1BC23F71920D1F4C94D94CBE653FCD77D",
+  "modified_on": "2026-09-13T14:00:46.088169+00:00"
+ },
+ "agentic-ask.ai": {
+  "zone_id": "633ecd860c4f62b68d727cf3896d24b5",
+  "dnssec_status": "pending",
+  "ds": "agentic-ask.ai. 3600 IN DS 2371 13 2 1BC54D1C16F2A0CC22E6CEE2B2391EE9DE73B3BBC91AAC33EDAD33554C0AE73D",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "1BC54D1C16F2A0CC22E6CEE2B2391EE9DE73B3BBC91AAC33EDAD33554C0AE73D",
+  "modified_on": "2026-09-13T14:00:47.819429+00:00"
+ },
+ "agentic-coverage.ai": {
+  "zone_id": "434ab0f4266729396ddab2cbd877410b",
+  "dnssec_status": "pending",
+  "ds": "agentic-coverage.ai. 3600 IN DS 2371 13 2 0AB44FF5C464800995EA77AE1A021B360FE7C517B6833CEBAD75793A8D802B00",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "0AB44FF5C464800995EA77AE1A021B360FE7C517B6833CEBAD75793A8D802B00",
+  "modified_on": "2026-09-13T14:00:49.307505+00:00"
+ },
+ "agentic-esg.ai": {
+  "zone_id": "e097aa6a77b3d54179ddc20eb8190da6",
+  "dnssec_status": "pending",
+  "ds": "agentic-esg.ai. 3600 IN DS 2371 13 2 84AAA2F218FF20AE3289050C15099E7B4A0BABB071F0A1D337CE91FE03E4F6CF",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "84AAA2F218FF20AE3289050C15099E7B4A0BABB071F0A1D337CE91FE03E4F6CF",
+  "modified_on": "2026-09-13T14:00:50.677474+00:00"
+ },
+ "agentic-issuers.ai": {
+  "zone_id": "143545c1147b5138f3d9a3089dcc8b61",
+  "dnssec_status": "pending",
+  "ds": "agentic-issuers.ai. 3600 IN DS 2371 13 2 BD95F2A42C14AE2934372AEAE02811909F1089F8EFF3DFCC6B430D5F818E44BC",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "BD95F2A42C14AE2934372AEAE02811909F1089F8EFF3DFCC6B430D5F818E44BC",
+  "modified_on": "2026-09-13T14:00:51.781653+00:00"
+ },
+ "agentic-disclosure.ai": {
+  "zone_id": "e694769ada37907502bff42f3fbe6dd1",
+  "dnssec_status": "pending",
+  "ds": "agentic-disclosure.ai. 3600 IN DS 2371 13 2 517E0A6494581DB02269774E8FF1B8D0E4CFF85F8BF579718BCEBDCA46AE16C4",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "517E0A6494581DB02269774E8FF1B8D0E4CFF85F8BF579718BCEBDCA46AE16C4",
+  "modified_on": "2026-09-13T14:00:53.019474+00:00"
+ },
+ "agentic-registries.ai": {
+  "zone_id": "93332eedf6e5c50e3e6c5422cb1cc449",
+  "dnssec_status": "pending",
+  "ds": "agentic-registries.ai. 3600 IN DS 2371 13 2 76E48648FD7C9D2EF772B525D4EBDBEF7BD6C8E86E0FA05D8BFA4B2C51D3DA2F",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "76E48648FD7C9D2EF772B525D4EBDBEF7BD6C8E86E0FA05D8BFA4B2C51D3DA2F",
+  "modified_on": "2026-09-13T14:00:54.464306+00:00"
+ },
+ "agentic-radar.ai": {
+  "zone_id": "6457148542dfbd315d5cdd7b56e8d39c",
+  "dnssec_status": "pending",
+  "ds": "agentic-radar.ai. 3600 IN DS 2371 13 2 01135A43F1862703EF45F5F76FAFABCE21C12B955F2487721C1F17086F3D0541",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "01135A43F1862703EF45F5F76FAFABCE21C12B955F2487721C1F17086F3D0541",
+  "modified_on": "2026-09-13T14:00:55.580503+00:00"
+ },
+ "ca-cm-kg.ai": {
+  "zone_id": "4d2c6dc2f534dd8c013f6e66544eed4c",
+  "dnssec_status": "pending",
+  "ds": "ca-cm-kg.ai. 3600 IN DS 2371 13 2 E73B61E589F349A28BADAD238FF6B4D16F13F9ADB7EFF37700E12BE3B7E320DD",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "E73B61E589F349A28BADAD238FF6B4D16F13F9ADB7EFF37700E12BE3B7E320DD",
+  "modified_on": "2026-09-13T14:00:56.85856+00:00"
+ },
+ "uk-cm-kg.ai": {
+  "zone_id": "999f8cab6ae570a878379f0e37cd87b0",
+  "dnssec_status": "pending",
+  "ds": "uk-cm-kg.ai. 3600 IN DS 2371 13 2 300F8155141492F477A5759CBBC28DFD7A0EDF35929DD78EF08FB441F8CB01C1",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "300F8155141492F477A5759CBBC28DFD7A0EDF35929DD78EF08FB441F8CB01C1",
+  "modified_on": "2026-09-13T14:00:58.068377+00:00"
+ },
+ "us-cm-kg.ai": {
+  "zone_id": "64516e94b82d13781980dff99c20c8b0",
+  "dnssec_status": "pending",
+  "ds": "us-cm-kg.ai. 3600 IN DS 2371 13 2 5BA6E70076CAAA8B0CFF6026903239BF19C67B042586228FD337545F338D54CC",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "5BA6E70076CAAA8B0CFF6026903239BF19C67B042586228FD337545F338D54CC",
+  "modified_on": "2026-09-13T14:00:59.123976+00:00"
+ },
+ "de-cm-kg.ai": {
+  "zone_id": "0e7b54741212fb036c2cf18b9392ed25",
+  "dnssec_status": "pending",
+  "ds": "de-cm-kg.ai. 3600 IN DS 2371 13 2 2BD72FB98A89B863C95F587EBEA0FFD5702A5B550420F146B4EE7778A92F22DD",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "2BD72FB98A89B863C95F587EBEA0FFD5702A5B550420F146B4EE7778A92F22DD",
+  "modified_on": "2026-09-13T14:01:00.555107+00:00"
+ },
+ "fr-cm-kg.ai": {
+  "zone_id": "645c30886df97804e3b793399e303c2b",
+  "dnssec_status": "pending",
+  "ds": "fr-cm-kg.ai. 3600 IN DS 2371 13 2 22CEBB1C99410FE58BA83CF295CDF5C31E5D0F9867DB8EDB737AEDEE0AED78BB",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "22CEBB1C99410FE58BA83CF295CDF5C31E5D0F9867DB8EDB737AEDEE0AED78BB",
+  "modified_on": "2026-09-13T14:01:01.922434+00:00"
+ },
+ "nl-cm-kg.ai": {
+  "zone_id": "e5a042d3df88b7e170d5225ecfacb008",
+  "dnssec_status": "pending",
+  "ds": "nl-cm-kg.ai. 3600 IN DS 2371 13 2 85EA9DA1DA1C4953FE0F6E042A8A985B56106F7E18ED85A74EC6B77B0F432CA4",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "85EA9DA1DA1C4953FE0F6E042A8A985B56106F7E18ED85A74EC6B77B0F432CA4",
+  "modified_on": "2026-09-13T14:01:03.194306+00:00"
+ },
+ "ch-cm-kg.ai": {
+  "zone_id": "0ea4358fbd0c1dc5ccf069448ccefe48",
+  "dnssec_status": "pending",
+  "ds": "ch-cm-kg.ai. 3600 IN DS 2371 13 2 5773CEAD1D67E79B18108A5491F14D69C779FDFFE38FEA451A28520E956354EA",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "5773CEAD1D67E79B18108A5491F14D69C779FDFFE38FEA451A28520E956354EA",
+  "modified_on": "2026-09-13T14:01:04.45833+00:00"
+ },
+ "au-cm-kg.ai": {
+  "zone_id": "8732370fd5742f40dba657be3eab5d37",
+  "dnssec_status": "pending",
+  "ds": "au-cm-kg.ai. 3600 IN DS 2371 13 2 366A9D48A6046B7BD1796B25DD9CBE979C2CBFD1A9555ABCCB28F366799B00BA",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "366A9D48A6046B7BD1796B25DD9CBE979C2CBFD1A9555ABCCB28F366799B00BA",
+  "modified_on": "2026-09-13T14:01:05.933921+00:00"
+ },
+ "sg-cm-kg.ai": {
+  "zone_id": "0d4ae29fdde22945ffd2858bc2922576",
+  "dnssec_status": "pending",
+  "ds": "sg-cm-kg.ai. 3600 IN DS 2371 13 2 5CF73CCEB7E0AF0DBE528EDCB6A12BFAF1F549F5735A9291C6BEADE87465A3D2",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "5CF73CCEB7E0AF0DBE528EDCB6A12BFAF1F549F5735A9291C6BEADE87465A3D2",
+  "modified_on": "2026-09-13T14:01:07.181602+00:00"
+ },
+ "jp-cm-kg.ai": {
+  "zone_id": "f1c120f9d544c4af28bd6029ce071b96",
+  "dnssec_status": "pending",
+  "ds": "jp-cm-kg.ai. 3600 IN DS 2371 13 2 6C4614BF2B946EC33CCB90FBE47A086B45352504137F1A165DC6AD372247295B",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "6C4614BF2B946EC33CCB90FBE47A086B45352504137F1A165DC6AD372247295B",
+  "modified_on": "2026-09-13T14:01:08.611102+00:00"
+ },
+ "kr-cm-kg.ai": {
+  "zone_id": "cd87134802ca140f4767253f39453ce1",
+  "dnssec_status": "pending",
+  "ds": "kr-cm-kg.ai. 3600 IN DS 2371 13 2 99D99EA1FE2FBFC9FF9987F52C77F688E49645F7C0922A121FAAB6D7474BA5F8",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "99D99EA1FE2FBFC9FF9987F52C77F688E49645F7C0922A121FAAB6D7474BA5F8",
+  "modified_on": "2026-09-13T14:01:10.042007+00:00"
+ },
+ "hk-cm-kg.ai": {
+  "zone_id": "eccfebad4729da2b3ab6411bf739acb4",
+  "dnssec_status": "pending",
+  "ds": "hk-cm-kg.ai. 3600 IN DS 2371 13 2 AC8481B1E1FDECC13CB84D3C00FDE4FBF88ED1BF77B5E92BF4E5E07E0C903458",
+  "key_tag": 2371,
+  "algorithm": "13",
+  "digest_type": "2",
+  "digest": "AC8481B1E1FDECC13CB84D3C00FDE4FBF88ED1BF77B5E92BF4E5E07E0C903458",
+  "modified_on": "2026-09-13T14:01:11.544629+00:00"
+ }
+}
