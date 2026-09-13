@@ -1,6 +1,6 @@
 """API CENTER (CEO, Sept 13 2026): description of record on the twelve MCP assets; contact mk@allooloo.ai on all thirteen; titles carry the node
 ("… apex router", "… Canada door" …). PUT by az rest with @file bodies; every other property carried forward unchanged. Tenant check first."""
-import json, subprocess, os, tempfile
+import json, subprocess, os, tempfile, sys
 API = '2024-06-01-preview'
 B = 'https://management.azure.com/subscriptions/038b49c0-5a0c-46f7-bd34-41ee6d087b41/resourceGroups/allooloo-cmkg-shared/providers/Microsoft.ApiCenter/services/allooloo-apic/workspaces/default'
 def az(method, path, body=None):
@@ -12,8 +12,7 @@ def az(method, path, body=None):
     if r.returncode != 0: return {'error': (r.stderr or r.stdout).strip()[:300]}
     try: return json.loads(r.stdout) if r.stdout.strip() else {}
     except Exception: return {'raw': r.stdout[:200]}
-acct = json.loads(subprocess.run(['az', 'account', 'show', '-o', 'json'], capture_output=True, text=True, shell=True).stdout)
-assert acct['tenantId'].startswith('04a24e43'), 'wrong tenant — STOP'
+sys.path.insert(0, r'C:\ALLOOLOO\AZURE'); from az_guard import require_allooloo; require_allooloo()   # STANDING RULE Sept 13 2026: tenant + subscription + user, stop on mismatch
 DESC = ("What: KYP Agentic Trading with the Capital Markets Knowledge Graph — one public-record file per listed company across eleven national markets, "
         "identity through disclosure trail, each field carrying its source and the date it was read, served from the issuer's own jurisdiction over the "
         "Model Context Protocol and the Agent-to-Agent protocol. Why: So an agent acting for a licensed capital markets participant with a Know Your Product (KYP) "
