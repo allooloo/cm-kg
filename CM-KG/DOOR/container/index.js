@@ -46,9 +46,13 @@ async function blobJson(name) {
   try { const b = await container.getBlobClient(name).downloadToBuffer(); return JSON.parse(b.toString('utf8')); } catch (e) { if (e.statusCode === 404) return null; throw e; }
 }
 async function boot(force = false) {
+  // every ten minutes: index, facts and nodes reload together; each survives the others' failure, so a new facts.json or nodes.json is seen without a revision restart (PAUSE ORDER, Sept 13 2026)
   if (INDEX && !force && Date.now() - BOOTED < 600000) return;
-  try { const [i, f, n] = await Promise.all([blobJson('door/index.json'), blobJson('door/facts.json'), blobJson('door/nodes.json')]); if (i) { INDEX = i; FACTS = f || { nodes: {} }; NODES = n || []; BOOTED = Date.now(); BOOT_ERR = ''; } else BOOT_ERR = 'door/index.json not in the regional store'; }
-  catch (e) { BOOT_ERR = String(e.message || e); if (!INDEX) { INDEX = { ticker: {}, isin: {}, lei: {}, alias: {}, name: {}, cmr: {}, keys: [] }; FACTS = { nodes: {} }; NODES = []; } }
+  const [i, f, n] = await Promise.all([blobJson('door/index.json').catch(e => (BOOT_ERR = String(e.message || e), undefined)), blobJson('door/facts.json').catch(() => undefined), blobJson('door/nodes.json').catch(() => undefined)]);
+  if (i) { INDEX = i; BOOT_ERR = ''; } else if (!INDEX) { INDEX = { ticker: {}, isin: {}, lei: {}, alias: {}, name: {}, cmr: {}, keys: [] }; BOOT_ERR = BOOT_ERR || 'door/index.json not in the regional store'; }
+  if (f) FACTS = f; else if (!FACTS) FACTS = { nodes: {} };
+  if (n) NODES = n; else if (!NODES) NODES = [];
+  BOOTED = Date.now();
 }
 function lookup(kind, value) { const m = INDEX && INDEX[kind]; return (m && m[value]) || []; }
 function slug(t) { return String(t).replace(/[^A-Za-z0-9.\-]/g, '_'); }
