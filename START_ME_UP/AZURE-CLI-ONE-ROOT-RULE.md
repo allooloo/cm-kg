@@ -3,7 +3,7 @@
 1. **One root at a time on the Azure CLI.** The machine's `az` default context belongs to one estate at a time: Allooloo (`C:\ALLOOLOO`) or GreenCore (`C:\GREENCORE`).
 2. **Before any Azure write, every rail on either root confirms tenant, subscription and signed-in user match its own estate, and stops if not.** No write on a mismatch, no "set it and continue" inside a rail.
 3. **When switching roots, the thread that takes over sets the CLI context first and reports it** (tenant, subscription, user) in its own report before its first Azure call.
-4. Logged in both roots' start-me-up folders: this file, and `C:\GREENCORE\START_ME_UP\AZURE-CLI-ONE-ROOT-RULE.md` (same text).
+4. Logged in both roots' start-me-up folders (Azure CLI and, since the extension below, the GitHub account too): this file, and `C:\GREENCORE\START_ME_UP\AZURE-CLI-ONE-ROOT-RULE.md` (same text).
 
 ## Allooloo estate of record
 
@@ -14,3 +14,14 @@
 ## Why (the incident)
 
 On Sept 13 2026 the CLI context was found switched to the GreenCore tenant (a `mk@gsc-em.com` login from another window) two hours after a clean Allooloo run. The Allooloo rail's tenant assert stopped before any write; the context was set back and reported, then the writes ran. Nothing landed in the wrong estate.
+
+## GitHub account — same rule (CEO extension, Sept 13 2026)
+
+5. **Before any registry publish or git push, confirm the active GitHub account is the estate's own and switch if not, in the same command as the token read.** Allooloo = `allooloo`; GreenCore = `greencore-solutions`. The `gh` keyring holds both and the active account flips whenever the other estate logs in.
+   - Allooloo, one command: `gh auth switch --user allooloo && mcp-publisher login github --token "$(gh auth token)" && mcp-publisher publish` — the switch and the token read never run as separate steps.
+   - Pushes: `gh auth switch --user allooloo && git push …`; commits carry the estate identity (`-c user.name=allooloo -c user.email=268771525+allooloo@users.noreply.github.com`).
+   - Guard for rails: `C:\ALLOOLOO\AZUREz_guard.py` now also has `require_github('allooloo')` — reads `gh auth status`, switches to the estate's account if another is active, and stops if the account is not in the keyring.
+
+## Why (the second incident)
+
+On Sept 13 2026 the 0.12.1 registry publish came back 403 "permission to publish io.github.greencore-solutions/*": the active gh account had flipped to greencore-solutions since the 0.12.0 publish, and `gh auth token` handed out the wrong token. Switching in the same command fixed it.
