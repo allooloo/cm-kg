@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-12",
+ "as_of": "2026-09-13",
  "source": "START_ME_UP/NODE-SURFACES.md \u00a79 NUMBERS LOG (one line per sweep per node; counts from list_nodes after the store reload)",
  "lines": [
   {
@@ -141,6 +141,20 @@
    "records": "1874",
    "events": "124581",
    "note": "records +0\u00b7events +281 (sweep 2026-09-12)"
+  },
+  {
+   "node": "uk-cm-kg",
+   "date": "2026-09-11",
+   "records": "1570",
+   "events": "128191",
+   "note": "records +0\u00b7events -202 (sweep 2026-09-12)"
+  },
+  {
+   "node": "sg-cm-kg",
+   "date": "2026-09-12",
+   "records": "639",
+   "events": "3620",
+   "note": "first line (sweep 2026-09-13)"
   }
  ]
 }
