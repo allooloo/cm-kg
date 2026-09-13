@@ -16,7 +16,7 @@ if ($cc -eq 'us') {
   Step 'us job wait' { $deadline = (Get-Date).AddHours(4); do { Start-Sleep -Seconds 120; $st = az containerapp job execution list -g allooloo-cmkg-eastus -n cmkg-us-rail --query "[0].properties.status" -o tsv } while ($st -eq 'Running' -and (Get-Date) -lt $deadline); "us job status: $st" }
 } else {
   Step 'harvest (Width 1 refresh, 7-day window, new pond drop)' { Set-Location "$rails\$cc-width1"; & ".\run_refresh.ps1" }
-  Step 'door data' { Set-Location "$rails\door"; python load_nodes.py $cc }
+  Step 'door data' { Set-Location "$rails\door"; Set-Item -Path ("Env:AS_OF_" + $cc.ToUpper()) -Value (Get-Date -Format 'yyyy-MM-dd'); python load_nodes.py $cc }   # the node's date on the wire moves with the sweep (drop date = this sweep's drop)
   Step 'regional store reload' { Set-Location "$root\AZURE"; python provision_region.py $cc $region upload }
 }
 Step 'apex index + deploy' { Set-Location "$root\CM-KG\DOOR\apex"; python build_index.py; $env:CLOUDFLARE_API_TOKEN = (Get-Content "$root\AGENT KEYS\cloudflare-d1.txt" -TotalCount 1).Trim(); npx wrangler deploy 2>&1 | Select-String 'Uploaded|error'; Remove-Item Env:CLOUDFLARE_API_TOKEN }
