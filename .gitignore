@@ -16,3 +16,5 @@ CM-KG/ESTATE/.wrangler/
 CM-KG/DOOR/.tools/
 AZURE/certs/
 AGENT KEYS/
+
+CM-KG/RAILS/node_modules/

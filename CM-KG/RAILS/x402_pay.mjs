@@ -1,15 +1,14 @@
 // x402 test client for the CEO's funded wallet — 402 → signed EIP-3009 authorization → 200 + receipt.
-// The private key never goes through CC: put it in an env var from your own file and run this yourself.
-//   npm i x402-fetch viem            (once, in C:\ALLOOLOO\CM-KG\RAILS)
-//   set X402_PRIVATE_KEY=0x…          (a Base Sepolia wallet holding test USDC; Base mainnet for the trades route)
-//   node x402_pay.mjs https://agentic-x402.ai/api
+// The payer key is read from AGENT KEYS/x402-payer-key.txt (generated 2026-09-13, never printed); X402_PRIVATE_KEY in the env overrides.
+//   node x402_pay.mjs https://agentic-x402.ai/api          (deps x402-fetch + viem are installed in this folder)
 //   node x402_pay.mjs "https://agentic-x402.ai/api?record=uk-cm-kg/LSE/BARC"
 //   node x402_pay.mjs https://agentic-trades.ai/x402/record/uk-cm-kg/LSE/BARC      (Base mainnet, $0.01 real)
 // Prints the status, the PAYMENT-RESPONSE (tx hash, network, amount) and the receipt URL; never prints the key.
 import { wrapFetchWithPayment, decodeXPaymentResponse } from 'x402-fetch';
 import { privateKeyToAccount } from 'viem/accounts';
 const url = process.argv[2]; if (!url) { console.error('usage: node x402_pay.mjs <url>'); process.exit(2); }
-const pk = process.env.X402_PRIVATE_KEY; if (!pk) { console.error('X402_PRIVATE_KEY is not set'); process.exit(2); }
+import { readFileSync } from 'fs';
+let pk = process.env.X402_PRIVATE_KEY; if (!pk) { try { pk = readFileSync('C:/ALLOOLOO/AGENT KEYS/x402-payer-key.txt', 'utf8').trim(); } catch (e) { console.error('no key: set X402_PRIVATE_KEY or place AGENT KEYS/x402-payer-key.txt'); process.exit(2); } }
 const account = privateKeyToAccount(pk);
 console.log('payer', account.address);
 const paidFetch = wrapFetchWithPayment(fetch, account);
