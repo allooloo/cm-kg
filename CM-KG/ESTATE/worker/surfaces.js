@@ -14,7 +14,7 @@ const FOCUS = { ca: { buyer: 'investment dealers and wealth platforms under CIRO
   uk: { buyer: 'brokers, wealth managers and platforms under the FCA product governance rules (PROD); the compliance consultancies that serve them', duty: 'know the product and its target market, and show your work', pain: 'the same data floor across Main Market, AIM and Aquis, with RNS as the firehose', first: 'Dealer MCP access to the UK node + Disclosure as the feed', proof: 'served from UK South (London, United Kingdom); FCA NSM and Companies House as sources; nothing licensed on the wire' } };
 import { radarData, radarBody, radarCsv } from './radar.js';
 import { KYP_COPY, kypBody, kypFacts, kypLlms, kypVals } from './kyp.js';
-import { handlePaid, paidStats, handleApi, receiptJwks, receiptLookup } from './x402.js';
+import { handlePaid, paidStats, handleApi, receiptJwks, receiptLookup, openapi as x402Openapi } from './x402.js';
 import * as OAUTH from './oauth.js';
 
 const REGISTRY = 'registry.modelcontextprotocol.io · io.github.allooloo/cm-kg';
@@ -156,6 +156,7 @@ export default {
     if (c.kind === 'product' && c.product === 'x402') {
       if (p === '/api') { if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: headers({}, { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'PAYMENT-SIGNATURE, X-PAYMENT, content-type', 'access-control-allow-methods': 'GET, POST, OPTIONS' }) }); return handleApi(request, env, url); }
       if (p === '/x402/jwks.json') return json(await receiptJwks(env), { node: 'x402' }, 'public, max-age=300');
+      if (p === '/openapi.json') return json(x402Openapi(), { node: 'x402' }, 'public, max-age=3600');
       const rc = p.match(/^\/x402\/receipt\/([a-f0-9]{32})$/); if (rc) { const r = await receiptLookup(env, rc[1]); return r ? json(r, { node: 'x402' }, 'public, max-age=31536000, immutable') : notFound(['/x402/receipt/{nonce}'], { node: 'x402' }); }
     }
     const lic = c.kind === 'product' && c.product === 'trades' && p.match(/^\/licensed\/record\/([a-z]{2}-cm-kg)\/([A-Za-z\-]+)\/(.+)$/i);
@@ -219,7 +220,7 @@ export default {
     }
     if (c.kind === 'product') {
       const key = c.product; const pr = PRODUCTS[key]; const meta = { node: 'estate', as_of: today() }; const t = totals(ctx);
-      const paths = ['/', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt'].concat(key === 'radar' ? ['/radar.json', '/radar.csv'] : key === 'x402' ? ['/api', '/x402/jwks.json', '/x402/receipt/{nonce}'] : []);
+      const paths = ['/', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt'].concat(key === 'radar' ? ['/radar.json', '/radar.csv'] : key === 'x402' ? ['/api', '/openapi.json', '/x402/jwks.json', '/x402/receipt/{nonce}'] : []);
       if (key === 'radar' && (p === '/' || p === '/radar.json' || p === '/radar.csv')) {
         const st = await readStatus(env); const d = await radarData(ctx, env, url.origin, st); d.paid_calls = await paidStats(env);
         if (p === '/radar.json') return json(d, meta, 'public, max-age=60');
