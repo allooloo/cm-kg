@@ -7,7 +7,7 @@ import { APEX, OPERATOR, headers, json } from './chrome.js';
 
 const NETWORKS = {
   'base-sepolia': { caip2: 'eip155:84532', usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e', facilitator: 'https://x402.org/facilitator', explorer: 'https://sepolia.basescan.org/tx/' },
-  'base': { caip2: 'eip155:8453', usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', facilitator: 'https://api.cdp.coinbase.com/platform/v2/x402', explorer: 'https://basescan.org/tx/' }
+  'base': { caip2: 'eip155:8453', usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', facilitator: 'https://api.cdp.coinbase.com/platform/v2/x402', fallback: 'https://facilitator.payai.network', explorer: 'https://basescan.org/tx/' }
 };
 export const PRICE_ATOMIC = '10000';   // $0.01 in USDC (6 decimals)
 const b64 = o => btoa(unescape(encodeURIComponent(JSON.stringify(o))));
@@ -23,11 +23,32 @@ function paymentRequired(env, url, error) {
   const body = { x402Version: 2, error: error || 'Payment required: $0.01 USDC on ' + req.network, accepts: [req], resource: { url: req.resource, description: req.description, mimeType: req.mimeType }, free_route: `${APEX}${url.pathname.replace('/x402', '')}`, operator: OPERATOR };
   return new Response(JSON.stringify(body, null, 1), { status: 402, headers: headers({ node: 'x402' }, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'PAYMENT-REQUIRED': b64(body), 'access-control-allow-origin': '*', 'access-control-expose-headers': 'PAYMENT-REQUIRED, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE' }) });
 }
-async function facilitator(env, path, body) {
+// ---- Coinbase CDP per-request JWT (Secret API key: Ed25519 base64 64-byte secret, or legacy ES256 PEM). Never logged.
+const b64uBuf = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const b64uStr = str => b64uBuf(new TextEncoder().encode(str));
+const pemDer = pem => Uint8Array.from(atob(pem.replace(/-----[^-]+-----/g, '').replace(/\s+/g, '')), c => c.charCodeAt(0));
+async function cdpJwt(env, method, host, path) {
+  const id = env.CDP_API_KEY_ID, secret = env.CDP_API_KEY_SECRET; if (!id || !secret) return null;
+  const now = Math.floor(Date.now() / 1000); const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
+  const claims = { sub: id, iss: 'cdp', aud: ['cdp_service'], nbf: now, exp: now + 120, uris: [`${method} ${host}${path}`] };
+  let alg, key, sigAlg;
+  if (secret.includes('BEGIN')) { alg = 'ES256'; key = await crypto.subtle.importKey('pkcs8', pemDer(secret), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']); sigAlg = { name: 'ECDSA', hash: 'SHA-256' }; }
+  else { alg = 'EdDSA'; const raw = Uint8Array.from(atob(secret), c => c.charCodeAt(0)); const seed = raw.slice(0, 32); const pkcs8 = new Uint8Array([0x30, 0x2e, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x04, 0x22, 0x04, 0x20, ...seed]); key = await crypto.subtle.importKey('pkcs8', pkcs8, { name: 'Ed25519' }, false, ['sign']); sigAlg = { name: 'Ed25519' }; }
+  const h = b64uStr(JSON.stringify({ alg, kid: id, typ: 'JWT', nonce })); const p = b64uStr(JSON.stringify(claims));
+  const sig = await crypto.subtle.sign(sigAlg, key, new TextEncoder().encode(`${h}.${p}`));
+  return `${h}.${p}.${b64uBuf(sig)}`;
+}
+export function facilitatorUrl(env) {
   const net = NETWORKS[env.X402_NETWORK || 'base-sepolia'] || NETWORKS['base-sepolia'];
+  if (env.X402_FACILITATOR) return env.X402_FACILITATOR;
+  if (net.fallback && !(env.CDP_API_KEY_ID && env.CDP_API_KEY_SECRET)) return net.fallback;
+  return net.facilitator;
+}
+async function facilitator(env, path, body) {
+  const base = facilitatorUrl(env); const u = new URL(base + path);
   const h = { 'content-type': 'application/json', accept: 'application/json' };
-  if (net.facilitator.includes('coinbase') && env.CDP_API_KEY) h['Authorization'] = 'Bearer ' + env.CDP_API_KEY;
-  const r = await fetch(net.facilitator + path, { method: 'POST', headers: h, body: JSON.stringify(body), signal: AbortSignal.timeout(30000) });
+  if (u.hostname.endsWith('coinbase.com')) { const jwt = await cdpJwt(env, 'POST', u.hostname, u.pathname); if (jwt) h['Authorization'] = 'Bearer ' + jwt; }
+  const r = await fetch(u.toString(), { method: 'POST', headers: h, body: JSON.stringify(body), signal: AbortSignal.timeout(30000) });
   let j = null; try { j = await r.json(); } catch (e) { j = { error: 'facilitator answered ' + r.status }; }
   return { status: r.status, body: j };
 }
@@ -51,5 +72,5 @@ export async function handlePaid(request, env, url, m) {
   return new Response(recBody, { status: rec.status, headers: headers({ node: 'x402' }, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'PAYMENT-RESPONSE': enc, 'X-PAYMENT-RESPONSE': enc, 'access-control-allow-origin': '*', 'access-control-expose-headers': 'PAYMENT-REQUIRED, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE' }) });
 }
 export async function paidStats(env) {
-  try { const c = parseInt((await env.STATUS.get('x402:count')) || '0', 10); const last = await env.STATUS.get('x402:last', 'json'); return { paid_calls: c, last, price_usdc: '0.01', route: 'https://agentic-trades.ai/x402/record/{node}/{exchange}/{code}', network: (NETWORKS[env.X402_NETWORK || 'base-sepolia'] || NETWORKS['base-sepolia']).caip2, receiver_configured: !!env.X402_PAYTO, source: 'facilitator settlement receipts counted in KV' }; } catch (e) { return { paid_calls: 0, last: null, source: 'KV unavailable' }; }
+  try { const c = parseInt((await env.STATUS.get('x402:count')) || '0', 10); const last = await env.STATUS.get('x402:last', 'json'); return { paid_calls: c, last, price_usdc: '0.01', facilitator: facilitatorUrl(env), route: 'https://agentic-trades.ai/x402/record/{node}/{exchange}/{code}', network: (NETWORKS[env.X402_NETWORK || 'base-sepolia'] || NETWORKS['base-sepolia']).caip2, receiver_configured: !!env.X402_PAYTO, source: 'facilitator settlement receipts counted in KV' }; } catch (e) { return { paid_calls: 0, last: null, source: 'KV unavailable' }; }
 }
