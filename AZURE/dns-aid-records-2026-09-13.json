@@ -3,219 +3,241 @@
   [
    "SVCB",
    "_index._agents.allooloo.io",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.allooloo.io",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.allooloo.io",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.allooloo.io",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "kyp-model.ai": [
   [
    "SVCB",
    "_index._agents.kyp-model.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.kyp-model.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.kyp-model.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.kyp-model.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "agentic-trades.ai": [
   [
    "SVCB",
    "_index._agents.agentic-trades.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.agentic-trades.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.agentic-trades.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.agentic-trades.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "agentic-ask.ai": [
   [
    "SVCB",
    "_index._agents.agentic-ask.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.agentic-ask.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.agentic-ask.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.agentic-ask.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "agentic-coverage.ai": [
   [
    "SVCB",
    "_index._agents.agentic-coverage.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.agentic-coverage.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.agentic-coverage.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.agentic-coverage.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "agentic-esg.ai": [
   [
    "SVCB",
    "_index._agents.agentic-esg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.agentic-esg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.agentic-esg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.agentic-esg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "agentic-issuers.ai": [
   [
    "SVCB",
    "_index._agents.agentic-issuers.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.agentic-issuers.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.agentic-issuers.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.agentic-issuers.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "agentic-disclosure.ai": [
   [
    "SVCB",
    "_index._agents.agentic-disclosure.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.agentic-disclosure.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.agentic-disclosure.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.agentic-disclosure.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "agentic-registries.ai": [
   [
    "SVCB",
    "_index._agents.agentic-registries.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.agentic-registries.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.agentic-registries.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.agentic-registries.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "agentic-radar.ai": [
   [
    "SVCB",
    "_index._agents.agentic-radar.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.agentic-radar.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.agentic-radar.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.agentic-radar.ai",
+   "exists \u2014 left as is"
+  ]
+ ],
+ "agentic-x402.ai": [
+  [
+   "SVCB",
+   "_index._agents.agentic-x402.ai",
+   "created"
+  ],
+  [
+   "TXT",
+   "_index._agents.agentic-x402.ai",
+   "created"
+  ],
+  [
+   "SVCB",
+   "_mcp._agents.agentic-x402.ai",
+   "created"
+  ],
+  [
+   "SVCB",
+   "_a2a._agents.agentic-x402.ai",
    "created"
   ]
  ],
@@ -223,254 +245,254 @@
   [
    "SVCB",
    "_index._agents.ca-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.ca-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.ca-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.ca-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "uk-cm-kg.ai": [
   [
    "SVCB",
    "_index._agents.uk-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.uk-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.uk-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.uk-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "us-cm-kg.ai": [
   [
    "SVCB",
    "_index._agents.us-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.us-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.us-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.us-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "de-cm-kg.ai": [
   [
    "SVCB",
    "_index._agents.de-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.de-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.de-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.de-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "fr-cm-kg.ai": [
   [
    "SVCB",
    "_index._agents.fr-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.fr-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.fr-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.fr-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "nl-cm-kg.ai": [
   [
    "SVCB",
    "_index._agents.nl-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.nl-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.nl-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.nl-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "ch-cm-kg.ai": [
   [
    "SVCB",
    "_index._agents.ch-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.ch-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.ch-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.ch-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "au-cm-kg.ai": [
   [
    "SVCB",
    "_index._agents.au-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.au-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.au-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.au-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "sg-cm-kg.ai": [
   [
    "SVCB",
    "_index._agents.sg-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.sg-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.sg-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.sg-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "jp-cm-kg.ai": [
   [
    "SVCB",
    "_index._agents.jp-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.jp-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.jp-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.jp-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "kr-cm-kg.ai": [
   [
    "SVCB",
    "_index._agents.kr-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.kr-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_mcp._agents.kr-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "SVCB",
    "_a2a._agents.kr-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ],
  "hk-cm-kg.ai": [
   [
    "SVCB",
    "_index._agents.hk-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ],
   [
    "TXT",
    "_index._agents.hk-cm-kg.ai",
-   "created"
+   "exists \u2014 left as is"
   ]
  ]
 }

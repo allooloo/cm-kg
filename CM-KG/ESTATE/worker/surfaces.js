@@ -14,7 +14,7 @@ const FOCUS = { ca: { buyer: 'investment dealers and wealth platforms under CIRO
   uk: { buyer: 'brokers, wealth managers and platforms under the FCA product governance rules (PROD); the compliance consultancies that serve them', duty: 'know the product and its target market, and show your work', pain: 'the same data floor across Main Market, AIM and Aquis, with RNS as the firehose', first: 'Dealer MCP access to the UK node + Disclosure as the feed', proof: 'served from UK South (London, United Kingdom); FCA NSM and Companies House as sources; nothing licensed on the wire' } };
 import { radarData, radarBody, radarCsv } from './radar.js';
 import { KYP_COPY, kypBody, kypFacts, kypLlms, kypVals } from './kyp.js';
-import { handlePaid, paidStats } from './x402.js';
+import { handlePaid, paidStats, handleApi, receiptJwks, receiptLookup } from './x402.js';
 import * as OAUTH from './oauth.js';
 
 const REGISTRY = 'registry.modelcontextprotocol.io · io.github.allooloo/cm-kg';
@@ -37,7 +37,7 @@ function classify(host) {
   if (h === 'kyp-model.ai') return { kind: 'kyp' };
   if (/^(kyp-model|kypmodel)\.(com|org|io)$/.test(h)) return { kind: 'redirect', canonical: 'https://kyp-model.ai', status: 301 };   // six kyp zones → 301 → kyp-model.ai, path preserved, one hop (CEO, Sept 12 2026)   // CEO forward, Sept 12 2026: allooloo.ai + www → 308 → allooloo.io, path + query kept
   if ((m = h.match(/^([a-z]{2})-cm-kg\.(ai|org|com)$/)) && NODE_DATA[m[1]]) return { kind: 'node', cc: m[1], tld: m[2], canonical: m[2] === 'ai' ? null : `https://${m[1]}-cm-kg.ai` };
-  if ((m = h.match(/^agentic-([a-z]+)\.(ai|com|org|io)$/)) && PRODUCTS[m[1]]) return { kind: 'product', product: m[1], tld: m[2], canonical: m[2] === 'ai' ? null : `https://agentic-${m[1]}.ai` };
+  if ((m = h.match(/^agentic-([a-z0-9]+)\.(ai|com|org|io)$/)) && PRODUCTS[m[1]]) return { kind: 'product', product: m[1], tld: m[2], canonical: m[2] === 'ai' ? null : `https://agentic-${m[1]}.ai` };
   if (h === 'capitalmarketsknowledgegraph.ai') return { kind: 'root', role: 'graph' };
   if (h === 'capitalmarketsknowledgegraph.org') return { kind: 'root', role: 'standard' };
   if (h === 'capitalmarketsknowledgegraph.com') return { kind: 'redirect', canonical: 'https://capitalmarketsknowledgegraph.ai' };
@@ -152,6 +152,12 @@ export default {
       if (p.startsWith('/oauth/register/') && request.method === 'GET') { const v = await OAUTH.verify(request, env); const id = p.split('/').pop(); if (!v.ok || v.claims.sub !== id) return OAUTH.challenge(host, v.error); const ci = await OAUTH.clientInfo(env, id); return ci ? json(ci, { node: 'registry' }, 'no-store') : notFound([], { node: 'registry' }); }
       if (p === '/registry/whoami') { const v = await OAUTH.verify(request, env); if (!v.ok) return OAUTH.challenge(host, v.error); return json({ licensed: true, ...v.claims, note: 'a licensed call; receipted in the region of the call' }, { node: 'registry' }, 'no-store'); }
     }
+    // AGENTIC-X402.AI (23rd surface): the paid endpoint, the receipt key and the receipt resolver
+    if (c.kind === 'product' && c.product === 'x402') {
+      if (p === '/api') { if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: headers({}, { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'PAYMENT-SIGNATURE, X-PAYMENT, content-type', 'access-control-allow-methods': 'GET, POST, OPTIONS' }) }); return handleApi(request, env, url); }
+      if (p === '/x402/jwks.json') return json(await receiptJwks(env), { node: 'x402' }, 'public, max-age=300');
+      const rc = p.match(/^\/x402\/receipt\/([a-f0-9]{32})$/); if (rc) { const r = await receiptLookup(env, rc[1]); return r ? json(r, { node: 'x402' }, 'public, max-age=31536000, immutable') : notFound(['/x402/receipt/{nonce}'], { node: 'x402' }); }
+    }
     const lic = c.kind === 'product' && c.product === 'trades' && p.match(/^\/licensed\/record\/([a-z]{2}-cm-kg)\/([A-Za-z\-]+)\/(.+)$/i);
     if (lic) { const v = await OAUTH.verify(request, env); if (!v.ok) return OAUTH.challenge(host, v.error); const r = await fetch(`${APEX}/record/${lic[1]}/${lic[2]}/${lic[3]}`, { headers: { accept: 'application/json' } }); return new Response(await r.text(), { status: r.status, headers: headers({ node: 'registry' }, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'X-Licensed-Client': v.claims.sub }) }); }
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method Not Allowed', { status: 405, headers: headers({}, { 'content-type': 'text/plain' }) });
@@ -213,7 +219,7 @@ export default {
     }
     if (c.kind === 'product') {
       const key = c.product; const pr = PRODUCTS[key]; const meta = { node: 'estate', as_of: today() }; const t = totals(ctx);
-      const paths = ['/', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt'].concat(key === 'radar' ? ['/radar.json', '/radar.csv'] : []);
+      const paths = ['/', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt'].concat(key === 'radar' ? ['/radar.json', '/radar.csv'] : key === 'x402' ? ['/api', '/x402/jwks.json', '/x402/receipt/{nonce}'] : []);
       if (key === 'radar' && (p === '/' || p === '/radar.json' || p === '/radar.csv')) {
         const st = await readStatus(env); const d = await radarData(ctx, env, url.origin, st); d.paid_calls = await paidStats(env);
         if (p === '/radar.json') return json(d, meta, 'public, max-age=60');

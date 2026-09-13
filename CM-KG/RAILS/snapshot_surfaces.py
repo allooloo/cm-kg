@@ -4,11 +4,11 @@ Usage: python snapshot_surfaces.py [cc ...]   (no args: every surface — 12 nod
 import os, sys, datetime, requests
 ROOT = r'C:\ALLOOLOO\CM-KG\POND\estate\surfaces'
 NODES = ['ca', 'us', 'uk', 'fr', 'nl', 'ch', 'de', 'au', 'sg', 'jp', 'kr', 'hk']
-PRODUCTS = ['trades', 'ask', 'coverage', 'esg', 'issuers', 'disclosure', 'registries', 'radar']
+PRODUCTS = ['trades', 'ask', 'coverage', 'esg', 'issuers', 'disclosure', 'registries', 'radar', 'x402']
 def hosts(args):
     if args: return [f'{cc}-cm-kg.ai' for cc in args]
     return [f'{cc}-cm-kg.ai' for cc in NODES] + [f'agentic-{p}.ai' for p in PRODUCTS] + ['allooloo.io', 'kyp-model.ai', 'capitalmarketsknowledgegraph.ai', 'cm-record.org']
-PATHS = {'allooloo.io': ['/', '/status', '/terms', '/privacy', '/security', '/no-cookies', '/llms.txt', '/facts.json', '/status.json'], 'agentic-radar.ai': ['/', '/radar.json', '/llms.txt', '/facts.json']}
+PATHS = {'allooloo.io': ['/', '/status', '/terms', '/privacy', '/security', '/no-cookies', '/llms.txt', '/facts.json', '/status.json'], 'agentic-radar.ai': ['/', '/radar.json', '/llms.txt', '/facts.json'], 'agentic-x402.ai': ['/', '/api', '/x402/jwks.json', '/llms.txt', '/facts.json', '/.well-known/agent-card.json']}
 day = datetime.date.today().isoformat(); d = os.path.join(ROOT, day); n = 1
 while os.path.exists(d): n += 1; d = os.path.join(ROOT, f'{day}-{n}')
 os.makedirs(d); count = 0

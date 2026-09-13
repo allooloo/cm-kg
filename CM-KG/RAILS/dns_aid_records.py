@@ -17,7 +17,7 @@ def cf(path, method='GET', body=None):
 APEX_MCP, APEX_AGENT = 'mcp.capitalmarketsknowledgegraph.ai', 'agent.capitalmarketsknowledgegraph.ai'
 NODES = ['ca', 'uk', 'us', 'de', 'fr', 'nl', 'ch', 'au', 'sg', 'jp', 'kr', 'hk']
 ZONES = {'allooloo.io': (APEX_MCP, APEX_AGENT), 'kyp-model.ai': (APEX_MCP, APEX_AGENT)}
-for p in ['trades', 'ask', 'coverage', 'esg', 'issuers', 'disclosure', 'registries', 'radar']: ZONES[f'agentic-{p}.ai'] = (APEX_MCP, APEX_AGENT)
+for p in ['trades', 'ask', 'coverage', 'esg', 'issuers', 'disclosure', 'registries', 'radar', 'x402']: ZONES[f'agentic-{p}.ai'] = (APEX_MCP, APEX_AGENT)
 for cc in NODES: ZONES[f'{cc}-cm-kg.ai'] = (None, None) if cc == 'hk' else (f'mcp.{cc}-cm-kg.ai', f'agent.{cc}-cm-kg.ai')
 SVC = 'alpn="h2" port=443'
 out = {}; created = skipped = failed = 0
