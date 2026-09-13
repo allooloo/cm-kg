@@ -230,6 +230,11 @@ def main():
     index = {'ticker': {}, 'isin': {}, 'lei': {}, 'alias': {}, 'name': {}, 'keys': []}; facts_nodes = {}
     for sub in ('records', 'events'): os.makedirs(os.path.join(OUT, sub), exist_ok=True)
     for cc in want: load_node(cc, index, facts_nodes)
+    # facts.json is the estate's, not this run's: keep every node not loaded in this run from the previous file (a per-node sweep must not wipe the others' facts)
+    _pf=os.path.join(OUT, 'facts.json')
+    if os.path.exists(_pf):
+        for _k,_v in (json.load(open(_pf, encoding='utf-8')).get('nodes') or {}).items():
+            if _k not in facts_nodes: facts_nodes[_k]=_v
     json.dump(index, open(os.path.join(OUT, 'index.json'), 'w', encoding='utf-8'), separators=(',', ':'))
     facts = {'as_of': max(v['as_of'] for v in facts_nodes.values()), 'records': sum(v['records'] for v in facts_nodes.values()), 'events': sum(v['events'] for v in facts_nodes.values()), 'nodes': facts_nodes,
              'source': 'public-record', 'operator': 'Allooloo Technologies Corp.', 'store': 'Cloudflare Workers Static Assets (one JSON per record and per issuer events)',
