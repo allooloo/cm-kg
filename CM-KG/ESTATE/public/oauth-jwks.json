@@ -1,0 +1,13 @@
+{
+ "keys": [
+  {
+   "kty": "EC",
+   "x": "WWCCWGKrVU2odgkkLQv5HlfPZTZKVYWvcENngynB4i4",
+   "y": "Qv8aIp6e83LFnb9Nw2-pb9l7ExXFIxJFHjELE8CLY_g",
+   "crv": "P-256",
+   "kid": "allooloo-registry-2026-09-13",
+   "alg": "ES256",
+   "use": "sig"
+  }
+ ]
+}

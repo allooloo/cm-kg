@@ -14,6 +14,8 @@ const FOCUS = { ca: { buyer: 'investment dealers and wealth platforms under CIRO
   uk: { buyer: 'brokers, wealth managers and platforms under the FCA product governance rules (PROD); the compliance consultancies that serve them', duty: 'know the product and its target market, and show your work', pain: 'the same data floor across Main Market, AIM and Aquis, with RNS as the firehose', first: 'Dealer MCP access to the UK node + Disclosure as the feed', proof: 'served from UK South (London, United Kingdom); FCA NSM and Companies House as sources; nothing licensed on the wire' } };
 import { radarData, radarBody, radarCsv } from './radar.js';
 import { KYP_COPY, kypBody, kypFacts, kypLlms, kypVals } from './kyp.js';
+import { handlePaid, paidStats } from './x402.js';
+import * as OAUTH from './oauth.js';
 
 const REGISTRY = 'registry.modelcontextprotocol.io · io.github.allooloo/cm-kg';
 let LIVE = null, LIVE_AT = 0;
@@ -132,8 +134,22 @@ export default {
     const url = new URL(request.url); const host = url.hostname; const c = classify(host); const apex = host.replace(/^www\./, '');
     if (c.kind === 'redirect' || c.canonical) return Response.redirect(c.canonical + url.pathname + url.search, c.status || 301);
     if (host !== apex) return Response.redirect(`https://${apex}${url.pathname}${url.search}`, 301);
-    if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method Not Allowed', { status: 405, headers: headers({}, { 'content-type': 'text/plain' }) });
     const p = url.pathname.replace(/\/+$/, '') || '/';
+    // x402 paid route (agentic-trades.ai only): the same record as the free apex route, $0.01 USDC on Base; free routes untouched
+    const paid = c.kind === 'product' && c.product === 'trades' && p.match(/^\/x402\/record\/([a-z]{2}-cm-kg)\/([A-Za-z\-]+)\/(.+)$/i);
+    if (paid) { if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: headers({}, { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'PAYMENT-SIGNATURE, X-PAYMENT, content-type', 'access-control-allow-methods': 'GET, OPTIONS' }) }); return handlePaid(request, env, url, paid); }
+    // REGISTRIES GATE (TO 100): the authorization server on agentic-registries.ai; licensed routes gated by a bearer token, public routes untouched
+    if (c.kind === 'product' && c.product === 'registries') {
+      if (p === '/oauth/register' && request.method === 'POST') return OAUTH.register(request, env);
+      if (p === '/oauth/token' && request.method === 'POST') return OAUTH.token(request, env);
+      if (p === '/oauth/introspect' && request.method === 'POST') return OAUTH.introspect(request, env);
+      if (p === '/oauth/jwks.json') return json(await OAUTH.jwks(env), { node: 'registry' }, 'public, max-age=300');
+      if (p.startsWith('/oauth/register/') && request.method === 'GET') { const v = await OAUTH.verify(request, env); const id = p.split('/').pop(); if (!v.ok || v.claims.sub !== id) return OAUTH.challenge(host, v.error); const ci = await OAUTH.clientInfo(env, id); return ci ? json(ci, { node: 'registry' }, 'no-store') : notFound([], { node: 'registry' }); }
+      if (p === '/registry/whoami') { const v = await OAUTH.verify(request, env); if (!v.ok) return OAUTH.challenge(host, v.error); return json({ licensed: true, ...v.claims, note: 'a licensed call; receipted in the region of the call' }, { node: 'registry' }, 'no-store'); }
+    }
+    const lic = c.kind === 'product' && c.product === 'trades' && p.match(/^\/licensed\/record\/([a-z]{2}-cm-kg)\/([A-Za-z\-]+)\/(.+)$/i);
+    if (lic) { const v = await OAUTH.verify(request, env); if (!v.ok) return OAUTH.challenge(host, v.error); const r = await fetch(`${APEX}/record/${lic[1]}/${lic[2]}/${lic[3]}`, { headers: { accept: 'application/json' } }); return new Response(await r.text(), { status: r.status, headers: headers({ node: 'registry' }, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'X-Licensed-Client': v.claims.sub }) }); }
+    if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method Not Allowed', { status: 405, headers: headers({}, { 'content-type': 'text/plain' }) });
     if (ICONS.includes(p)) { const a = await env.ASSETS.fetch(new Request(url.origin + p)); const h = new Headers(a.headers); for (const [k, v] of Object.entries(headers({}))) h.set(k, v); h.set('cache-control', p === '/estate.css' ? 'public, max-age=300' : 'public, max-age=86400'); return new Response(a.body, { status: a.status, headers: h }); }
     if (p === '/robots.txt') return text(ROBOTS(host), {}, 'text/plain; charset=utf-8', 'public, max-age=86400');
     if (p === '/.well-known/security.txt') return text(SECURITY(host), {}, 'text/plain; charset=utf-8', 'public, max-age=86400');
@@ -144,6 +160,7 @@ export default {
     const label = c.kind === 'node' ? `${NODE_DATA[c.cc].country} node — Capital Markets Knowledge Graph` : c.kind === 'product' ? PRODUCTS[c.product].title : c.kind === 'site' ? 'Allooloo Technologies Corp. — Capital Markets Knowledge Graph' : c.kind === 'kyp' ? KYP_COPY.title : `${host} — Capital Markets Knowledge Graph`;
     const desc0 = c.kind === 'node' ? fill(NODE_DATA[c.cc].meta, nodeVals(c.cc, live)) : c.kind === 'product' ? PRODUCTS[c.product].reason : c.kind === 'site' ? homeMeta(ctx) : c.kind === 'kyp' ? KYP_COPY.meta.replace(/\{records\}/g, kypVals(ctx).records).replace(/\{events\}/g, kypVals(ctx).events).replace(/\{live_nodes\}/g, kypVals(ctx).live_nodes) : 'Estate host of the Capital Markets Knowledge Graph; the apex router answers for every market.';
     const HTML = (body, m) => AEO.wantsMarkdown(request) ? markdown(AEO.toMarkdown(body, host), m, LINK) : html(body, m, LINK);
+    if (p === '/.well-known/oauth-authorization-server' || p === '/.well-known/openid-configuration') return json(OAUTH.metadata(), kmeta, 'public, max-age=3600');
     if (p === '/.well-known/api-catalog') return json(AEO.apiCatalog(host, T), kmeta, 'public, max-age=3600', 200, 'application/linkset+json');
     if (p === '/.well-known/oauth-protected-resource') return json(AEO.protectedResource(host, T), kmeta, 'public, max-age=3600');
     if (p === '/auth.md') return markdown(AEO.authMd(host, T), kmeta, LINK);
@@ -193,7 +210,7 @@ export default {
       const key = c.product; const pr = PRODUCTS[key]; const meta = { node: 'estate', as_of: today() }; const t = totals(ctx);
       const paths = ['/', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt'].concat(key === 'radar' ? ['/radar.json', '/radar.csv'] : []);
       if (key === 'radar' && (p === '/' || p === '/radar.json' || p === '/radar.csv')) {
-        const st = await readStatus(env); const d = await radarData(ctx, env, url.origin, st);
+        const st = await readStatus(env); const d = await radarData(ctx, env, url.origin, st); d.paid_calls = await paidStats(env);
         if (p === '/radar.json') return json(d, meta, 'public, max-age=60');
         if (p === '/radar.csv') return text(radarCsv(d), meta, 'text/csv; charset=utf-8', 'public, max-age=60');
         const body = page({ host, title: pr.title, desc: pr.reason, h1: pr.h1, state: 'live', asOf: d.as_of.slice(0, 10), version: 'v1.0 · ' + SURFACES_VERSION, body: `<p class="lead">${esc(pr.reason)}</p>${radarBody(ctx, host, d)}`, mono: true });

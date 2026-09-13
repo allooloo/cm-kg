@@ -29,7 +29,7 @@
    "AIM",
    "AQSE"
   ],
-  "events": 128393,
+  "events": 128191,
   "issuers_with_events": 1227
  },
  {
@@ -45,7 +45,7 @@
    "NSX",
    "TMX-AU"
   ],
-  "events": 124300,
+  "events": 124581,
   "issuers_with_events": 1777
  },
  {
@@ -54,13 +54,13 @@
   "registry": "sg-cm-kg.org",
   "door": "https://mcp.sg-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-11",
+  "as_of": "2026-09-12",
   "records": 639,
   "exchanges": [
    "SGX",
    "SGX-CATALIST"
   ],
-  "events": 3510,
+  "events": 3620,
   "issuers_with_events": 554
  },
  {
@@ -75,8 +75,8 @@
    "SIX",
    "BX"
   ],
-  "events": 1385,
-  "issuers_with_events": 192
+  "events": 1512,
+  "issuers_with_events": 193
  },
  {
   "node": "de-cm-kg",
@@ -90,8 +90,8 @@
    "XETRA",
    "EUREX"
   ],
-  "events": 35403,
-  "issuers_with_events": 3324
+  "events": 35570,
+  "issuers_with_events": 3329
  },
  {
   "node": "fr-cm-kg",
@@ -106,8 +106,8 @@
    "ALXP",
    "XMLI"
   ],
-  "events": 9999,
-  "issuers_with_events": 440
+  "events": 10469,
+  "issuers_with_events": 451
  },
  {
   "node": "nl-cm-kg",
@@ -121,7 +121,7 @@
    "XAMS",
    "ALXA"
   ],
-  "events": 2707,
+  "events": 2742,
   "issuers_with_events": 84
  },
  {
