@@ -18,4 +18,20 @@ def require_allooloo():
     if not ok: sys.exit('az_guard: CLI context is not the Allooloo estate — STOP. ' + line + f'. Expected tenant {TENANT}, subscription {SUBSCRIPTION}, user *@{USER_SUFFIX}. Take the CLI back with: az account set --subscription {SUBSCRIPTION}; az account show')
     print(line + ' — Allooloo, confirmed')
     return c
-if __name__ == '__main__': require_allooloo()
+
+def require_github(account='allooloo'):
+    """Before any registry publish or push: the active gh account must be the estate's own; switch if another is active; stop if it is not in the keyring."""
+    st = subprocess.run(['gh', 'auth', 'status'], capture_output=True, text=True, shell=True); out = (st.stdout or '') + (st.stderr or '')
+    if f'account {account}' not in out: sys.exit(f'gh_guard: GitHub account {account} is not in the gh keyring — STOP (gh auth login as {account})')
+    active = None
+    for block in out.split('Logged in to github.com account')[1:]:
+        name = block.split()[0]
+        if 'Active account: true' in block: active = name
+    if active != account:
+        sw = subprocess.run(['gh', 'auth', 'switch', '--user', account], capture_output=True, text=True, shell=True)
+        if sw.returncode != 0: sys.exit(f'gh_guard: could not switch gh to {account} — STOP: {(sw.stderr or sw.stdout)[:120]}')
+        print(f'gh account: was {active}, switched to {account}')
+    else: print(f'gh account: {account} — active, confirmed')
+    return account
+
+if __name__ == '__main__': require_allooloo(); require_github('allooloo')
