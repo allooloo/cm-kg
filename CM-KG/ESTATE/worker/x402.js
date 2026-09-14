@@ -13,9 +13,11 @@ export const PRICE_ATOMIC = '10000';   // $0.01 in USDC (6 decimals)
 const b64 = o => btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 const unb64 = s => JSON.parse(decodeURIComponent(escape(atob(s))));
 
-export function netKey(env, url) { return url && url.hostname === 'agentic-x402.ai' ? (env.X402_API_NETWORK || 'base-sepolia') : (env.X402_NETWORK || 'base-sepolia'); }
+export function netKey(env, url) { return url && url.pathname === '/api' ? (env.X402_API_NETWORK || 'base-sepolia') : (env.X402_NETWORK || 'base-sepolia'); }   // every /api door (all surfaces) rides the API network; the trades record route rides X402_NETWORK
 const IS_API = url => url && url.hostname === 'agentic-x402.ai';
+const IS_SURFACE_API = url => url && url.pathname === '/api' && url.hostname !== 'agentic-x402.ai';
 export function describe(url) {
+  if (IS_SURFACE_API(url)) return `One paid call on ${url.hostname} for $0.01 USDC: the surface's own statement of record (a market node: its list_nodes line; a product: its record of record; allooloo.io: the estate scale block), public-record only, with an EdDSA-signed receipt that resolves forever at https://${url.hostname}/x402/receipt/{nonce}. Doctrine: https://agentic-x402.ai/.`;
   return IS_API(url)
     ? 'Allooloo Capital Markets estate index for $0.01 USDC: every market node (Canada, United Kingdom, United States, Germany, France, Netherlands, Switzerland, Australia, Singapore, Japan, South Korea), issuer and disclosure-event counts, drop date; add ?record=node/exchange/code (e.g. uk-cm-kg/LSE/BARC) for one Capital Markets Record, sourced per field, public-record only. Every settlement answers with an EdDSA-signed receipt that resolves forever at /x402/receipt/{nonce}.'
     : 'One Capital Markets Record for $0.01 USDC — a listed issuer\'s identity, registry identifiers, aliases, listing, disclosure events, auditor and transfer agent, each field sourced to the public filing, served from the node of the issuer\'s own market (eleven markets, in-country). Path: /x402/record/{node}/{exchange}/{code}, e.g. uk-cm-kg/LSE/BARC. The same record the free MCP door serves; the payment buys the receipted call.';
@@ -23,6 +25,7 @@ export function describe(url) {
 // x402 Bazaar discovery extension (CDP facilitator indexes the resource on its first settlement)
 export function bazaar(url) {
   const api = IS_API(url);
+  if (IS_SURFACE_API(url)) return { bazaar: { info: { input: { type: 'http', method: 'GET' }, output: { type: 'json', example: { receipt: { receipt_url: `https://${url.hostname}/x402/receipt/{nonce}`, settled: true, amount_usdc: '0.01' }, data: { surface: url.hostname, statement: 'the surface\'s record of record' } } } }, schema: { '$schema': 'https://json-schema.org/draft/2020-12/schema', type: 'object', properties: { input: { type: 'object', properties: { type: { type: 'string', const: 'http' }, method: { type: 'string', enum: ['GET', 'HEAD', 'DELETE'] } }, required: ['type', 'method'] }, output: { type: 'object' } }, required: ['input'] } } };
   const input = api
     ? { type: 'http', method: 'GET', queryParams: { record: { type: 'string', required: false, description: 'optional node/exchange/code — returns that Capital Markets Record instead of the estate index', example: 'uk-cm-kg/LSE/BARC' } } }
     : { type: 'http', method: 'GET', pathParams: { node: { type: 'string', required: true, description: 'market node, e.g. uk-cm-kg', example: 'uk-cm-kg' }, exchange: { type: 'string', required: true, description: 'exchange code, e.g. LSE', example: 'LSE' }, code: { type: 'string', required: true, description: 'ticker, ISIN or LEI', example: 'BARC' } } };
@@ -38,7 +41,7 @@ export function requirements(env, url) {
 }
 function paymentRequired(env, url, error) {
   const req = requirements(env, url);
-  const body = { x402Version: 2, error: error || 'Payment required: $0.01 USDC on ' + req.network, accepts: [req], resource: { url: req.resource, description: req.description, mimeType: req.mimeType }, extensions: bazaar(url), free_route: `${APEX}${url.pathname.replace('/x402', '')}`, operator: OPERATOR };
+  const body = { x402Version: 2, error: error || 'Payment required: $0.01 USDC on ' + req.network, accepts: [req], resource: { url: req.resource, description: req.description, mimeType: req.mimeType }, extensions: bazaar(url), free_route: url.pathname === '/api' ? `https://${url.hostname}/facts.json` : `${APEX}${url.pathname.replace('/x402', '')}`, operator: OPERATOR };
   return new Response(JSON.stringify(body, null, 1), { status: 402, headers: headers({ node: 'x402' }, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'PAYMENT-REQUIRED': b64(body), 'access-control-allow-origin': '*', 'access-control-expose-headers': 'PAYMENT-REQUIRED, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE' }) });
 }
 // ---- Coinbase CDP per-request JWT (Secret API key: Ed25519 base64 64-byte secret, or legacy ES256 PEM). Never logged.
@@ -102,8 +105,9 @@ async function signReceipt(env, claims) {
   const sig = await crypto.subtle.sign({ name: 'Ed25519' }, key, new TextEncoder().encode(`${h}.${p}`)); return `${h}.${p}.${b64uBuf(sig)}`;
 }
 export async function receiptLookup(env, nonce) { try { return await env.STATUS.get(`x402:receipt:${nonce}`, 'json'); } catch (e) { return null; } }
-export async function handleApi(request, env, url) {
-  const base = 'https://agentic-x402.ai';
+// resolve(url) → { data, status }: what this surface's paid call buys (surfaces.js paidResource); agentic-x402.ai keeps its index / ?record= contract
+export async function handleApi(request, env, url, resolve) {
+  const base = url.origin;
   if (!env.X402_PAYTO) return json({ error: 'receiver_not_configured', note: 'the pay-to address (Worker secret X402_PAYTO) is not set' }, { node: 'x402' }, 'no-store', 503);
   const sig = request.headers.get('PAYMENT-SIGNATURE') || request.headers.get('X-PAYMENT');
   if (!sig) return paymentRequired(env, url);
@@ -112,18 +116,20 @@ export async function handleApi(request, env, url) {
   const v = await facilitator(env, '/verify', { x402Version: payload.x402Version || 2, paymentPayload: payload, paymentRequirements: req }, url);
   if (!(v.body && v.body.isValid)) return paymentRequired(env, url, 'payment not valid: ' + ((v.body && (v.body.invalidReason || v.body.error)) || v.status));
   // what the call buys: the estate index (every node, its counts and drop) — or one record when ?record=node/exchange/code is given
-  const rq = url.searchParams.get('record'); let data, dataStatus = 200;
-  if (rq && /^[a-z]{2}-cm-kg\/[A-Za-z\-]+\/.+$/i.test(rq)) { const r = await fetch(`${APEX}/record/${rq}`, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(30000) }); dataStatus = r.status; try { data = await r.json(); } catch (e) { data = { error: 'record fetch failed', status: r.status }; } }
+  const rq = IS_API(url) ? url.searchParams.get('record') : null; let data, dataStatus = 200;
+  if (resolve && !IS_API(url)) { try { const r = await resolve(url); data = r.data; dataStatus = r.status || 200; } catch (e) { data = { error: 'statement unavailable' }; dataStatus = 503; } }
+  else if (rq && /^[a-z]{2}-cm-kg\/[A-Za-z\-]+\/.+$/i.test(rq)) { const r = await fetch(`${APEX}/record/${rq}`, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(30000) }); dataStatus = r.status; try { data = await r.json(); } catch (e) { data = { error: 'record fetch failed', status: r.status }; } }
   else { const r = await fetch(`${APEX}/nodes.json`, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(30000) }); try { data = await r.json(); } catch (e) { data = { error: 'index fetch failed', status: r.status }; } }
   const s = await facilitator(env, '/settle', { x402Version: payload.x402Version || 2, paymentPayload: payload, paymentRequirements: req }, url);
   const settled = !!(s.body && (s.body.success || s.body.transaction || s.body.txHash)); const tx = s.body && (s.body.transaction || s.body.txHash || null);
   const net = NETWORKS[netKey(env, url)] || NETWORKS['base-sepolia']; const now = Math.floor(Date.now() / 1000);
   const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
-  const claims = { iss: base, sub: (s.body && s.body.payer) || (payload.payload && payload.payload.authorization && payload.payload.authorization.from) || 'payer', jti: nonce, iat: now, resource: req.resource + (rq ? `?record=${rq}` : ''), scheme: 'exact', standard: 'EIP-3009 transferWithAuthorization', network: req.network, asset: req.asset, amount: req.amount, amount_usdc: '0.01', payTo: req.payTo, transaction: tx, explorer: tx ? net.explorer + tx : null, settled, facilitator: facilitatorUrl(env, url), receipt_url: `${base}/x402/receipt/${nonce}`, operator: OPERATOR };
+  const sha = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(data)))), b => b.toString(16).padStart(2, '0')).join('');
+  const claims = { iss: base, surface: url.hostname, data_sha256: sha, sub: (s.body && s.body.payer) || (payload.payload && payload.payload.authorization && payload.payload.authorization.from) || 'payer', jti: nonce, iat: now, resource: req.resource + (rq ? `?record=${rq}` : ''), scheme: 'exact', standard: 'EIP-3009 transferWithAuthorization', network: req.network, asset: req.asset, amount: req.amount, amount_usdc: '0.01', payTo: req.payTo, transaction: tx, explorer: tx ? net.explorer + tx : null, settled, facilitator: facilitatorUrl(env, url), receipt_url: `${base}/x402/receipt/${nonce}`, operator: OPERATOR };
   let jwt = null; try { jwt = await signReceipt(env, claims); } catch (e) { jwt = null; }
   const receipt = { ...claims, jwt, kid: RECEIPT_KID, jwks: `${base}/x402/jwks.json` };
   try { await env.STATUS.put(`x402:receipt:${nonce}`, JSON.stringify(receipt)); } catch (e) { /* the receipt is also in the response */ }
-  try { const c = parseInt((await env.STATUS.get('x402:count')) || '0', 10) + (settled ? 1 : 0); await env.STATUS.put('x402:count', String(c)); if (settled) await env.STATUS.put('x402:last', JSON.stringify({ x402Version: 2, success: true, transaction: tx, network: req.network, amount: req.amount, asset: req.asset, payer: claims.sub, explorer: claims.explorer, at: new Date().toISOString(), resource: claims.resource, receipt: claims.receipt_url })); } catch (e) { /* best effort */ }
+  try { const c = parseInt((await env.STATUS.get('x402:count')) || '0', 10) + (settled ? 1 : 0); await env.STATUS.put('x402:count', String(c)); if (settled) await env.STATUS.put('x402:last', JSON.stringify({ x402Version: 2, success: true, transaction: tx, network: req.network, amount: req.amount, asset: req.asset, payer: claims.sub, explorer: claims.explorer, at: new Date().toISOString(), resource: claims.resource, receipt: claims.receipt_url, surface: url.hostname })); } catch (e) { /* best effort */ }
   const pr = { x402Version: 2, success: settled, transaction: tx, network: req.network, amount: req.amount, asset: req.asset, payer: claims.sub, receipt: claims.receipt_url, errorReason: settled ? null : (s.body && (s.body.errorReason || s.body.error)) || null };
   const enc = b64(pr);
   return new Response(JSON.stringify({ receipt, data }, null, 1), { status: settled ? dataStatus : 402, headers: headers({ node: 'x402' }, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'PAYMENT-RESPONSE': enc, 'X-PAYMENT-RESPONSE': enc, 'X-X402-Receipt': claims.receipt_url, 'access-control-allow-origin': '*', 'access-control-expose-headers': 'PAYMENT-REQUIRED, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE, X-X402-Receipt' }) });

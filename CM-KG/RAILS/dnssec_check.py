@@ -24,7 +24,7 @@ for z in ZONES:
     ds = doh(z, 'DS'); ad = doh(f'_index._agents.{z}', 'TXT')
     n_ds = len([a for a in ds.get('Answer', []) if a.get('type') == 43])
     out[z] = {'cloudflare_dnssec': st, 'ds_at_parent': n_ds, 'ds_ad': ds.get('AD'), 'index_txt_answers': len(ad.get('Answer', [])), 'index_txt_ad': ad.get('AD'), 'checked_utc': stamp}
-    ok = st == 'success' and n_ds > 0 and ad.get('AD') is True
+    ok = st in ('active', 'success') and n_ds > 0 and ad.get('AD') is True
     lines.append(f"{z}: cloudflare={st} ds_at_parent={n_ds} validated={ad.get('AD')} -> {'LANDED' if ok else 'not yet'}")
 base = rf'C:\ALLOOLOO\AZURE\dnssec-check-{stamp}'
 json.dump(out, open(base + '.json', 'w'), indent=1); open(base + '.txt', 'w', encoding='utf-8').write('\n'.join(lines) + '\n')
