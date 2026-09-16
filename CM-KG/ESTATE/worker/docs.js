@@ -68,3 +68,26 @@ ${contactSection(host)}
 <p>Security: <a href="https://allooloo.io/security">allooloo.io/security</a> and <a href="/.well-known/security.txt">/.well-known/security.txt</a>.</p>
 <p>Documentation: <a href="https://capitalmarketsknowledgegraph.ai/docs">capitalmarketsknowledgegraph.ai/docs</a>.</p>`;
 }
+
+// Enterprise setup page (CEO ORDER-022, Sept 16 2026): allooloo.io/setup — what an enterprise AI platform's connector form needs, nothing more.
+export function setupBody(host) {
+  return `<p class="lead">Enterprise setup for the Capital Markets Knowledge Graph connector: the two fields a connector form asks for, the authentication answer, what the five tools do and do not do, and where support and privacy live.</p>
+
+<h2>1. Server</h2>
+${table(['field', 'value'], [
+  ['Server URL', `<code>${esc(MCP)}</code>`],
+  ['Transport', 'Streamable HTTP (Model Context Protocol, JSON-RPC 2.0 over HTTPS)'],
+  ['Name', 'Capital Markets Knowledge Graph'],
+  ['Agent card', `<a href="${APEX_AGENT}/.well-known/agent-card.json"><code>${esc(APEX_AGENT)}/.well-known/agent-card.json</code></a>`]
+])}
+<p>A plain <code>GET</code> on the server URL answers 405 by design: the door speaks JSON-RPC by <code>POST</code>. Documentation for integrators: <a href="https://capitalmarketsknowledgegraph.ai/docs">capitalmarketsknowledgegraph.ai/docs</a>.</p>
+
+<h2>2. Authentication</h2>
+<p><strong>None.</strong> OAuth Client ID and Client Secret stay blank. There is no enterprise managed authentication to configure: the door issues no challenge, needs no token and runs no client registration. If the connector form insists on a method, choose "None" or "No authentication".</p>
+
+<h2>3. Tools and data</h2>
+<p>Five read-only tools are open: <code>resolve_issuer</code>, <code>get_record</code>, <code>list_events_since</code>, <code>list_aliases</code>, <code>list_nodes</code>. No sign-in. No user data is stored. Nothing is written: there is no write path on the door. Public-record data only — listing rosters, company registries, exchange notices and newswire releases, each field named to its source — and no prices, quotes or licensed market data.</p>
+
+<h2>4. Support and privacy</h2>
+<p>Support: <a href="https://allooloo.io/#contact">allooloo.io/#contact</a> (the contact form of record) and <a href="https://allooloo.io/support">allooloo.io/support</a>. Privacy: <a href="https://allooloo.io/privacy">allooloo.io/privacy</a>. Security: <a href="https://allooloo.io/security">allooloo.io/security</a>.</p>`;
+}
