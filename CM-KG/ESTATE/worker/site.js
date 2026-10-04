@@ -1,7 +1,7 @@
 // ORDER-020 §4 (as amended Sept 12 2026: §4.0 page order, §5.0 title rule, §12 Toronto and London) + §3 record pages + §6 Status.
 // allooloo.io: head → H1 → scale block (five live numbers) → reason-for-being → products → twelve-node table → licence shapes → engines and duties → Proof → contact.
 // The sample record is one link in Proof → /record (a live get_record from the Canada door on its own page). Regions are never abbreviated.
-import { APEX, APEX_AGENT, CONTACT, CONTACT2, LEGAL, OPERATOR, KICKER, REGION_FULL, REGIONS_LIST, esc, int, num, table, form, scale } from './chrome.js';
+import { APEX, APEX_AGENT, CONTACT, CONTACT2, LEGAL, OPERATOR, KICKER, REGION_FULL, REGIONS_LIST, TAGLINE, esc, int, num, table, form, scale, icon, btn, regionAzure } from './chrome.js';
 import { ORDER, DUTY, LICENCES, nodesTable, totals, PRODUCTS } from './products.js';
 
 const HERO_ID = 'TSX:SHOP';   // the Canada node's section-2 example issuer; fetched from the Canada door at render (§4.1)
@@ -26,7 +26,46 @@ export const REASON = 'Allooloo builds the Capital Markets Knowledge Graph for t
 export function scaleBlock(ctx) { const t = totals(ctx); return scale([[int(t.records), 'listed companies', 'list_nodes'], [int(t.events), 'dated disclosures, trailing twelve months', 'list_nodes'], [`${t.nodes}`, 'markets · 11 Azure regions · served in-country', 'list_nodes'], ['100%', 'fields carrying source URL and read date', 'the record shape'], [esc(t.last), 'last drop', 'list_nodes']]); }
 export function homeMeta(ctx) { const t = totals(ctx); return `${int(t.records)} listed companies, ${int(t.events)} dated disclosures, eleven markets served in-country. Every field sourced and read-dated. MCP and A2A for AI agents.`; }
 
+// ---------- allooloo.io home, refurb (Site Book "allooloo.io · Home", word for word; Addendum A §3, §4). Figures from list_nodes at render, exactly as returned.
+const ENGINES_P1 = 'Claude reads and adjudicates. ChatGPT extracts at scale. Gemini reads whole filings. Perplexity grounds the cold read. Grok carries the live signal. Mistral reads the European nodes in their own languages. Tavily is the net. Cloudflare is the network. No engine is trusted alone. Every field carries who read it. A person cuts the record before it is confirmed.';
+const WHERE = 'Records are stored and served in the issuer\'s jurisdiction: Canada Central Azure (Toronto, Canada), East US Azure (Virginia, United States), UK South Azure (London, United Kingdom), France Central Azure (Paris, France), West Europe Azure (Amsterdam, Netherlands), Switzerland North Azure (Zurich, Switzerland), Germany West Central Azure (Frankfurt, Germany), Australia East Azure (Sydney, Australia), Southeast Asia Azure (Singapore), Japan East Azure (Tokyo, Japan), Korea Central Azure (Seoul, South Korea). Hong Kong is a beacon; a local partner is wanted. The apex router holds an index and forwards. No record body leaves its jurisdiction.';
+export const HOME_SUB = TAGLINE;
+export const homeActions = () => `${btn('Gain the edge', '/connect', 'primary')}${btn('See the numbers', 'https://agentic-radar.ai/', 'secondary')}`;
+const sec = (id, h, inner, cls) => `<section class="sec${cls ? ' ' + cls : ''}"${id ? ` id="${id}"` : ''}><h2>${esc(h)}</h2>${inner}</section>`;
+const card = (ic, title, text, action) => `<div class="card">${icon(ic)}<h3>${esc(title)}</h3><p>${text}</p>${action || ''}</div>`;
+function marketTiles(ctx) {
+  const rows = Object.values(ctx.live).map(n => { const cc = String(n.node || '').slice(0, 2); if (!REGION_FULL[cc]) return '';
+    const name = esc(n.country || (ctx.nodes[cc] || {}).country || '');
+    if (cc === 'hk') return `<a class="tile mkt" href="https://hk-cm-kg.ai/">${icon('ring')}<span class="nm">${name}</span><span class="rg">${esc(regionAzure(cc))}</span><span class="ct">beacon · partner wanted</span></a>`;
+    if (!n.live || !n.records) return '';   // a tile shows only when its source answers; the row closes up
+    return `<a class="tile mkt" href="https://${cc}-cm-kg.ai/">${icon('ring')}<span class="nm">${name}</span><span class="rg">${esc(regionAzure(cc))}</span><span class="ct">${int(n.records)} records · drop ${esc(n.as_of || '')}</span><span class="st"><span class="dot" aria-hidden="true"></span>live</span></a>`; }).join('');
+  return rows ? `<div class="markets">${rows}</div><p class="src mono">source: list_nodes at https://mcp.capitalmarketsknowledgegraph.ai/mcp, read at render</p>` : '';
+}
 export function homeBody(ctx, host) {
+  const t = totals(ctx);
+  const numbers = scale([[int(t.records), 'Listed companies', 'One record per listed company, source and read date on every field.', 'issuer', 'https://agentic-issuers.ai/'], [int(t.events), 'Dated disclosures', 'Trailing twelve months, typed, with the regulator’s URL.', 'record', 'https://agentic-disclosure.ai/'], [t.nodes ? String(t.nodes) : '', 'Markets', 'Served in-country, each from its own door.', 'ring', '#markets'], [esc(t.last), 'Last drop', 'The latest weekly cut, as of its sweep.', 'pulse', 'https://agentic-radar.ai/']]);
+  const features = [['Coverage', 'coverage'], ['ESG', 'esg'], ['Disclosure', 'disclosure'], ['Registries', 'registries'], ['RADAR', 'radar'], ['x402', 'x402']].map(([w, k]) => `<a href="https://agentic-${k}.ai/">${w}</a>`).join(' · ');
+  const markets = marketTiles(ctx);
+  return `${numbers ? sec('', 'The record by the numbers', numbers) : ''}
+${sec('', 'Three products. One record.', `<div class="cards three">${card('record', 'Trades, the desks', 'The data systems agents trade on. Bring your own broker.', btn('Open Trades', 'https://agentic-trades.ai/'))}${card('desk', 'ASK, the desk', 'One question, one door, twelve markets. Every answer is a record with sources, never a summary.', btn('Open ASK', 'https://agentic-ask.ai/'))}${card('issuer', 'Issuers, your record', 'The record every dealer agent reads about your company. Confirm it, correct it at the source, and it is live to every agent.', btn('Open Issuers', 'https://agentic-issuers.ai/'))}</div><p class="under">${features} are features of the record; each has its own page.</p>`)}
+${markets ? sec('markets', 'Eleven markets, in-country.', markets) : ''}
+${sec('', 'An agent that trades now has to show where it got the facts.', '<p class="lead">One sourced, read-dated record for every listed company on eleven exchanges, served in the issuer’s own jurisdiction, callable by any agent over the Model Context Protocol (MCP) and Agent2Agent (A2A). An agent that trades, recommends or approves a product has to show where it got the facts; the record has to be defensible before the price is asked. Public record only. No prices, no quotes, no licensed data.</p>')}
+${sec('', 'Four things a dealer, bank or broker can sign. No services. Ever.', `<div class="cards four">${LICENCES.map(([n, l], i) => card(['key', 'issuer', 'record', 'ring'][i], n, `${esc(l)}.`)).join('')}</div><p class="under">You license. You operate. We do not consult, integrate, or run your motion.</p>`)}
+${sec('', 'Eight engines. Named duties. Human cut.', `<p>${esc(ENGINES_P1)}</p><p>The duty the record serves, by market: ${ORDER.map(cc => `${esc(ctx.nodes[cc].country)} — ${esc(DUTY[cc])}`).join('; ')}.</p>`)}
+${sec('', 'Proof', `<p class="kicker">${esc(KICKER)}</p><dl class="rows">${[['ring', `Served in-country from ${esc(REGIONS_LIST)}.`], ['issuer', 'Public-record only: exchange lists, corporate registers, GLEIF, EDGAR, EDINET, DART, RNS, AMF, AFM, SIX, Xetra, ASX, SGX and their peers; source URL and read date on every field; blank stays blank.'], ['record', 'What a record looks like: <a href="/record">a live record from the Canada door</a>, rendered on its own page.'], ['pulse', 'Every door probed every five minutes: <a href="/status">allooloo.io/status</a>. The estate numbers: <a href="https://agentic-radar.ai/">agentic-radar.ai</a> · <a href="https://agentic-radar.ai/radar.json">radar.json</a>.'], ['key', `Registry entry: <code>registry.modelcontextprotocol.io · io.github.allooloo/cm-kg</code>; apex Agent Card <code>${APEX_AGENT}/.well-known/agent-card.json</code>.`]].map(([ic, v], i) => `<dt>5.${i + 1}</dt><dd>${icon(ic)}<span>${v}</span></dd>`).join('')}</dl>`)}
+<p class="where">${esc(WHERE)}</p>
+<section class="sec contact"><h2>Contact Us</h2>${form(host)}</section>`;
+}
+// ---------- allooloo.io/connect (Site Book "allooloo.io/connect · Connect an agent", word for word; Addendum A §1, §2)
+export const CONNECT = { title: 'Connect an agent · Capital Markets Knowledge Graph — Allooloo', desc: 'One address for every listed company on eleven markets: the MCP door, the ASK desk, the issuer record and the registries.', h1: 'Connect an agent.', sub: 'One address for every listed company on the record.' };
+export function connectBody(host) {
+  return `${sec('', 'For dealers, banks and brokers', `${icon('ring', 'lg')}<p class="lead">Add one address to Claude, ChatGPT, Gemini, Copilot or any agent that speaks the Model Context Protocol (MCP), the open standard for connecting artificial intelligence (AI) agents to tools. Your agent can then call the record for every listed company on eleven markets.</p><p class="addr"><code id="door">${APEX}/mcp</code><button class="btn secondary copy" type="button" data-copy="door">Copy</button></p><p class="actions">${btn('Connector docs', 'https://capitalmarketsknowledgegraph.ai/docs', 'primary')}</p>`, 'card-sec')}
+${sec('', 'Ask about any listed company', `${icon('desk', 'lg')}<p>The desk routes by identifier to the market that holds the name and answers with the record, its sources and its dated events.</p><p class="actions">${btn('Open ASK', 'https://ask.allooloo.io/')}</p>`, 'card-sec')}
+${sec('', 'For listed companies', `${icon('issuer', 'lg')}<p>Your record is already on the graph. Confirm it, correct it at the source, and it is live to every dealer agent.</p><p class="actions">${btn('Open Issuers', 'https://agentic-issuers.ai/')}</p>`, 'card-sec')}
+${sec('', 'For partners, auditors and applications', `${icon('key', 'lg')}<p>Who may call and what they did: agent identity, licences, receipts. Every door probed every five minutes.</p><p class="actions">${btn('Registries', 'https://agentic-registries.ai/')}${btn('Status', 'https://allooloo.io/status')}</p>`, 'card-sec')}
+<section class="sec contact"><h2>Contact Us</h2>${form(host)}</section>`;
+}
+export function homeBodyLegacy(ctx, host) {   // pre-refurb body, kept beside (not routed)
   return `${scaleBlock(ctx)}
 <p class="lead">${esc(REASON)}</p>
 <h2>1 Products</h2>${num(1, Object.keys(PRODUCTS).map(k => `<a href="https://agentic-${k}.ai/"><code>${esc(PRODUCTS[k].title)}</code></a>`))}

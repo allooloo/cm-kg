@@ -39,9 +39,28 @@ export function requirements(env, url) {
   return { scheme: 'exact', network: net.caip2, amount: PRICE_ATOMIC, maxAmountRequired: PRICE_ATOMIC, asset: net.usdc, payTo: env.X402_PAYTO, maxTimeoutSeconds: url && url.hostname === 'agentic-x402.ai' ? 60 : 300,
     resource: url.origin + url.pathname, description: describe(url), mimeType: 'application/json', extra: { name: net.name, version: '2' } };   // EIP-712 domain of the USDC contract per network: Base mainnet 'USD Coin', Base Sepolia test contract 'USDC'
 }
+// ORDER AL-x402-01 (Oct 3 2026): Open USD on Base as the second accept entry on every /api door (Permit2 + the facilitator's eip2612GasSponsoring extension; the contract has no EIP-3009).
+// payTo = Worker secret X402_PAYTO_OUSD (falls back to X402_PAYTO). Base mainnet only; the USDC entry stays first and unchanged; the agentic-trades.ai record route keeps its one entry.
+const OUSD = { asset: '0xB2000000000000000000002fEb517dFeC7415344', name: 'OpenUSD', version: '1' };
+const EIP2612_GAS_SPONSORING = { eip2612GasSponsoring: { info: { description: 'The facilitator accepts EIP-2612 gasless Permit to Permit2 canonical contract.', version: '1' }, schema: { type: 'object' } } };
+const takesOusd = (env, url) => !!url && url.pathname === '/api' && (NETWORKS[netKey(env, url)] || {}).caip2 === 'eip155:8453';
+export function accepts(env, url) {
+  const usdc = requirements(env, url); if (!takesOusd(env, url)) return [usdc];
+  return [usdc, { ...usdc, asset: OUSD.asset, payTo: env.X402_PAYTO_OUSD || env.X402_PAYTO, extra: { assetTransferMethod: 'permit2', name: OUSD.name, version: OUSD.version } }];
+}
+// GET /x402/settled.json — the surface's register. settled = settlements on this host's /api counted since Oct 3 2026 (the per-host counter starts with this order);
+// family_settled = every settlement on every door of the estate Worker (the one counter kept since Sept 13 2026).
+export async function handleSettled(env, url) {
+  const host = url.hostname; const out = { zone: host, settled: 0, last_tx: null, last_receipt: null, last_at: null, family_settled: 0, as_of: new Date().toISOString(), network: 'eip155:8453', asset: 'USDC, OUSD', door: `https://${host}/api`,
+    basis: 'settled counts settlements on this host since 2026-10-03, when the per-host register began; family_settled counts every settlement on every door of the estate Worker' };
+  try { out.settled = parseInt((await env.STATUS.get(`x402:count:${host}`)) || '0', 10); out.family_settled = parseInt((await env.STATUS.get('x402:count')) || '0', 10);
+    const l = await env.STATUS.get(`x402:last:${host}`, 'json'); if (l) { out.last_tx = l.transaction || null; out.last_receipt = l.receipt || null; out.last_at = l.at || null; } }
+  catch (e) { return json({ error: 'register unavailable' }, { node: 'x402' }, 'no-store', 503); }
+  return json(out, { node: 'x402' }, 'no-store');
+}
 function paymentRequired(env, url, error) {
   const req = requirements(env, url);
-  const body = { x402Version: 2, error: error || 'Payment required: $0.01 USDC on ' + req.network, accepts: [req], resource: { url: req.resource, description: req.description, mimeType: req.mimeType }, extensions: bazaar(url), free_route: url.pathname === '/api' ? `https://${url.hostname}/facts.json` : `${APEX}${url.pathname.replace('/x402', '')}`, operator: OPERATOR };
+  const body = { x402Version: 2, error: error || 'Payment required: $0.01 USDC on ' + req.network, accepts: accepts(env, url), resource: { url: req.resource, description: req.description, mimeType: req.mimeType }, extensions: takesOusd(env, url) ? { ...bazaar(url), ...EIP2612_GAS_SPONSORING } : bazaar(url), free_route: url.pathname === '/api' ? `https://${url.hostname}/facts.json` : `${APEX}${url.pathname.replace('/x402', '')}`, operator: OPERATOR };
   return new Response(JSON.stringify(body, null, 1), { status: 402, headers: headers({ node: 'x402' }, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'PAYMENT-REQUIRED': b64(body), 'access-control-allow-origin': '*', 'access-control-expose-headers': 'PAYMENT-REQUIRED, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE' }) });
 }
 // ---- Coinbase CDP per-request JWT (Secret API key: Ed25519 base64 64-byte secret, or legacy ES256 PEM). Never logged.
@@ -112,7 +131,8 @@ export async function handleApi(request, env, url, resolve) {
   const sig = request.headers.get('PAYMENT-SIGNATURE') || request.headers.get('X-PAYMENT');
   if (!sig) return paymentRequired(env, url);
   let payload; try { payload = unb64(sig); } catch (e) { return paymentRequired(env, url, 'PAYMENT-SIGNATURE is not base64 JSON'); }
-  const req = requirements(env, url);
+  const chosen = String((payload.accepted && payload.accepted.asset) || '').toLowerCase(); const offered = accepts(env, url);
+  const req = offered.find(a => a.asset.toLowerCase() === chosen) || offered[0];
   const v = await facilitator(env, '/verify', { x402Version: payload.x402Version || 2, paymentPayload: payload, paymentRequirements: req }, url);
   if (!(v.body && v.body.isValid)) return paymentRequired(env, url, 'payment not valid: ' + ((v.body && (v.body.invalidReason || v.body.error)) || v.status));
   // what the call buys: the estate index (every node, its counts and drop) — or one record when ?record=node/exchange/code is given
@@ -125,11 +145,12 @@ export async function handleApi(request, env, url, resolve) {
   const net = NETWORKS[netKey(env, url)] || NETWORKS['base-sepolia']; const now = Math.floor(Date.now() / 1000);
   const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
   const sha = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(data)))), b => b.toString(16).padStart(2, '0')).join('');
-  const claims = { iss: base, surface: url.hostname, data_sha256: sha, sub: (s.body && s.body.payer) || (payload.payload && payload.payload.authorization && payload.payload.authorization.from) || 'payer', jti: nonce, iat: now, resource: req.resource + (rq ? `?record=${rq}` : ''), scheme: 'exact', standard: 'EIP-3009 transferWithAuthorization', network: req.network, asset: req.asset, amount: req.amount, amount_usdc: '0.01', payTo: req.payTo, transaction: tx, explorer: tx ? net.explorer + tx : null, settled, facilitator: facilitatorUrl(env, url), receipt_url: `${base}/x402/receipt/${nonce}`, operator: OPERATOR };
+  const claims = { iss: base, surface: url.hostname, data_sha256: sha, sub: (s.body && s.body.payer) || (payload.payload && payload.payload.authorization && payload.payload.authorization.from) || (payload.payload && payload.payload.permit2Authorization && payload.payload.permit2Authorization.from) || 'payer', jti: nonce, iat: now, resource: req.resource + (rq ? `?record=${rq}` : ''), scheme: 'exact', standard: req.asset === OUSD.asset ? 'Permit2 permitWitnessTransferFrom' : 'EIP-3009 transferWithAuthorization', network: req.network, asset: req.asset, amount: req.amount, amount_usdc: '0.01', payTo: req.payTo, transaction: tx, explorer: tx ? net.explorer + tx : null, settled, facilitator: facilitatorUrl(env, url), receipt_url: `${base}/x402/receipt/${nonce}`, operator: OPERATOR };
   let jwt = null; try { jwt = await signReceipt(env, claims); } catch (e) { jwt = null; }
   const receipt = { ...claims, jwt, kid: RECEIPT_KID, jwks: `${base}/x402/jwks.json` };
   try { await env.STATUS.put(`x402:receipt:${nonce}`, JSON.stringify(receipt)); } catch (e) { /* the receipt is also in the response */ }
   try { const c = parseInt((await env.STATUS.get('x402:count')) || '0', 10) + (settled ? 1 : 0); await env.STATUS.put('x402:count', String(c)); if (settled) await env.STATUS.put('x402:last', JSON.stringify({ x402Version: 2, success: true, transaction: tx, network: req.network, amount: req.amount, asset: req.asset, payer: claims.sub, explorer: claims.explorer, at: new Date().toISOString(), resource: claims.resource, receipt: claims.receipt_url, surface: url.hostname })); } catch (e) { /* best effort */ }
+  if (settled) { try { const hc = parseInt((await env.STATUS.get(`x402:count:${url.hostname}`)) || '0', 10) + 1; await env.STATUS.put(`x402:count:${url.hostname}`, String(hc)); await env.STATUS.put(`x402:last:${url.hostname}`, JSON.stringify({ transaction: tx, receipt: claims.receipt_url, at: new Date().toISOString(), asset: req.asset })); } catch (e) { /* the per-host register is best effort */ } }
   const pr = { x402Version: 2, success: settled, transaction: tx, network: req.network, amount: req.amount, asset: req.asset, payer: claims.sub, receipt: claims.receipt_url, errorReason: settled ? null : (s.body && (s.body.errorReason || s.body.error)) || null };
   const enc = b64(pr);
   return new Response(JSON.stringify({ receipt, data }, null, 1), { status: settled ? dataStatus : 402, headers: headers({ node: 'x402' }, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'PAYMENT-RESPONSE': enc, 'X-PAYMENT-RESPONSE': enc, 'X-X402-Receipt': claims.receipt_url, 'access-control-allow-origin': '*', 'access-control-expose-headers': 'PAYMENT-REQUIRED, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE, X-X402-Receipt' }) });
