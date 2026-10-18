@@ -12,6 +12,7 @@ TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-
 CF_ACCT = 'dd2832b36f171b815f84c8487aada36b'
 ZONES = {'ca': '4d2c6dc2f534dd8c013f6e66544eed4c', 'uk': '999f8cab6ae570a878379f0e37cd87b0', 'au': '8732370fd5742f40dba657be3eab5d37', 'sg': '0d4ae29fdde22945ffd2858bc2922576', 'ch': '0ea4358fbd0c1dc5ccf069448ccefe48', 'de': '0e7b54741212fb036c2cf18b9392ed25', 'fr': '645c30886df97804e3b793399e303c2b', 'nl': 'e5a042d3df88b7e170d5225ecfacb008', 'jp': 'f1c120f9d544c4af28bd6029ce071b96', 'kr': 'cd87134802ca140f4767253f39453ce1', 'us': '64516e94b82d13781980dff99c20c8b0'}
 cc, region, step = sys.argv[1], sys.argv[2], sys.argv[3]; tag = sys.argv[4] if len(sys.argv) > 4 else 'latest'
+CONT = os.environ.get('STORAGE_CONTAINER', 'pond')   # ORDER-031 (2026-10-17): the store container is a parameter — 'pond' on the wire, 'staging' for a dry run; default unchanged
 node = f'{cc}-cm-kg'; rg = f'allooloo-cmkg-{region}'; sa = f'allooloocmkg{cc}pond'; app = f'cmkg-door-{cc}'; host = f'mcp.{node}.ai'
 env_name = open(rf'C:\ALLOOLOO\AZURE\env-{cc}.txt').read().strip() if os.path.exists(rf'C:\ALLOOLOO\AZURE\env-{cc}.txt') else f'cmkg-env-{region}'
 LOG = r'C:\ALLOOLOO\AZURE\provision.log'
@@ -54,7 +55,7 @@ elif step == 'upload':
             drops = [d for d in os.listdir(sdir) if re.match(r'^\d{4}-\d{2}-\d{2}(-\d+)?$', d) and os.path.isdir(os.path.join(sdir, d))]
             if not drops: continue
             newest = max(drops, key=lambda d: (d[:10], int(d[11:] or 0)))
-            r = az('storage', 'blob', 'upload-batch', '--account-name', sa, '--account-key', k, '--destination', 'pond', '--destination-path', f'pond/{source}/{newest}', '--source', os.path.join(sdir, newest), '--overwrite', 'false', '--no-progress', check=False)
+            r = az('storage', 'blob', 'upload-batch', '--account-name', sa, '--account-key', k, '--destination', CONT, '--destination-path', f'pond/{source}/{newest}', '--source', os.path.join(sdir, newest), '--overwrite', 'false', '--no-progress', check=False)
             n = len(r) if isinstance(r, list) else 0; total += n; log(f'pond drop uploaded: {source}/{newest} — {n} new blobs')
         log(f'pond drops uploaded: {total} new blobs (newest drop per source only)')
     data = r'C:\ALLOOLOO\CM-KG\DOOR\data'; recs = glob.glob(os.path.join(data, 'records', node, '*', '*.json')); log(f'door records to upload: {len(recs)}')
@@ -63,7 +64,7 @@ elif step == 'upload':
     for sub in (() if HOLD else ('records', 'events')):
         d = os.path.join(data, sub, node)
         if os.path.isdir(d):
-            r = az('storage', 'blob', 'upload-batch', '--account-name', sa, '--account-key', k, '--destination', 'pond', '--destination-path', f'door/{sub}', '--source', d, '--overwrite', 'true', '--no-progress', '--content-type', 'application/json', check=False)
+            r = az('storage', 'blob', 'upload-batch', '--account-name', sa, '--account-key', k, '--destination', CONT, '--destination-path', f'door/{sub}', '--source', d, '--overwrite', 'true', '--no-progress', '--content-type', 'application/json', check=False)
             log(f'door/{sub}: {len(r) if isinstance(r, list) else "see log"} blobs')
     # per-node index: ticker / isin / lei / alias / name -> cmr keys, from the record files
     def nkey(s): return re.sub(r'[^a-z0-9]+', ' ', str(s).lower().replace('&', ' and ')).strip()
@@ -84,7 +85,7 @@ elif step == 'upload':
     json.dump(nf, open(os.path.join(tmp, 'facts.json'), 'w', encoding='utf-8'), indent=1)
     json.dump(json.load(open(os.path.join(data, 'nodes.json'), encoding='utf-8')), open(os.path.join(tmp, 'nodes.json'), 'w', encoding='utf-8'), indent=1)
     for fn in ('index.json', 'facts.json', 'nodes.json'):
-        az('storage', 'blob', 'upload', '--account-name', sa, '--account-key', k, '-c', 'pond', '-n', (f'door-held/{HOLD}/{fn}' if HOLD else f'door/{fn}'), '-f', os.path.join(tmp, fn), '--overwrite', 'true', '--content-type', 'application/json', '--no-progress', check=False)
+        az('storage', 'blob', 'upload', '--account-name', sa, '--account-key', k, '-c', CONT, '-n', (f'door-held/{HOLD}/{fn}' if HOLD else f'door/{fn}'), '-f', os.path.join(tmp, fn), '--overwrite', 'true', '--content-type', 'application/json', '--no-progress', check=False)
     log(f"door index: {len(idx['keys'])} keys, {len(idx['ticker'])} tickers, {len(idx['isin'])} isins, {len(idx['alias'])} aliases; facts + nodes uploaded")
 elif step == 'app':
     # a failed environment is left standing (Rule One) and the next name is used: cmkg-env-<region>, -2, -3 …

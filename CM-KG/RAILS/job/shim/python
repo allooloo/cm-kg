@@ -1,0 +1,12 @@
+#!/bin/bash
+# ORDER-031 — the "python" the rails' PowerShell scripts call inside the job image. Windows-style path arguments (..\pond_open.py,
+# 'C:\ALLOOLOO\CM-KG\DISCLOSURE\uk-disclosure.xlsx') are translated before the real interpreter runs; everything else passes through untouched.
+args=()
+for a in "$@"; do
+  case "$a" in
+    C:\\ALLOOLOO*|C:/ALLOOLOO*) a="${a/C:\\ALLOOLOO//job/ALLOOLOO}"; a="${a/C:\/ALLOOLOO//job/ALLOOLOO}"; a="${a//\\//}" ;;
+    ..\\*|.\\*|*\\*.py|*\\*.ps1|*\\*.log|*\\*.json|*\\*.jsonl|*\\*.xlsx|*\\*.txt) a="${a//\\//}" ;;
+  esac
+  args+=("$a")
+done
+exec /usr/local/bin/python3 "${args[@]}"

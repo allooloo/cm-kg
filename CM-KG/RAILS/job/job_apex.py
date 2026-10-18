@@ -1,0 +1,142 @@
+r"""ORDER-031 (2026-10-17) — the apex job (East US, shared resource group), fired later the same Friday (CEO clock) after the eleven node jobs.
+Reads the eleven done-markers (sweeps/<market date>/<cc>/done.json in each node's store); rebuilds the apex index for every node that landed
+(build_index.py reads every regional store's door/ files as they stand, so a node with no marker keeps last week's as_of on the wire); deploys
+the apex and the estate (wrangler, non-interactive); appends the nodes' NUMBERS LOG and SPEND lines; snapshots the surfaces; writes the sweep
+close line and sweepREVIEW-<market date>.md (machine half from the job logs, X line STAGED, never posted) and lands all of it in the shared apex
+store (sweeps/<market date>/...) and, when enabled, the apex ark bucket. The laptop pulls the same files into the repo with pull_sweep.py.
+No fallback, no retry: a node without a marker is written as "did not land". A missing ark object is a failed close."""
+import os, sys, json, subprocess, datetime, re, io, traceback
+ROOT = os.environ.get('CMKG_ROOT', '/job/ALLOOLOO'); RAILS = f'{ROOT}/CM-KG/RAILS'; HERE = os.path.dirname(os.path.abspath(__file__))
+TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-41ee6d087b41'
+NODES = [('nl', 'westeurope'), ('ch', 'switzerlandnorth'), ('fr', 'francecentral'), ('de', 'germanywestcentral'), ('sg', 'southeastasia'), ('au', 'australiaeast'), ('uk', 'uksouth'), ('ca', 'canadacentral'), ('jp', 'japaneast'), ('kr', 'koreacentral'), ('us', 'eastus')]
+DRY = os.environ.get('APEX_DRY', '0') == '1'   # dry run: build and report from the staging markers, deploy nothing, write under dry/<date>/, no ark
+CONT = os.environ.get('STORAGE_CONTAINER', 'pond'); APEX_SA = os.environ.get('APEX_STORAGE_ACCOUNT', 'allooloocmkgapex'); APEX_CONT = os.environ.get('APEX_CONTAINER', 'sweeps')
+T0 = datetime.datetime.now(datetime.timezone.utc); TODAY = T0.date()
+def friday_on_or_before(d): return d - datetime.timedelta(days=(d.weekday() - 4) % 7)
+MDATE = os.environ.get('MARKET_DATE') or friday_on_or_before(TODAY).isoformat()
+EXEC = os.environ.get('CONTAINER_APP_JOB_EXECUTION_NAME', os.environ.get('HOSTNAME', '?')); IMAGE_TAG = os.environ.get('IMAGE_TAG', '?')
+os.environ.setdefault('AZURE_CONFIG_DIR', '/tmp/.azure'); os.environ['AZURE_CORE_COLLECT_TELEMETRY'] = 'false'
+LOG = []
+def log(*a):
+    s = f"{datetime.datetime.now(datetime.timezone.utc).strftime('%H:%M:%S')} " + ' '.join(str(x) for x in a); print(s, flush=True); LOG.append(s)
+def sh(args, cwd=None, env=None, check=True):
+    p = subprocess.Popen(args, cwd=cwd, env={**os.environ, **(env or {})}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding='utf-8', errors='replace')
+    out = []
+    for line in p.stdout:
+        line = line.rstrip('\n'); out.append(line)
+        if line: log('  ' + line)
+    rc = p.wait()
+    if check and rc != 0: raise RuntimeError(f"{' '.join(str(a) for a in args[:3])} exit {rc}")
+    return rc, '\n'.join(out)
+def az(*a, raw=False):
+    p = subprocess.run(['az', *a] + ([] if raw else ['-o', 'json']), capture_output=True, text=True, encoding='utf-8', errors='replace')
+    if p.returncode != 0: raise RuntimeError(f"az {' '.join(a[:4])} failed: {(p.stderr or p.stdout)[-400:]}")
+    return p.stdout.strip() if raw else (json.loads(p.stdout) if p.stdout.strip() else None)
+from azure.storage.blob import BlobServiceClient, ContentSettings
+def client(sa, key, cont): return BlobServiceClient(f'https://{sa}.blob.core.windows.net', credential=key).get_container_client(cont)
+def get_json(c, name):
+    try: return json.loads(c.get_blob_client(name).download_blob().readall().decode('utf-8'))
+    except Exception: return None
+def put(c, name, data, ct='application/json'):
+    c.upload_blob(name, data.encode('utf-8') if isinstance(data, str) else data, overwrite=True, content_settings=ContentSettings(content_type=ct))
+
+def main():
+    log(f'ORDER-031 apex job: market date {MDATE}, node container {CONT}, image {IMAGE_TAG}, execution {EXEC}{" — DRY RUN: nothing deployed, nothing written to the ark" if DRY else ""}')
+    sh(['az', 'login', '--identity', '-o', 'none']); sh(['az', 'account', 'set', '-s', SUB])
+    acct = az('account', 'show')
+    if acct.get('tenantId') != TENANT or acct.get('id') != SUB: raise SystemExit('STOP: not the tenant/subscription of record')
+    markers = {}; failed = {}; skipped = {}
+    for cc, reg in NODES:
+        sa = f'allooloocmkg{cc}pond'; key = az('storage', 'account', 'keys', 'list', '-n', sa, '-g', f'allooloo-cmkg-{reg}', '--query', '[0].value', '-o', 'tsv', raw=True)
+        c = client(sa, key, CONT); d = get_json(c, f'sweeps/{MDATE}/{cc}/done.json')
+        if d: markers[cc] = d
+        else:
+            f = get_json(c, f'sweeps/{MDATE}/{cc}/failed.json'); s = get_json(c, f'sweeps/{MDATE}/{cc}/skipped.json')
+            if f: failed[cc] = f
+            if s: skipped[cc] = s
+        log(f"{cc}: {'landed' if cc in markers else ('FAILED' if cc in failed else ('skipped' if cc in skipped else 'did not land'))}")
+    # apex index for every node that landed; nodes without a marker keep last week's door files (build_index reads the stores as they stand)
+    sh(['/usr/local/bin/python3', 'build_index.py'], cwd=f'{ROOT}/CM-KG/DOOR/apex')
+    apex_dep = 'Version ID: dry-run-not-deployed' if DRY else sh(['npx', '--yes', 'wrangler', 'deploy'], cwd=f'{ROOT}/CM-KG/DOOR/apex', check=False)[1]; apex_ver = (re.search(r'Version ID:\s*([0-9a-f-]+)', apex_dep) or re.search(r'Current Version ID:\s*([0-9a-f-]+)', apex_dep) or [None, 'see log'])[1]
+    # NUMBERS LOG: the nodes' own lines (computed against what each door served before the upload), appended to the boot block; the asset mirrored
+    boot = f'{ROOT}/START_ME_UP/NODE-SURFACES.md'; s = open(boot, encoding='utf-8').read(); m = re.search(r'(## 9 NUMBERS LOG[\s\S]*?```\n)([\s\S]*?)(```)', s)
+    lines = [l for l in m.group(2).splitlines() if l.strip()]; added = []
+    for cc, _ in NODES:
+        if cc in markers and markers[cc].get('numbers_line') and markers[cc]['numbers_line'] not in lines: lines.append(markers[cc]['numbers_line']); added.append(markers[cc]['numbers_line'])
+    s = s[:m.start(2)] + '\n'.join(lines) + '\n' + s[m.start(3):]; open(boot, 'w', encoding='utf-8').write(s)
+    sh(['/usr/local/bin/python3', 'numbers_log.py'], cwd=RAILS, check=False)   # mirror only -> CM-KG/ESTATE/public/numbers-log.json
+    estate_dep = 'Version ID: dry-run-not-deployed' if DRY else sh(['npx', '--yes', 'wrangler', 'deploy'], cwd=f'{ROOT}/CM-KG/ESTATE', check=False)[1]; estate_ver = (re.search(r'Version ID:\s*([0-9a-f-]+)', estate_dep) or re.search(r'Current Version ID:\s*([0-9a-f-]+)', estate_dep) or [None, 'see log'])[1]
+    # SPEND: the nodes' lines + the run-level Tavily reading (start = the last reading in SPEND.md, end = now)
+    md = f'{ROOT}/CM-KG/SPEND/SPEND.md'; spend = []
+    for cc, _ in NODES:
+        for l in (markers.get(cc) or {}).get('spend_lines') or []: spend.append(l)
+    tav = None
+    try:
+        import requests
+        r = requests.get('https://api.tavily.com/usage', headers={'Authorization': 'Bearer ' + os.environ.get('TAVILY_API_KEY', '')}, timeout=30)
+        j = r.json().get('account', {}) if r.status_code == 200 else {}; tav = int(j['plan_usage']) if j.get('plan_usage') is not None else None
+    except Exception: pass
+    prev = re.findall(r'plan ([\d,]+) of', open(md, encoding='utf-8').read()) if os.path.exists(md) else []
+    prev = int(prev[-1].replace(',', '')) if prev else None
+    if tav is not None: spend.append(f"sweep {MDATE} · Tavily (run level) · {(tav - prev) if prev is not None else '?'} credits used · plan {tav:,} of 200,000, {200000 - tav:,} remaining · meter: GET /usage plan counter read by the apex job at close{' (estimated: start = last SPEND.md reading)' if prev is not None else ''}")
+    else: spend.append(f'sweep {MDATE} · Tavily (run level) · counter not read at close (flag) · no figure written')
+    if os.path.exists(md):
+        t = open(md, encoding='utf-8').read(); i = t.rstrip().rfind('```')
+        t = t[:i] + '\n'.join(spend) + '\n' + t[i:]; open(md, 'w', encoding='utf-8').write(t)
+    # surfaces snapshot to the pond (estate), uploaded to the shared store
+    sh(['/usr/local/bin/python3', 'snapshot_surfaces.py'], cwd=RAILS, check=False)
+    # sweepREVIEW — machine half from the job logs
+    rows = []; tot_r = tot_e = 0
+    for cc, reg in NODES:
+        if cc in markers:
+            d = markers[cc]; rows.append(f"| {cc}-cm-kg | {d.get('as_of') or MDATE} | {d['records']:,} | {d['events']:,} | records {d['records_delta']:+d} · events {d['events_delta']:+d}{' · HELD' if d.get('held') else ''} |"); tot_r += d['records']; tot_e += d['events']
+        else: rows.append(f"| {cc}-cm-kg | — | — | — | did not land ({'failed: ' + (failed[cc].get('error') or '')[:80] if cc in failed else ('skipped: ' + skipped[cc].get('why', '') if cc in skipped else 'no marker')}) — the wire keeps last week's as_of |")
+    held = [f"- {cc}-cm-kg: {markers[cc]['held_flag'].strip()}" for cc, _ in NODES if markers.get(cc, {}).get('held_flag')]
+    ark_lines = []; ark_ok = True
+    for cc, _ in NODES:
+        a = (markers.get(cc) or {}).get('ark') or {}
+        if not a.get('enabled'): ark_lines.append(f'- {cc}-cm-kg: ark not enabled'); continue
+        if a.get('error') or not a.get('objects'): ark_ok = False; ark_lines.append(f"- {cc}-cm-kg: ARK FAILED — {a.get('error') or 'no objects'}")
+        else: ark_lines.append(f"- {cc}-cm-kg: " + '; '.join(f"s3://{o['bucket']}/{o['key']} v={o['version_id']}" for o in a['objects']))
+    landed = [cc for cc, _ in NODES if cc in markers]
+    close = f"SWEEP CLOSE {MDATE} · {len(landed)} of 11 landed ({' '.join(landed) or 'none'}) · {tot_r:,} records · {tot_e:,} events on the landed doors · apex {apex_ver} · estate {estate_ver} · ark {'complete' if ark_ok and any((markers.get(cc) or {}).get('ark', {}).get('enabled') for cc, _ in NODES) else ('FAILED CLOSE' if not ark_ok else 'not enabled')}"
+    x_line = f"get_issuer · sweep of {MDATE} · {len(landed)}/11 markets · {tot_r:,} issuers · {tot_e:,} disclosure events · one date on every door · https://getissuer.ai"
+    rep = [f'# sweepREVIEW · sweep of {MDATE} · reviewed ', '', f'*(Machine half written by the apex job {EXEC} on {TODAY.isoformat()}, image {IMAGE_TAG}. The reviewed date is written by the CEO go. Human half: X line, spend, zones, deletions, rules, registry publishes.)*', '',
+           '## Doors (from the node jobs\' done-markers)', '', '| node | as of | records | events | this sweep |', '|---|---|---|---|---|', *rows, '', f'**Close line:** {close}', '',
+           '## NUMBERS LOG lines written', '', '```', *(added or ['(no new lines)']), '```', '', '## SPEND lines written', '', '```', *spend, '```', '',
+           '## Flags', '', *(held or ['- no door held']), *([f"- {cc}-cm-kg FAILED: {failed[cc].get('error')}" for cc in failed]), *([f"- {cc}-cm-kg skipped: {skipped[cc].get('why')}" for cc in skipped]), '',
+           '## Ark (AWS)', '', *ark_lines, '', '## X line (STAGED — the CEO posts)', '', '```', x_line, '```', '']
+    report = '\n'.join(rep); rp = f'{ROOT}/START_ME_UP/sweepREVIEW-{MDATE}.md'; open(rp, 'w', encoding='utf-8').write(report)
+    key = az('storage', 'account', 'keys', 'list', '-n', APEX_SA, '-g', 'allooloo-cmkg-shared', '--query', '[0].value', '-o', 'tsv', raw=True); c = client(APEX_SA, key, APEX_CONT)
+    pre = (f'dry/{MDATE}/' if DRY else f'{MDATE}/')
+    put(c, pre + f'sweepREVIEW-{MDATE}.md', report, 'text/markdown'); put(c, pre + 'NODE-SURFACES.md', open(boot, encoding='utf-8').read(), 'text/markdown')
+    put(c, pre + 'SPEND.md', open(md, encoding='utf-8').read(), 'text/markdown'); put(c, pre + 'numbers-log.json', open(f'{ROOT}/CM-KG/ESTATE/public/numbers-log.json', 'rb').read())
+    for fn in ('index.json', 'nodes.json'): put(c, pre + f'apex-{fn}', open(f'{ROOT}/CM-KG/DOOR/apex/static/{fn}', 'rb').read())
+    snaps = f'{ROOT}/CM-KG/POND/estate/surfaces'
+    if os.path.isdir(snaps):
+        for d in sorted(os.listdir(snaps)):
+            for r_, _, fs in os.walk(os.path.join(snaps, d)):
+                for f in fs:
+                    p = os.path.join(r_, f); put(c, pre + 'surfaces/' + os.path.relpath(p, snaps).replace(os.sep, '/'), open(p, 'rb').read(), 'application/octet-stream')
+    ark = {'enabled': os.environ.get('ARK_ENABLED', '0') == '1' and not DRY, 'objects': []}
+    if ark['enabled']:
+        try:
+            import boto3
+            s3 = boto3.client('s3', region_name=os.environ['ARK_REGION']); b = os.environ['ARK_BUCKET']
+            for p, k in ((rp, f'apex/{MDATE}/sweepREVIEW-{MDATE}.md'), (f'{ROOT}/CM-KG/DOOR/apex/static/index.json', f'apex/{MDATE}/index.json'), (f'{ROOT}/CM-KG/DOOR/apex/static/nodes.json', f'apex/{MDATE}/nodes.json')):
+                with open(p, 'rb') as f: r = s3.put_object(Bucket=b, Key=k, Body=f)
+                ark['objects'].append({'bucket': b, 'key': k, 'version_id': r.get('VersionId')})
+            log(f"ark: {len(ark['objects'])} apex objects written")
+        except Exception as e: ark['error'] = repr(e)[:300]; log('ark write FAILED:', ark['error']); close += ' · APEX ARK FAILED'
+    done = {'market_date': MDATE, 'landed': landed, 'failed': list(failed), 'skipped': list(skipped), 'records': tot_r, 'events': tot_e, 'apex_version': apex_ver, 'estate_version': estate_ver, 'close_line': close, 'x_line_staged': x_line, 'ark': ark, 'image': IMAGE_TAG, 'execution': EXEC, 'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    put(c, pre + 'apex-done.json', json.dumps(done, ensure_ascii=False, indent=1)); log(close); log('X line STAGED:', x_line); return 0
+
+if __name__ == '__main__':
+    try: rc = main()
+    except SystemExit as e: rc = e.code if isinstance(e.code, int) else 1; log('STOP', e)
+    except Exception as e: rc = 1; log('FAILED', repr(e)[:400]); log(traceback.format_exc()[-2000:])
+    try:
+        key = az('storage', 'account', 'keys', 'list', '-n', APEX_SA, '-g', 'allooloo-cmkg-shared', '--query', '[0].value', '-o', 'tsv', raw=True)
+        put(client(APEX_SA, key, APEX_CONT), (f'dry/{MDATE}' if DRY else MDATE) + f'/apex-job-{EXEC}.log', '\n'.join(LOG) + '\n', 'text/plain')
+    except Exception: pass
+    sys.exit(rc)

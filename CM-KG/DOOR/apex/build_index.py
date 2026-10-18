@@ -8,6 +8,7 @@ TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-
 NODES = {'ca': 'canadacentral', 'uk': 'uksouth', 'au': 'australiaeast', 'sg': 'southeastasia', 'ch': 'switzerlandnorth',
          'de': 'germanywestcentral', 'fr': 'francecentral', 'nl': 'westeurope', 'jp': 'japaneast', 'kr': 'koreacentral', 'us': 'eastus'}
 HERE = os.path.dirname(os.path.abspath(__file__)); STATIC = os.path.join(HERE, 'static')
+CONT = os.environ.get('STORAGE_CONTAINER', 'pond')   # ORDER-031 (2026-10-18): 'pond' on the wire, 'staging' for a dry run; default unchanged
 
 def az(*a):
     r = subprocess.run(['az', *a], capture_output=True, text=True, shell=True); return r.stdout.strip()
@@ -25,7 +26,7 @@ for cc in want:
     got = {}
     for fn in ('index.json', 'nodes.json', 'facts.json'):
         p = os.path.join(tmp, f'{cc}-{fn}')
-        az('storage', 'blob', 'download', '--account-name', sa, '--account-key', k, '-c', 'pond', '-n', f'door/{fn}', '-f', p, '--no-progress', '-o', 'none')
+        az('storage', 'blob', 'download', '--account-name', sa, '--account-key', k, '-c', CONT, '-n', f'door/{fn}', '-f', p, '--no-progress', '-o', 'none')
         got[fn] = json.load(open(p, encoding='utf-8')) if os.path.exists(p) else None
     ni = got['index.json']
     if not ni: print(cc, 'no door/index.json in the regional store (node stays as listed)'); continue

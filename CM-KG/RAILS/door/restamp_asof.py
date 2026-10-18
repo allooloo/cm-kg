@@ -10,6 +10,7 @@ TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-
 cc, region, date = sys.argv[1], sys.argv[2], sys.argv[3]
 datetime.date.fromisoformat(date)
 node = f'{cc}-cm-kg'; rg = f'allooloo-cmkg-{region}'; sa = f'allooloocmkg{cc}pond'
+CONT = os.environ.get('STORAGE_CONTAINER', 'pond')   # ORDER-031 (2026-10-17): 'pond' on the wire, 'staging' for a dry run; default unchanged
 def az(*a, raw=False):
     p = subprocess.run(['az', *a] + ([] if raw else ['-o', 'json']), capture_output=True, text=True, encoding='utf-8', errors='replace', shell=True)
     if p.returncode != 0: raise SystemExit(f"az {' '.join(a[:4])} failed: {(p.stderr or p.stdout)[-400:]}")
@@ -21,7 +22,7 @@ keep = os.path.join(r'C:\ALLOOLOO\AZURE\restamp', datetime.date.today().isoforma
 changed = []
 for fn in ('facts.json', 'nodes.json'):
     p = os.path.join(keep, f'{cc}-{fn}')
-    az('storage', 'blob', 'download', '--account-name', sa, '--account-key', k, '-c', 'pond', '-n', f'door/{fn}', '-f', p, '--no-progress', '-o', 'none', raw=True)
+    az('storage', 'blob', 'download', '--account-name', sa, '--account-key', k, '-c', CONT, '-n', f'door/{fn}', '-f', p, '--no-progress', '-o', 'none', raw=True)
     j = json.load(open(p, encoding='utf-8'))
     pre = p.replace('.json', '.pre-027-20261017.json')
     if not os.path.exists(pre): os.replace(p, pre)
@@ -40,6 +41,6 @@ for fn in ('facts.json', 'nodes.json'):
     out = os.path.join(keep, f'{cc}-{fn}')
     json.dump(j, open(out, 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
     if before != date:
-        az('storage', 'blob', 'upload', '--account-name', sa, '--account-key', k, '-c', 'pond', '-n', f'door/{fn}', '-f', out, '--overwrite', 'true', '--content-type', 'application/json', '--no-progress', '-o', 'none', raw=True)
+        az('storage', 'blob', 'upload', '--account-name', sa, '--account-key', k, '-c', CONT, '-n', f'door/{fn}', '-f', out, '--overwrite', 'true', '--content-type', 'application/json', '--no-progress', '-o', 'none', raw=True)
         changed.append(f'{fn} {before} -> {date}')
 print(f"{node} restamp: {'; '.join(changed) if changed else 'already ' + date} (door reloads facts and nodes within ten minutes)")

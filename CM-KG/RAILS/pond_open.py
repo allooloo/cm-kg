@@ -11,7 +11,8 @@ pond.close_drop(node, source)
 d = pond.open_drop(node, source)
 raw = os.path.join(RAILS, rail, 'raw')
 if os.path.isdir(raw):
-    try: os.readlink(raw); os.rmdir(raw)
+    try: os.readlink(raw); (os.rmdir if os.name == 'nt' else os.unlink)(raw)
     except OSError: raise SystemExit(f'{raw} is a real folder; run pond_migrate.py first')
-subprocess.check_call(['cmd', '/c', 'mklink', '/J', raw, d], stdout=subprocess.DEVNULL)
+if os.name == 'nt': subprocess.check_call(['cmd', '/c', 'mklink', '/J', raw, d], stdout=subprocess.DEVNULL)
+else: os.symlink(d, raw, target_is_directory=True)   # ORDER-031 (2026-10-17): the in-country job image is Linux; a symlink is the junction there
 print('open drop', d, '-> raw')

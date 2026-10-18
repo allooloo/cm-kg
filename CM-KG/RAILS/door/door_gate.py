@@ -14,6 +14,7 @@ import json, os, sys, subprocess, datetime, tempfile
 TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-41ee6d087b41'
 cc, region, mdate = sys.argv[1], sys.argv[2], sys.argv[3]; after_job = '--after-job' in sys.argv
 node = f'{cc}-cm-kg'; rg = f'allooloo-cmkg-{region}'; sa = f'allooloocmkg{cc}pond'
+CONT = os.environ.get('STORAGE_CONTAINER', 'pond')   # ORDER-031 (2026-10-17): 'pond' on the wire, 'staging' for a dry run; default unchanged
 FLAGS = r'C:\ALLOOLOO\CM-KG\SWEEPS'
 def az(*a, raw=False):
     p = subprocess.run(['az', *a] + ([] if raw else ['-o', 'json']), capture_output=True, text=True, encoding='utf-8', errors='replace', shell=True)
@@ -25,12 +26,12 @@ k = az('storage', 'account', 'keys', 'list', '-n', sa, '-g', rg, '--query', '[0]
 tmp = tempfile.mkdtemp(prefix=f'gate-{cc}-')
 def get(name, version=None):
     p = os.path.join(tmp, name.replace('/', '_') + ('.v' + ''.join(ch for ch in version if ch.isalnum()) if version else ''))
-    args = ['storage', 'blob', 'download', '--account-name', sa, '--account-key', k, '-c', 'pond', '-n', name, '-f', p, '--no-progress', '-o', 'none'] + (['--version-id', version] if version else [])
+    args = ['storage', 'blob', 'download', '--account-name', sa, '--account-key', k, '-c', CONT, '-n', name, '-f', p, '--no-progress', '-o', 'none'] + (['--version-id', version] if version else [])
     az(*args, raw=True); return p
-def put(name, path): az('storage', 'blob', 'upload', '--account-name', sa, '--account-key', k, '-c', 'pond', '-n', name, '-f', path, '--overwrite', 'true', '--content-type', 'application/json', '--no-progress', '-o', 'none', raw=True)
+def put(name, path): az('storage', 'blob', 'upload', '--account-name', sa, '--account-key', k, '-c', CONT, '-n', name, '-f', path, '--overwrite', 'true', '--content-type', 'application/json', '--no-progress', '-o', 'none', raw=True)
 def counts(facts_path): f = json.load(open(facts_path, encoding='utf-8')); n = (f.get('nodes') or {}).get(node) or {}; return int(n.get('records') or 0), int(n.get('events') or 0), n.get('as_of')
 if after_job:
-    vs = az('storage', 'blob', 'list', '--account-name', sa, '--account-key', k, '-c', 'pond', '--prefix', 'door/facts.json', '--include', 'v', '--query', "[?name=='door/facts.json'].{v:versionId,cur:isCurrentVersion}") or []
+    vs = az('storage', 'blob', 'list', '--account-name', sa, '--account-key', k, '-c', CONT, '--prefix', 'door/facts.json', '--include', 'v', '--query', "[?name=='door/facts.json'].{v:versionId,cur:isCurrentVersion}") or []
     vs = sorted([x for x in vs if x.get('v')], key=lambda x: x['v'])
     prev = [x for x in vs if not x.get('cur')]
     if not prev: print(f'{node} gate: no previous facts version; publish'); sys.exit(0)
@@ -45,7 +46,7 @@ held = f'door-held/{mdate}'
 if after_job:
     for fn in ('index.json', 'facts.json', 'nodes.json'):
         put(f'{held}/{fn}', get(f'door/{fn}'))
-        fv = sorted([x for x in (az('storage', 'blob', 'list', '--account-name', sa, '--account-key', k, '-c', 'pond', '--prefix', f'door/{fn}', '--include', 'v', '--query', f"[?name=='door/{fn}'].{{v:versionId,cur:isCurrentVersion}}") or []) if x.get('v') and not x.get('cur')], key=lambda x: x['v'])
+        fv = sorted([x for x in (az('storage', 'blob', 'list', '--account-name', sa, '--account-key', k, '-c', CONT, '--prefix', f'door/{fn}', '--include', 'v', '--query', f"[?name=='door/{fn}'].{{v:versionId,cur:isCurrentVersion}}") or []) if x.get('v') and not x.get('cur')], key=lambda x: x['v'])
         if fv: put(f'door/{fn}', get(f'door/{fn}', fv[-1]['v']))
     note = 'the job had published; index, facts and nodes restored to their previous versions (record blobs the job rewrote stay as written)'
 else:

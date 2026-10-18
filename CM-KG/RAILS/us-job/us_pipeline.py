@@ -15,11 +15,34 @@ from concurrent.futures import ThreadPoolExecutor
 import html
 import requests
 from azure.storage.blob import BlobServiceClient
-TODAY = datetime.date.today(); SINCE = (TODAY - datetime.timedelta(days=366)).isoformat(); STAMP = TODAY.isoformat()
+TODAY = datetime.date.today(); STAMP = TODAY.isoformat()
+# ORDER-031 (2026-10-18): the twelve-month window is anchored on the sweep's MARKET DATE (SWEEP_MARKET_DATE, set by the job runner), not the run day —
+# one sweep reads one date. A run on any day after the market Friday otherwise rolled year-old filings out (dry run of 2026-10-18: −1,125 events, all
+# dated 2025-10-16) and the forward-only gate held the door. On a Friday run the two dates are the same. The drop folder stays dated by run day.
+_ANCHOR = datetime.date.fromisoformat(os.environ['SWEEP_MARKET_DATE']) if os.environ.get('SWEEP_MARKET_DATE') else TODAY
+SINCE = (_ANCHOR - datetime.timedelta(days=366)).isoformat()
 CONTACT = os.environ.get('CONTACT', 'developers@allooloo.ai'); UA = {'User-Agent': f'Allooloo Technologies Corp. {CONTACT}', 'Accept-Encoding': 'gzip, deflate'}
 NODE = 'us-cm-kg'; REGION = os.environ.get('REGION', 'eastus'); HOST = 'https://mcp.us-cm-kg.ai'
 bsc = BlobServiceClient(f"https://{os.environ['STORAGE_ACCOUNT']}.blob.core.windows.net", credential=os.environ['STORAGE_KEY']); cont = bsc.get_container_client(os.environ.get('STORAGE_CONTAINER', 'pond'))
 W = '/job/work'; os.makedirs(W, exist_ok=True); LOG = []
+# ORDER-031 (2026-10-18): a same-day resume reuses a drop only when that drop was fetched under the same twelve-month window. Every drop now
+# records its window (window.json). A drop with another window, or with no window record, is left untouched and this run writes the next drop
+# beside it (<date>-2, -3 ...) — never over it. On a normal Friday the first drop of the day is used, exactly as before.
+def _pick_drop():
+    n = 1
+    while True:
+        cand = STAMP if n == 1 else f'{STAMP}-{n}'
+        try: w = json.loads(cont.get_blob_client(f'pond/width0/{cand}/window.json').download_blob().readall().decode('utf-8')).get('since')
+        except Exception: w = None
+        if w == SINCE: return cand
+        if w is None:
+            try: used = any(True for _ in cont.list_blobs(name_starts_with=f'pond/width0/{cand}/'))
+            except Exception: used = False
+            if not used:
+                cont.upload_blob(f'pond/width0/{cand}/window.json', json.dumps({'since': SINCE, 'anchor': _ANCHOR.isoformat(), 'run_day': STAMP}).encode('utf-8'), overwrite=False)
+                return cand
+        n += 1
+DROP = _pick_drop()
 def log(*a):
     s = ' '.join(str(x) for x in a); print(s, flush=True); LOG.append(f'{time.strftime("%H:%M")} {s}')
 def put(name, data, ct='application/json'):
@@ -30,7 +53,7 @@ def get_blob(name):
     except Exception as e: log('blob miss', name, e); return None
 def stage(name):
     """A finished stage of today's drop, when it exists (a re-run on the same day resumes; nothing is re-fetched or overwritten)."""
-    try: return json.loads(cont.get_blob_client(f'pond/width0/{STAMP}/{name}.json').download_blob().readall().decode('utf-8'))
+    try: return json.loads(cont.get_blob_client(f'pond/width0/{DROP}/{name}.json').download_blob().readall().decode('utf-8'))
     except Exception: return None
 GU = {'calls': 0, 'prompt_tokens': 0, 'output_tokens': 0}
 _gate = threading.Lock(); _last = [0.0]
@@ -49,10 +72,10 @@ def edgar(url, tries=4, **kw):
 # ---------------- Width 0
 def width0():
     ss, ro = stage('submissions'), stage('roster')
-    if ss and ro: log('resume: submissions and roster from the pond drop', STAMP, len(ss), len(ro)); return ro, {int(k): v for k, v in ss.items()}
+    if ss and ro: log('resume: submissions and roster from the pond drop', DROP, len(ss), len(ro)); return ro, {int(k): v for k, v in ss.items()}
     r = edgar('https://www.sec.gov/files/company_tickers_exchange.json')
     if r is None or r.status_code != 200: raise SystemExit(f'EDGAR roster refused: {r.status_code if r is not None else None} — the container address is blocked too (HITL)')
-    j = r.json(); rows = [dict(zip(j['fields'], d)) for d in j['data']]; put(f'pond/width0/{STAMP}/company_tickers_exchange.json', r.text)
+    j = r.json(); rows = [dict(zip(j['fields'], d)) for d in j['data']]; put(f'pond/width0/{DROP}/company_tickers_exchange.json', r.text)
     EXCH = {'NYSE': 'NYSE', 'Nasdaq': 'NASDAQ', 'CBOE': 'CBOE'}
     listed = [x for x in rows if (x.get('exchange') or '') in EXCH]; log('EDGAR roster', len(rows), 'listed on NYSE/Nasdaq/Cboe', len(listed))
     subs = {}; lock = threading.Lock(); n = [0]
@@ -73,7 +96,7 @@ def width0():
             if n[0] % 500 == 0: log('submissions', n[0])
     ciks = sorted({x['cik'] for x in listed})
     with ThreadPoolExecutor(max_workers=4) as ex: list(ex.map(one, ciks))
-    log('submissions read', len(subs), 'of', len(ciks)); put(f'pond/width0/{STAMP}/submissions.json', json.dumps(subs, ensure_ascii=False))
+    log('submissions read', len(subs), 'of', len(ciks)); put(f'pond/width0/{DROP}/submissions.json', json.dumps(subs, ensure_ascii=False))
     roster = []; seen = set()
     for x in listed:
         k = (EXCH[x['exchange']], x['ticker'])
@@ -81,7 +104,7 @@ def width0():
         seen.add(k); s = subs.get(x['cik']) or {}; sic = str(s.get('sic') or ''); nm = (s.get('name') or x['name'] or '').strip(); et = (s.get('entity_type') or '').lower()
         st = 'Fund / trust (by SIC or name)' if sic in ('6722', '6726') or re.search(r'\b(ETF|EXCHANGE TRADED FUND|TRUST SERIES|INDEX FUND)\b', nm.upper()) else ('SPAC (by SIC 6770)' if sic == '6770' else (f'Non-operating entity type ({et})' if et and et != 'operating' else 'Corporate'))
         roster.append({'exchange': k[0], 'ticker': x['ticker'], 'cik': x['cik'], 'name': nm, 'list_name': x['name'], 'security_type': st, **{kk: s.get(kk) for kk in ('sic', 'sic_desc', 'state_inc', 'state_inc_desc', 'fye', 'category', 'entity_type', 'ein', 'former', 'tickers', 'business', 'city', 'website', 'ir', 'annual', 'src')}, 'n_recent': len(s.get('recent') or [])})
-    log('roster', len(roster), {e: sum(1 for r in roster if r['exchange'] == e) for e in ('NYSE', 'NASDAQ', 'CBOE')}); put(f'pond/width0/{STAMP}/roster.json', json.dumps(roster, ensure_ascii=False))
+    log('roster', len(roster), {e: sum(1 for r in roster if r['exchange'] == e) for e in ('NYSE', 'NASDAQ', 'CBOE')}); put(f'pond/width0/{DROP}/roster.json', json.dumps(roster, ensure_ascii=False))
     return roster, subs
 # ---------------- GLEIF (local joins over the staged golden-copy extract)
 def norm(s): return ' '.join(re.sub(r'[^A-Z0-9 ]', ' ', (s or '').upper().replace('&', ' AND ')).split())
@@ -124,7 +147,7 @@ def gleif(roster):
         for row in rd:
             if row[li] in isins: isins[row[li]].append(row[ii])
         log('ISINs mapped to', sum(1 for v in isins.values() if v), 'LEIs')
-    put(f'pond/width0/{STAMP}/lei_match.json', json.dumps({k: {kk: vv for kk, vv in v.items() if kk != 'rec'} for k, v in match.items()}, ensure_ascii=False))
+    put(f'pond/width0/{DROP}/lei_match.json', json.dumps({k: {kk: vv for kk, vv in v.items() if kk != 'rec'} for k, v in match.items()}, ensure_ascii=False))
     return match, isins
 # ---------------- Width 1 from the submissions header
 FORM_TYPE = [('takeover', r'^SC TO|^SC 14D9'), ('major_holder', r'^SC 13[DG]'), ('directors_dealings', r'^[345](/A)?$'), ('agm_egm', r'^DEF 14A|^DEFA14A|^PRE 14A'), ('prospectus', r'^S-1|^S-3|^S-4|^S-11|^F-1|^F-3|^424B|^F-10'), ('halt_suspension', r'^25(-NSE)?$|^15-12'), ('results', r'^10-K|^10-Q|^20-F|^40-F|^6-K'), ('ad_hoc', r'^8-K')]
@@ -146,7 +169,7 @@ def width1(roster, subs):
 def fill(roster, subs):
     fs = stage('fill'); out = {}; lock = threading.Lock(); cnt = [0]
     if fs:
-        log('resume: fill from the pond drop', STAMP, len(fs)); GU.update(fs.get('_usage') or {})
+        log('resume: fill from the pond drop', DROP, len(fs)); GU.update(fs.get('_usage') or {})
         out = {tuple(k.split('|', 1)): v for k, v in fs.items() if not k.startswith('_')}
         return perplexity_pages(roster, out)
     gem_key = os.environ.get('GEMINI_API_KEY', ''); pplx = os.environ.get('PERPLEXITY_API_KEY', ''); pmax = int(os.environ.get('PPLX_MAX', '0'))
@@ -184,7 +207,7 @@ def fill(roster, subs):
     with ThreadPoolExecutor(max_workers=4) as ex: list(ex.map(one, corp))
     log('fill: auditor tags', sum(1 for v in out.values() if v.get('auditor')), 'period end', sum(1 for v in out.values() if v.get('period_end')), 'registrar (Gemini)', sum(1 for v in out.values() if v.get('registrar')), 'of', len(corp))
     log('gemini usage', GU)
-    put(f'pond/width0/{STAMP}/fill.json', json.dumps({**{f'{k[0]}|{k[1]}': v for k, v in out.items()}, '_usage': GU}, ensure_ascii=False))
+    put(f'pond/width0/{DROP}/fill.json', json.dumps({**{f'{k[0]}|{k[1]}': v for k, v in out.items()}, '_usage': GU}, ensure_ascii=False))
     return perplexity_pages(roster, out)
 def perplexity_pages(roster, out):
     lock = threading.Lock(); pplx = os.environ.get('PERPLEXITY_API_KEY', ''); pmax = int(os.environ.get('PPLX_MAX', '0'))
@@ -193,7 +216,7 @@ def perplexity_pages(roster, out):
         ps = stage('perplexity') or {}; pp = {tuple(k.split('|', 1)): v for k, v in ps.items()}
         if pp: log('resume: perplexity pages from the pond drop', len(pp))
         todo = [r for r in corp[:pmax] if (r['exchange'], r['ticker']) not in pp]; done = [0]
-        def checkpoint(): put(f'pond/width0/{STAMP}/perplexity.json', json.dumps({f'{k[0]}|{k[1]}': v for k, v in pp.items()}, ensure_ascii=False))
+        def checkpoint(): put(f'pond/width0/{DROP}/perplexity.json', json.dumps({f'{k[0]}|{k[1]}': v for k, v in pp.items()}, ensure_ascii=False))
         def page(r):
             try:
                 rr = requests.post('https://api.perplexity.ai/v1/responses', headers={'Authorization': 'Bearer ' + pplx}, json={'preset': 'fast', 'input': f"Find the official investor-relations page of the US-listed company {r['name']} ({r['exchange']}: {r['ticker']}). Reply JSON only: {{\"url\": \"<page URL or empty>\", \"page_title\": \"<title>\"}}"}, timeout=120); j = rr.json(); txt = ''.join(c.get('text', '') for o in j.get('output', []) if o.get('type') == 'message' for c in o.get('content', []) if c.get('type') == 'output_text')
@@ -263,6 +286,6 @@ def render(roster, match, isins, events, fills):
     put('door/index.json', json.dumps(idx, separators=(',', ':'))); put('door/facts.json', json.dumps(facts, indent=1)); put('door/nodes.json', json.dumps(nodes, indent=1))
     log('door rendered', n, 'records', ev_total, 'events', counts)
 if __name__ == '__main__':
-    t0 = time.time(); log('US rail start', STAMP, 'UA', UA['User-Agent'])
+    t0 = time.time(); log('US rail start', STAMP, 'drop', DROP, 'window since', SINCE, 'UA', UA['User-Agent'])
     roster, subs = width0(); match, isins = gleif(roster); events = width1(roster, subs); fills = fill(roster, subs); render(roster, match, isins, events, fills)
-    log('spend: gemini', GU); put(f'pond/width0/{STAMP}/job-{int(t0)}.log', '\n'.join(LOG), 'text/plain'); log('US rail DONE in', round((time.time() - t0) / 60, 1), 'minutes')
+    log('spend: gemini', GU); put(f'pond/width0/{DROP}/job-{int(t0)}.log', '\n'.join(LOG), 'text/plain'); log('US rail DONE in', round((time.time() - t0) / 60, 1), 'minutes')
