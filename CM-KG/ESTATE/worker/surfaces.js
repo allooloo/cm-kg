@@ -200,10 +200,11 @@ export default {
     if (p === '/.well-known/ard.json') return json(cat(), kmeta, 'public, max-age=300', 200, 'application/ard+json; charset=utf-8');
     if (p.startsWith('/.well-known/') && p !== '/.well-known/allooloo.json') return notFound(['/.well-known/agent-card.json', '/.well-known/mcp.json', '/.well-known/mcp/server-card.json', '/.well-known/api-catalog', '/.well-known/oauth-protected-resource', '/.well-known/agent-skills/index.json', '/.well-known/skills.json', '/.well-known/ai-catalog.json', '/.well-known/ard.json', '/.well-known/security.txt'], kmeta);
     if (D27.isNew(c)) {   // ORDER-027: duty doors, getissuer.ai, cite quiet zones
+      if (c.kind === 'swap') ctx.swap = await D27.swapData(env, url);   // ORDER-032 C.4: the serving cloud per node, live at render
       const a = D27.pageArgs27(c, ctx, host); const meta = a.meta; const paths = D27.paths27(c);
-      if (p === '/') return HTML(page({ host, title: a.title, desc: desc0, h1: a.h1, state: a.state, asOf: a.asOf, body: a.body, jsonld: [{ '@context': 'https://schema.org', '@type': 'WebPage', name: a.title, description: desc0, url: `https://${host}/`, publisher: { '@type': 'Organization', name: OPERATOR, url: CORPORATE } }] }), meta);
-      if (p === '/llms.txt') return text(D27.llms27(c, host, live), meta);
-      if (p === '/facts.json') return json(D27.facts27(c, host, live), meta);
+      if (p === '/') return HTML((c.kind === 'swap' ? D27.stripScripts : (x => x))(page({ host, title: a.title, desc: desc0, h1: a.h1, state: a.state, asOf: a.asOf, body: a.body, jsonld: [{ '@context': 'https://schema.org', '@type': 'WebPage', name: a.title, description: desc0, url: `https://${host}/`, publisher: { '@type': 'Organization', name: OPERATOR, url: CORPORATE } }] })), meta);
+      if (p === '/llms.txt') return text(D27.llms27(c, host, live, ctx), meta, undefined, c.kind === 'swap' ? 'public, max-age=60' : undefined);
+      if (p === '/facts.json') return json(D27.facts27(c, host, live, ctx), meta, c.kind === 'swap' ? 'public, max-age=60' : undefined);
       if (p === '/sitemap.xml') return text(sitemap(host, paths.filter(x => x === '/' || x === '/docs' || x === '/llms.txt' || x === '/facts.json')), meta, 'application/xml; charset=utf-8', 'public, max-age=3600');
       if ((p === '/mcp.json' || p === '/openapi.json') && c.kind !== 'cite') return json(D27.pointer27(c, p === '/mcp.json' ? 'mcp' : 'openapi'), meta);
       // the documentation page moves with the human page (capitalmarketsknowledgegraph.ai/docs 301s here, path kept); copy unchanged until ORDER-028

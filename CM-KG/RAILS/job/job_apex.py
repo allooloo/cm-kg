@@ -65,6 +65,23 @@ def main():
         if cc in markers and markers[cc].get('numbers_line') and markers[cc]['numbers_line'] not in lines: lines.append(markers[cc]['numbers_line']); added.append(markers[cc]['numbers_line'])
     s = s[:m.start(2)] + '\n'.join(lines) + '\n' + s[m.start(3):]; open(boot, 'w', encoding='utf-8').write(s)
     sh(['/usr/local/bin/python3', 'numbers_log.py'], cwd=RAILS, check=False)   # mirror only -> CM-KG/ESTATE/public/numbers-log.json
+    # ORDER-032 C.4: the agent-swap logs of record live in the shared apex store (sweeps/swap/); pull them before the estate deploy so a Friday deploy never
+    # rolls back a swap logged since the image was built, add tonight's ark writes, write ark.json back (dry run: read only, nothing written back)
+    try:
+        akey = az('storage', 'account', 'keys', 'list', '-n', APEX_SA, '-g', 'allooloo-cmkg-shared', '--query', '[0].value', '-o', 'tsv', raw=True); ac = client(APEX_SA, akey, APEX_CONT)
+        swd = f'{ROOT}/CM-KG/ESTATE/public/swap'; os.makedirs(swd, exist_ok=True)
+        for fn in ('swaps.json', 'ark.json'):
+            j = get_json(ac, f'swap/{fn}')
+            if j is not None: json.dump(j, open(f'{swd}/{fn}', 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
+        arkp = f'{swd}/ark.json'; arkj = json.load(open(arkp, encoding='utf-8')) if os.path.exists(arkp) else {'about': 'last write of each node record to its ark bucket (AWS); written at the sweep close and by the backfill', 'nodes': {}}
+        for cc_, _ in NODES:
+            a_ = (markers.get(cc_) or {}).get('ark') or {}
+            if a_.get('enabled') and a_.get('objects') and not a_.get('error'):
+                arkj['nodes'][f'{cc_}-cm-kg'] = {'last_write': TODAY.isoformat(), 'bucket': a_['objects'][0]['bucket'], 'objects': len(a_['objects']), 'market_date': MDATE}
+        json.dump(arkj, open(arkp, 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
+        if not DRY: put(ac, 'swap/ark.json', json.dumps(arkj, ensure_ascii=False, indent=1))
+        log('agent-swap logs pulled from the apex store; ark.json', 'updated' if not DRY else 'read (dry)')
+    except Exception as e: log('agent-swap logs not refreshed (flag):', repr(e)[:200])
     estate_dep = 'Version ID: dry-run-not-deployed' if DRY else sh(['npx', '--yes', 'wrangler', 'deploy'], cwd=f'{ROOT}/CM-KG/ESTATE', check=False)[1]; estate_ver = (re.search(r'Version ID:\s*([0-9a-f-]+)', estate_dep) or re.search(r'Current Version ID:\s*([0-9a-f-]+)', estate_dep) or [None, 'see log'])[1]
     # SPEND: the nodes' lines + the run-level Tavily reading (start = the last reading in SPEND.md, end = now)
     md = f'{ROOT}/CM-KG/SPEND/SPEND.md'; spend = []
@@ -123,7 +140,7 @@ def main():
         try:
             import boto3
             s3 = boto3.client('s3', region_name=os.environ['ARK_REGION']); b = os.environ['ARK_BUCKET']
-            for p, k in ((rp, f'apex/{MDATE}/sweepREVIEW-{MDATE}.md'), (f'{ROOT}/CM-KG/DOOR/apex/static/index.json', f'apex/{MDATE}/index.json'), (f'{ROOT}/CM-KG/DOOR/apex/static/nodes.json', f'apex/{MDATE}/nodes.json')):
+            for p, k in ((rp, f'apex/reports/sweepREVIEW-{MDATE}.md'), (f'{ROOT}/CM-KG/DOOR/apex/static/index.json', f'apex/index/{MDATE}/index.json'), (f'{ROOT}/CM-KG/DOOR/apex/static/nodes.json', f'apex/index/{MDATE}/nodes.json')):   # ark layout of record (ORDER-033)
                 with open(p, 'rb') as f: r = s3.put_object(Bucket=b, Key=k, Body=f)
                 ark['objects'].append({'bucket': b, 'key': k, 'version_id': r.get('VersionId')})
             log(f"ark: {len(ark['objects'])} apex objects written")

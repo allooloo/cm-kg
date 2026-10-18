@@ -1,0 +1,71 @@
+{
+ "about": "last write of each node record to its ark bucket (AWS); written at the sweep close and by the ORDER-033 backfill",
+ "nodes": {
+  "nl-cm-kg": {
+   "last_write": "2026-10-18",
+   "bucket": "allooloo-ark-nl-cm-kg",
+   "objects": 30,
+   "source": "ORDER-033 backfill"
+  },
+  "ch-cm-kg": {
+   "last_write": "2026-10-18",
+   "bucket": "allooloo-ark-ch-cm-kg",
+   "objects": 28,
+   "source": "ORDER-033 backfill"
+  },
+  "fr-cm-kg": {
+   "last_write": "2026-10-18",
+   "bucket": "allooloo-ark-fr-cm-kg",
+   "objects": 21,
+   "source": "ORDER-033 backfill"
+  },
+  "de-cm-kg": {
+   "last_write": "2026-10-18",
+   "bucket": "allooloo-ark-de-cm-kg",
+   "objects": 18,
+   "source": "ORDER-033 backfill"
+  },
+  "sg-cm-kg": {
+   "last_write": "2026-10-18",
+   "bucket": "allooloo-ark-sg-cm-kg",
+   "objects": 22435,
+   "source": "ORDER-033 backfill"
+  },
+  "au-cm-kg": {
+   "last_write": "2026-10-18",
+   "bucket": "allooloo-ark-au-cm-kg",
+   "objects": 27,
+   "source": "ORDER-033 backfill"
+  },
+  "uk-cm-kg": {
+   "last_write": "2026-10-18",
+   "bucket": "allooloo-ark-uk-cm-kg",
+   "objects": 24,
+   "source": "ORDER-033 backfill"
+  },
+  "ca-cm-kg": {
+   "last_write": "2026-10-18",
+   "bucket": "allooloo-ark-ca-cm-kg",
+   "objects": 177,
+   "source": "ORDER-033 backfill"
+  },
+  "jp-cm-kg": {
+   "last_write": "2026-10-18",
+   "bucket": "allooloo-ark-jp-cm-kg",
+   "objects": 7819,
+   "source": "ORDER-033 backfill"
+  },
+  "kr-cm-kg": {
+   "last_write": "2026-10-18",
+   "bucket": "allooloo-ark-kr-cm-kg",
+   "objects": 2752,
+   "source": "ORDER-033 backfill"
+  },
+  "us-cm-kg": {
+   "last_write": "2026-10-18",
+   "bucket": "allooloo-ark-us-cm-kg",
+   "objects": 29,
+   "source": "ORDER-033 backfill"
+  }
+ }
+}

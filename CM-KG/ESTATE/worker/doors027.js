@@ -8,6 +8,7 @@ import CAP from './duty-captures.js';
 
 const WORDS = ['none', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
 const GI = 'https://getissuer.ai';
+const SWAP = 'https://agent-swap.ai';
 const GI_MCP = 'https://mcp.getissuer.ai/mcp';
 const GI_AGENT = 'https://agent.getissuer.ai/.well-known/agent-card.json';
 
@@ -62,9 +63,10 @@ export function classify27(h) {
   if ((m = h.match(/^agent-?(kyp|prod|mifid|finsa|ddo|regbi)\.(ai|com|co\.uk)$/)) && DUTIES[m[1]]) { const canon = `agent-${m[1]}.ai`; return h === canon ? { kind: 'duty', fam: m[1] } : { kind: 'redirect', canonical: `https://${canon}`, status: 301 }; }
   if (/^get-?issuer\.(ai|com|io|org|co\.uk)$/.test(h)) return h === 'getissuer.ai' ? { kind: 'getissuer' } : { kind: 'redirect', canonical: GI, status: 301 };
   if ((m = h.match(/^cite-(fact|dd)\.(ai|com)$/))) return m[2] === 'ai' ? { kind: 'cite', which: m[1] } : { kind: 'redirect', canonical: `https://cite-${m[1]}.ai`, status: 301 };
+  if (/^agent-swap\.(ai|com|io|org|co\.uk)$/.test(h)) return h === 'agent-swap.ai' ? { kind: 'swap' } : { kind: 'redirect', canonical: SWAP, status: 301 };   // ORDER-032 C.4
   return null;
 }
-export const isNew = c => c && (c.kind === 'duty' || c.kind === 'getissuer' || c.kind === 'cite');
+export const isNew = c => c && (c.kind === 'duty' || c.kind === 'getissuer' || c.kind === 'cite' || c.kind === 'swap');
 
 const nv = (live, cc) => { const n = live[`${cc}-cm-kg`] || {}; return { live: !!n.live, records: n.live ? int(n.records) : '', events: n.live ? int(n.events) : '', as_of: n.live ? (n.as_of || '') : '' }; };
 function famVals(live, fam) {
@@ -86,8 +88,9 @@ const CITE = {
   fact: { title: 'Agentic cite-fact — the receipt for an answer an agent was served', h1: 'cite-fact — the receipt for a served answer.', what: 'A receipt is a permanent address on cite-fact.ai that resolves to exactly what an Allooloo door served: the record or event payload, the node, the as-of, the serving time, the signing key and the source page of each field. A second call never changes the first receipt.', state: 'Receipts are not issued yet and none is stubbed. This host serves its machine kit only.' },
   dd: { title: 'Agentic cite-DD — the due-diligence file, every fact receipted', h1: 'cite-DD — the due-diligence file, every fact receipted.', what: 'cite-DD is the due diligence (DD) file for one issuer: a bundle of cite-fact receipts, gathered through the duty doors, each fact traceable to the answer that served it.', state: 'No file is issued yet and none is stubbed. This host serves its machine kit only.' }
 };
-export function label27(c) { return c.kind === 'duty' ? DUTIES[c.fam].title : c.kind === 'getissuer' ? 'Agentic getissuer — the issuer record, for AI agents' : CITE[c.which].title; }
+export function label27(c) { if (c.kind === 'swap') return SWAP_COPY.title; return c.kind === 'duty' ? DUTIES[c.fam].title : c.kind === 'getissuer' ? 'Agentic getissuer — the issuer record, for AI agents' : CITE[c.which].title; }
 export function desc27(c, live) {
+  if (c.kind === 'swap') return SWAP_COPY.desc;
   if (c.kind === 'duty') { const d = DUTIES[c.fam]; const v = famVals(live, c.fam); return `The record an agent cites under ${d.long} (${d.short}), ${d.market}: ${v.records} issuer records and ${v.events} dated disclosure events, live from list_nodes, served in-country.`; }
   if (c.kind === 'getissuer') { const t = totals({ live }); return `getissuer — the issuer record, for AI agents: ${int(t.records)} issuers, ${int(t.events)} events, ${WORDS[t.nodes] || t.nodes} markets, one MCP door at ${GI_MCP}.`; }
   return `${CITE[c.which].h1} ${CITE[c.which].state}`;
@@ -160,11 +163,64 @@ export function citeLlms(host, which) { const q = CITE[which]; return [`# ${host
 
 // ---------- page metadata for surfaces.js
 export function pageArgs27(c, ctx, host) {
+  if (c.kind === 'swap') { const d = ctx.swap || { rows: [], swap_log: [], at: new Date().toISOString() }; return { title: SWAP_COPY.title, h1: SWAP_COPY.h1, state: 'live', asOf: d.at.slice(0, 10), body: swapBody(d, host), meta: { node: 'estate', as_of: d.at.slice(0, 10) } }; }
   if (c.kind === 'duty') { const d = DUTIES[c.fam]; const v = famVals(ctx.live, c.fam); return { title: d.title, h1: d.h1, state: v.live ? 'live' : 'not live', asOf: v.as_of || today(), body: dutyBody(ctx, host, c.fam), meta: { node: d.nodes.length === 1 ? `${d.nodes[0]}-cm-kg` : d.nodes.map(x => `${x}-cm-kg`).join(','), as_of: v.as_of || today() } }; }
   if (c.kind === 'getissuer') { const t = totals(ctx); return { title: label27(c), h1: 'getissuer — the issuer record, for AI agents', state: 'live', asOf: t.last || today(), body: getissuerBody(ctx, host), meta: { node: 'apex', as_of: t.last || today() } }; }
   const q = CITE[c.which]; return { title: q.title, h1: q.h1, state: 'record', asOf: today(), body: citeBody(host, c.which), meta: { node: 'estate', as_of: today() } };
 }
-export function facts27(c, host, live) { return c.kind === 'duty' ? dutyFacts(host, c.fam, live) : c.kind === 'getissuer' ? getissuerFacts(host, live) : citeFacts(host, c.which, live); }
-export function llms27(c, host, live) { return c.kind === 'duty' ? dutyLlms(host, c.fam, live) : c.kind === 'getissuer' ? getissuerLlms(host, live) : citeLlms(host, c.which); }
-export function paths27(c) { return (c.kind === 'getissuer' ? ['/', '/docs'] : ['/']).concat(['/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt', '/sitemap.xml', '/robots.txt']).concat(c.kind === 'cite' ? [] : ['/mcp.json', '/openapi.json']); }
+export function facts27(c, host, live, ctx) { if (c.kind === 'swap') return swapFacts((ctx && ctx.swap) || { rows: [], swap_log: [], at: new Date().toISOString() }, host); return c.kind === 'duty' ? dutyFacts(host, c.fam, live) : c.kind === 'getissuer' ? getissuerFacts(host, live) : citeFacts(host, c.which, live); }
+export function llms27(c, host, live, ctx) { if (c.kind === 'swap') return swapLlms((ctx && ctx.swap) || { rows: [], swap_log: [], at: new Date().toISOString() }, host); return c.kind === 'duty' ? dutyLlms(host, c.fam, live) : c.kind === 'getissuer' ? getissuerLlms(host, live) : citeLlms(host, c.which); }
+export function paths27(c) { if (c.kind === 'swap') return ['/', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt', '/sitemap.xml', '/robots.txt']; return (c.kind === 'getissuer' ? ['/', '/docs'] : ['/']).concat(['/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt', '/sitemap.xml', '/robots.txt']).concat(c.kind === 'cite' ? [] : ['/mcp.json', '/openapi.json']); }
 export function pointer27(c, kind) { const t = target27(c); return { pointer: true, [kind]: kind === 'mcp' ? t.mcpjson : t.openapi, door: t.mcp, note: 'this host is a product surface; the door descriptor is served by the door' }; }
+
+// ---------- ORDER-032 C.4 — agent-swap.ai: which cloud serves each market's record now, its last swap, and when the record last reached the second cloud.
+// Live at render: the serving cloud is the X-Allooloo-Origin header each node door returns; swaps and ark writes come from the published logs
+// /swap/swaps.json (written by the swap rail) and /swap/ark.json (written at the sweep close). Sourced or blank: a door that does not answer reads "did not answer".
+const SWAP_NODES = [['nl', 'Netherlands'], ['ch', 'Switzerland'], ['fr', 'France'], ['de', 'Germany'], ['sg', 'Singapore'], ['au', 'Australia'], ['uk', 'United Kingdom'], ['ca', 'Canada'], ['jp', 'Japan'], ['kr', 'South Korea'], ['us', 'United States']];
+const CLOUD = { azure: 'Azure', aws: 'AWS' };
+export const SWAP_COPY = {
+  title: 'agent-swap — the record keeps answering',
+  h1: 'agent-swap — the record keeps answering',
+  desc: 'For each of eleven markets: the cloud serving the issuer record now, the last swap, and the last night the record reached its second cloud. Live at render.',
+  lead: "Every market's issuer record is served from its own country and reaches a second cloud the same night. When the serving cloud stops answering, the same record answers from the other one: same address, same tools, same record."
+};
+async function assetJson(env, url, path) { try { const r = await env.ASSETS.fetch(new URL(path, url)); return r.ok ? await r.json() : null; } catch (e) { return null; } }
+export async function swapData(env, url) {
+  const [swaps, ark] = await Promise.all([assetJson(env, url, '/swap/swaps.json'), assetJson(env, url, '/swap/ark.json')]);
+  const log = ((swaps && swaps.swaps) || []).slice().sort((a, b) => (a.at < b.at ? -1 : 1));
+  const rows = await Promise.all(SWAP_NODES.map(async ([cc, country]) => {
+    const node = `${cc}-cm-kg`; let origin = null, asOf = null;
+    try {
+      const ac = new AbortController(); const t = setTimeout(() => ac.abort(), 4000);
+      const r = await fetch(`https://mcp.${node}.ai/facts.json`, { signal: ac.signal, cf: { cacheTtl: 0 } }); clearTimeout(t);
+      if (r.ok) { origin = (r.headers.get('x-allooloo-origin') || '').toLowerCase() || null; asOf = r.headers.get('x-cmr-as-of') || null; }
+    } catch (e) { }
+    const sw = log.filter(x => x.node === node); const a = ((ark && ark.nodes) || {})[node] || null;
+    return { node, country, serving: origin, as_of: asOf, swaps: sw.length, last_swap: sw.length ? sw[sw.length - 1] : null, last_ark_write: a ? a.last_write : null };
+  }));
+  return { at: new Date().toISOString(), rows, swap_log: log };
+}
+function swapBody(d, host) {
+  const rows = d.rows.map(r => [`<code class="nw">${esc(r.node)}</code>`, esc(r.country), r.serving ? esc(CLOUD[r.serving] || r.serving) : 'did not answer', r.as_of ? esc(r.as_of) : '',
+    r.last_swap ? `${esc(r.last_swap.at.slice(0, 10))} (to ${esc(CLOUD[r.last_swap.to] || r.last_swap.to)})` : 'none yet', r.swaps ? int(r.swaps) : 'none yet', r.last_ark_write ? esc(r.last_ark_write) : 'not yet']);
+  const log = d.swap_log.length ? table(['When (UTC)', 'Market', 'From', 'To', 'Proof'], d.swap_log.slice().reverse().map(x => [esc(x.at.replace('T', ' ').slice(0, 16)), `<code class="nw">${esc(x.node)}</code>`, esc(CLOUD[x.from] || x.from), esc(CLOUD[x.to] || x.to), esc(x.proof || '')])) : '<p>No swap yet.</p>';
+  return `<p class="lead">${esc(SWAP_COPY.lead)}</p>
+<h2>1 Serving now</h2>${table(['Market', 'Country', 'Serving cloud', 'Record as of', 'Last swap', 'Swaps', 'Last copy to the second cloud'], rows)}
+<p>Read at ${esc(d.at.replace('T', ' ').slice(0, 16))} UTC from each market's door.</p>
+<h2>2 Swaps</h2>${log}
+<h2>3 Machine kit</h2>${num(3, ['<a href="/llms.txt"><code>/llms.txt</code></a> · <a href="/facts.json"><code>/facts.json</code></a> · <a href="/.well-known/agent-card.json"><code>/.well-known/agent-card.json</code></a>', `Doors: <code>https://mcp.&lt;market&gt;-cm-kg.ai/mcp</code> · apex <code>${esc(GI_MCP)}</code>`, `Operator: ${esc(OPERATOR)}`])}
+${contactSection(host)}`;
+}
+function swapFacts(d, host) {
+  return { domain: host, kind: 'record', product: 'agent-swap', what: SWAP_COPY.lead, operator: OPERATOR, corporate: CORPORATE, contact: CONTACT, as_of: d.at.slice(0, 10), read_at: d.at, surface_version: SURFACES_VERSION,
+    nodes: d.rows.map(r => ({ node: r.node, country: r.country, serving: r.serving, record_as_of: r.as_of, swaps: r.swaps, last_swap: r.last_swap, last_ark_write: r.last_ark_write })), swaps: d.swap_log,
+    machine_paths: ['/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt', '/sitemap.xml', '/robots.txt'], source: 'X-Allooloo-Origin header of each node door at render; /swap/swaps.json; /swap/ark.json' };
+}
+function swapLlms(d, host) {
+  return [`# ${host} — agent-swap, the record keeps answering`, `1. ${SWAP_COPY.lead}`, `2. Read at ${d.at} from each market's door:`,
+    ...d.rows.map(r => `   - ${r.node} (${r.country}): serving ${r.serving ? (CLOUD[r.serving] || r.serving) : 'did not answer'}; record as of ${r.as_of || 'not read'}; swaps ${r.swaps || 'none yet'}${r.last_swap ? `; last ${r.last_swap.at.slice(0, 10)} to ${r.last_swap.to}` : ''}; last copy to the second cloud ${r.last_ark_write || 'not yet'}`),
+    `3. Doors: https://mcp.<market>-cm-kg.ai/mcp; apex ${GI_MCP}. Operator: ${OPERATOR}. Contact: ${CONTACT}. agent-swap.com, .io, .org and .co.uk forward here.`,
+    '4. Machine paths: /llms.txt /facts.json /.well-known/agent-card.json /.well-known/security.txt /sitemap.xml /robots.txt'].join('\n') + '\n';
+}
+// record-grade pages carry no script (Site Book): the shared footer's /webmcp.js and the light/dark toggle (which needs it) are taken out for this family
+export function stripScripts(htmlText) { return htmlText.replace('<script src="/webmcp.js"></script>', '').replace(/<button class="tint"[\s\S]*?<\/button>/, ''); }

@@ -6,12 +6,18 @@
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import https from 'node:https';
+import zlib from 'node:zlib';
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
-const OPERATOR = 'Allooloo Technologies Corp.'; const SERVER_VERSION = '0.12.1'; const PROTOCOL = '2025-06-18';
+const OPERATOR = 'Allooloo Technologies Corp.'; const SERVER_VERSION = '0.13.1'; const PROTOCOL = '2025-06-18';
 const NODE = process.env.NODE || 'ca-cm-kg'; const REGION = process.env.REGION || ''; const PUBLIC_HOST = process.env.PUBLIC_HOST || `mcp.${NODE}.ai`; const AGENT_HOST = `agent.${NODE}.ai`;
 const CONTACT = process.env.CONTACT || 'allooloo@users.noreply.github.com'; const PORT = parseInt(process.env.PORT || '8080', 10);
-const cred = new StorageSharedKeyCredential(process.env.STORAGE_ACCOUNT, process.env.STORAGE_KEY);
-const container = new BlobServiceClient(`https://${process.env.STORAGE_ACCOUNT}.blob.core.windows.net`, cred).getContainerClient(process.env.STORAGE_CONTAINER || 'pond');
+// ORDER-032 (2026-10-18): ORIGIN=azure (default) reads the node's regional Azure store, as before. ORIGIN=aws is the warm standby: at boot it loads the
+// newest door bundle from the node's own ark bucket (ARK_BUCKET, ARK_REGION, same country as the node; task role, read-only) into DOOR_DIR and serves
+// those files — same hostnames, five tools, Agent Card and headers. Every response carries X-Allooloo-Origin: azure|aws.
+const ORIGIN = (process.env.ORIGIN || 'azure').toLowerCase() === 'aws' ? 'aws' : 'azure'; const DOOR_DIR = process.env.DOOR_DIR || '/tmp/ark';
+const cred = ORIGIN === 'azure' ? new StorageSharedKeyCredential(process.env.STORAGE_ACCOUNT, process.env.STORAGE_KEY) : null;
+const container = ORIGIN === 'aws' ? null : new BlobServiceClient(`https://${process.env.STORAGE_ACCOUNT}.blob.core.windows.net`, cred).getContainerClient(process.env.STORAGE_CONTAINER || 'pond');
 const ANN = { readOnlyHint: true, destructiveHint: false, openWorldHint: false, idempotentHint: true };
 const TOOLS = [
   { name: 'resolve_issuer', title: 'Resolve issuer', annotations: { title: 'Resolve issuer', ...ANN }, description: 'Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version.',
@@ -43,7 +49,20 @@ const COPY = NODE_COPY[NODE] || { country: NODE, jurisdiction: '', duty: '', sco
 let INDEX = null, FACTS = null, NODES = null, BOOTED = 0, BOOT_ERR = '';
 const CACHE = new Map(); const CACHE_MAX = 6000;
 async function blobJson(name) {
+  if (ORIGIN === 'aws') { const p = path.join(DOOR_DIR, name); if (!p.startsWith(DOOR_DIR + path.sep) || !fs.existsSync(p)) return null; return JSON.parse(fs.readFileSync(p, 'utf8')); }
   try { const b = await container.getBlobClient(name).downloadToBuffer(); return JSON.parse(b.toString('utf8')); } catch (e) { if (e.statusCode === 404) return null; throw e; }
+}
+let ARK_LOADED = '';
+async function loadArk() {
+  // the newest <node>/door/<as_of>/door-bundle.tar.gz in the node's ark bucket (a '-2' beside-copy is a later write of the same as_of and wins)
+  const { S3Client, ListObjectsV2Command, GetObjectCommand } = await import('@aws-sdk/client-s3'); const tar = await import('tar');
+  const s3 = new S3Client({ region: process.env.ARK_REGION }); const Bucket = process.env.ARK_BUCKET; let keys = [], token;
+  do { const r = await s3.send(new ListObjectsV2Command({ Bucket, Prefix: `${NODE}/door/`, ContinuationToken: token })); keys.push(...(r.Contents || []).map(o => o.Key)); token = r.NextContinuationToken; } while (token);
+  keys = keys.filter(k => /\/door-bundle\.tar\.gz(-\d+)?$/.test(k)).sort((a, b) => { const A = a.split('/')[2], B = b.split('/')[2]; return A < B ? -1 : A > B ? 1 : (parseInt((a.match(/-(\d+)$/) || [0, 1])[1]) - parseInt((b.match(/-(\d+)$/) || [0, 1])[1])); });
+  if (!keys.length) throw new Error(`no door bundle under s3://${Bucket}/${NODE}/door/`);
+  const key = keys[keys.length - 1]; const obj = await s3.send(new GetObjectCommand({ Bucket, Key: key })); fs.mkdirSync(DOOR_DIR, { recursive: true });
+  await new Promise((ok, bad) => obj.Body.pipe(tar.x({ cwd: DOOR_DIR, strict: true })).on('finish', ok).on('error', bad));
+  ARK_LOADED = key; console.log('ark bundle loaded', `s3://${Bucket}/${key}`);
 }
 async function boot(force = false) {
   // every ten minutes: index, facts and nodes reload together; each survives the others' failure, so a new facts.json or nodes.json is seen without a revision restart (PAUSE ORDER, Sept 13 2026)
@@ -141,7 +160,7 @@ A2A Agent Card: https://${AGENT_HOST}/.well-known/agent-card.json (also /.well-k
 GET paths: /, /facts.json, /llms.txt, /nodes.json, /record/<EXCHANGE>/<CODE>, /events/<EXCHANGE>/<CODE>?since=YYYY-MM-DD&cursor=0&limit=50. Exchanges: ${COPY.exchanges}.
 `;
 }
-function hdrs(asOf, ver, extra = {}) { return { 'X-CMR-Node': NODE, 'X-CMR-Region': REGION, 'X-CMR-As-Of': asOf || '', 'X-CMR-Version': String(ver || ''), 'X-CMR-Source': 'public-record', 'X-CMR-Contact': 'CEO mk@allooloo.ai', 'Content-Security-Policy': CSP, 'Strict-Transport-Security': 'max-age=31536000; includeSubDomains', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-CMR-Operator': OPERATOR, 'X-CMR-Registry': 'io.github.allooloo/cm-kg', 'Strict-Transport-Security': 'max-age=31536000', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Accept, Mcp-Session-Id, Mcp-Protocol-Version, Authorization', 'Access-Control-Expose-Headers': 'X-CMR-Node, X-CMR-Region, X-CMR-As-Of, X-CMR-Version, X-CMR-Source, X-CMR-Operator, Mcp-Session-Id', ...extra }; }
+function hdrs(asOf, ver, extra = {}) { return { 'X-Allooloo-Origin': ORIGIN, 'X-CMR-Node': NODE, 'X-CMR-Region': REGION, 'X-CMR-As-Of': asOf || '', 'X-CMR-Version': String(ver || ''), 'X-CMR-Source': 'public-record', 'X-CMR-Contact': 'CEO mk@allooloo.ai', 'Content-Security-Policy': CSP, 'Strict-Transport-Security': 'max-age=31536000; includeSubDomains', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-CMR-Operator': OPERATOR, 'X-CMR-Registry': 'io.github.allooloo/cm-kg', 'Strict-Transport-Security': 'max-age=31536000', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Accept, Mcp-Session-Id, Mcp-Protocol-Version, Authorization', 'Access-Control-Expose-Headers': 'X-Allooloo-Origin, X-CMR-Node, X-CMR-Region, X-CMR-As-Of, X-CMR-Version, X-CMR-Source, X-CMR-Operator, Mcp-Session-Id', ...extra }; }
 function send(res, status, body, type, asOf, ver, cache) { const h = hdrs(asOf, ver, { 'content-type': type, 'cache-control': cache || 'no-store' }); res.writeHead(status, h); res.end(body); }
 function sendJson(res, obj, status, asOf, ver, cache) { send(res, status, JSON.stringify(obj), 'application/json; charset=utf-8', asOf, ver, cache); }
 const CSP = "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; base-uri 'none'; form-action https://formspree.io; frame-ancestors 'none'; upgrade-insecure-requests";
@@ -200,4 +219,6 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, { error: 'not_found', doors: ['/', '/mcp', '/facts.json', '/llms.txt', '/nodes.json', '/.well-known/agent-card.json', '/record/<EXCHANGE>/<CODE>', '/events/…'] }, 404, asOf, ver);
   } catch (e) { console.error(e); sendJson(res, { error: 'internal', note: String(e.message || e) }, 500, '', ''); }
 });
-server.listen(PORT, () => { console.log(`cmkg door ${NODE} (${REGION}) on :${PORT}`); boot(true).then(() => console.log('index keys', INDEX ? (INDEX.keys || []).length : 0, BOOT_ERR || '')); });
+// aws standby: HTTPS on TLS_PORT with the node's Cloudflare Origin CA certificate (TLS_CERT / TLS_KEY from Secrets Manager), so Cloudflare runs full strict
+if (ORIGIN === 'aws' && process.env.TLS_CERT && process.env.TLS_KEY) { const tls = https.createServer({ cert: process.env.TLS_CERT, key: process.env.TLS_KEY }, (req, res) => server.emit('request', req, res)); tls.listen(parseInt(process.env.TLS_PORT || '443', 10), () => console.log('tls on', process.env.TLS_PORT || '443')); }
+server.listen(PORT, () => { console.log(`cmkg door ${NODE} (${REGION}) origin ${ORIGIN} on :${PORT}`); (ORIGIN === 'aws' ? loadArk() : Promise.resolve()).then(() => boot(true)).then(() => console.log('index keys', INDEX ? (INDEX.keys || []).length : 0, BOOT_ERR || '')); });

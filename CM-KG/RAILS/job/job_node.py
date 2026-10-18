@@ -124,13 +124,20 @@ def tavily_usage():
     except Exception: return None
 
 def ark_write(files, prefix):
-    """files: [(local path, key under <node>/<market date>/)]; returns [{key, version_id, bytes}] — Object Lock on the bucket keeps every version"""
-    import boto3
-    s3 = boto3.client('s3', region_name=os.environ['ARK_REGION']); b = os.environ['ARK_BUCKET']; out = []
+    """files: [(local path, key under <prefix>/)] -> [{bucket, key, version_id, bytes, skipped}]. Put only, never overwrite (ORDER-033 rule): the bucket's
+    listing (ark-writer may list its own prefix) gives each key's ETag; same MD5 = skipped, a differing object is written beside as <name>-2, -3 ..."""
+    import boto3, hashlib, base64
+    s3 = boto3.client('s3', region_name=os.environ['ARK_REGION']); b = os.environ['ARK_BUCKET']; out = []; have = {}
+    for page in s3.get_paginator('list_objects_v2').paginate(Bucket=b, Prefix=prefix + '/'):
+        for o in page.get('Contents', []): have[o['Key']] = o['ETag'].strip('"')
     for p, key in files:
-        k = f'{prefix}/{key}'
-        with open(p, 'rb') as f: r = s3.put_object(Bucket=b, Key=k, Body=f)
-        out.append({'bucket': b, 'key': k, 'version_id': r.get('VersionId'), 'bytes': os.path.getsize(p)})
+        data = open(p, 'rb').read(); md5 = hashlib.md5(data).hexdigest(); k = f'{prefix}/{key}'
+        if have.get(k) == md5: out.append({'bucket': b, 'key': k, 'version_id': None, 'bytes': len(data), 'skipped': True}); continue
+        n = 1; base = k
+        while k in have and have[k] != md5: n += 1; k = f'{base}-{n}'
+        if have.get(k) == md5: out.append({'bucket': b, 'key': k, 'version_id': None, 'bytes': len(data), 'skipped': True}); continue
+        r = s3.put_object(Bucket=b, Key=k, Body=data, ContentMD5=base64.b64encode(bytes.fromhex(md5)).decode())
+        have[k] = md5; out.append({'bucket': b, 'key': k, 'version_id': r.get('VersionId'), 'bytes': len(data), 'skipped': False})
     return out
 
 def main():
@@ -150,7 +157,10 @@ def main():
         gate = sh(['/usr/local/bin/python3', 'door_gate.py', 'us', REGION, MDATE, '--after-job'], cwd=f'{RAILS}/door', check=False); log('gate exit', gate)
         if gate == 0: sh(['/usr/local/bin/python3', 'restamp_asof.py', 'us', REGION, MDATE], cwd=f'{RAILS}/door')
         else: hold = MDATE
-        new = blob_json('door/facts.json'); drop = TODAY.isoformat()
+        new = blob_json('door/facts.json')
+        # the drop this run wrote: the newest pond/width0/<today>[-n] (the pipeline writes the next drop beside when an earlier one of the day had another window)
+        _ds = sorted({b.name.split('/')[2] for b in store().list_blobs(name_starts_with=f'pond/width0/{TODAY.isoformat()}')}, key=lambda d: (d[:10], int(d[11:] or 0)))
+        drop = _ds[-1] if _ds else TODAY.isoformat()
     else:
         sync_pond()
         if os.path.exists(os.path.join(POND, NODE, '.lock')):
@@ -181,7 +191,7 @@ def main():
     # SPEND: the node's own lab lines from its drops (Canada carries the labs; the others call Tavily only) + its share of the Tavily counter
     tav1 = tavily_usage(); spend_lines = []
     if CC != 'us':
-        md = f'{ROOT}/CM-KG/SPEND/SPEND.md'; n0 = len(open(md, encoding='utf-8').read().splitlines()) if os.path.exists(md) else 0
+        md = f'{ROOT}/CM-KG/SPEND/SPEND.md'; before = set(open(md, encoding='utf-8').read().splitlines()) if os.path.exists(md) else set()
         args = ['/usr/local/bin/python3', 'spend_line.py', f'sweep {MDATE} {CC} (Azure job)', TODAY.isoformat(), '--note', 'in-country job; Tavily share read on this job only (the counter is shared by the parallel jobs)']
         # never write zero: the Tavily plan counter lags a few minutes and is shared by the parallel jobs, so an unchanged reading at close is not
         # "0 credits used" — the job writes its reading and says so; the run-level credits are the apex job's line (dry run 1, 2026-10-18)
@@ -190,7 +200,9 @@ def main():
         if moved: args += ['--tavily-start', str(tav0), '--tavily-end', str(tav1), '--estimated', '--only', 'Grok,ChatGPT,Gemini,Mistral,Perplexity,Claude,Tavily']
         else: args += ['--only', 'Grok,ChatGPT,Gemini,Mistral,Perplexity,Claude']
         try:
-            sh(args, cwd=RAILS, check=False, quiet=True); spend_lines = [l for l in open(md, encoding='utf-8').read().splitlines()[n0:] if l.strip() and not l.startswith('```')]
+            # spend_line.py inserts its lines before the closing fence of SPEND.md, so the new lines are the ones not there before — not the file's tail
+            # (the tail slice dropped the first new line, Grok, on every node; found on the Canada dry run 2026-10-18)
+            sh(args, cwd=RAILS, check=False, quiet=True); spend_lines = [l for l in open(md, encoding='utf-8').read().splitlines() if l.strip() and not l.startswith('```') and l not in before]
         except Exception as e: log('spend line failed (flagged):', repr(e)[:160])
         if not moved: spend_lines.append(f"sweep {MDATE} {CC} (Azure job) · Tavily · credits not attributed to this job (plan counter {tav1 if tav1 is not None else 'not read'} of 200,000 at close, unchanged from the start reading; the counter lags and is shared by the parallel jobs) · the run-level Tavily line is the apex job's")
     else: spend_lines = [f'sweep {MDATE} · United States job (EDGAR, Gemini, Perplexity) · no meter · lab calls run in the East US container job and are not counted here']
@@ -205,30 +217,41 @@ def main():
     ark = {'enabled': os.environ.get('ARK_ENABLED', '0') == '1' and CONT == 'pond', 'objects': []}
     if os.environ.get('ARK_ENABLED', '0') == '1' and CONT != 'pond': log(f'ark skipped: container {CONT} is not the live store')
     if ark['enabled']:
+        # ark layout of record (ORDER-033, 2026-10-18) — the same keys the backfill writes, so the ark reads like the pond:
+        #   <node>/pond/<source>/<drop>/<file>   every pond drop this run created, paths identical to the pond
+        #   <node>/door/<as_of>/door-bundle.tar.gz   the door as published (records, events, index, facts, nodes)
+        #   <node>/numbers/<market date>.txt   the NUMBERS LOG line
         try:
-            files = []; prefix = f'{NODE}/{MDATE}'
+            files = []
             if CC != 'us':
-                dd = os.path.join(POND, NODE, 'width1', drop)
-                for r_, _, fs in os.walk(dd):
-                    for f in fs: files.append((os.path.join(r_, f), f'pond/width1/{drop}/' + os.path.relpath(os.path.join(r_, f), dd).replace(os.sep, '/')))
-                tb = f'/tmp/{NODE}-door-bundle.tar.gz'
-                with tarfile.open(tb, 'w:gz') as t:
-                    for sub in ('records', 'events'):
-                        d = f'{DOOR}/data/{sub}/{NODE}'
-                        if os.path.isdir(d): t.add(d, arcname=f'door/{sub}/{NODE}')
-                    for fn in ('index.json', 'facts.json', 'nodes.json'): t.add(f'{DOOR}/data/{fn}', arcname=f'door/{fn}')
-                files.append((tb, 'door/door-bundle.tar.gz'))
+                for source in sorted(os.listdir(os.path.join(POND, NODE))):
+                    sd = os.path.join(POND, NODE, source)
+                    if not os.path.isdir(sd) or source.startswith('.'): continue
+                    for dr in os.listdir(sd):
+                        if not dr.startswith(TODAY.isoformat()): continue   # drops this run created
+                        dd = os.path.join(sd, dr)
+                        for r_, _, fs in os.walk(dd):
+                            for f in fs:
+                                if f == '.open': continue
+                                files.append((os.path.join(r_, f), f'pond/{source}/{dr}/' + os.path.relpath(os.path.join(r_, f), dd).replace(os.sep, '/')))
+                door_src = [(f'{DOOR}/data/{sub}/{NODE}', f'door/{sub}') for sub in ('records', 'events')]   # the store's own layout door/<sub>/<EX>/<code>.json — what a door reads + [(f'{DOOR}/data/{fn}', f'door/{fn}') for fn in ('index.json', 'facts.json', 'nodes.json')]
             else:
-                tb = f'/tmp/{NODE}-door-bundle.tar.gz'; tmpd = f'/tmp/{NODE}-door'; os.makedirs(tmpd, exist_ok=True)
-                names = [b.name for b in store().list_blobs(name_starts_with='door/')] + [b.name for b in store().list_blobs(name_starts_with=f'pond/width0/{drop}/')]
+                tmpd = f'/tmp/{NODE}-ark'; os.makedirs(tmpd, exist_ok=True)
+                drop_names = [b.name for b in store().list_blobs(name_starts_with=f'pond/width0/{drop}/')]   # the drop this run wrote, never an earlier drop of the day
+                door_names = [b.name for b in store().list_blobs(name_starts_with='door/')]
                 def one(n):
                     p = os.path.join(tmpd, n); os.makedirs(os.path.dirname(p), exist_ok=True)
                     with open(p, 'wb') as f: store().get_blob_client(n).download_blob().readinto(f)
-                with ThreadPoolExecutor(max_workers=32) as ex: list(ex.map(one, names))
-                with tarfile.open(tb, 'w:gz') as t: t.add(tmpd, arcname='.')
-                files.append((tb, 'door-and-drop-bundle.tar.gz'))
-            open(f'/tmp/{NODE}-numbers.txt', 'w', encoding='utf-8').write(line + '\n'); files.append((f'/tmp/{NODE}-numbers.txt', 'numbers.txt'))
-            ark['objects'] = ark_write(files, prefix); log(f"ark: {len(ark['objects'])} objects written to s3://{os.environ['ARK_BUCKET']}/{prefix}/")
+                with ThreadPoolExecutor(max_workers=32) as ex: list(ex.map(one, drop_names + door_names))
+                files += [(os.path.join(tmpd, n), n) for n in drop_names]
+                door_src = [(os.path.join(tmpd, 'door'), 'door')]
+            tb = f'/tmp/{NODE}-door-bundle.tar.gz'
+            with tarfile.open(tb, 'w:gz') as t:
+                for src, arc in door_src:
+                    if os.path.exists(src): t.add(src, arcname=arc)
+            files.append((tb, f'door/{n_asof or MDATE}/door-bundle.tar.gz'))
+            open(f'/tmp/{NODE}-numbers.txt', 'w', encoding='utf-8').write(line + '\n'); files.append((f'/tmp/{NODE}-numbers.txt', f'numbers/{MDATE}.txt'))
+            ark['objects'] = ark_write(files, NODE); log(f"ark: {len(ark['objects'])} objects written to s3://{os.environ['ARK_BUCKET']}/{NODE}/")
         except Exception as e: ark['error'] = repr(e)[:300]; log('ark write FAILED (a failed close for the apex):', ark['error'])
     done = {'node': NODE, 'market_date': MDATE, 'region': REGION, 'store': f'{SA}/{CONT}', 'pond_drop': drop, 'records': n_rec, 'events': n_ev, 'as_of': n_asof, 'records_delta': n_rec - o_rec, 'events_delta': n_ev - o_ev,
             'served_before': {'records': o_rec, 'events': o_ev, 'as_of': o_asof}, 'gate_exit': gate, 'held': bool(hold), 'held_flag': held_flag, 'numbers_line': line, 'spend_lines': spend_lines,
