@@ -23,3 +23,35 @@ CM-KG/RAILS/node_modules/
 .azure/
 .gh/
 CM-KG/POND/
+
+# ops content lives in the private allooloo/cm-kg-ops (CEO 2026-10-18); cm-kg is code only
+/START_ME_UP/
+/AWS/
+/COMPANY RECORDS/
+/CM-KG/SWEEPS/
+/CM-KG/SPEND/
+/CM-KG/POND/
+/CLAUDE.md
+/ROOT-CONFIG.json
+/ORDER-*.md
+*.pre-*
+*.pre.*
+_anchors-*/
+_pre-refurb*/
+/AZURE/*
+!/AZURE/*.py
+!/AZURE/*.ps1
+!/AZURE/*.sh
+/AZURE/apic-pre-*/
+*.log
+/CM-KG/RAILS/estate-audit-*
+/CM-KG/RAILS/estate-surface-*
+/CM-KG/RAILS/zones-027/*
+!/CM-KG/RAILS/zones-027/*.py
+/CM-KG/RAILS/zones-032/*
+!/CM-KG/RAILS/zones-032/*.py
+!/CM-KG/RAILS/zones-032/*.js
+.wrangler/
+.claude/
+/.git-ops/
+
