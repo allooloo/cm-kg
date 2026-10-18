@@ -1,0 +1,321 @@
+{
+ "ca": {
+  "app": "cmkg-door-ca",
+  "rg": "allooloo-cmkg-canadacentral",
+  "anchor": {
+   "image": "allooloocmkg.azurecr.io/cmkg-door:0.11.3",
+   "rev": "cmkg-door-ca--0000003"
+  },
+  "version_before": "0.11.0",
+  "rolled": {
+   "rev": "cmkg-door-ca--v0121-0917",
+   "state": "Succeeded"
+  },
+  "gate": {
+   "version": "0.12.1",
+   "tools": 5,
+   "headers": {
+    "ok": true,
+    "missing": [],
+    "wrong": {},
+    "node": "ca-cm-kg",
+    "version": "1",
+    "as_of": "2026-09-10",
+    "hsts": true
+   },
+   "valid_ok": true,
+   "bad": "typed_error",
+   "PASS": true
+  }
+ },
+ "us": {
+  "app": "cmkg-door-us",
+  "rg": "allooloo-cmkg-eastus",
+  "anchor": {
+   "image": "allooloocmkg.azurecr.io/cmkg-door:0.11.3",
+   "rev": "cmkg-door-us--0000003"
+  },
+  "version_before": "0.11.0",
+  "rolled": {
+   "rev": "cmkg-door-us--v0121-0917",
+   "state": "Succeeded"
+  },
+  "gate": {
+   "version": "0.12.1",
+   "tools": 5,
+   "headers": {
+    "ok": true,
+    "missing": [],
+    "wrong": {},
+    "node": "us-cm-kg",
+    "version": "1",
+    "as_of": "2026-09-12",
+    "hsts": true
+   },
+   "valid_ok": true,
+   "bad": "typed_error",
+   "PASS": true
+  }
+ },
+ "uk": {
+  "app": "cmkg-door-uk",
+  "rg": "allooloo-cmkg-uksouth",
+  "anchor": {
+   "image": "allooloocmkg.azurecr.io/cmkg-door:0.11.3",
+   "rev": "cmkg-door-uk--0000003"
+  },
+  "version_before": "0.11.0",
+  "rolled": {
+   "rev": "cmkg-door-uk--v0121-0917",
+   "state": "Succeeded"
+  },
+  "gate": {
+   "version": "0.12.1",
+   "tools": 5,
+   "headers": {
+    "ok": true,
+    "missing": [],
+    "wrong": {},
+    "node": "uk-cm-kg",
+    "version": "1",
+    "as_of": "2026-09-11",
+    "hsts": true
+   },
+   "valid_ok": true,
+   "bad": "typed_error",
+   "PASS": true
+  }
+ },
+ "de": {
+  "app": "cmkg-door-de",
+  "rg": "allooloo-cmkg-germanywestcentral",
+  "anchor": {
+   "image": "allooloocmkg.azurecr.io/cmkg-door:0.11.3",
+   "rev": "cmkg-door-de--0000003"
+  },
+  "version_before": "0.11.0",
+  "rolled": {
+   "rev": "cmkg-door-de--v0121-0917",
+   "state": "Succeeded"
+  },
+  "gate": {
+   "version": "0.12.1",
+   "tools": 5,
+   "headers": {
+    "ok": true,
+    "missing": [],
+    "wrong": {},
+    "node": "de-cm-kg",
+    "version": "1",
+    "as_of": "2026-09-11",
+    "hsts": true
+   },
+   "valid_ok": true,
+   "bad": "typed_error",
+   "PASS": true
+  }
+ },
+ "fr": {
+  "app": "cmkg-door-fr",
+  "rg": "allooloo-cmkg-francecentral",
+  "anchor": {
+   "image": "allooloocmkg.azurecr.io/cmkg-door:0.11.3",
+   "rev": "cmkg-door-fr--0000003"
+  },
+  "version_before": "0.11.0",
+  "rolled": {
+   "rev": "cmkg-door-fr--v0121-0917",
+   "state": "Succeeded"
+  },
+  "gate": {
+   "version": "0.12.1",
+   "tools": 5,
+   "headers": {
+    "ok": true,
+    "missing": [],
+    "wrong": {},
+    "node": "fr-cm-kg",
+    "version": "1",
+    "as_of": "2026-09-11",
+    "hsts": true
+   },
+   "valid_ok": true,
+   "bad": "typed_error",
+   "PASS": true
+  }
+ },
+ "nl": {
+  "app": "cmkg-door-nl",
+  "rg": "allooloo-cmkg-westeurope",
+  "anchor": {
+   "image": "allooloocmkg.azurecr.io/cmkg-door:0.11.3",
+   "rev": "cmkg-door-nl--0000003"
+  },
+  "version_before": "0.11.0",
+  "rolled": {
+   "rev": "cmkg-door-nl--v0121-0917",
+   "state": "Succeeded"
+  },
+  "gate": {
+   "version": "0.12.1",
+   "tools": 5,
+   "headers": {
+    "ok": true,
+    "missing": [],
+    "wrong": {},
+    "node": "nl-cm-kg",
+    "version": "1",
+    "as_of": "2026-09-11",
+    "hsts": true
+   },
+   "valid_ok": true,
+   "bad": "typed_error",
+   "PASS": true
+  }
+ },
+ "ch": {
+  "app": "cmkg-door-ch",
+  "rg": "allooloo-cmkg-switzerlandnorth",
+  "anchor": {
+   "image": "allooloocmkg.azurecr.io/cmkg-door:0.11.3",
+   "rev": "cmkg-door-ch--0000003"
+  },
+  "version_before": "0.11.0",
+  "rolled": {
+   "rev": "cmkg-door-ch--v0121-0917",
+   "state": "Succeeded"
+  },
+  "gate": {
+   "version": "0.12.1",
+   "tools": 5,
+   "headers": {
+    "ok": true,
+    "missing": [],
+    "wrong": {},
+    "node": "ch-cm-kg",
+    "version": "1",
+    "as_of": "2026-09-11",
+    "hsts": true
+   },
+   "valid_ok": true,
+   "bad": "typed_error",
+   "PASS": true
+  }
+ },
+ "au": {
+  "app": "cmkg-door-au",
+  "rg": "allooloo-cmkg-australiaeast",
+  "anchor": {
+   "image": "allooloocmkg.azurecr.io/cmkg-door:0.11.3",
+   "rev": "cmkg-door-au--0000003"
+  },
+  "version_before": "0.11.0",
+  "rolled": {
+   "rev": "cmkg-door-au--v0121-0917",
+   "state": "Succeeded"
+  },
+  "gate": {
+   "version": "0.12.1",
+   "tools": 5,
+   "headers": {
+    "ok": true,
+    "missing": [],
+    "wrong": {},
+    "node": "au-cm-kg",
+    "version": "1",
+    "as_of": "2026-09-11",
+    "hsts": true
+   },
+   "valid_ok": true,
+   "bad": "typed_error",
+   "PASS": true
+  }
+ },
+ "sg": {
+  "app": "cmkg-door-sg",
+  "rg": "allooloo-cmkg-southeastasia",
+  "anchor": {
+   "image": "allooloocmkg.azurecr.io/cmkg-door:0.11.3",
+   "rev": "cmkg-door-sg--0000003"
+  },
+  "version_before": "0.11.0",
+  "rolled": {
+   "rev": "cmkg-door-sg--v0121-0917",
+   "state": "Succeeded"
+  },
+  "gate": {
+   "version": "0.12.1",
+   "tools": 5,
+   "headers": {
+    "ok": true,
+    "missing": [],
+    "wrong": {},
+    "node": "sg-cm-kg",
+    "version": "1",
+    "as_of": "2026-09-12",
+    "hsts": true
+   },
+   "valid_ok": true,
+   "bad": "typed_error",
+   "PASS": true
+  }
+ },
+ "jp": {
+  "app": "cmkg-door-jp",
+  "rg": "allooloo-cmkg-japaneast",
+  "anchor": {
+   "image": "allooloocmkg.azurecr.io/cmkg-door:0.11.3",
+   "rev": "cmkg-door-jp--0000003"
+  },
+  "version_before": "0.11.0",
+  "rolled": {
+   "rev": "cmkg-door-jp--v0121-0917",
+   "state": "Succeeded"
+  },
+  "gate": {
+   "version": "0.12.1",
+   "tools": 5,
+   "headers": {
+    "ok": true,
+    "missing": [],
+    "wrong": {},
+    "node": "jp-cm-kg",
+    "version": "1",
+    "as_of": "2026-09-12",
+    "hsts": true
+   },
+   "valid_ok": true,
+   "bad": "typed_error",
+   "PASS": true
+  }
+ },
+ "kr": {
+  "app": "cmkg-door-kr",
+  "rg": "allooloo-cmkg-koreacentral",
+  "anchor": {
+   "image": "allooloocmkg.azurecr.io/cmkg-door:0.11.3",
+   "rev": "cmkg-door-kr--0000003"
+  },
+  "version_before": "0.11.0",
+  "rolled": {
+   "rev": "cmkg-door-kr--v0121-0917",
+   "state": "Succeeded"
+  },
+  "gate": {
+   "version": "0.12.1",
+   "tools": 5,
+   "headers": {
+    "ok": true,
+    "missing": [],
+    "wrong": {},
+    "node": "kr-cm-kg",
+    "version": "1",
+    "as_of": "2026-09-12",
+    "hsts": true
+   },
+   "valid_ok": true,
+   "bad": "typed_error",
+   "PASS": true
+  }
+ }
+}

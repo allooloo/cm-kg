@@ -1,4 +1,4 @@
-"""Apex index builder (ORDER-018): rebuilds static/index.json (identifier -> node, index-only, no record bodies)
+r"""Apex index builder (ORDER-018): rebuilds static/index.json (identifier -> node, index-only, no record bodies)
 and static/nodes.json from the eleven regional stores' door/index.json and door/nodes.json.
 Run from CM-KG\DOOR\apex; then `wrangler deploy`. Tenant guard: the subscription of record only.
 Usage: python build_index.py [cc ...]   (no args = all eleven nodes)"""

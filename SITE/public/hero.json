@@ -1,0 +1,88 @@
+{
+ "record": "CMR",
+ "version": "width-0 draft",
+ "as_of": "2026-09-10",
+ "status": "unsigned — signing lands with cm-record.org",
+ "issuer": "Doman Building Materials Group Ltd.",
+ "exchange": "TSX",
+ "ticker": "DBM",
+ "fields": [
+  {
+   "field": "Legal name",
+   "value": "Doman Building Materials Group Ltd.",
+   "source": "https://www.tsx.com/json/company-directory/search/tsx/^*",
+   "read_by": "tsx.com company directory (exchange list)"
+  },
+  {
+   "field": "Ticker",
+   "value": "TSX: DBM",
+   "source": "https://www.tsx.com/json/company-directory/search/tsx/^*",
+   "read_by": "tsx.com company directory (exchange list)"
+  },
+  {
+   "field": "ISIN",
+   "value": "CA25703L1004",
+   "source": "https://www.marketscreener.com/quote/stock/DOMAN-BUILDING-MATERIALS--14943042",
+   "read_by": "Tavily search + regex extraction from page text"
+  },
+  {
+   "field": "LEI",
+   "value": "529900HEUBRUITK08D78",
+   "source": "https://api.gleif.org/api/v1/lei-records/529900HEUBRUITK08D78",
+   "read_by": "GLEIF name-exact",
+   "note": "registration ISSUED"
+  },
+  {
+   "field": "Sector",
+   "value": "Industrial Products & Services",
+   "source": "https://www.tsx.com/en/resource/571 (tsx-and-amp-tsxv-listed-companies-2026-08-14-en.xlsx, data as of 31-Jul-2026)",
+   "read_by": "TMX listed-companies workbook (exchange list, monthly; data month named in the source column)"
+  },
+  {
+   "field": "Incorporation",
+   "value": "British Columbia (CA-BC)",
+   "source": "https://api.gleif.org/api/v1/lei-records/529900HEUBRUITK08D78",
+   "read_by": "GLEIF LEI record (LEI per the LEI column)"
+  },
+  {
+   "field": "Head office",
+   "value": "Vanvouver, British Columbia",
+   "source": "https://api.gleif.org/api/v1/lei-records/529900HEUBRUITK08D78",
+   "read_by": "GLEIF LEI record (LEI per the LEI column)",
+   "note": "as recorded at GLEIF"
+  },
+  {
+   "field": "Transfer agent",
+   "value": "TSX Trust Company",
+   "source": "https://cdn.domanbm.com/files/Annual-2025-FS-FINAL.pdf",
+   "read_by": "Tavily search + regex extraction from page text",
+   "evidence": "f the Company. Directors Officers Amar S. Doman Chairman and CEO James Code Chief Financial Officer R.S. (Rob) Doman Corporate Secretary Doman Building Materials Group Ltd. Head Office 1600 – 1100 Melville Street P.O. Box 39 Vancouver, BC V6E 4A6 Contact Phone: 604-432-1400 Website: www.domanbm.com "
+  },
+  {
+   "field": "Auditor",
+   "value": "KPMG LLP",
+   "source": "https://cdn.domanbm.com/files/Annual-2025-FS-FINAL.pdf",
+   "read_by": "Tavily regex",
+   "evidence": "h Columbia Ann Simms Minneapolis, Minnesota Siegfried J. Thoma Portland, Oregon Auditors KPMG LLP Vancouver, British Columbia Solicitors Goodmans LLP Toronto, Ontario DLA Piper "
+  },
+  {
+   "field": "Newswire of habit",
+   "value": "GlobeNewswire",
+   "source": "https://www.globenewswire.com/news-release/2025/11/26/3195098/0/en/Doman-Building-Materials-Group-Ltd-Announces-Offering-and-Pricing-of-Reopening-of-170-Million-Senior-Notes-Due-2029.html",
+   "read_by": "Tavily search restricted to wire domains (release hits)"
+  },
+  {
+   "field": "SEDAR+ profile",
+   "value": "https://www.sedarplus.ca/csa-party/000029499.html?_locale=en",
+   "source": "https://www.sedarplus.ca/csa-party/records/profile.html?id=1eef405d7c4b445f808cb721138ff416",
+   "read_by": "Tavily search of sedarplus.ca (profile page whose heading matches the name)"
+  },
+  {
+   "field": "Listed since",
+   "value": "2004-05-12 (IPO)",
+   "source": "https://www.tsx.com/en/resource/571 (tsx-and-amp-tsxv-listed-companies-2026-08-14-en.xlsx, data as of 31-Jul-2026)",
+   "read_by": "TMX listed-companies workbook (exchange list, monthly; data month named in the source column)"
+  }
+ ],
+ "gaps": "SEDI link: unverified: sedi.ca returns HTTP 403 to automated clients; link is the issuer-search entry"
+}

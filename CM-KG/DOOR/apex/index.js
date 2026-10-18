@@ -79,14 +79,23 @@ async function handleRpc(msg) {
   if (method === 'prompts/list') return rpcResult(id, { prompts: [] });
   return rpcError(id, -32601, `Method not found: ${method}`);
 }
-function agentCard() {
-  return { name: 'Capital Markets Knowledge Graph — apex router', description: 'Index-only router over the Capital Markets Knowledge Graph: names the node that holds an issuer (ticker, ISIN, LEI, legal name or sourced alias) and forwards record and event calls to that node\'s regional door. No record body is stored or served from the apex; each node\'s data lives and is served in its own jurisdiction. Read-only, public-record only, no auth, no prices.',
+// ORDER-027 C2 (2026-10-17): agent.getissuer.ai / mcp.getissuer.ai are aliases of this router — same tools, same index, same card; the card's name reads 'getissuer' there.
+function agentCard(host) {
+  return { name: /(^|\.)getissuer\.ai$/.test(host || '') ? 'getissuer' : 'Capital Markets Knowledge Graph — apex router', description: 'Index-only router over the Capital Markets Knowledge Graph: names the node that holds an issuer (ticker, ISIN, LEI, legal name or sourced alias) and forwards record and event calls to that node\'s regional door. No record body is stored or served from the apex; each node\'s data lives and is served in its own jurisdiction. Read-only, public-record only, no auth, no prices.',
     url: 'https://mcp.capitalmarketsknowledgegraph.ai/mcp', preferredTransport: 'JSONRPC', supportedInterfaces: [{ url: 'https://mcp.capitalmarketsknowledgegraph.ai/mcp', transport: 'JSONRPC' }], additionalInterfaces: [{ url: 'https://mcp.capitalmarketsknowledgegraph.ai/mcp', transport: 'JSONRPC' }], securitySchemes: {}, security: [], defaultInputModes: ['application/json', 'text/plain'], defaultOutputModes: ['application/json'], iconUrl: 'https://mcp.capitalmarketsknowledgegraph.ai/icon-512.png', provider: { organization: OPERATOR, url: 'https://allooloo.io' }, version: SERVER_VERSION, documentationUrl: 'https://mcp.capitalmarketsknowledgegraph.ai/llms.txt', protocolVersion: '0.3.0', capabilities: { streaming: false, pushNotifications: false, stateTransitionHistory: false }, defaultInputModes: ['application/json', 'text/plain'], defaultOutputModes: ['application/json'],
     skills: TOOLS.map(t => ({ id: t.name, name: t.title, description: t.description, tags: ['capital-markets', 'public-record', 'router', 'mcp'] })),
     'x-cmkg': { role: 'apex router', transport: 'MCP Streamable HTTP (JSON-RPC 2.0, stateless, no auth)', registry: 'io.github.allooloo/cm-kg', contact: 'allooloo@users.noreply.github.com', node_agents: (NODES || []).map(n => ({ node: n.node, country: n.country, live: !!n.live, regional_door: PUBLIC[n.node] ? PUBLIC[n.node].door : null, agent_card: PUBLIC[n.node] ? PUBLIC[n.node].agent_card : null })), old_shared_door: 'the Cloudflare Worker + D1 door (cm-kg-door) stays deployed beside this router and is listed for CEO deletion at end of scope' } };
 }
-function headers(extra = {}) { return { 'Content-Security-Policy': CSP, 'Strict-Transport-Security': 'max-age=31536000; includeSubDomains', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-CMR-Node': 'apex', 'X-CMR-Contact': 'CEO mk@allooloo.ai', 'X-CMR-Source': 'public-record', 'X-CMR-Operator': OPERATOR, 'X-CMR-Registry': 'io.github.allooloo/cm-kg', 'X-CMR-Version': SERVER_VERSION, 'Strict-Transport-Security': 'max-age=31536000', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Accept, Mcp-Session-Id, Mcp-Protocol-Version, Authorization', 'Access-Control-Expose-Headers': 'X-CMR-Node, X-CMR-Source, X-CMR-Operator, X-CMR-Version, Mcp-Session-Id', ...extra }; }
-function json(obj, status = 200, cache = 'no-store') { return new Response(JSON.stringify(obj), { status, headers: headers({ 'content-type': 'application/json; charset=utf-8', 'cache-control': cache }) }); }
+function indexAsOf() { let m = ''; for (const n of (NODES || [])) { if (n && n.as_of && String(n.as_of) > m) m = String(n.as_of); } return m; }
+function asOfOf(obj) {  // the as-of of the record served: a result that carries as_of, or the newest among resolve_issuer matches
+  if (!obj || typeof obj !== 'object') return '';
+  if (obj.as_of) return String(obj.as_of);
+  if (obj.record && obj.record.as_of) return String(obj.record.as_of);
+  if (Array.isArray(obj.matches) && obj.matches.length) { let m = ''; for (const x of obj.matches) if (x && x.as_of && String(x.as_of) > m) m = String(x.as_of); return m; }
+  return '';
+}
+function headers(extra = {}) { const asOf = (extra && extra['X-CMR-As-Of']) || indexAsOf(); return { 'Content-Security-Policy': CSP, 'Strict-Transport-Security': 'max-age=31536000; includeSubDomains', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-CMR-Node': 'apex', 'X-CMR-As-Of': asOf, 'X-CMR-Contact': 'CEO mk@allooloo.ai', 'X-CMR-Source': 'public-record', 'X-CMR-Operator': OPERATOR, 'X-CMR-Registry': 'io.github.allooloo/cm-kg', 'X-CMR-Version': SERVER_VERSION, 'Strict-Transport-Security': 'max-age=31536000', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Accept, Mcp-Session-Id, Mcp-Protocol-Version, Authorization', 'Access-Control-Expose-Headers': 'X-CMR-Node, X-CMR-As-Of, X-CMR-Source, X-CMR-Operator, X-CMR-Version, Mcp-Session-Id', ...extra }; }
+function json(obj, status = 200, cache = 'no-store', asOf = '') { return new Response(JSON.stringify(obj), { status, headers: headers({ 'content-type': 'application/json; charset=utf-8', 'cache-control': cache, ...(asOf ? { 'X-CMR-As-Of': asOf } : {}) }) }); }
 function human() {
   const live = NODES.filter(n => n.live);
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Capital Markets Knowledge Graph — apex router</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><meta name="theme-color" content="#14213D"><style>body{font-family:system-ui,sans-serif;max-width:72ch;margin:2rem auto;padding:0 1rem;color:#14213D;line-height:1.5}code{background:#f3f4f6;padding:.1em .3em}h1{font-size:1.4rem}</style></head><body><h1>Capital Markets Knowledge Graph — apex router</h1>
@@ -120,10 +129,11 @@ export default {
       let body; try { body = await request.json(); } catch (e) { return json(rpcError(null, -32700, 'Parse error'), 400); }
       const batch = Array.isArray(body); const outs = []; for (const m of (batch ? body : [body])) { const r = await handleRpc(m); if (r) outs.push(r); }
       if (!outs.length) return new Response(null, { status: 202, headers: headers() });
-      return json(batch ? outs : outs[0]);
+      let servedAsOf = ''; for (const o of outs) { const sc = o && o.result && o.result.structuredContent; const a = asOfOf(sc); if (a > servedAsOf) servedAsOf = a; }
+      return json(batch ? outs : outs[0], 200, 'no-store', servedAsOf);
     }
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method Not Allowed', { status: 405, headers: headers() });
-    if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json' || (host.startsWith('agent.') && p === '/')) return json(agentCard(), 200, 'public, max-age=300');
+    if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json' || (host.startsWith('agent.') && p === '/')) return json(agentCard(host), 200, 'public, max-age=300');
     if (p === '/') return new Response(human(), { status: 200, headers: headers({ 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300' }) });
     if (p === '/llms.txt') return new Response(llms(), { status: 200, headers: headers({ 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=3600' }) });
     if (p === '/nodes.json') return json(NODES.map(n => ({ ...n, regional_door: PUBLIC[n.node] ? PUBLIC[n.node].door : null, agent_card: PUBLIC[n.node] ? PUBLIC[n.node].agent_card : null })), 200, 'public, max-age=3600');
@@ -135,7 +145,7 @@ export default {
     if (p === '/openapi.json') return json(openapi(host), 200, 'public, max-age=3600');
     if (['/favicon.ico', '/favicon.svg', '/apple-touch-icon.png', '/icon-48.png', '/icon-96.png', '/icon-144.png', '/icon-192.png', '/icon-512.png', '/site.webmanifest'].includes(p)) { const a = await env.ASSETS.fetch(new Request(origin + p)); return a.ok ? new Response(a.body, { status: 200, headers: headers({ 'content-type': a.headers.get('content-type') || 'application/octet-stream', 'cache-control': 'public, max-age=86400' }) }) : json({ error: 'not_found' }, 404); }
     let m = p.match(/^\/(record|events)\/([a-z]{2}-cm-kg)\/([A-Z\-]+)\/(.+)$/i);
-    if (m) { const node = m[2].toLowerCase(); const key = `${node}/${m[3].toUpperCase()}/${decodeURIComponent(m[4])}`; const out = m[1].toLowerCase() === 'record' ? await forward(node, 'get_record', { identifier: key }) : await forward(node, 'list_events_since', { identifier: key, since: url.searchParams.get('since') || undefined, cursor: url.searchParams.get('cursor') || 0, limit: url.searchParams.get('limit') || 50 }); return json(out, out.error ? (out.error === 'unavailable' ? 503 : 404) : 200); }
+    if (m) { const node = m[2].toLowerCase(); const key = `${node}/${m[3].toUpperCase()}/${decodeURIComponent(m[4])}`; const out = m[1].toLowerCase() === 'record' ? await forward(node, 'get_record', { identifier: key }) : await forward(node, 'list_events_since', { identifier: key, since: url.searchParams.get('since') || undefined, cursor: url.searchParams.get('cursor') || 0, limit: url.searchParams.get('limit') || 50 }); return json(out, out.error ? (out.error === 'unavailable' ? 503 : 404) : 200, 'no-store', asOfOf(out)); }
     return json({ error: 'not_found', doors: ['/', '/mcp', '/nodes.json', '/facts.json', '/llms.txt', '/.well-known/agent-card.json', '/record/<node>/<EXCHANGE>/<CODE>', '/events/<node>/<EXCHANGE>/<CODE>'] }, 404);
   }
 };

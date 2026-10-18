@@ -18,3 +18,8 @@ AZURE/certs/
 AGENT KEYS/
 
 CM-KG/RAILS/node_modules/
+
+# ORDER-031 (2026-10-17): per-root login directories and local pond mirrors never enter the repo
+.azure/
+.gh/
+CM-KG/POND/

@@ -1,0 +1,143 @@
+{
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+ "name": "io.github.allooloo/cm-kg",
+ "title": "Capital Markets Agents: MCP+A2A Canada",
+ "description": "KYP Agentic Trading with the Capital Markets Knowledge Graph — eleven markets, in-country.",
+ "version": "0.12.2",
+ "websiteUrl": "https://capitalmarketsknowledgegraph.ai",
+ "repository": {
+  "url": "https://github.com/allooloo/cm-kg",
+  "source": "github"
+ },
+ "remotes": [
+  {
+   "type": "streamable-http",
+   "url": "https://mcp.capitalmarketsknowledgegraph.ai/mcp"
+  },
+  {
+   "type": "streamable-http",
+   "url": "https://mcp.getissuer.ai/mcp"
+  }
+ ],
+ "_meta": {
+  "io.modelcontextprotocol.registry/publisher-provided": {
+   "operator": "Allooloo Technologies Corp.",
+   "category": "agentic market dataset",
+   "keywords": [
+    "agentic market dataset",
+    "capital markets",
+    "issuer record",
+    "ISIN",
+    "LEI",
+    "KYP",
+    "Canada",
+    "TSX",
+    "United Kingdom",
+    "LSE",
+    "AIM",
+    "Companies House",
+    "Australia",
+    "ASX",
+    "NSX",
+    "ASIC",
+    "Singapore",
+    "SGX",
+    "ACRA",
+    "Switzerland",
+    "SIX",
+    "Zefix",
+    "Germany",
+    "Xetra",
+    "Handelsregister",
+    "France",
+    "Euronext Paris",
+    "AMF",
+    "Netherlands",
+    "Euronext Amsterdam",
+    "AFM",
+    "Japan",
+    "Tokyo Stock Exchange",
+    "EDINET",
+    "South Korea",
+    "KRX",
+    "DART"
+   ],
+   "authentication": "none",
+   "access": "read-only, public-record only; no prices, quotes or licensed market data",
+   "record_spec": "CMR v0 (cm-record.org, draft)",
+   "nodes_live": [
+    "ca-cm-kg",
+    "uk-cm-kg",
+    "au-cm-kg",
+    "sg-cm-kg",
+    "ch-cm-kg",
+    "de-cm-kg",
+    "fr-cm-kg",
+    "nl-cm-kg",
+    "jp-cm-kg",
+    "kr-cm-kg",
+    "us-cm-kg"
+   ],
+   "tools": [
+    {
+     "name": "resolve_issuer",
+     "description": "Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version."
+    },
+    {
+     "name": "get_record",
+     "description": "Return the full Capital Markets Record for an issuer, with per-field source, reader and state; optionally a prior version."
+    },
+    {
+     "name": "list_events_since",
+     "description": "Return dated, URL'd disclosure events for an issuer (releases, bulletins, halts, corporate actions, statement and record dates) since a date."
+    },
+    {
+     "name": "list_aliases",
+     "description": "Return the sourced trade and former names an issuer releases under."
+    },
+    {
+     "name": "list_nodes",
+     "description": "Return the twelve market nodes and which are live."
+    }
+   ],
+   "facts": "https://mcp.capitalmarketsknowledgegraph.ai/facts.json",
+   "llms_txt": "https://mcp.capitalmarketsknowledgegraph.ai/llms.txt",
+   "description_of_record": "What: KYP Agentic Trading with the Capital Markets Knowledge Graph — one public-record file per listed company across eleven national markets, identity through disclosure trail, each field carrying its source and the date it was read, served from the issuer's own jurisdiction over the Model Context Protocol and the Agent-to-Agent protocol. Why: So an agent acting for a licensed capital markets participant with a Know Your Product (KYP) obligation hands back a fact that can be defended. The KYP model runs on this record. No prices, no quotes, no licensed data.",
+   "estate": "Eleven regional doors on Azure Container Apps, apex router on Cloudflare, an A2A Agent Card per node.",
+   "agent_cards": "https://agent.<node>-cm-kg.ai/.well-known/agent-card.json for each live node (ca uk us de fr nl ch au sg jp kr) and https://agent.capitalmarketsknowledgegraph.ai/.well-known/agent-card.json",
+   "confirmed": "Confirmed current by the operator, Sept 13 2026; records confirmed against the public filing, not signed by it.",
+   "x402": {
+    "endpoint": "https://agentic-x402.ai/api",
+    "surface": "https://agentic-x402.ai/",
+    "price_usdc": "0.01",
+    "network": "eip155:8453",
+    "scheme": "exact (EIP-3009)",
+    "trades_record_route": "https://agentic-trades.ai/x402/record/{node}/{exchange}/{code}",
+    "receipts": "https://agentic-x402.ai/x402/receipt/{nonce}",
+    "jwks": "https://agentic-x402.ai/x402/jwks.json"
+   },
+   "registries_gate": {
+    "authorization_server": "https://agentic-registries.ai",
+    "metadata": "https://agentic-registries.ai/.well-known/oauth-authorization-server",
+    "register": "https://agentic-registries.ai/oauth/register",
+    "token": "https://agentic-registries.ai/oauth/token",
+    "auth_md": "https://agentic-registries.ai/auth.md",
+    "grants": [
+     "client_credentials",
+     "urn:ietf:params:oauth:grant-type:jwt-bearer"
+    ],
+    "licensed_routes": [
+     "https://agentic-trades.ai/licensed/record/{node}/{exchange}/{code}",
+     "https://agentic-registries.ai/registry/whoami"
+    ]
+   },
+   "surfaces_version": "2026-09-13.12",
+   "aliases": {
+    "getissuer.ai": "https://getissuer.ai/",
+    "mcp.getissuer.ai": "https://mcp.getissuer.ai/mcp (same router as mcp.capitalmarketsknowledgegraph.ai; same five tools, same index)",
+    "agent.getissuer.ai": "https://agent.getissuer.ai/.well-known/agent-card.json"
+   },
+   "staged": "ORDER-027 C3 (2026-10-17): getissuer aliases added; goes out at the next republish. Title, description and card copy unchanged."
+  }
+ }
+}

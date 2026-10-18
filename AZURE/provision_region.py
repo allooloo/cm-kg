@@ -58,7 +58,9 @@ elif step == 'upload':
             n = len(r) if isinstance(r, list) else 0; total += n; log(f'pond drop uploaded: {source}/{newest} — {n} new blobs')
         log(f'pond drops uploaded: {total} new blobs (newest drop per source only)')
     data = r'C:\ALLOOLOO\CM-KG\DOOR\data'; recs = glob.glob(os.path.join(data, 'records', node, '*', '*.json')); log(f'door records to upload: {len(recs)}')
-    for sub in ('records', 'events'):
+    HOLD = os.environ.get('DOOR_HOLD', '')   # CEO standing line 2 (2026-10-17): forward-only door — on a gate hold the door keeps its last good data; the new index/facts/nodes go BESIDE it
+    if HOLD: log(f'DOOR HOLD (forward-only gate): record and event blobs not uploaded; index, facts and nodes written beside at door-held/{HOLD}/')
+    for sub in (() if HOLD else ('records', 'events')):
         d = os.path.join(data, sub, node)
         if os.path.isdir(d):
             r = az('storage', 'blob', 'upload-batch', '--account-name', sa, '--account-key', k, '--destination', 'pond', '--destination-path', f'door/{sub}', '--source', d, '--overwrite', 'true', '--no-progress', '--content-type', 'application/json', check=False)
@@ -82,7 +84,7 @@ elif step == 'upload':
     json.dump(nf, open(os.path.join(tmp, 'facts.json'), 'w', encoding='utf-8'), indent=1)
     json.dump(json.load(open(os.path.join(data, 'nodes.json'), encoding='utf-8')), open(os.path.join(tmp, 'nodes.json'), 'w', encoding='utf-8'), indent=1)
     for fn in ('index.json', 'facts.json', 'nodes.json'):
-        az('storage', 'blob', 'upload', '--account-name', sa, '--account-key', k, '-c', 'pond', '-n', f'door/{fn}', '-f', os.path.join(tmp, fn), '--overwrite', 'true', '--content-type', 'application/json', '--no-progress', check=False)
+        az('storage', 'blob', 'upload', '--account-name', sa, '--account-key', k, '-c', 'pond', '-n', (f'door-held/{HOLD}/{fn}' if HOLD else f'door/{fn}'), '-f', os.path.join(tmp, fn), '--overwrite', 'true', '--content-type', 'application/json', '--no-progress', check=False)
     log(f"door index: {len(idx['keys'])} keys, {len(idx['ticker'])} tickers, {len(idx['isin'])} isins, {len(idx['alias'])} aliases; facts + nodes uploaded")
 elif step == 'app':
     # a failed environment is left standing (Rule One) and the next name is used: cmkg-env-<region>, -2, -3 …

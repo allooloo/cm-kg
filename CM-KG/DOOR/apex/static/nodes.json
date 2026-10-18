@@ -5,7 +5,7 @@
   "registry": "ca-cm-kg.org",
   "door": "https://mcp.ca-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-10",
+  "as_of": "2026-10-16",
   "records": 4820,
   "exchanges": [
    "TSX",
@@ -13,8 +13,8 @@
    "CSE",
    "CBOE-CANADA"
   ],
-  "events": 25222,
-  "issuers_with_events": 2658
+  "events": 30747,
+  "issuers_with_events": 2681
  },
  {
   "node": "uk-cm-kg",
@@ -22,14 +22,14 @@
   "registry": "uk-cm-kg.org",
   "door": "https://mcp.uk-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-11",
+  "as_of": "2026-10-16",
   "records": 1570,
   "exchanges": [
    "LSE",
    "AIM",
    "AQSE"
   ],
-  "events": 128191,
+  "events": 137724,
   "issuers_with_events": 1227
  },
  {
@@ -38,15 +38,15 @@
   "registry": "au-cm-kg.org",
   "door": "https://mcp.au-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-11",
+  "as_of": "2026-10-16",
   "records": 1874,
   "exchanges": [
    "ASX",
    "NSX",
    "TMX-AU"
   ],
-  "events": 124581,
-  "issuers_with_events": 1777
+  "events": 130740,
+  "issuers_with_events": 1782
  },
  {
   "node": "sg-cm-kg",
@@ -54,13 +54,13 @@
   "registry": "sg-cm-kg.org",
   "door": "https://mcp.sg-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-12",
+  "as_of": "2026-10-16",
   "records": 639,
   "exchanges": [
    "SGX",
    "SGX-CATALIST"
   ],
-  "events": 3620,
+  "events": 4006,
   "issuers_with_events": 554
  },
  {
@@ -69,14 +69,14 @@
   "registry": "ch-cm-kg.org",
   "door": "https://mcp.ch-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-11",
+  "as_of": "2026-10-16",
   "records": 829,
   "exchanges": [
    "SIX",
    "BX"
   ],
-  "events": 1512,
-  "issuers_with_events": 193
+  "events": 1972,
+  "issuers_with_events": 199
  },
  {
   "node": "de-cm-kg",
@@ -84,14 +84,14 @@
   "registry": "de-cm-kg.org",
   "door": "https://mcp.de-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-11",
+  "as_of": "2026-10-16",
   "records": 3436,
   "exchanges": [
    "XETRA",
    "EUREX"
   ],
-  "events": 35570,
-  "issuers_with_events": 3329
+  "events": 36029,
+  "issuers_with_events": 3345
  },
  {
   "node": "fr-cm-kg",
@@ -99,15 +99,15 @@
   "registry": "fr-cm-kg.org",
   "door": "https://mcp.fr-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-11",
+  "as_of": "2026-10-16",
   "records": 712,
   "exchanges": [
    "XPAR",
    "ALXP",
    "XMLI"
   ],
-  "events": 10469,
-  "issuers_with_events": 451
+  "events": 11959,
+  "issuers_with_events": 463
  },
  {
   "node": "nl-cm-kg",
@@ -115,13 +115,13 @@
   "registry": "nl-cm-kg.org",
   "door": "https://mcp.nl-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-11",
+  "as_of": "2026-10-16",
   "records": 123,
   "exchanges": [
    "XAMS",
    "ALXA"
   ],
-  "events": 2742,
+  "events": 3003,
   "issuers_with_events": 84
  },
  {
@@ -140,7 +140,7 @@
   "registry": "jp-cm-kg.org",
   "door": "https://mcp.jp-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-12",
+  "as_of": "2026-10-16",
   "records": 3964,
   "exchanges": [
    "TSE-PRIME",
@@ -149,7 +149,7 @@
    "TSE-PRO",
    "TSE-REIT"
   ],
-  "events": 39274,
+  "events": 40359,
   "issuers_with_events": 3708
  },
  {
@@ -158,14 +158,14 @@
   "registry": "kr-cm-kg.org",
   "door": "https://mcp.kr-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-12",
+  "as_of": "2026-10-16",
   "records": 2802,
   "exchanges": [
    "KOSPI",
    "KOSDAQ",
    "KONEX"
   ],
-  "events": 143297,
+  "events": 146567,
   "issuers_with_events": 2700
  },
  {
@@ -174,14 +174,14 @@
   "registry": "us-cm-kg.org",
   "door": "https://mcp.us-cm-kg.ai",
   "live": true,
-  "as_of": "2026-09-12",
-  "records": 7710,
+  "as_of": "2026-10-16",
+  "records": 7693,
   "exchanges": [
    "NYSE",
    "NASDAQ",
    "CBOE"
   ],
-  "events": 1872343,
-  "issuers_with_events": 7705
+  "events": 1875609,
+  "issuers_with_events": 7687
  }
 ]

@@ -17,6 +17,7 @@ import { KYP_COPY, kypBody, kypFacts, kypLlms, kypVals } from './kyp.js';
 import { handlePaid, paidStats, handleApi, handleSettled, receiptJwks, receiptLookup, openapi as x402Openapi } from './x402.js';
 import * as OAUTH from './oauth.js';
 import { docsBody, supportBody, setupBody } from './docs.js';
+import * as D27 from './doors027.js';   // ORDER-027: six duty doors, getissuer.ai, cite-fact.ai / cite-dd.ai
 // §5 — the paid door on every surface: /api answers 402 with the surface's own one-resource statement; the receipt resolves on the surface that served it
 const PAID = host => `13. Paid door: https://${host}/api — HTTP 402 (x402 v2, scheme exact), $0.01 USDC on Base; the settled call returns this surface's statement of record and an EdDSA-signed receipt at https://${host}/x402/receipt/{nonce} (key https://${host}/x402/jwks.json, kid allooloo-x402-receipts-2026-09). Doctrine: https://agentic-x402.ai/.\n`;
 async function paidResource(c, host, url, live) {
@@ -43,15 +44,16 @@ async function askUp() { if (ASK_UP !== null && Date.now() - ASK_AT < 600000) re
 
 function classify(host) {
   const h = host.replace(/^www\./, ''); let m;
+  const n27 = D27.classify27(h); if (n27) return n27;   // ORDER-027 families: the .ai serves, every other zone 301s to it (path kept)
   if (h === 'allooloo.io') return { kind: 'site' };
   if (h === 'allooloo.ai') return { kind: 'redirect', canonical: 'https://allooloo.io', status: 308 };
   if (h === 'kyp-model.ai') return { kind: 'kyp' };
   if (/^(kyp-model|kypmodel)\.(com|org|io)$/.test(h)) return { kind: 'redirect', canonical: 'https://kyp-model.ai', status: 301 };   // six kyp zones → 301 → kyp-model.ai, path preserved, one hop (CEO, Sept 12 2026)   // CEO forward, Sept 12 2026: allooloo.ai + www → 308 → allooloo.io, path + query kept
   if ((m = h.match(/^([a-z]{2})-cm-kg\.(ai|org|com)$/)) && NODE_DATA[m[1]]) return { kind: 'node', cc: m[1], tld: m[2], canonical: m[2] === 'ai' ? null : `https://${m[1]}-cm-kg.ai` };
   if ((m = h.match(/^agentic-([a-z0-9]+)\.(ai|com|org|io)$/)) && PRODUCTS[m[1]]) return { kind: 'product', product: m[1], tld: m[2], canonical: m[2] === 'ai' ? null : `https://agentic-${m[1]}.ai` };
-  if (h === 'capitalmarketsknowledgegraph.ai') return { kind: 'root', role: 'graph' };
+  if (h === 'capitalmarketsknowledgegraph.ai') return { kind: 'redirect', canonical: 'https://getissuer.ai', status: 301 };   // CEO go, sweepREVIEW 2026-10-16 (2026-10-17): the human page 301s to getissuer.ai, path kept; mcp.capitalmarketsknowledgegraph.ai is a separate Worker host and is not touched
   if (h === 'capitalmarketsknowledgegraph.org') return { kind: 'root', role: 'standard' };
-  if (h === 'capitalmarketsknowledgegraph.com') return { kind: 'redirect', canonical: 'https://capitalmarketsknowledgegraph.ai' };
+  if (h === 'capitalmarketsknowledgegraph.com') return { kind: 'redirect', canonical: 'https://getissuer.ai' };   // one hop (was via the .ai)
   if (h === 'cm-kg.org') return { kind: 'root', role: 'cmkg-standard' };
   if (h === 'cm-kg.io') return { kind: 'root', role: 'cmkg-twin' };
   if (h === 'cm-kg.ai') return { kind: 'redirect', canonical: 'https://capitalmarketsknowledgegraph.ai' };
@@ -168,10 +170,10 @@ export default {
       if (p === '/openapi.json') return json(x402Openapi(), { node: 'x402' }, 'public, max-age=3600');
     }
     // §5 PAID DOOR ON EVERY SURFACE: /api → 402 (same facilitator, same payTo, same receipt key); receipts and the key resolve on the surface that served them
-    if (p === '/api' && c.kind !== 'unknown') { if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: headers({}, { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'PAYMENT-SIGNATURE, X-PAYMENT, content-type', 'access-control-allow-methods': 'GET, POST, OPTIONS' }) }); const live0 = await liveNodes(); return handleApi(request, env, url, u => paidResource(c, host, u, live0)); }
-    if (p === '/x402/settled.json' && c.kind !== 'unknown') return handleSettled(env, url);   // ORDER AL-x402-01: the surface's register
-    if (p === '/x402/jwks.json' && c.kind !== 'unknown') return json(await receiptJwks(env), { node: 'x402' }, 'public, max-age=300');
-    const rc = c.kind !== 'unknown' && p.match(/^\/x402\/receipt\/([a-f0-9]{32})$/); if (rc) { const r = await receiptLookup(env, rc[1]); return r ? json(r, { node: 'x402' }, 'public, max-age=31536000, immutable') : notFound(['/x402/receipt/{nonce}'], { node: 'x402' }); }
+    if (p === '/api' && c.kind !== 'unknown' && !D27.isNew(c)) { if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: headers({}, { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'PAYMENT-SIGNATURE, X-PAYMENT, content-type', 'access-control-allow-methods': 'GET, POST, OPTIONS' }) }); const live0 = await liveNodes(); return handleApi(request, env, url, u => paidResource(c, host, u, live0)); }
+    if (p === '/x402/settled.json' && c.kind !== 'unknown' && !D27.isNew(c)) return handleSettled(env, url);   // ORDER AL-x402-01: the surface's register
+    if (p === '/x402/jwks.json' && c.kind !== 'unknown' && !D27.isNew(c)) return json(await receiptJwks(env), { node: 'x402' }, 'public, max-age=300');
+    const rc = c.kind !== 'unknown' && !D27.isNew(c) && p.match(/^\/x402\/receipt\/([a-f0-9]{32})$/); if (rc) { const r = await receiptLookup(env, rc[1]); return r ? json(r, { node: 'x402' }, 'public, max-age=31536000, immutable') : notFound(['/x402/receipt/{nonce}'], { node: 'x402' }); }
     const lic = c.kind === 'product' && c.product === 'trades' && p.match(/^\/licensed\/record\/([a-z]{2}-cm-kg)\/([A-Za-z\-]+)\/(.+)$/i);
     if (lic) { const v = await OAUTH.verify(request, env); if (!v.ok) return OAUTH.challenge(host, v.error); const r = await fetch(`${APEX}/record/${lic[1]}/${lic[2]}/${lic[3]}`, { headers: { accept: 'application/json' } }); return new Response(await r.text(), { status: r.status, headers: headers({ node: 'registry' }, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'X-Licensed-Client': v.claims.sub }) }); }
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method Not Allowed', { status: 405, headers: headers({}, { 'content-type': 'text/plain' }) });
@@ -180,10 +182,10 @@ export default {
     if (p === '/.well-known/security.txt') return text(SECURITY(host), {}, 'text/plain; charset=utf-8', 'public, max-age=86400');
     const live = await liveNodes(); const ctx = ctxOf(live);
     // ---- agent readiness kit (aeo.js): the same paths on every surface, pointing at the node door, the apex, or the beacon
-    const cc0 = c.kind === 'node' ? c.cc : null; const T = AEO.target(c, cc0); const kmeta = { node: c.kind === 'node' ? `${c.cc}-cm-kg` : (c.kind === 'site' ? 'allooloo' : 'estate'), as_of: today() };
+    const cc0 = c.kind === 'node' ? c.cc : null; const T = D27.isNew(c) ? D27.target27(c) : AEO.target(c, cc0); const kmeta = { node: c.kind === 'node' ? `${c.cc}-cm-kg` : (c.kind === 'site' ? 'allooloo' : 'estate'), as_of: today() };
     const LINK = AEO.linkHeader(host, T);
-    const label = c.kind === 'node' ? `${NODE_DATA[c.cc].country} node — Capital Markets Knowledge Graph` : c.kind === 'product' ? PRODUCTS[c.product].title : c.kind === 'site' ? 'Allooloo Technologies Corp. — Capital Markets Knowledge Graph' : c.kind === 'kyp' ? KYP_COPY.title : `${host} — Capital Markets Knowledge Graph`;
-    const desc0 = c.kind === 'node' ? fill(NODE_DATA[c.cc].meta, nodeVals(c.cc, live)) : c.kind === 'product' ? PRODUCTS[c.product].reason : c.kind === 'site' ? homeMeta(ctx) : c.kind === 'kyp' ? KYP_COPY.meta.replace(/\{records\}/g, kypVals(ctx).records).replace(/\{events\}/g, kypVals(ctx).events).replace(/\{live_nodes\}/g, kypVals(ctx).live_nodes) : 'Estate host of the Capital Markets Knowledge Graph; the apex router answers for every market.';
+    const label = D27.isNew(c) ? D27.label27(c) : c.kind === 'node' ? `${NODE_DATA[c.cc].country} node — Capital Markets Knowledge Graph` : c.kind === 'product' ? PRODUCTS[c.product].title : c.kind === 'site' ? 'Allooloo Technologies Corp. — Capital Markets Knowledge Graph' : c.kind === 'kyp' ? KYP_COPY.title : `${host} — Capital Markets Knowledge Graph`;
+    const desc0 = D27.isNew(c) ? D27.desc27(c, live) : c.kind === 'node' ? fill(NODE_DATA[c.cc].meta, nodeVals(c.cc, live)) : c.kind === 'product' ? PRODUCTS[c.product].reason : c.kind === 'site' ? homeMeta(ctx) : c.kind === 'kyp' ? KYP_COPY.meta.replace(/\{records\}/g, kypVals(ctx).records).replace(/\{events\}/g, kypVals(ctx).events).replace(/\{live_nodes\}/g, kypVals(ctx).live_nodes) : 'Estate host of the Capital Markets Knowledge Graph; the apex router answers for every market.';
     const HTML = (body, m) => AEO.wantsMarkdown(request) ? markdown(AEO.toMarkdown(body, host), m, LINK) : html(body, m, LINK);
     if (p === '/.well-known/oauth-authorization-server' || p === '/.well-known/openid-configuration') return json(OAUTH.metadata(), kmeta, 'public, max-age=3600');
     if (p === '/.well-known/api-catalog') return json(AEO.apiCatalog(host, T), kmeta, 'public, max-age=3600', 200, 'application/linkset+json');
@@ -193,9 +195,21 @@ export default {
     if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json') return json(AEO.agentCard(host, T, label, desc0, live, cc0), kmeta);
     if (p === '/.well-known/agent-skills/index.json' || p === '/.well-known/skills.json') return json(AEO.skillsIndex(host, T), kmeta);
     const sk = p.match(/^\/\.well-known\/agent-skills\/([a-z-]+)\/SKILL\.md$/); if (sk) { const md = AEO.skillMd(host, T, sk[1]); return md ? markdown(md, kmeta, LINK) : notFound([], kmeta); }
-    if (p === '/.well-known/ai-catalog.json') return json(AEO.aiCatalog(host, T, label, desc0), kmeta, 'public, max-age=300', 200, 'application/ard+json; charset=utf-8');
-    if (p === '/.well-known/ard.json') return json(AEO.aiCatalog(host, T, label, desc0), kmeta, 'public, max-age=300', 200, 'application/ard+json; charset=utf-8');
+    const cat = () => { const a = AEO.aiCatalog(host, T, label, desc0); if (D27.isNew(c)) a.entries = a.entries.filter(e => !/:api:paid-call$/.test(e.identifier)); return a; };   // ORDER-027: no paid route on the product doors
+    if (p === '/.well-known/ai-catalog.json') return json(cat(), kmeta, 'public, max-age=300', 200, 'application/ard+json; charset=utf-8');
+    if (p === '/.well-known/ard.json') return json(cat(), kmeta, 'public, max-age=300', 200, 'application/ard+json; charset=utf-8');
     if (p.startsWith('/.well-known/') && p !== '/.well-known/allooloo.json') return notFound(['/.well-known/agent-card.json', '/.well-known/mcp.json', '/.well-known/mcp/server-card.json', '/.well-known/api-catalog', '/.well-known/oauth-protected-resource', '/.well-known/agent-skills/index.json', '/.well-known/skills.json', '/.well-known/ai-catalog.json', '/.well-known/ard.json', '/.well-known/security.txt'], kmeta);
+    if (D27.isNew(c)) {   // ORDER-027: duty doors, getissuer.ai, cite quiet zones
+      const a = D27.pageArgs27(c, ctx, host); const meta = a.meta; const paths = D27.paths27(c);
+      if (p === '/') return HTML(page({ host, title: a.title, desc: desc0, h1: a.h1, state: a.state, asOf: a.asOf, body: a.body, jsonld: [{ '@context': 'https://schema.org', '@type': 'WebPage', name: a.title, description: desc0, url: `https://${host}/`, publisher: { '@type': 'Organization', name: OPERATOR, url: CORPORATE } }] }), meta);
+      if (p === '/llms.txt') return text(D27.llms27(c, host, live), meta);
+      if (p === '/facts.json') return json(D27.facts27(c, host, live), meta);
+      if (p === '/sitemap.xml') return text(sitemap(host, paths.filter(x => x === '/' || x === '/docs' || x === '/llms.txt' || x === '/facts.json')), meta, 'application/xml; charset=utf-8', 'public, max-age=3600');
+      if ((p === '/mcp.json' || p === '/openapi.json') && c.kind !== 'cite') return json(D27.pointer27(c, p === '/mcp.json' ? 'mcp' : 'openapi'), meta);
+      // the documentation page moves with the human page (capitalmarketsknowledgegraph.ai/docs 301s here, path kept); copy unchanged until ORDER-028
+      if (p === '/docs' && c.kind === 'getissuer') return HTML(page({ host, title: 'Documentation — Capital Markets Knowledge Graph apex door for AI agents', desc: 'Connector documentation for the apex door: connect, five read-only tools with wire examples, identifiers, the record shape, residency by node, data handling, limits and versioning, support.', h1: 'Documentation — the apex door', state: 'live', asOf: today(), path: '/docs', nocurrent: true, body: docsBody(live) }), meta);
+      return notFound(paths, meta);
+    }
     if (c.kind === 'kyp') {
       const v = kypVals(ctx); const meta = { node: 'kyp-model', as_of: v.last || today() }; const paths = ['/', '/api', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt'];
       if (p === '/') return HTML(page({ host, title: KYP_COPY.title, desc: desc0, h1: KYP_COPY.h1, state: 'live', asOf: v.last || today(), body: kypBody(ctx, host), jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: KYP_COPY.h1, name: KYP_COPY.title, description: desc0, url: `https://${host}/`, datePublished: '2026-09-12', author: { '@type': 'Person', name: 'Matthew Keddy', jobTitle: 'CEO', worksFor: { '@type': 'Organization', name: OPERATOR, url: CORPORATE } }, publisher: { '@type': 'Organization', name: OPERATOR, url: CORPORATE } }] }), meta);

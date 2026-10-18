@@ -1,0 +1,19 @@
+name = "allooloo-io"
+main = "worker/index.js"
+compatibility_date = "2026-09-01"
+account_id = "dd2832b36f171b815f84c8487aada36b"
+workers_dev = false
+routes = [
+  { pattern = "allooloo.io", custom_domain = true },
+  { pattern = "www.allooloo.io", custom_domain = true }
+]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+not_found_handling = "404-page"
+
+[observability]
+enabled = true
+

@@ -10,8 +10,8 @@ export const LEGAL = 'legal@allooloo.ai';
 export const APEX = 'https://mcp.capitalmarketsknowledgegraph.ai';
 export const APEX_AGENT = 'https://agent.capitalmarketsknowledgegraph.ai';
 export const FORM = 'https://formspree.io/f/moeqzgll';
-export const SURFACES_VERSION = '2026-09-28.1';   // bumped on every estate deploy; prior renders go to the pond (snapshot_surfaces.py)
-export const KICKER = 'Microsoft AI Cloud Partner · Microsoft Azure · eleven regions, in-country';   // Proof section first line and footer line only
+export const SURFACES_VERSION = '2026-10-17.1';   // ORDER-027 (2026-10-17): product doors; was 2026-09-28.1   // bumped on every estate deploy; prior renders go to the pond (snapshot_surfaces.py)
+export const KICKER = 'allooloo.ai · Microsoft AI Cloud Partner · Microsoft Azure · eleven regions, in-country';   // ORDER-027 D4: the kicker prints allooloo.ai (printed name; allooloo.io stays the serving canonical)   // Proof section first line and footer line only
 export const COMPANY_TITLE = 'AI Agents · MCP + A2A · Capital Markets Knowledge Graph — Allooloo';
 export const REGION_FULL = { ca: 'Canada Central (Toronto, Canada)', us: 'East US (Virginia, United States)', uk: 'UK South (London, United Kingdom)', fr: 'France Central (Paris, France)', nl: 'West Europe (Amsterdam, Netherlands)', ch: 'Switzerland North (Zurich, Switzerland)', de: 'Germany West Central (Frankfurt, Germany)', au: 'Australia East (Sydney, Australia)', sg: 'Southeast Asia (Singapore)', jp: 'Japan East (Tokyo, Japan)', kr: 'Korea Central (Seoul, South Korea)', hk: 'East Asia (Hong Kong — beacon, partner wanted)' };
 export const REGIONS_LIST = ['ca', 'us', 'uk', 'fr', 'nl', 'ch', 'de', 'au', 'sg', 'jp', 'kr', 'hk'].map(cc => REGION_FULL[cc]).join(' · ');
@@ -91,5 +91,5 @@ ${head || ''}<script type="application/ld+json">${JSON.stringify(ld)}</script></
 <button class="tint" type="button" data-tint aria-label="Light or dark">${icon('moon', 'moon')}${icon('sun', 'sun')}</button><a class="btn primary cta" href="${CTA[1]}">${CTA[0]}${icon('arrow')}</a></div></div>
 ${hero ? '' : `<div class="in">${ll}</div>`}</header>
 <main><div class="hero"><h1>${esc(h1)}</h1>${hero ? `<p class="sub">${esc(sub)}</p>${ll}${actions ? `<p class="actions">${actions}</p>` : ''}` : ''}</div>${body}</main>
-<footer><section class="band" aria-label="Allooloo"><p class="tag">${esc(TAGLINE)}</p><p>${esc(BAND)}</p></section>${host === 'allooloo.io' ? `<p class="line">The agents that built this read their own mail: ${CONTACT2} · ${OPERATOR} · Vancouver &amp; Toronto, Canada</p>` : ''}<p class="row">${FOOTER_ROW}</p></footer><script src="/webmcp.js"></script></body></html>`;
+<footer><section class="band" aria-label="Allooloo"><p class="tag">${esc(TAGLINE)}</p><p>${esc(BAND)}</p></section>${host === 'allooloo.io' ? `<p class="line">The agents that built this read their own mail: ${CONTACT2} · ${OPERATOR} · allooloo.ai · Vancouver &amp; Toronto, Canada</p>` : ''}<p class="row">${FOOTER_ROW}</p></footer><script src="/webmcp.js"></script></body></html>`;
 }

@@ -14,9 +14,11 @@ NODE = 'ca-cm-kg'
 def jload(fn):
     """pond rule 3: a raw/<file> is read from every drop of this rail (newest wins per 'key' when rows carry one, union otherwise) plus the working folder"""
     out = []; seen = set()
-    paths = ([p for d, p in pond.drops(NODE, 'fill-confirm')] + (['raw'] if os.path.isdir('raw') else [])) if fn.startswith('raw/') and fn.count('/') == 1 else [None]
+    # close-out 2026-10-10: any depth under raw/ (raw/width0/<file> too) resolves across every drop; before this only raw/<file> did, and the
+    # fresh drop pond_open makes each run holds no width0 inputs, so alias_sources/confirm died on FileNotFoundError (sweep 2026-10-09/10)
+    paths = ([p for d, p in pond.drops(NODE, 'fill-confirm')] + (['raw'] if os.path.isdir('raw') else [])) if fn.startswith('raw/') else [None]
     for p in paths:
-        f = fn if p is None else os.path.join(p, os.path.basename(fn)); rp = os.path.realpath(f)
+        f = fn if p is None else os.path.join(p, fn[4:]); rp = os.path.realpath(f)
         if not os.path.exists(f) or rp in seen: continue
         seen.add(rp)
         for line in open(f, encoding='utf-8'):
@@ -27,6 +29,13 @@ def jload(fn):
         for d in out: byk[d.get('key')] = d   # newest drop last -> wins
         return list(byk.values())
     return out
+def pond_file(fn):
+    """a raw/<path> single file (json, not jsonl): the working drop first, else the newest drop of this rail that holds it (close-out 2026-10-10)"""
+    if os.path.exists(fn): return fn
+    for d, p in reversed(pond.drops(NODE, 'fill-confirm')):
+        f = os.path.join(p, fn[4:])
+        if os.path.exists(f): return f
+    raise FileNotFoundError(f'{fn}: not in the working drop or any fill-confirm drop of {NODE}')
 def events(): return jload(EVENTS_JSONL)
 def all_rows():
     """every row of ca-issuers.xlsx (4,820) as dicts with the tab name"""

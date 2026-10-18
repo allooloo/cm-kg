@@ -1,0 +1,69 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; font-src 'self'; form-action 'self' https://formspree.io; frame-ancestors 'self'; base-uri 'self'
+
+/
+  Cache-Control: public, max-age=300, stale-while-revalidate=600
+
+/index.html
+  Cache-Control: public, max-age=300, stale-while-revalidate=600
+
+/llms.txt
+  Cache-Control: public, max-age=3600
+  Content-Type: text/plain; charset=utf-8
+
+/facts.json
+  Cache-Control: public, max-age=3600
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/.well-known/allooloo.json
+  Cache-Control: public, max-age=3600
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/hero.json
+  Cache-Control: public, max-age=3600
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/styles.css
+  Cache-Control: public, max-age=86400
+
+/hero.js
+  Cache-Control: public, max-age=86400
+
+/logo.svg
+  Cache-Control: public, max-age=86400
+
+/favicon.svg
+  Cache-Control: public, max-age=86400
+
+/favicon.ico
+  Cache-Control: public, max-age=86400
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=86400
+
+/icon-192.png
+  Cache-Control: public, max-age=86400
+
+/icon-512.png
+  Cache-Control: public, max-age=86400
+
+/site.webmanifest
+  Cache-Control: public, max-age=86400
+  Content-Type: application/manifest+json

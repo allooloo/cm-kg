@@ -7,7 +7,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
-const OPERATOR = 'Allooloo Technologies Corp.'; const SERVER_VERSION = '0.11.0'; const PROTOCOL = '2025-06-18';
+const OPERATOR = 'Allooloo Technologies Corp.'; const SERVER_VERSION = '0.12.1'; const PROTOCOL = '2025-06-18';
 const NODE = process.env.NODE || 'ca-cm-kg'; const REGION = process.env.REGION || ''; const PUBLIC_HOST = process.env.PUBLIC_HOST || `mcp.${NODE}.ai`; const AGENT_HOST = `agent.${NODE}.ai`;
 const CONTACT = process.env.CONTACT || 'allooloo@users.noreply.github.com'; const PORT = parseInt(process.env.PORT || '8080', 10);
 const cred = new StorageSharedKeyCredential(process.env.STORAGE_ACCOUNT, process.env.STORAGE_KEY);

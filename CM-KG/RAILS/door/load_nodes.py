@@ -251,6 +251,6 @@ def main():
             p = os.path.join(OUT, sub, ex)
             if os.path.isdir(p) and os.path.isdir(os.path.join(OUT, sub, 'ca-cm-kg', ex)): shutil.rmtree(p)
     nfiles = sum(len(fs) for _, _, fs in os.walk(OUT))
-    print('index tickers', len(index['ticker']), 'isins', len(index['isin']), 'leis', len(index['lei']), '| files in data/', nfiles, '(Workers static-assets cap 20,000 per version)')
-    if nfiles > 20000: print('FILE CAP EXCEEDED — STOP per ORDER-010 Part A step 4')
+    # ORDER-024 (2026-09-18): the Workers static-assets file-cap check (20,000 per version, ORDER-010 Part A step 4) is struck — the Worker it guarded was deleted 2026-09-13; data/ now feeds the regional stores, which carry no such cap.
+    print('index tickers', len(index['ticker']), 'isins', len(index['isin']), 'leis', len(index['lei']), '| files in data/', nfiles)
 if __name__ == '__main__': main()

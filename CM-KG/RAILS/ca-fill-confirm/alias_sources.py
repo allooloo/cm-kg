@@ -9,7 +9,7 @@ issuers = load_issuers(); byk = {key(r): r for r in issuers}
 gleif = {d['lei']: d for d in jload('raw/gleif_names.jsonl')}
 wp = {d['key']: d for d in jload(W1 + r'\wire_pages.jsonl')}
 cse = {d['key']: d for d in jload('raw/width0/enr_cse.jsonl') if 'error' not in d}
-roster = {r['exchange'] + '|' + r['symbol']: r for r in json.load(open('raw/width0/roster.json', encoding='utf-8'))}
+roster = {r['exchange'] + '|' + r['symbol']: r for r in json.load(open(pond_file('raw/width0/roster.json'), encoding='utf-8'))}
 def same(a, b): return norm(a).replace(' ', '') == norm(b).replace(' ', '')
 def clean(s): return re.sub(r'\s+', ' ', html.unescape(s or '')).strip(' -–|')
 def wire_page_name(url):

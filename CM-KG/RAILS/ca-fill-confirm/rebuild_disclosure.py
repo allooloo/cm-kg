@@ -15,10 +15,13 @@ from common import event, classify, in_window
 XL = r'C:\ALLOOLOO\CM-KG\DISCLOSURE\ca-disclosure.xlsx'; BAK = XL.replace('ca-disclosure.xlsx', 'ca-disclosure-width1.xlsx')
 JL = EVENTS_JSONL; JBAK = JL.replace('ca-events.jsonl', 'ca-events-width1.jsonl')
 if not os.path.exists(BAK): shutil.copy(XL, BAK)
-if not os.path.exists(JBAK): shutil.copy(JL, JBAK)
+# ORDER-027 (2026-10-17): the base is THIS run's Width 1 assembly. The rail runs ..\ca-width1ssemble_disclosure.py just before this step, so ca-events.jsonl
+# holds that assembly now; it is copied to ca-events-width1.jsonl every run. Before, the copy was made once (2026-09-10) and every weekly Width 1 harvest
+# since was dropped by this rebuild (2026-10-16 sweep: 2,056 assembled events not published; 20 published events dated after 2026-09-10).
+shutil.copy(JL, JBAK)
 issuers = load_issuers(); byk = {key(r): r for r in issuers}
 EV = jload(JBAK)
-for e in EV: e['state'] = 'sourced'; e['pass'] = 'width1'
+for e in EV: e.setdefault('state', 'sourced'); e.setdefault('pass', 'width1')   # ORDER-027: events carried from earlier rebuilds keep their state (filled · confirmed)
 touched = Counter()
 # alias rematch events
 for d in jload('raw/rematch.jsonl'):
