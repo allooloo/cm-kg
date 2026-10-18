@@ -77,12 +77,16 @@ ec2 = S.client('ec2'); vpc = ec2.describe_vpcs(Filters=[{'Name': 'isDefault', 'V
 if not vpc: raise SystemExit(f'STOP: no default VPC in {REGION}')
 VPC = vpc[0]['VpcId']; SUBNETS = [s['SubnetId'] for s in ec2.describe_subnets(Filters=[{'Name': 'vpc-id', 'Values': [VPC]}, {'Name': 'default-for-az', 'Values': ['true']}])['Subnets']]
 SGN = f'allooloo-standby-door-{cc}'; sg = ec2.describe_security_groups(Filters=[{'Name': 'group-name', 'Values': [SGN]}, {'Name': 'vpc-id', 'Values': [VPC]}])['SecurityGroups']
+# Cloudflare's published edge ranges from its API (www.cloudflare.com/ips-v4 refuses plain clients, 403 on the NL deploy 2026-10-18)
+ranges = requests.get('https://api.cloudflare.com/client/v4/ips', timeout=30).json()['result']['ipv4_cidrs']
 if sg: SG = sg[0]['GroupId']; log('security group present', SG)
 else:
-    SG = ec2.create_security_group(GroupName=SGN, Description=f'ORDER-032 standby door {NODE}: 443 from Cloudflare only', VpcId=VPC, TagSpecifications=[{'ResourceType': 'security-group', 'Tags': [{'Key': 'order', 'Value': 'ORDER-032'}]}])['GroupId']
-    ranges = urllib.request.urlopen('https://www.cloudflare.com/ips-v4', timeout=30).read().decode().split()
-    ec2.authorize_security_group_ingress(GroupId=SG, IpPermissions=[{'IpProtocol': 'tcp', 'FromPort': 443, 'ToPort': 443, 'IpRanges': [{'CidrIp': c, 'Description': 'Cloudflare'} for c in ranges]}])
-    log('security group created', SG, '443 from', len(ranges), 'Cloudflare ranges')
+    SG = ec2.create_security_group(GroupName=SGN, Description=f'ORDER-032 standby door {NODE}: 443 from Cloudflare only', VpcId=VPC, TagSpecifications=[{'ResourceType': 'security-group', 'Tags': [{'Key': 'order', 'Value': 'ORDER-032'}]}])['GroupId']; log('security group created', SG)
+# ingress applied whether the group is new or not (a group left without its rule by an interrupted run is completed here); existing rules are kept
+have_r = {r['CidrIp'] for p_ in ec2.describe_security_groups(GroupIds=[SG])['SecurityGroups'][0]['IpPermissions'] if p_.get('FromPort') == 443 for r in p_.get('IpRanges', [])}
+want_r = [c for c in ranges if c not in have_r]
+if want_r: ec2.authorize_security_group_ingress(GroupId=SG, IpPermissions=[{'IpProtocol': 'tcp', 'FromPort': 443, 'ToPort': 443, 'IpRanges': [{'CidrIp': c, 'Description': 'Cloudflare'} for c in want_r]}])
+log('security group', SG, '443 from', len(have_r) + len(want_r), 'Cloudflare ranges (' + str(len(want_r)) + ' added)')
 rec.update({'vpc': VPC, 'subnets': SUBNETS, 'security_group': SG})
 
 # ---- 4. compute: ECS on Fargate, scaled to zero
