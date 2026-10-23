@@ -23,4 +23,5 @@ Write-Output 'REFRESH DONE'
 # ORDER-027 A4 (2026-10-17): WINDOW_DAYS is the HARVEST window; Fill + Confirm (rebuild_disclosure's Gemini AGM findings, rematch) must read the
 # twelve-month disclosure window. The 2026-10-16 sweep carried the harvest window into the rebuild and dropped 65 in-window agm_record_date events.
 Remove-Item Env:WINDOW_DAYS -ErrorAction SilentlyContinue   # common.py default: 365 days
-& "$PSScriptRoot\..\ca-fill-confirm\run_refresh.ps1"
+# ORDER-036 NIGHTLY (2026-10-22): Fill + Confirm depth is gated by day inside the job — FILL_CONFIRM=0 on the nights off the rotation (the Width 1 read above runs every night)
+if ($env:FILL_CONFIRM -eq '0') { 'Fill + Confirm off tonight (FILL_CONFIRM=0; rotation of record in job_node.py)' } else { & "$PSScriptRoot\..\ca-fill-confirm\run_refresh.ps1" }

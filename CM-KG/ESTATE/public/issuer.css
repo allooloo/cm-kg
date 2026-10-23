@@ -1,0 +1,21 @@
+/* ORDER-034 (2026-10-22) — the sovereign node pages and the two standards pages: two colours (navy on white; the dark tint swaps the same two), zero scripts, system fonts. */
+:root{--a:#14213D;--b:#FFFFFF}
+@media (prefers-color-scheme:dark){:root{--a:#FFFFFF;--b:#14213D}}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--b);color:var(--a);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header,main,footer{max-width:880px;margin:0 auto;padding:0 1.25rem}
+header{padding-top:1.25rem;display:flex;align-items:center;gap:.6rem;border-bottom:1px solid var(--a);padding-bottom:.75rem}
+header img{width:28px;height:28px}
+header a{color:var(--a);text-decoration:none;font-weight:600}
+.state{margin:.25rem 0 0;font-size:.875rem}
+h1{font-size:1.9rem;line-height:1.2;margin:1.5rem 0 .5rem}
+h2{font-size:1.15rem;margin:2rem 0 .5rem;border-bottom:1px solid var(--a);padding-bottom:.25rem}
+a{color:var(--a)}
+code,pre{font:.875rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{border:1px solid var(--a);padding:.75rem;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
+dl{margin:0}dt{font-weight:600;float:left;clear:left;width:3.2rem}dd{margin:0 0 .4rem 3.2rem}
+table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{border:1px solid var(--a);padding:.35rem .5rem;text-align:left;vertical-align:top}
+form{display:grid;gap:.35rem;max-width:32rem}input,textarea,button{font:inherit;color:var(--a);background:var(--b);border:1px solid var(--a);padding:.4rem}
+button{cursor:pointer;font-weight:600}.hp{position:absolute;left:-9999px}
+footer{border-top:1px solid var(--a);margin-top:2.5rem;padding-top:.75rem;padding-bottom:2rem;font-size:.85rem}

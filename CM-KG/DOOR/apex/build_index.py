@@ -6,7 +6,7 @@ import json, os, subprocess, sys, tempfile
 
 TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-41ee6d087b41'
 NODES = {'ca': 'canadacentral', 'uk': 'uksouth', 'au': 'australiaeast', 'sg': 'southeastasia', 'ch': 'switzerlandnorth',
-         'de': 'germanywestcentral', 'fr': 'francecentral', 'nl': 'westeurope', 'jp': 'japaneast', 'kr': 'koreacentral', 'us': 'eastus'}
+         'de': 'germanywestcentral', 'fr': 'francecentral', 'nl': 'westeurope', 'jp': 'japaneast', 'kr': 'koreacentral', 'us': 'eastus', 'hk': 'eastasia'}   # hk: ORDER-035 (2026-10-22)
 HERE = os.path.dirname(os.path.abspath(__file__)); STATIC = os.path.join(HERE, 'static')
 CONT = os.environ.get('STORAGE_CONTAINER', 'pond')   # ORDER-031 (2026-10-18): 'pond' on the wire, 'staging' for a dry run; default unchanged
 

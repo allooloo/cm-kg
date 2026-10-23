@@ -17,7 +17,7 @@ export const KEYRING = 'https://agentic-x402.ai/x402/jwks.json';   // the estate
 
 // Where this host's agent answers: the node door, the apex, or the beacon.
 export function target(c, cc) {
-  if (c.kind === 'node' && cc === 'hk') return { kind: 'beacon', mcp: null, agent: null, openapi: null, mcpjson: null, name: 'Hong Kong node — beacon (Width 0, local partner wanted)', note: 'no door and no agent; the apex answers not found for Hong Kong identifiers' };
+  if (c.kind === 'node' && cc === 'hk' && false) return { kind: 'beacon', mcp: null, agent: null, openapi: null, mcpjson: null, name: 'Hong Kong node — beacon (Width 0, local partner wanted)', note: 'no door and no agent; the apex answers not found for Hong Kong identifiers' };
   if (c.kind === 'node') return { kind: 'node', mcp: `https://mcp.${cc}-cm-kg.ai/mcp`, agent: `https://agent.${cc}-cm-kg.ai/.well-known/agent-card.json`, openapi: `https://mcp.${cc}-cm-kg.ai/openapi.json`, mcpjson: `https://mcp.${cc}-cm-kg.ai/mcp.json`, name: `${cc}-cm-kg door` };
   if (c.kind === 'product' && c.product === 'x402') return { kind: 'apex', mcp: `${APEX}/mcp`, agent: `${APEX_AGENT}/.well-known/agent-card.json`, openapi: 'https://agentic-x402.ai/openapi.json', mcpjson: `${APEX}/mcp.json`, name: 'Agentic x402 — a paid call with a signed receipt (apex door for MCP)' };
   return { kind: 'apex', mcp: `${APEX}/mcp`, agent: `${APEX_AGENT}/.well-known/agent-card.json`, openapi: `${APEX}/openapi.json`, mcpjson: `${APEX}/mcp.json`, name: 'Capital Markets Knowledge Graph — apex router' };

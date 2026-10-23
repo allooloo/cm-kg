@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-17",
+ "as_of": "2026-10-22",
  "source": "START_ME_UP/NODE-SURFACES.md \u00a79 NUMBERS LOG (one line per sweep per node; counts from list_nodes after the store reload)",
  "lines": [
   {
@@ -343,14 +343,21 @@
    "date": "2026-10-16",
    "records": "4820",
    "events": "27316",
-   "note": "records +0 \u00b7 events +2076 (sweepREVIEW of sweep 2026-10-16: Canada rebuilt from the pond, no re-harvest \u2014 rebuild base fixed at root; 2011 Width 1 events and 65 Gemini AGM-date events back on the wire; 0 removed)"
+   "note": "records +0\u00b7events +2076 (sweepREVIEW of sweep 2026-10-16: Canada rebuilt from the pond, no re-harvest \u2014 rebuild base fixed at root; 2011 Width 1 events and 65 Gemini AGM-date events back on the wire; 0 removed)"
   },
   {
    "node": "ca-cm-kg",
    "date": "2026-10-16",
    "records": "4820",
    "events": "30747",
-   "note": "records +0 \u00b7 events +3431 (sweepREVIEW of sweep 2026-10-16: Canada back-fill 2026-09-10 to 2026-10-16 on the CEO go \u2014 38-day Width 1 harvest into a new pond drop, rebuilt from this run's own assembly, forward-only gate passed; 3,436 new events assembled, 5 dated 2026-10-17 held in the raw drop for next Friday's market date)"
+   "note": "records +0\u00b7events +3431 (sweepREVIEW of sweep 2026-10-16: Canada back-fill 2026-09-10 to 2026-10-16 on the CEO go \u2014 38-day Width 1 harvest into a new pond drop, rebuilt from this run's own assembly, forward-only gate passed; 3,436 new events assembled, 5 dated 2026-10-17 held in the raw drop for next Friday's market date)"
+  },
+  {
+   "node": "hk-cm-kg",
+   "date": "2026-10-22",
+   "records": "2820",
+   "events": "162874",
+   "note": "first line (sweep 2026-10-22)"
   }
  ]
 }

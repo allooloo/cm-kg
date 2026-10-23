@@ -17,7 +17,8 @@ def is_ops(p):
     if n.endswith('.log'): return True
     if re.search(r'(^|/)(\.wrangler|\.claude)/', p): return True   # local tool state (wrangler caches incl. the account id, miniflare databases, launch configs)
     if re.match(r'^CM-KG/RAILS/(estate-audit-|estate-surface-)', p): return True
-    if re.match(r'^CM-KG/RAILS/zones-0(27|32)/', p) and not n.endswith(('.py', '.js')): return True
+    if re.match(r'^CM-KG/RAILS/zones-0(27|32|34)/', p) and not n.endswith(('.py', '.js')): return True   # zones-034: ORDER-034 state (2026-10-23)
+    if re.match(r'^CM-KG/RAILS/job/schedules-[^/]*\.json$', p): return True   # job schedule exports (ORDER-036)
     return False
 def ls(): return subprocess.run(['git', 'ls-files', '-z'], capture_output=True, check=True).stdout.decode('utf-8', 'surrogateescape').split('\0')[:-1]
 def rm(paths):

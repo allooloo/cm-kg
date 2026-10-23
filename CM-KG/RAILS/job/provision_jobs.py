@@ -9,9 +9,13 @@ and its node's resource group (Contributor: storage key, door restart). The apex
 Secrets are Key Vault references; nothing baked, nothing in env files, no registry password handled here. Tenant guard as the rails."""
 import os, sys, json, subprocess, time
 TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-41ee6d087b41'; ACR = 'allooloocmkg'; ACR_SERVER = 'allooloocmkg.azurecr.io'
-NODES = {'nl': 'westeurope', 'ch': 'switzerlandnorth', 'fr': 'francecentral', 'de': 'germanywestcentral', 'sg': 'southeastasia', 'au': 'australiaeast', 'uk': 'uksouth', 'ca': 'canadacentral', 'jp': 'japaneast', 'kr': 'koreacentral', 'us': 'eastus'}
-ARK = {'nl': 'eu-central-1', 'ch': 'eu-central-2', 'fr': 'eu-west-3', 'de': 'eu-central-1', 'sg': 'ap-southeast-1', 'au': 'ap-southeast-2', 'uk': 'eu-west-2', 'ca': 'ca-central-1', 'jp': 'ap-northeast-1', 'kr': 'ap-northeast-2', 'us': 'us-east-1', 'apex': 'us-east-1'}
-PARKED = '0 0 31 2 *'; CRON = '30 20 * * 5'; CRON_APEX = '30 3 * * 6'
+NODES = {'nl': 'westeurope', 'ch': 'switzerlandnorth', 'fr': 'francecentral', 'de': 'germanywestcentral', 'sg': 'southeastasia', 'au': 'australiaeast', 'uk': 'uksouth', 'ca': 'canadacentral', 'jp': 'japaneast', 'kr': 'koreacentral', 'us': 'eastus', 'hk': 'eastasia'}   # hk: ORDER-035 (2026-10-22)
+ARK = {'hk': 'ap-east-1', 'nl': 'eu-central-1', 'ch': 'eu-central-2', 'fr': 'eu-west-3', 'de': 'eu-central-1', 'sg': 'ap-southeast-1', 'au': 'ap-southeast-2', 'uk': 'eu-west-2', 'ca': 'ca-central-1', 'jp': 'ap-northeast-1', 'kr': 'ap-northeast-2', 'us': 'us-east-1', 'apex': 'us-east-1'}
+PARKED = '0 0 31 2 *'; CRON = '30 20 * * 5'; CRON_APEX = '30 3 * * 6'   # the weekly clock of record until ORDER-036
+# ORDER-036 NIGHTLY (2026-10-22): 02:00 in each region's local STANDARD time as a fixed UTC cron, pinned across clock changes (never moved for daylight time);
+# the apex after the last region (Canada and the United States fire 07:00 UTC; the apex 12:30 UTC); seven nights a week
+NIGHTLY = {'au': '0 16 * * *', 'jp': '0 17 * * *', 'kr': '0 17 * * *', 'sg': '0 18 * * *', 'hk': '0 18 * * *', 'nl': '0 1 * * *', 'ch': '0 1 * * *', 'fr': '0 1 * * *', 'de': '0 1 * * *', 'uk': '0 2 * * *', 'ca': '0 7 * * *', 'us': '0 7 * * *', 'apex': '30 12 * * *'}
+KV = {'hk': 'allooloo-cmkg-kv-sg'}   # hk reads the Singapore vault's lab keys by reference (no key value copied to a new vault); every other node its own
 LAB = ['tavily', 'grok', 'perplexity', 'mistral', 'gemini', 'chatgpt', 'claude', 'companieshouse', 'dart', 'edinet']
 ENVKEY = {'tavily': 'TAVILY_API_KEY', 'grok': 'XAI_API_KEY', 'perplexity': 'PERPLEXITY_API_KEY', 'mistral': 'MISTRAL_API_KEY', 'gemini': 'GEMINI_API_KEY', 'chatgpt': 'OPENAI_API_KEY', 'claude': 'ANTHROPIC_API_KEY', 'companieshouse': 'COMPANIESHOUSE_API_KEY', 'dart': 'DART_API_KEY', 'edinet': 'EDINET_API_KEY'}
 def az(*a, raw=False, check=True):
@@ -40,7 +44,7 @@ def ensure_identity_roles(job, rg, kv, extra_rgs=()):
     if not pid or pid == 'None':
         az('containerapp', 'job', 'identity', 'assign', '-n', job, '-g', rg, '--system-assigned'); time.sleep(10)
         pid = az('containerapp', 'job', 'show', '-n', job, '-g', rg, '--query', 'identity.principalId', '-o', 'tsv', raw=True)
-    kvid = az('keyvault', 'show', '-n', kv, '--query', 'id', '-o', 'tsv', raw=True)
+    kvid = az('keyvault', 'show', '-n', kv, '--query', 'id', '-o', 'tsv', raw=True)   # (hk: the Singapore vault, by reference)
     roles = [('AcrPull', ACR_ID), ('Key Vault Secrets User', kvid)] + [('Contributor', az('group', 'show', '-n', g, '--query', 'id', '-o', 'tsv', raw=True)) for g in [rg, *extra_rgs]]
     for role, scope in roles: log(f"  {job}: {role} on {scope.split('/')[-1]} {'ok' if assign(role, pid, scope) else 'FAILED'}")
     return pid
@@ -50,7 +54,7 @@ def set_env(job, rg, pairs): az('containerapp', 'job', 'update', '-n', job, '-g'
 if cmd == 'create':
     tag = sys.argv[2]; ccs = sys.argv[3:] or list(NODES); image = f'{ACR_SERVER}/cmkg-sweep:{tag}'
     for cc in ccs:
-        reg = NODES[cc]; rg = f'allooloo-cmkg-{reg}'; job = f'cmkg-{cc}-rail'; kv = f'allooloo-cmkg-kv-{cc}'; sa = f'allooloocmkg{cc}pond'
+        reg = NODES[cc]; rg = f'allooloo-cmkg-{reg}'; job = f'cmkg-{cc}-rail'; kv = KV.get(cc, f'allooloo-cmkg-kv-{cc}'); sa = f'allooloocmkg{cc}pond'
         base_env = [f'NODE_CC={cc}', f'REGION={reg}', f'STORAGE_ACCOUNT={sa}', 'STORAGE_CONTAINER=pond', 'DOOR_RESTART=1', 'ARK_ENABLED=0', f'ARK_BUCKET=allooloo-ark-{cc}-cm-kg', f'ARK_REGION={ARK[cc]}', f'IMAGE_TAG={tag}', 'CONTACT=developers@allooloo.ai', 'PPLX_MAX=6000']
         ex = az('containerapp', 'job', 'show', '-n', job, '-g', rg, check=False)
         if ex:
@@ -107,6 +111,26 @@ elif cmd in ('dryrun', 'live'):
     if env.get('STORAGE_CONTAINER') != ('staging' if cmd == 'dryrun' else 'pond'): raise SystemExit(f'{job}: container env not set as asked — not started')
     log(f"{job}: STORAGE_CONTAINER={env.get('STORAGE_CONTAINER')} DOOR_RESTART={env.get('DOOR_RESTART')}")
     if cmd == 'dryrun': log(f"{job}: execution {az('containerapp', 'job', 'start', '-n', job, '-g', rg, '--query', 'name', '-o', 'tsv', raw=True)} started against staging")
+elif cmd == 'upgrade':
+    # ORDER-036: the tag move of the upgrade (UPGRADE.md) — image and IMAGE_TAG only; every other env value (ARK_ENABLED among them) is kept as the job carries it
+    tag = sys.argv[2]; image = f'{ACR_SERVER}/cmkg-sweep:{tag}'
+    for cc in (sys.argv[3:] or list(NODES) + ['apex']):
+        job = 'cmkg-apex-rail' if cc == 'apex' else f'cmkg-{cc}-rail'; rg = 'allooloo-cmkg-eastus' if cc == 'apex' else f'allooloo-cmkg-{NODES[cc]}'
+        before = az('containerapp', 'job', 'show', '-n', job, '-g', rg); env0 = {e['name']: e.get('value') for e in before['properties']['template']['containers'][0].get('env', [])}
+        az('containerapp', 'job', 'update', '-n', job, '-g', rg, '--image', image, '--set-env-vars', f'IMAGE_TAG={tag}')
+        after = az('containerapp', 'job', 'show', '-n', job, '-g', rg); env1 = {e['name']: e.get('value') for e in after['properties']['template']['containers'][0].get('env', [])}
+        moved = sorted(k for k in set(env0) | set(env1) if env0.get(k) != env1.get(k))
+        log(f"{job}: {before['properties']['template']['containers'][0]['image'].split(':')[-1]} -> {tag} · env changed: {moved} · ARK_ENABLED {env1.get('ARK_ENABLED')}")
+elif cmd == 'nightly':
+    for cc in (sys.argv[2:] or list(NODES) + ['apex']):
+        job = 'cmkg-apex-rail' if cc == 'apex' else f'cmkg-{cc}-rail'; rg = 'allooloo-cmkg-eastus' if cc == 'apex' else f'allooloo-cmkg-{NODES[cc]}'
+        az('containerapp', 'job', 'update', '-n', job, '-g', rg, '--cron-expression', NIGHTLY[cc]); log(f'{job}: NIGHTLY {NIGHTLY[cc]} UTC (02:00 local standard time; apex after the last region)')
+elif cmd == 'export':
+    # the schedule of every job as it stands, written beside before a clock change (Rule One: the Friday clock is disabled, never deleted — this file is its record)
+    out = {j['name']: {'resource_group': j['resourceGroup'], 'trigger': j['properties']['configuration']['triggerType'], 'cron': (j['properties']['configuration'].get('scheduleTriggerConfig') or {}).get('cronExpression'), 'image': j['properties']['template']['containers'][0]['image']} for j in az('containerapp', 'job', 'list')}
+    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"schedules-{sys.argv[2] if len(sys.argv) > 2 else 'export'}.json")
+    with open(fn, 'x', encoding='utf-8') as f: json.dump(out, f, indent=1)
+    log(f'schedules exported: {fn} ({len(out)} jobs)')
 elif cmd == 'status':
     for j in az('containerapp', 'job', 'list'):
         c = j['properties']['configuration']; t = j['properties']['template']['containers'][0]

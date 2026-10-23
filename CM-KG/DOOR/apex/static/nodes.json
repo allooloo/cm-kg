@@ -129,10 +129,16 @@
   "country": "Hong Kong",
   "registry": "hk-cm-kg.org",
   "door": "https://mcp.hk-cm-kg.ai",
-  "live": false,
-  "as_of": null,
-  "records": 0,
-  "exchanges": []
+  "live": true,
+  "as_of": "2026-10-22",
+  "records": 2820,
+  "exchanges": [
+   "HKEX",
+   "HKEX-GEM",
+   "HKEX-REIT"
+  ],
+  "events": 162874,
+  "issuers_with_events": 2795
  },
  {
   "node": "jp-cm-kg",

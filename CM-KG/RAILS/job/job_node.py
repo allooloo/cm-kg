@@ -26,7 +26,22 @@ TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-
 IMAGE_TAG = os.environ.get('IMAGE_TAG', '?'); EXEC = os.environ.get('CONTAINER_APP_JOB_EXECUTION_NAME', os.environ.get('HOSTNAME', '?'))
 T0 = datetime.datetime.now(datetime.timezone.utc); TODAY = T0.date()
 def friday_on_or_before(d): return d - datetime.timedelta(days=(d.weekday() - 4) % 7)
-MDATE = os.environ.get('MARKET_DATE') or friday_on_or_before(TODAY).isoformat(); datetime.date.fromisoformat(MDATE)
+# ORDER-036 NIGHTLY (2026-10-22): every regional job fires at 02:00 its own region's local STANDARD time (fixed UTC cron, never moved for daylight time),
+# seven nights a week. NIGHT = the local calendar date at the fire (the key of the night's markers: sweeps/<night>/<cc>/ — a Saturday or Sunday night never
+# lands on Friday's marker); MDATE = the market date = the last trading date before the night (weekends roll back to Friday; exchange holidays are not
+# carried — the run that night reads the window and the as_of stays the date the rule gives). Supersedes the Friday-on-or-before rule (ORDER-027 A1).
+STD_OFFSET = {'ca': -5, 'us': -5, 'uk': 0, 'de': 1, 'fr': 1, 'nl': 1, 'ch': 1, 'au': 10, 'sg': 8, 'hk': 8, 'jp': 9, 'kr': 9}
+def last_trading(d):
+    while d.weekday() >= 5: d -= datetime.timedelta(days=1)
+    return d
+NIGHT = os.environ.get('NIGHT') or (T0 + datetime.timedelta(hours=STD_OFFSET.get(CC, 0))).date().isoformat(); datetime.date.fromisoformat(NIGHT)
+MDATE = os.environ.get('MARKET_DATE') or last_trading(datetime.date.fromisoformat(NIGHT) - datetime.timedelta(days=1)).isoformat(); datetime.date.fromisoformat(MDATE)
+# depth gated by day inside the job: the Width 1 read runs every night over a three-day window (a 48-hour window plus the weekend margin); the Fill +
+# Confirm passes (Canada's rail carries them) run on the node's rotation night only — CC's rotation of record, logged in done.json
+os.environ.setdefault('WINDOW_DAYS', os.environ.get('NIGHTLY_WINDOW_DAYS', '3'))
+FILL_ROTATION = {'ca': 4, 'us': 4, 'uk': 4, 'de': 4, 'fr': 4, 'nl': 4, 'ch': 4, 'au': 4, 'sg': 4, 'hk': 4, 'jp': 4, 'kr': 4}   # market-date weekday of the Fill + Confirm night (4 = Friday: the depth the weekly sweep ran)
+FILL_CONFIRM = os.environ.get('FILL_CONFIRM') or ('1' if datetime.date.fromisoformat(MDATE).weekday() == FILL_ROTATION.get(CC, 4) and datetime.date.fromisoformat(NIGHT).weekday() == (FILL_ROTATION.get(CC, 4) + 1) % 7 else '0')
+os.environ['FILL_CONFIRM'] = FILL_CONFIRM
 os.environ['SWEEP_MARKET_DATE'] = MDATE; os.environ['STORAGE_CONTAINER'] = CONT; os.environ['PYTHONIOENCODING'] = 'utf-8'
 os.environ['AZURE_CORE_OUTPUT'] = 'json'; os.environ['AZURE_CORE_COLLECT_TELEMETRY'] = 'false'; os.environ.setdefault('AZURE_CONFIG_DIR', '/tmp/.azure')
 LOG = []; LOGF = f'/tmp/{NODE}-{MDATE}-job.log'
@@ -142,7 +157,7 @@ def ark_write(files, prefix):
 
 def main():
     global _key
-    log(f'ORDER-031 node job {NODE} region {REGION} store {SA}/{CONT} market date {MDATE} image {IMAGE_TAG} execution {EXEC}')
+    log(f'ORDER-036 nightly node job {NODE} region {REGION} store {SA}/{CONT} night {NIGHT} market date {MDATE} window {os.environ.get("WINDOW_DAYS")} days fill+confirm {FILL_CONFIRM} image {IMAGE_TAG} execution {EXEC}')
     sh(['az', 'login', '--identity', '-o', 'none'], quiet=True); sh(['az', 'account', 'set', '-s', SUB], quiet=True)
     acct = az('account', 'show')
     if acct.get('tenantId') != TENANT or acct.get('id') != SUB: raise SystemExit('STOP: not the tenant/subscription of record')
@@ -164,7 +179,7 @@ def main():
     else:
         sync_pond()
         if os.path.exists(os.path.join(POND, NODE, '.lock')):
-            log('DONE skipped on the node lock'); blob_put(f'sweeps/{MDATE}/{CC}/skipped.json', json.dumps({'node': NODE, 'market_date': MDATE, 'why': 'node lock in the store', 'at': T0.isoformat()})); return 0
+            log('DONE skipped on the node lock'); blob_put(f'sweeps/{NIGHT}/{CC}/skipped.json', json.dumps({'node': NODE, 'market_date': MDATE, 'why': 'node lock in the store', 'at': T0.isoformat()})); return 0
         before = newest_drop('assembled')
         rail = f'{RAILS}/{CC}-width1'
         rc = sh(['pwsh', '-NoProfile', '-NonInteractive', '-Command', "& './run_refresh.ps1'; exit $LASTEXITCODE"], cwd=rail, check=False)
@@ -250,23 +265,23 @@ def main():
                 for src, arc in door_src:
                     if os.path.exists(src): t.add(src, arcname=arc)
             files.append((tb, f'door/{n_asof or MDATE}/door-bundle.tar.gz'))
-            open(f'/tmp/{NODE}-numbers.txt', 'w', encoding='utf-8').write(line + '\n'); files.append((f'/tmp/{NODE}-numbers.txt', f'numbers/{MDATE}.txt'))
+            open(f'/tmp/{NODE}-numbers.txt', 'w', encoding='utf-8').write(line + '\n'); files.append((f'/tmp/{NODE}-numbers.txt', f'numbers/{NIGHT}.txt'))
             ark['objects'] = ark_write(files, NODE); log(f"ark: {len(ark['objects'])} objects written to s3://{os.environ['ARK_BUCKET']}/{NODE}/")
         except Exception as e: ark['error'] = repr(e)[:300]; log('ark write FAILED (a failed close for the apex):', ark['error'])
-    done = {'node': NODE, 'market_date': MDATE, 'region': REGION, 'store': f'{SA}/{CONT}', 'pond_drop': drop, 'records': n_rec, 'events': n_ev, 'as_of': n_asof, 'records_delta': n_rec - o_rec, 'events_delta': n_ev - o_ev,
+    done = {'node': NODE, 'night': NIGHT, 'market_date': MDATE, 'window_days': os.environ.get('WINDOW_DAYS'), 'fill_confirm': FILL_CONFIRM, 'region': REGION, 'store': f'{SA}/{CONT}', 'pond_drop': drop, 'records': n_rec, 'events': n_ev, 'as_of': n_asof, 'records_delta': n_rec - o_rec, 'events_delta': n_ev - o_ev,
             'served_before': {'records': o_rec, 'events': o_ev, 'as_of': o_asof}, 'gate_exit': gate, 'held': bool(hold), 'held_flag': held_flag, 'numbers_line': line, 'spend_lines': spend_lines,
             'tavily': {'start': tav0, 'end': tav1}, 'ark': ark, 'image': IMAGE_TAG, 'execution': EXEC, 'started_utc': T0.isoformat(), 'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), **result}
-    blob_put(f'sweeps/{MDATE}/{CC}/done.json', json.dumps(done, ensure_ascii=False, indent=1)); blob_put(f'sweeps/{MDATE}/{CC}/numbers.txt', line + '\n', 'text/plain'); blob_put(f'sweeps/{MDATE}/{CC}/spend.txt', '\n'.join(spend_lines) + '\n', 'text/plain')
-    if held_flag: blob_put(f'sweeps/{MDATE}/{CC}/held.txt', held_flag, 'text/plain')
-    log(f'DONE {NODE} {MDATE}: marker sweeps/{MDATE}/{CC}/done.json'); return 0
+    blob_put(f'sweeps/{NIGHT}/{CC}/done.json', json.dumps(done, ensure_ascii=False, indent=1)); blob_put(f'sweeps/{NIGHT}/{CC}/numbers.txt', line + '\n', 'text/plain'); blob_put(f'sweeps/{NIGHT}/{CC}/spend.txt', '\n'.join(spend_lines) + '\n', 'text/plain')
+    if held_flag: blob_put(f'sweeps/{NIGHT}/{CC}/held.txt', held_flag, 'text/plain')
+    log(f'DONE {NODE} night {NIGHT} market date {MDATE}: marker sweeps/{NIGHT}/{CC}/done.json'); return 0
 
 if __name__ == '__main__':
     try: rc = main()
     except SystemExit as e: rc = e.code if isinstance(e.code, int) else 1; log('STOP', e)
     except Exception as e:
         rc = 1; log('FAILED', repr(e)[:400]); log(traceback.format_exc()[-2000:])
-        try: blob_put(f'sweeps/{MDATE}/{CC}/failed.json', json.dumps({'node': NODE, 'market_date': MDATE, 'error': repr(e)[:400], 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'execution': EXEC}))
+        try: blob_put(f'sweeps/{NIGHT}/{CC}/failed.json', json.dumps({'node': NODE, 'market_date': MDATE, 'error': repr(e)[:400], 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'execution': EXEC}))
         except Exception: pass
-    try: blob_put(f'sweeps/{MDATE}/{CC}/job-{EXEC}.log', '\n'.join(LOG) + '\n', 'text/plain')
+    try: blob_put(f'sweeps/{NIGHT}/{CC}/job-{EXEC}.log', '\n'.join(LOG) + '\n', 'text/plain')
     except Exception: pass
     sys.exit(rc)

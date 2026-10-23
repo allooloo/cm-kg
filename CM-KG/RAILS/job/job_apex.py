@@ -8,12 +8,18 @@ No fallback, no retry: a node without a marker is written as "did not land". A m
 import os, sys, json, subprocess, datetime, re, io, traceback
 ROOT = os.environ.get('CMKG_ROOT', '/job/ALLOOLOO'); RAILS = f'{ROOT}/CM-KG/RAILS'; HERE = os.path.dirname(os.path.abspath(__file__))
 TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-41ee6d087b41'
-NODES = [('nl', 'westeurope'), ('ch', 'switzerlandnorth'), ('fr', 'francecentral'), ('de', 'germanywestcentral'), ('sg', 'southeastasia'), ('au', 'australiaeast'), ('uk', 'uksouth'), ('ca', 'canadacentral'), ('jp', 'japaneast'), ('kr', 'koreacentral'), ('us', 'eastus')]
+NODES = [('nl', 'westeurope'), ('ch', 'switzerlandnorth'), ('fr', 'francecentral'), ('de', 'germanywestcentral'), ('sg', 'southeastasia'), ('au', 'australiaeast'), ('uk', 'uksouth'), ('ca', 'canadacentral'), ('jp', 'japaneast'), ('kr', 'koreacentral'), ('us', 'eastus'), ('hk', 'eastasia')]   # hk: ORDER-035 (2026-10-22)
 DRY = os.environ.get('APEX_DRY', '0') == '1'   # dry run: build and report from the staging markers, deploy nothing, write under dry/<date>/, no ark
 CONT = os.environ.get('STORAGE_CONTAINER', 'pond'); APEX_SA = os.environ.get('APEX_STORAGE_ACCOUNT', 'allooloocmkgapex'); APEX_CONT = os.environ.get('APEX_CONTAINER', 'sweeps')
 T0 = datetime.datetime.now(datetime.timezone.utc); TODAY = T0.date()
 def friday_on_or_before(d): return d - datetime.timedelta(days=(d.weekday() - 4) % 7)
-MDATE = os.environ.get('MARKET_DATE') or friday_on_or_before(TODAY).isoformat()
+# ORDER-036 NIGHTLY (2026-10-22): the apex fires every night after the last region; NIGHT = its UTC date = every node's local date at its own 02:00 fire;
+# the markers it reads are sweeps/<night>/<cc>/; MDATE = the last trading date before the night (weekends roll back to Friday), the as_of every node stamps
+def last_trading(d):
+    while d.weekday() >= 5: d -= datetime.timedelta(days=1)
+    return d
+NIGHT = os.environ.get('NIGHT') or TODAY.isoformat()
+MDATE = os.environ.get('MARKET_DATE') or last_trading(datetime.date.fromisoformat(NIGHT) - datetime.timedelta(days=1)).isoformat()
 EXEC = os.environ.get('CONTAINER_APP_JOB_EXECUTION_NAME', os.environ.get('HOSTNAME', '?')); IMAGE_TAG = os.environ.get('IMAGE_TAG', '?')
 os.environ.setdefault('AZURE_CONFIG_DIR', '/tmp/.azure'); os.environ['AZURE_CORE_COLLECT_TELEMETRY'] = 'false'
 LOG = []
@@ -41,17 +47,17 @@ def put(c, name, data, ct='application/json'):
     c.upload_blob(name, data.encode('utf-8') if isinstance(data, str) else data, overwrite=True, content_settings=ContentSettings(content_type=ct))
 
 def main():
-    log(f'ORDER-031 apex job: market date {MDATE}, node container {CONT}, image {IMAGE_TAG}, execution {EXEC}{" — DRY RUN: nothing deployed, nothing written to the ark" if DRY else ""}')
+    log(f'ORDER-036 nightly apex job: night {NIGHT}, market date {MDATE}, node container {CONT}, image {IMAGE_TAG}, execution {EXEC}{" — DRY RUN: nothing deployed, nothing written to the ark" if DRY else ""}')
     sh(['az', 'login', '--identity', '-o', 'none']); sh(['az', 'account', 'set', '-s', SUB])
     acct = az('account', 'show')
     if acct.get('tenantId') != TENANT or acct.get('id') != SUB: raise SystemExit('STOP: not the tenant/subscription of record')
     markers = {}; failed = {}; skipped = {}
     for cc, reg in NODES:
         sa = f'allooloocmkg{cc}pond'; key = az('storage', 'account', 'keys', 'list', '-n', sa, '-g', f'allooloo-cmkg-{reg}', '--query', '[0].value', '-o', 'tsv', raw=True)
-        c = client(sa, key, CONT); d = get_json(c, f'sweeps/{MDATE}/{cc}/done.json')
+        c = client(sa, key, CONT); d = get_json(c, f'sweeps/{NIGHT}/{cc}/done.json')
         if d: markers[cc] = d
         else:
-            f = get_json(c, f'sweeps/{MDATE}/{cc}/failed.json'); s = get_json(c, f'sweeps/{MDATE}/{cc}/skipped.json')
+            f = get_json(c, f'sweeps/{NIGHT}/{cc}/failed.json'); s = get_json(c, f'sweeps/{NIGHT}/{cc}/skipped.json')
             if f: failed[cc] = f
             if s: skipped[cc] = s
         log(f"{cc}: {'landed' if cc in markers else ('FAILED' if cc in failed else ('skipped' if cc in skipped else 'did not land'))}")
@@ -116,17 +122,17 @@ def main():
         if a.get('error') or not a.get('objects'): ark_ok = False; ark_lines.append(f"- {cc}-cm-kg: ARK FAILED — {a.get('error') or 'no objects'}")
         else: ark_lines.append(f"- {cc}-cm-kg: " + '; '.join(f"s3://{o['bucket']}/{o['key']} v={o['version_id']}" for o in a['objects']))
     landed = [cc for cc, _ in NODES if cc in markers]
-    close = f"SWEEP CLOSE {MDATE} · {len(landed)} of 11 landed ({' '.join(landed) or 'none'}) · {tot_r:,} records · {tot_e:,} events on the landed doors · apex {apex_ver} · estate {estate_ver} · ark {'complete' if ark_ok and any((markers.get(cc) or {}).get('ark', {}).get('enabled') for cc, _ in NODES) else ('FAILED CLOSE' if not ark_ok else 'not enabled')}"
-    x_line = f"get_issuer · sweep of {MDATE} · {len(landed)}/11 markets · {tot_r:,} issuers · {tot_e:,} disclosure events · one date on every door · https://getissuer.ai"
-    rep = [f'# sweepREVIEW · sweep of {MDATE} · reviewed ', '', f'*(Machine half written by the apex job {EXEC} on {TODAY.isoformat()}, image {IMAGE_TAG}. The reviewed date is written by the CEO go. Human half: X line, spend, zones, deletions, rules, registry publishes.)*', '',
+    close = f"SWEEP CLOSE {MDATE} · {len(landed)} of {len(NODES)} landed ({' '.join(landed) or 'none'}) · {tot_r:,} records · {tot_e:,} events on the landed doors · apex {apex_ver} · estate {estate_ver} · ark {'complete' if ark_ok and any((markers.get(cc) or {}).get('ark', {}).get('enabled') for cc, _ in NODES) else ('FAILED CLOSE' if not ark_ok else 'not enabled')}"
+    x_line = f"get_issuer · sweep of {MDATE} · {len(landed)}/{len(NODES)} markets · {tot_r:,} issuers · {tot_e:,} disclosure events · one date on every door · https://getissuer.ai"
+    rep = [f'# sweepREVIEW · night of {NIGHT} · market date {MDATE} · reviewed ', '', f'*(Machine half written by the apex job {EXEC} on {TODAY.isoformat()}, image {IMAGE_TAG}. The reviewed date is written by the CEO go. Human half: X line, spend, zones, deletions, rules, registry publishes.)*', '',
            '## Doors (from the node jobs\' done-markers)', '', '| node | as of | records | events | this sweep |', '|---|---|---|---|---|', *rows, '', f'**Close line:** {close}', '',
            '## NUMBERS LOG lines written', '', '```', *(added or ['(no new lines)']), '```', '', '## SPEND lines written', '', '```', *spend, '```', '',
            '## Flags', '', *(held or ['- no door held']), *([f"- {cc}-cm-kg FAILED: {failed[cc].get('error')}" for cc in failed]), *([f"- {cc}-cm-kg skipped: {skipped[cc].get('why')}" for cc in skipped]), '',
-           '## Ark (AWS)', '', *ark_lines, '', '## X line (STAGED — the CEO posts)', '', '```', x_line, '```', '']
-    report = '\n'.join(rep); rp = f'{ROOT}/START_ME_UP/sweepREVIEW-{MDATE}.md'; open(rp, 'w', encoding='utf-8').write(report)
+           '## Ark (AWS)', '', *ark_lines, '', '## X line (STAGED — the CEO posts from @allooloo_ai, https://x.com/allooloo_ai)', '', '```', x_line, '```', '']
+    report = '\n'.join(rep); rp = f'{ROOT}/START_ME_UP/sweepREVIEW-{NIGHT}.md'; open(rp, 'w', encoding='utf-8').write(report)
     key = az('storage', 'account', 'keys', 'list', '-n', APEX_SA, '-g', 'allooloo-cmkg-shared', '--query', '[0].value', '-o', 'tsv', raw=True); c = client(APEX_SA, key, APEX_CONT)
-    pre = (f'dry/{MDATE}/' if DRY else f'{MDATE}/')
-    put(c, pre + f'sweepREVIEW-{MDATE}.md', report, 'text/markdown'); put(c, pre + 'NODE-SURFACES.md', open(boot, encoding='utf-8').read(), 'text/markdown')
+    pre = (f'dry/{NIGHT}/' if DRY else f'{NIGHT}/')
+    put(c, pre + f'sweepREVIEW-{NIGHT}.md', report, 'text/markdown'); put(c, pre + 'NODE-SURFACES.md', open(boot, encoding='utf-8').read(), 'text/markdown')
     put(c, pre + 'SPEND.md', open(md, encoding='utf-8').read(), 'text/markdown'); put(c, pre + 'numbers-log.json', open(f'{ROOT}/CM-KG/ESTATE/public/numbers-log.json', 'rb').read())
     for fn in ('index.json', 'nodes.json'): put(c, pre + f'apex-{fn}', open(f'{ROOT}/CM-KG/DOOR/apex/static/{fn}', 'rb').read())
     snaps = f'{ROOT}/CM-KG/POND/estate/surfaces'
@@ -140,12 +146,12 @@ def main():
         try:
             import boto3
             s3 = boto3.client('s3', region_name=os.environ['ARK_REGION']); b = os.environ['ARK_BUCKET']
-            for p, k in ((rp, f'apex/reports/sweepREVIEW-{MDATE}.md'), (f'{ROOT}/CM-KG/DOOR/apex/static/index.json', f'apex/index/{MDATE}/index.json'), (f'{ROOT}/CM-KG/DOOR/apex/static/nodes.json', f'apex/index/{MDATE}/nodes.json')):   # ark layout of record (ORDER-033)
+            for p, k in ((rp, f'apex/reports/sweepREVIEW-{NIGHT}.md'), (f'{ROOT}/CM-KG/DOOR/apex/static/index.json', f'apex/index/{NIGHT}/index.json'), (f'{ROOT}/CM-KG/DOOR/apex/static/nodes.json', f'apex/index/{NIGHT}/nodes.json')):   # ark layout of record (ORDER-033)
                 with open(p, 'rb') as f: r = s3.put_object(Bucket=b, Key=k, Body=f)
                 ark['objects'].append({'bucket': b, 'key': k, 'version_id': r.get('VersionId')})
             log(f"ark: {len(ark['objects'])} apex objects written")
         except Exception as e: ark['error'] = repr(e)[:300]; log('ark write FAILED:', ark['error']); close += ' · APEX ARK FAILED'
-    done = {'market_date': MDATE, 'landed': landed, 'failed': list(failed), 'skipped': list(skipped), 'records': tot_r, 'events': tot_e, 'apex_version': apex_ver, 'estate_version': estate_ver, 'close_line': close, 'x_line_staged': x_line, 'ark': ark, 'image': IMAGE_TAG, 'execution': EXEC, 'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    done = {'night': NIGHT, 'market_date': MDATE, 'landed': landed, 'failed': list(failed), 'skipped': list(skipped), 'records': tot_r, 'events': tot_e, 'apex_version': apex_ver, 'estate_version': estate_ver, 'close_line': close, 'x_line_staged': x_line, 'ark': ark, 'image': IMAGE_TAG, 'execution': EXEC, 'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat()}
     put(c, pre + 'apex-done.json', json.dumps(done, ensure_ascii=False, indent=1)); log(close); log('X line STAGED:', x_line); return 0
 
 if __name__ == '__main__':
@@ -154,6 +160,6 @@ if __name__ == '__main__':
     except Exception as e: rc = 1; log('FAILED', repr(e)[:400]); log(traceback.format_exc()[-2000:])
     try:
         key = az('storage', 'account', 'keys', 'list', '-n', APEX_SA, '-g', 'allooloo-cmkg-shared', '--query', '[0].value', '-o', 'tsv', raw=True)
-        put(client(APEX_SA, key, APEX_CONT), (f'dry/{MDATE}' if DRY else MDATE) + f'/apex-job-{EXEC}.log', '\n'.join(LOG) + '\n', 'text/plain')
+        put(client(APEX_SA, key, APEX_CONT), (f'dry/{NIGHT}' if DRY else NIGHT) + f'/apex-job-{EXEC}.log', '\n'.join(LOG) + '\n', 'text/plain')
     except Exception: pass
     sys.exit(rc)

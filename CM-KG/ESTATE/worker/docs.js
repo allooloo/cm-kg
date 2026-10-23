@@ -22,7 +22,7 @@ const EX = {
 
 export function docsBody(live) {
   const ln = ORDER.filter(cc => (live[`${cc}-cm-kg`] || {}).live); const t = ln.reduce((a, cc) => { const n = live[`${cc}-cm-kg`]; a.records += n.records || 0; a.events += n.events || 0; return a; }, { records: 0, events: 0 });
-  const rows = ORDER.filter(cc => cc !== 'hk').map(cc => { const n = live[`${cc}-cm-kg`] || {}; return [esc(NODE_DATA[cc].country), esc(REGION_FULL[cc].replace(' (', ' Azure (')), `<code class="nw">https://mcp.${cc}-cm-kg.ai/mcp</code>`, `<code class="nw">https://agent.${cc}-cm-kg.ai/.well-known/agent-card.json</code>`, n.live ? int(n.records) : 'not live', n.live ? int(n.events) : '', n.live ? esc(n.as_of || '') : ''] });
+  const rows = ORDER.map(cc => { const n = live[`${cc}-cm-kg`] || {}; return [esc(NODE_DATA[cc].country), esc(REGION_FULL[cc].replace(' (', ' Azure (')), `<code class="nw">https://mcp.${cc}-cm-kg.ai/mcp</code>`, `<code class="nw">https://agent.${cc}-cm-kg.ai/.well-known/agent-card.json</code>`, n.live ? int(n.records) : 'not live', n.live ? int(n.events) : '', n.live ? esc(n.as_of || '') : ''] });
   return `<p class="lead">Connector documentation for the apex door of the Capital Markets Knowledge Graph: how to connect, the five tools, the identifiers, the record shape, where records live, what data is handled, limits and versioning, support. Counts on this page are read live from <code>list_nodes</code> at render: ${ln.length} live nodes, ${int(t.records)} issuer records, ${int(t.events)} dated disclosure events.</p>
 
 <h2>1. Connect</h2>
@@ -47,9 +47,9 @@ ${table(['tool', 'parameters', 'returns', 'wire example'], [
 <p>Every field of a Capital Markets Record carries four parts: <code>value</code>, <code>source_url</code> (the public filing or registry page it was read from), <code>read_by</code> (the registry API or the reading engine) and <code>state</code> — one of <code>sourced</code> (read from the filing), <code>filled</code> (read by an engine, not yet confirmed), <code>confirmed</code> (two sources agree), <code>conflict</code> (sources disagree; both kept) or <code>unverified</code>. Record level: <code>as_of</code> (the drop date), <code>version</code>, a <code>gaps</code> list naming what could not be read, and <code>served_by</code> (node, regional door, Agent Card). Machine descriptions: <a href="${APEX}/openapi.json">openapi.json</a> (OpenAPI 3.1, the REST twin of the door) and <a href="${APEX}/mcp.json">mcp.json</a> (the MCP descriptor).</p>
 
 <h2>5. Residency</h2>
-<p>Records are stored and served in the issuer's own jurisdiction. Eleven live nodes, one Microsoft Azure region each, region written in full; counts and drop dates read live from <code>list_nodes</code> at render.</p>
+<p>Records are stored and served in the issuer's own jurisdiction. Twelve live nodes, one Microsoft Azure region each, region written in full; counts and drop dates read live from <code>list_nodes</code> at render.</p>
 <div class="wrap">${table(['node', 'Azure region', 'regional door (MCP)', 'Agent Card (A2A)', 'issuer records', 'events', 'drop'], rows)}</div>
-<p>Hong Kong is a beacon at Width 0: the roster is held, not served; no door, no Agent Card; Hong Kong identifiers answer not found at the apex until a local partner reads the filings.</p>
+<p>Hong Kong is a full node (ORDER-035): English-language filings from HKEXnews, served from East Asia (Hong Kong).</p>
 
 <h2>6. Data handling</h2>
 <p>Public-record data only: listing rosters, company registries, exchange notices and newswire releases, each field named to its source. No prices, no quotes, no licensed market data. No user data is collected or stored: the door takes an identifier and returns a record; there is no account, no session, no token on the public routes, no write path, and no cookies on any surface of the estate. Calls are not attributed to a caller. The operator's identity is on every response in the <code>X-CMR-Operator</code> header.</p>
@@ -64,7 +64,7 @@ ${table(['tool', 'parameters', 'returns', 'wire example'], [
 export function supportBody(host) {
   return `<p class="lead">Bring four things: the identifier you called, the tool, the door that answered (the <code>X-CMR-Node</code> header or <code>served_by</code> in the body), and the <code>as_of</code> on the response.</p>
 ${contactSection(host)}
-<p>Status: <a href="https://allooloo.io/status">allooloo.io/status</a> — the eleven doors probed every five minutes.</p>
+<p>Status: <a href="https://allooloo.io/status">allooloo.io/status</a> — the twelve doors probed every five minutes.</p>
 <p>Security: <a href="https://allooloo.io/security">allooloo.io/security</a> and <a href="/.well-known/security.txt">/.well-known/security.txt</a>.</p>
 <p>Documentation: <a href="https://capitalmarketsknowledgegraph.ai/docs">capitalmarketsknowledgegraph.ai/docs</a>.</p>`;
 }

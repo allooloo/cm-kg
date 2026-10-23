@@ -51,6 +51,9 @@ _pre-refurb*/
 /CM-KG/RAILS/zones-032/*
 !/CM-KG/RAILS/zones-032/*.py
 !/CM-KG/RAILS/zones-032/*.js
+/CM-KG/RAILS/zones-034/*
+!/CM-KG/RAILS/zones-034/*.py
+/CM-KG/RAILS/job/schedules-*.json
 .wrangler/
 .claude/
 /.git-ops/

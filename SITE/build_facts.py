@@ -35,7 +35,7 @@ facts = {
     'rules': ['licence only, no services', 'public-record only: no prices, no quotes, no licensed market data', 'blank is blank: nothing inferred; every enriched field carries a source and a reader', 'no engine is trusted alone; a person cuts the record before it is signed'],
     'proof': {'canada_width0': {'date': '2026-09-10', 'securities': 4820, 'corporate_issuers': 2851, 'exchanges': ['TSX', 'TSXV', 'CSE', 'Cboe Canada']}},
     'domains': domains,
-    'social': {'x': 'https://x.com/allooloo_io', 'github': 'https://github.com/allooloo'},
+    'social': {'x': 'https://x.com/allooloo_ai', 'github': 'https://github.com/allooloo'},
 }
 os.makedirs('public/.well-known', exist_ok=True)
 json.dump(facts, open('public/facts.json', 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
