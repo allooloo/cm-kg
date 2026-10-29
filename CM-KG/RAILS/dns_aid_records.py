@@ -15,7 +15,8 @@ def cf(path, method='GET', body=None):
         with urllib.request.urlopen(r, timeout=60) as x: return json.loads(x.read())
     except urllib.error.HTTPError as e: return json.loads(e.read())
 APEX_MCP, APEX_AGENT = 'mcp.capitalmarketsknowledgegraph.ai', 'agent.capitalmarketsknowledgegraph.ai'
-NODES = ['ca', 'uk', 'us', 'de', 'fr', 'nl', 'ch', 'au', 'sg', 'jp', 'kr', 'hk']
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import roster   # ENUM-01 (DAY ORDER 6): the roster of record
+NODES = [roster.cc_of(n) for n in roster.load() if str(n.get('door') or '').startswith(f'https://mcp.{roster.cc_of(n)}-cm-kg.ai')]   # ENUM-01: every roster node with its own <cc>-cm-kg.ai zone (the European doors sit under eu-cm-kg.ai)
 ZONES = {'allooloo.io': (APEX_MCP, APEX_AGENT), 'kyp-model.ai': (APEX_MCP, APEX_AGENT)}
 for p in ['trades', 'ask', 'coverage', 'esg', 'issuers', 'disclosure', 'registries', 'radar', 'x402']: ZONES[f'agentic-{p}.ai'] = (APEX_MCP, APEX_AGENT)
 for cc in NODES: ZONES[f'{cc}-cm-kg.ai'] = (None, None) if cc == 'hk' else (f'mcp.{cc}-cm-kg.ai', f'agent.{cc}-cm-kg.ai')

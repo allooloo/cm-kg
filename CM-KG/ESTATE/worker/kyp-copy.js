@@ -17,7 +17,7 @@ export default {
     ],
     [
      "1.2",
-     "At render: {records} issuer records, {events} dated disclosure events over the trailing twelve months, {live_nodes} live nodes, one beacon (list_nodes)."
+     "At render: {records} issuer records, {events} dated disclosure events over the trailing twelve months, {live_nodes} live nodes (list_nodes)."
     ],
     [
      "1.3",
@@ -71,7 +71,7 @@ export default {
    "clauses": [
     [
      "4.1",
-     "Ultra-reliable. Ultra-fast. Low-token, skinny records. Secure on Microsoft Azure, stored and served in-country. A confirmed record per company. These are best practice and Allooloo does them all."
+     "Ultra-reliable. Ultra-fast. Low-token, skinny records. Secure on Microsoft Azure, stored and served in-country. A signed record per company (EdDSA, key allooloo-cmr-2026-10). These are best practice and Allooloo does them all."
     ],
     [
      "4.2",
@@ -85,7 +85,7 @@ export default {
    "clauses": [
     [
      "",
-     "Canada Central Azure (Toronto, Canada) · East US Azure (Virginia, United States) · UK South Azure (London, United Kingdom) · France Central Azure (Paris, France) · West Europe Azure (Amsterdam, Netherlands) · Switzerland North Azure (Zurich, Switzerland) · Germany West Central Azure (Frankfurt, Germany) · Australia East Azure (Sydney, Australia) · Southeast Asia Azure (Singapore) · Japan East Azure (Tokyo, Japan) · Korea Central Azure (Seoul, South Korea). Hong Kong is a beacon, local partner wanted."
+     "Every market in its own Microsoft Azure region, in-country; the apex holds an index only. The regions are read from list_nodes at render and listed on the allooloo.io home grid:"
     ]
    ]
   }

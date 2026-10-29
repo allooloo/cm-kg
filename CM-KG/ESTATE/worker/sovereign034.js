@@ -6,7 +6,7 @@
 // hk-issuer.ai prints "node arming" in the door section until https://mcp.hk-cm-kg.ai/healthz answers 200 (ORDER-035), then the door. UK in every human string; GB only in the zone name.
 // No acronym is left unspelled on first use: every human string passes through spell() with a per-render set (GLOSS below).
 import NODE_DATA from './nodes.js';
-import { OPERATOR, CORPORATE, CONTACT, SURFACES_VERSION, ROBOTS, SECURITY, regionAzure, esc, int, today, headers, sitemap, form } from './chrome.js';
+import { OPERATOR, CORPORATE, CONTACT, SURFACES_VERSION, ROBOTS, SECURITY, regionAzure, esc, int, today, headers, sitemap, form, navHeader, estateFooter, SPRITE } from './chrome.js';   // SITE-04A: the nav of record + the estate footer
 import * as AEO from './aeo.js';
 import * as OAUTH from './oauth.js';
 import { KYP_CAPTURE, IW_CAPTURE } from './captures034.js';
@@ -95,16 +95,15 @@ const READER = {
 };
 
 // ---------- the page shell: no script, no inline style, the one stylesheet, the contact block of record, one-row footer
-function shell({ host, title, desc, h1, state, asOf, body, sp }) {
+function shell({ host, title, desc, h1, state, asOf, body, sp, kyp }) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}"><link rel="canonical" href="https://${host}/"><meta name="robots" content="index,follow">
 <link rel="stylesheet" href="/issuer.css?v=${SURFACES_VERSION}"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt"><link rel="alternate" type="application/json" href="/facts.json" title="facts.json"><link rel="alternate" type="text/markdown" href="/" title="markdown twin (Accept: text/markdown)"></head><body>
-<header><img src="/mark.svg" width="28" height="28" alt=""><a href="${CORPORATE}/">Allooloo</a><span>&nbsp;·&nbsp;${esc(host)}</span></header>
+<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt"><link rel="alternate" type="application/json" href="/facts.json" title="facts.json"><link rel="alternate" type="text/markdown" href="/" title="markdown twin (Accept: text/markdown)"></head><body>${SPRITE}
+${navHeader(host, { nocurrent: true, kyp })}</header>
 <main><h1>${esc(h1)}</h1><p class="state">${esc(state)} · as of ${esc(asOf || today())} · surfaces ${esc(SURFACES_VERSION)}</p>${body}
 <h2>Contact</h2>${form(host)}</main>
-<footer>${esc(sp(`${OPERATOR} · public-record only · no prices, no quotes, no licensed market data · `))}<a href="${CONTACT}">contact form</a> · <a href="${CORPORATE}/">allooloo.io</a> · <a href="/llms.txt">llms.txt</a> · <a href="https://kyp-model.org/">kyp-model.org</a> · <a href="https://issuerwire.org/">issuerwire.org</a> · © 2026</footer>
-</body></html>`;
+${estateFooter(host)}<script src="/webmcp.js"></script></body></html>`;
 }
 const li = items => `<dl>${items.map((v, i) => `<dt>${i + 1}</dt><dd>${v}</dd>`).join('')}</dl>`;
 const code = s => `<code>${esc(s)}</code>`;
@@ -187,7 +186,7 @@ export function stdBody(which, live, iw, sp) {
       sp('State. One of sourced (read from its source of record), filled (found by a reader and not yet confirmed), confirmed (a second independent source agrees), conflict (two sources disagree; both kept). A blank stays blank; nothing is inferred.'),
       sp('The source page. Every field carries the web address it was read from. A field without one is not served.'),
       sp('The read date. The record carries as_of, the sweep’s market date; each field keeps its own read date. The two are never merged.'),
-      sp('The signature. CMR signing is reserved and not yet in service on the record; a row is proved today by its source page and read date, and by the receipt in clause 8 once it is issued.'),
+      sp('The signature. Every record is signed (EdDSA, key allooloo-cmr-2026-10); verify against https://allooloo.ai/.well-known/jwks.json. A row is proved by its source page, its read date and its signature, and by the receipt in clause 8 once it is issued.'),
       sp('The delta. list_events_since(identifier, since) answers the dated disclosures for one issuer since a date the agent holds; the agent keeps its own last read.'),
       sp('The receipt. cite-fact.ai is the permanent address for what a door served: payload, node, as_of, serving time, key and the source page of each field. Receipts are not issued yet and none is stubbed.'),
       sp('The duty map. The same row serves each market’s duty; the table below is read from the live node surfaces.'),
@@ -196,7 +195,7 @@ export function stdBody(which, live, iw, sp) {
     const ex = KYP_CAPTURE;
     return `<h2>Clauses</h2>${li(c.map(esc))}<table><thead><tr><th>market</th><th>duty</th><th>node page</th></tr></thead><tbody>${duty}</tbody></table>
 <h2>On the record</h2><p>${esc(sp(`Captured from the wire ${ex.captured} at ${ex.door}:`))}</p><pre>${esc(JSON.stringify(ex.request, null, 1))}</pre><pre>${esc(JSON.stringify(ex.response, null, 1))}</pre>
-<h2>The door it describes</h2>${li([esc(sp('get_issuer (MCP, Streamable HTTP, no authentication): ')) + code(GI_MCP), esc(sp('Where the record lives: each market in its own Azure region, in-country; the apex holds an index only. The eleven markets and their regions are named on the node pages.'))])}`;
+<h2>The door it describes</h2>${li([esc(sp('get_issuer (MCP, Streamable HTTP, no authentication): ')) + code(GI_MCP), esc(sp('Where the record lives: each market in its own Azure region, in-country; the apex holds an index only. The markets and their regions are named on the node pages and in list_nodes.'))])}`;
   }
   const mk = Array.isArray(iw.markets) ? iw.markets.map(m => m === 'UK' ? 'United Kingdom (UK)' : m === 'US' ? 'United States' : m === 'CA' ? 'Canada' : m).join(', ') : '';
   const c = [
@@ -220,9 +219,24 @@ const STD_COPY = {
 function stdLlms(which, host, iw) {
   const sp = speller();
   return which === 'kyp'
-    ? [`# ${host} — the KYP record standard`, sp('1. A get_issuer row: one Capital Markets Record (CMR) per listed issuer, keyed node/exchange/code; every field = value, source_url, read_by, state (sourced · filled · confirmed · conflict).'), '2. as_of = the sweep market date; field read dates kept separately.', '3. Signing: reserved, not yet in service; receipts at https://cite-fact.ai/ (not issued yet).', '4. Delta: list_events_since(identifier, since).', '5. Versioning: integer version; nothing deleted.', '6. Not carried: prices, quotes, licensed market data, ratings, opinions, summaries.', `7. Door: ${GI_MCP}. Residency: each market in its own Azure region; node pages at https://<cc>-issuer.ai/.`, `8. Example on the record: get_record LSE:SHEL (captured ${KYP_CAPTURE.captured}).`].join('\n') + '\n'
+    ? [`# ${host} — the KYP record standard`, sp('1. A get_issuer row: one Capital Markets Record (CMR) per listed issuer, keyed node/exchange/code; every field = value, source_url, read_by, state (sourced · filled · confirmed · conflict).'), '2. as_of = the sweep market date; field read dates kept separately.', '3. Signing: every record is signed (EdDSA, key allooloo-cmr-2026-10); keyring https://allooloo.ai/.well-known/jwks.json; receipts at https://cite-fact.ai/ (not issued yet).', '4. Delta: list_events_since(identifier, since).', '5. Versioning: integer version; nothing deleted.', '6. Not carried: prices, quotes, licensed market data, ratings, opinions, summaries.', `7. Door: ${GI_MCP}. Residency: each market in its own Azure region; node pages at https://<cc>-issuer.ai/.`, `8. Example on the record: get_record LSE:SHEL (captured ${KYP_CAPTURE.captured}).`].join('\n') + '\n'
     : [`# ${host} — the signed-row standard for Issuerwire`, '1. One row per filing: id, issuer_key, type, date, title, source page; never edited.', '2. Type in English from the register\'s code table; title exactly as filed in its original language; never machine-translated; identifiers language-free.', `3. Signature: Ed25519, kid amn-2026-10; keys ${IW_KEYS}; the full signed row on the paid call (x402).`, '4. Delta: get_delta(issuer, since).', `5. Markets carried at render: ${(iw.markets || []).join(', ')}.`, '6. Not carried: summaries, ratings, prices, opinions, translations.', `7. Door: ${IW_MCP}. Residency: France Central Azure (Paris, France).`].join('\n') + '\n';
 }
+
+// ---------- RADAR-02 (2026-10-23): one row per ORDER-034 zone for RADAR (the counts read at render, as the pages print them; the scanner level from zones-scan.json, as read)
+export async function sovereignZones(live, scan) {
+  const [iw, hk] = await Promise.all([iwFacts(), hkUp()]); const z = (scan && scan.zones) || {}; const lv = h => (z[h] && z[h].level != null) ? { level: z[h].level, passed: z[h].passed, scored: z[h].scored } : null;
+  const rows = NODES.map(cc => { const v = nodeView(cc, live, iw, hk); const k = MKT[cc]; const h = `${cc}-issuer.ai`;
+    return { zone: h, market: v.country, duty: `the record an agent cites under ${v.d.duty}`, doors: v.arming ? [] : [GI_MCP].concat(v.both ? [IW_MCP] : []),
+      get_issuer: v.isLive ? { issuers: n_(v.n.records), disclosures: n_(v.n.events) } : null, issuerwire: v.both ? { issuers: n_((iw.issuers_by_market || {})[k]), signed_rows: n_((iw.filings_by_market || {})[k]) } : null,
+      as_of: v.asOf || null, state: v.arming ? 'node arming' : (v.isLive ? 'live' : 'not live'), scanner: lv(h) }; });
+  const recs = Object.values(live).filter(n => n.live).reduce((a, n) => a + n_(n.records), 0);
+  rows.push({ zone: 'gb-issuer.ai', market: 'United Kingdom', duty: '301 → https://uk-issuer.ai/ (one hop, path kept)', doors: [], get_issuer: null, issuerwire: null, as_of: null, state: '301', scanner: null });
+  rows.push({ zone: STD.kyp, market: 'every market on the roster', duty: 'the KYP record standard: what a get_issuer row is', doors: [GI_MCP], get_issuer: { issuers: recs }, issuerwire: null, as_of: today(), state: 'live', scanner: lv(STD.kyp) });
+  rows.push({ zone: STD.iw, market: 'the markets Issuerwire carries', duty: 'the signed-row standard: one row per filing, signed', doors: [IW_MCP], get_issuer: null, issuerwire: iw.issuers_held != null ? { issuers: n_(iw.issuers_held), signed_rows: n_(iw.signed_rows != null ? iw.signed_rows : iw.filings_held) } : null, as_of: iw.store_as_of ? String(iw.store_as_of).slice(0, 10) : null, state: iw.issuers_held != null ? 'live' : 'facts not read', scanner: lv(STD.iw) });
+  return { rows, iw, scan_read_at: (scan && scan.read_at) || null, scan_instrument: (scan && scan.instrument) || 'isitagentready.com', source: `list_nodes at ${GI_MCP} (read at render); ${IW_FACTS} (read at render); zones-scan.json (the ORDER-034 scan, as read)` };
+}
+export { iwFacts };
 
 // ---------- the handler
 const TGT = { kind: 'apex', mcp: GI_MCP, agent: GI_AGENT, openapi: 'https://mcp.getissuer.ai/openapi.json', mcpjson: 'https://mcp.getissuer.ai/mcp.json', name: 'getissuer' };
@@ -239,7 +253,7 @@ export async function handle34(request, env, url, c, liveNodes) {
   const node = c.kind === 'sov' ? `${c.cc}-cm-kg` : (c.which === 'kyp' ? 'kyp-model' : 'issuerwire');
   if (c.kind === 'sov' && p === '/mcp') { if (request.method === 'GET' || request.method === 'HEAD') return respond(new Response(null, { status: 302, headers: { location: GI_MCP } }), node); return respond(new Response(JSON.stringify({ error: 'post_to_the_door', door: GI_MCP }), { status: 405, headers: { 'content-type': 'application/json', allow: 'GET, HEAD' } }), node); }
   if (request.method !== 'GET' && request.method !== 'HEAD') return respond(new Response('Method Not Allowed', { status: 405, headers: { 'content-type': 'text/plain' } }), node);
-  if (['/issuer.css', '/favicon.svg', '/favicon.ico', '/mark.svg', '/icon-512.png', '/icon-192.png', '/apple-touch-icon.png'].includes(p)) { const a = await env.ASSETS.fetch(new Request(url.origin + p)); const r = respond(new Response(a.body, { status: a.status, headers: a.headers }), node); r.headers.set('cache-control', p === '/issuer.css' ? 'public, max-age=300' : 'public, max-age=86400'); return r; }
+  if (['/issuer.css', '/favicon.svg', '/favicon.ico', '/mark.svg', '/allooloo-logo.svg', '/allooloo-logo-dark.svg', '/icon-512.png', '/icon-192.png', '/apple-touch-icon.png'].includes(p)) { const a = await env.ASSETS.fetch(new Request(url.origin + p)); const r = respond(new Response(a.body, { status: a.status, headers: a.headers }), node); r.headers.set('cache-control', p === '/issuer.css' ? 'public, max-age=300' : 'public, max-age=86400'); return r; }
   if (p === '/robots.txt') return respond(new Response(ROBOTS(host), { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } }), node);
   if (p === '/.well-known/security.txt') return respond(new Response(SECURITY(host), { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } }), node);
   const [live, iw, hk] = await Promise.all([liveNodes(), iwFacts(), c.kind === 'sov' && c.cc === 'hk' ? hkUp() : Promise.resolve(true)]);
@@ -263,7 +277,7 @@ export async function handle34(request, env, url, c, liveNodes) {
   if (p === '/') {
     let page;
     const sp = speller();   // one speller per page: the H1 is the first use
-    if (c.kind === 'sov') { const h1 = sp(nodeH1(c.cc)); const b = nodeBody(host, c.cc, live, iw, hk, sp); page = shell({ host, title: label, desc, h1, state: b.v.arming ? 'node arming' : (b.v.isLive ? 'live' : 'not live'), asOf: b.v.asOf, body: b.html, sp }); }
+    if (c.kind === 'sov') { const h1 = sp(nodeH1(c.cc)); const b = nodeBody(host, c.cc, live, iw, hk, sp); page = shell({ kyp: 'https://getissuer.ai/#issuers', host, title: label, desc, h1, state: b.v.arming ? 'node arming' : (b.v.isLive ? 'live' : 'not live'), asOf: b.v.asOf, body: b.html, sp }); }
     else { const h1 = sp(STD_COPY[c.which].h1); page = shell({ host, title: label, desc, h1, state: 'standard', asOf: today(), body: stdBody(c.which, live, iw, sp), sp }); }
     const md = AEO.wantsMarkdown(request);
     // no-transform: the edge must not rewrite the page (it would inject the Web Analytics beacon — the page carries zero scripts)

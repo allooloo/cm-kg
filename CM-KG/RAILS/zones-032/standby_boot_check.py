@@ -3,7 +3,8 @@ listener, scale back to 0. The door's security group admits Cloudflare only, so 
 Usage: python standby_boot_check.py <cc>"""
 import os, sys, json, time
 import boto3
-ARK = {'nl': 'eu-central-1', 'ch': 'eu-central-2', 'fr': 'eu-west-3', 'de': 'eu-central-1', 'sg': 'ap-southeast-1', 'au': 'ap-southeast-2', 'uk': 'eu-west-2', 'ca': 'ca-central-1', 'jp': 'ap-northeast-1', 'kr': 'ap-northeast-2', 'us': 'us-east-1'}
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import infra_policy as _ip   # ENUM-01 (DAY ORDER 6): ark region, zone, ident read from the roster and the policy of record
+ARK = _ip.Lazy(_ip.ark_region)
 cc = sys.argv[1]; R = ARK[cc]; SVC = f'allooloo-standby-{cc}'; LG = f'/allooloo/standby/{cc}'
 _k = open(r'C:\MATTHEWKEDDY\AGENT KEYS\aws-standby-deployer.txt', encoding='utf-8').read().split()
 S = boto3.session.Session(aws_access_key_id=_k[0], aws_secret_access_key=_k[1], region_name=R); del _k

@@ -3,7 +3,8 @@ CM-KG\POND\estate\surfaces\<yyyy-mm-dd>[-n]\<host>\ as an immutable dated drop (
 Usage: python snapshot_surfaces.py [cc ...]   (no args: every surface — 12 nodes, 8 products, allooloo.io and its record pages, the roots)."""
 import os, sys, datetime, requests
 ROOT = r'C:\ALLOOLOO\CM-KG\POND\estate\surfaces'
-NODES = ['ca', 'us', 'uk', 'fr', 'nl', 'ch', 'de', 'au', 'sg', 'jp', 'kr', 'hk']
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import roster   # ENUM-01 (DAY ORDER 6): the roster of record
+NODES = roster.codes()   # ENUM-01: every roster node's surfaces (the twelve were typed here)
 PRODUCTS = ['trades', 'ask', 'coverage', 'esg', 'issuers', 'disclosure', 'registries', 'radar', 'x402']
 def hosts(args):
     if args: return [f'{cc}-cm-kg.ai' for cc in args]

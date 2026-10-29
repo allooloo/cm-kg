@@ -16,7 +16,9 @@ def doh(name, typ):
     try:
         with urllib.request.urlopen(r, timeout=30) as x: return json.loads(x.read())
     except Exception as e: return {'error': str(e)[:120]}
-ZONES = ['allooloo.io', 'kyp-model.ai'] + [f'agentic-{p}.ai' for p in ['trades', 'ask', 'coverage', 'esg', 'issuers', 'disclosure', 'registries', 'radar', 'x402']] + [f'{cc}-cm-kg.ai' for cc in ['ca', 'uk', 'us', 'de', 'fr', 'nl', 'ch', 'au', 'sg', 'jp', 'kr', 'hk']]
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import roster   # ENUM-01 (DAY ORDER 6): the roster of record
+NODES = [roster.cc_of(n) for n in roster.load() if str(n.get('door') or '').startswith(f'https://mcp.{roster.cc_of(n)}-cm-kg.ai')]   # ENUM-01: every roster node with its own <cc>-cm-kg.ai zone (the European doors sit under eu-cm-kg.ai)
+ZONES = ['allooloo.io', 'kyp-model.ai'] + [f'agentic-{p}.ai' for p in ['trades', 'ask', 'coverage', 'esg', 'issuers', 'disclosure', 'registries', 'radar', 'x402']] + [f'{cc}-cm-kg.ai' for cc in NODES] + (['eu-cm-kg.ai'] if any('.eu-cm-kg.ai' in str(n.get('door')) for n in roster.load()) else [])
 stamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H%MZ'); out = {}; lines = []
 for z in ZONES:
     j = cf(f'/zones?name={z}'); zid = j['result'][0]['id'] if j.get('result') else None

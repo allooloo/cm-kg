@@ -10,7 +10,8 @@ def cf(path):
     try:
         with urllib.request.urlopen(r, timeout=60) as x: return json.loads(x.read())
     except urllib.error.HTTPError as e: return {'errors': e.read()[:160].decode('utf-8', 'replace')}
-NODES = ['ca', 'us', 'uk', 'fr', 'nl', 'ch', 'de', 'au', 'sg', 'jp', 'kr', 'hk']
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import roster   # ENUM-01 (DAY ORDER 6): the roster of record
+NODES = [roster.cc_of(n) for n in roster.load() if str(n.get('door') or '').startswith(f'https://mcp.{roster.cc_of(n)}-cm-kg.ai')]   # ENUM-01: every roster node with its own <cc>-cm-kg.ai zone (the European doors sit under eu-cm-kg.ai)
 PRODUCTS = ['trades', 'ask', 'coverage', 'esg', 'issuers', 'disclosure', 'registries', 'radar', 'x402']
 SCOPE = ['allooloo.io'] + [f'agentic-{p}.ai' for p in PRODUCTS] + ['kyp-model.ai'] + [f'{cc}-cm-kg.ai' for cc in NODES]
 UAS = {'PerplexityBot': 'Mozilla/5.0 (compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot)', 'ClaudeBot': 'Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)', 'GPTBot': 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)', 'Googlebot': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'}

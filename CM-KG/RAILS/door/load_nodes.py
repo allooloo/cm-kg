@@ -7,7 +7,10 @@ Idempotent on (node, exchange, ticker): every file is rewritten from the workboo
 Usage: python load_nodes.py [ca uk ...]   (default: every node with a workbook present). AS_OF_<CC> and CMR_VERSION_<CC> env vars per node."""
 import openpyxl, json, os, re, datetime, sys, shutil
 ROOT = r'C:\ALLOOLOO'; OUT = os.path.join(ROOT, r'CM-KG\DOOR\data')
-NODES = [('ca', 'Canada'), ('uk', 'United Kingdom'), ('au', 'Australia'), ('sg', 'Singapore'), ('ch', 'Switzerland'), ('de', 'Germany'), ('fr', 'France'), ('nl', 'Netherlands'), ('hk', 'Hong Kong'), ('jp', 'Japan'), ('kr', 'South Korea'), ('us', 'United States')]
+NODES_TYPED_BEFORE_ENUM01 = [('ca', 'Canada'), ('uk', 'United Kingdom'), ('au', 'Australia'), ('sg', 'Singapore'), ('ch', 'Switzerland'), ('de', 'Germany'), ('fr', 'France'), ('nl', 'Netherlands'), ('hk', 'Hong Kong'), ('jp', 'Japan'), ('kr', 'South Korea'), ('us', 'United States')]
+# ENUM-01 (DAY ORDER 6, 2026-10-25): the nodes (and their country and public door) are the roster of record; the typed twelve above stay as the record only
+import sys as _s; _s.path.insert(0, os.path.dirname(os.path.abspath(__file__))); import roster
+NODES = [(roster.cc_of(n), n['country']) for n in roster.load(live_only=False)]; DOORS = {roster.cc_of(n): n['door'].rstrip('/') for n in roster.load(live_only=False)}
 def slug_ticker(t): return re.sub(r'[^A-Za-z0-9.\-]', '_', str(t))
 def gaps_of(text):
     out = {}
@@ -135,7 +138,25 @@ HK = {'tabs': {'Main Board': 'HKEX', 'GEM': 'HKEX-GEM', 'REITs': 'HKEX-REIT'}, '
                  'registrar': ('Share registrar', 'Share registrar source', 'Share registrar read by', 'Share registrar State', 'Share registrar'), 'newswire': ('Newswire of habit', 'Newswire releases seen', 'Newswire read by', 'Newswire State', 'Newswire of habit'),
                  'hq_city': ('HQ city', 'HQ source', 'HQ read by', 'HQ State', 'HQ city'), 'trading_currency': ('Trading currency', 'Roster source', 'Roster read by', None, None), 'board_lot': ('Board lot', 'Roster source', 'Roster read by', None, None), 'ccass': ('Admitted to CCASS', 'Roster source', 'Roster read by', None, None), 'status': ('Status', 'Roster source', 'Roster read by', None, None)},
       'second': {'isin': 'ISIN', 'lei': 'LEI', 'registrar': 'Share registrar', 'auditor': 'Auditor', 'newswire': 'Newswire of habit'}, 'prefixes': ['HKEX', 'HKEX-GEM', 'HKEX-REIT'], 'alias_from_lei_record': True}
+# NODE-EU-01…14 (DAY ORDER 4, 2026-10-24): the European nodes on the Euronext pattern — ISIN-keyed, one tab per venue (RAILS\eu-nodeenues.json), the
+# workbook written by RAILS\eu-node\eu_node.py from ESMA FIRDS and the national regulated-information store
+def EU(venues, tabs=None):   # DAY ORDER 5: the sheet name from tabs.json (CEO tab rule 2026-10-24) when the market has one
+    return {'tabs': {(tabs or {}).get(mic) or tab: mic for mic, tab in venues.items()}, 'alt_tabs': {(tabs or {}).get(mic) or tab: tab for mic, tab in venues.items()}, 'ticker': 'ISIN', 'name': 'Legal name', 'default_as_of': '2026-10-24',
+            'fields': {'name': ('Legal name', 'Roster source', 'Roster read by', None, None), 'ticker': ('ISIN', 'Roster source', 'Roster read by', None, None), 'exchange': ('Exchange', 'Roster source', 'Roster read by', None, None),
+                       'mic': ('MIC', 'Roster source', 'Roster read by', None, None), 'cfi': ('CFI', 'Roster source', 'Roster read by', None, None), 'trading_symbol': ('Ticker', 'Roster source', 'Roster read by', None, None),
+                       'isin': ('ISIN', 'ISIN source', 'ISIN read by', 'ISIN State', 'ISIN'), 'lei': ('LEI', 'LEI source', 'LEI read by', 'LEI State', 'LEI')},
+            'second': {'isin': 'ISIN', 'lei': 'LEI'}, 'prefixes': list(venues.keys())}
+try:
+    _EUV = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'eu-node', 'venues.json'), encoding='utf-8'))
+except Exception: _EUV = {}
+try:
+    _TABS = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'eu-node', 'tabs.json'), encoding='utf-8'))
+except Exception: _TABS = {}
+EU_NAMES = {'it': 'Italy', 'es': 'Spain', 'se': 'Sweden', 'dk': 'Denmark', 'no': 'Norway', 'fi': 'Finland', 'be': 'Belgium', 'ie': 'Ireland', 'at': 'Austria', 'pl': 'Poland', 'pt': 'Portugal', 'lu': 'Luxembourg', 'gr': 'Greece', 'cz': 'Czech Republic', 'ky': 'Cayman Islands', 'bm': 'Bermuda', 'je': 'Jersey', 'in': 'India', 'tw': 'Taiwan', 'sa': 'Saudi Arabia', 'ae': 'United Arab Emirates', 'br': 'Brazil', 'mx': 'Mexico'}   # NODE-ROW (DAY ORDER 5, 2026-10-24)
 MAPS = {'ca': CA, 'uk': UK, 'au': AU, 'sg': SG, 'ch': CH, 'de': DE, 'fr': FR, 'nl': NL, 'jp': JP, 'kr': KR, 'hk': HK}
+for _cc, _v in _EUV.items():
+    MAPS[_cc] = EU(_v, _TABS.get(_cc))
+    if _cc not in [c for c, _ in NODES]: NODES.append((_cc, EU_NAMES.get(_cc, _cc)))
 def field(d, spec, gaps):
     vcol, scol, rcol, stcol, glabel = spec
     v = d.get(vcol)
@@ -168,7 +189,8 @@ def load_node(cc, index, facts_nodes):
             if lid and lr.get('name'): lei_legal_names[lid] = (lr['name'], lr.get('src') or f'https://api.gleif.org/api/v1/lei-records/{lid}')
     wb = openpyxl.load_workbook(xlsx, read_only=True); n = 0; counts = {}
     for tab, exs in M['tabs'].items():
-        ws = wb[tab]; it = ws.iter_rows(values_only=True); hdr = next(it)
+        _alt = (M.get('alt_tabs') or {}).get(tab, tab)   # a drop assembled before the tab rule carries the official name (cut at 31)
+        ws = next(wb[x] for x in (tab, tab[:31], _alt, _alt[:31]) if x in wb.sheetnames); it = ws.iter_rows(values_only=True); hdr = next(it)   # NODE-ROW (DAY ORDER 5): Excel caps a sheet name at 31 characters (The International Stock Exchange, National Stock Exchange of India)
         os.makedirs(os.path.join(OUT, 'records', node, exs), exist_ok=True); os.makedirs(os.path.join(OUT, 'events', node, exs), exist_ok=True)
         for row in it:
             d = dict(zip(hdr, row))
@@ -216,6 +238,11 @@ def load_node(cc, index, facts_nodes):
             if exs not in extra_ex: extra_ex.append(exs); os.makedirs(os.path.join(OUT, 'records', node, exs), exist_ok=True); os.makedirs(os.path.join(OUT, 'events', node, exs), exist_ok=True)
             evs = sorted(ref_ev.get((exs, t), []), key=lambda e: e['date'], reverse=True)
             rec = {'cmr': key, 'node': node, 'as_of': r.get('as_of') or as_of, 'version': r.get('version', 1), 'kind': r.get('kind'), 'identity': r['identity'], 'aliases': r.get('aliases', []), 'events_url': f'{host}/events/{exs}/{t}', 'event_count': len(evs), 'gaps': r.get('gaps', []), 'sources': r.get('sources')}
+            # ISIN disambiguation (2026-10-27): a reference record is a derivative — it keeps its own identifiers and links to the primary listing by
+            # `parent` (the underlying's CMR when the underlying ISIN is on the roster; RAILS\door\isin_parents.json names it when it sits on another node)
+            ui = r['identity'].get('underlying_isin') or r['identity'].get('isin') or {}; uc = r['identity'].get('underlying_cmr') or {}
+            rec['parent'] = {'cmr': uc.get('value'), 'relation': 'derivative', 'isin': ui.get('value'), 'source_url': uc.get('source_url') or ui.get('source_url'), 'read_by': uc.get('read_by') or ui.get('read_by'),
+                             'rule': 'an ISIN resolves to the primary listing record; a derivative keeps its own identifiers and never answers an ISIN lookup on its own (2026-10-27)'}
             json.dump(rec, open(os.path.join(OUT, 'records', node, exs, slug_ticker(t) + '.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
             json.dump([{k2: e.get(k2) for k2 in ('date', 'event_type', 'title', 'reference', 'category', 'language', 'wire', 'source', 'url', 'read_by', 'state', 'detail') if e.get(k2) not in (None, '')} for e in evs], open(os.path.join(OUT, 'events', node, exs, slug_ticker(t) + '.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
             index['keys'].append(key); index['ticker'].setdefault(t.upper(), []).append(key)
@@ -250,7 +277,7 @@ def main():
              'source': 'public-record', 'operator': 'Allooloo Technologies Corp.', 'store': 'Cloudflare Workers Static Assets (one JSON per record and per issuer events)',
              'tools': ['resolve_issuer', 'get_record', 'list_events_since', 'list_aliases', 'list_nodes'], 'mcp': '/mcp (Streamable HTTP, JSON-RPC 2.0, no auth)'}
     json.dump(facts, open(os.path.join(OUT, 'facts.json'), 'w', encoding='utf-8'), indent=1)
-    nodes = [{'node': f'{c}-cm-kg', 'country': nme, 'registry': f'{c}-cm-kg.org', 'door': f'https://mcp.{c}-cm-kg.ai', 'live': f'{c}-cm-kg' in facts_nodes, 'as_of': facts_nodes.get(f'{c}-cm-kg', {}).get('as_of'), 'records': facts_nodes.get(f'{c}-cm-kg', {}).get('records', 0), 'exchanges': facts_nodes.get(f'{c}-cm-kg', {}).get('exchanges', [])} for c, nme in NODES]
+    nodes = [{'node': f'{c}-cm-kg', 'country': nme, 'registry': f'{c}-cm-kg.org', 'door': DOORS.get(c, f'https://mcp.{c}-cm-kg.ai'), 'live': f'{c}-cm-kg' in facts_nodes, 'as_of': facts_nodes.get(f'{c}-cm-kg', {}).get('as_of'), 'records': facts_nodes.get(f'{c}-cm-kg', {}).get('records', 0), 'exchanges': facts_nodes.get(f'{c}-cm-kg', {}).get('exchanges', [])} for c, nme in NODES]
     json.dump(nodes, open(os.path.join(OUT, 'nodes.json'), 'w', encoding='utf-8'), indent=1)
     static_dir = os.path.join(ROOT, r'CM-KG\DOOR\static')
     if os.path.isdir(static_dir):

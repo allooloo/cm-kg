@@ -5,7 +5,7 @@
   "registry": "ca-cm-kg.org",
   "door": "https://mcp.ca-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-16",
+  "as_of": "2026-10-23",
   "records": 4820,
   "exchanges": [
    "TSX",
@@ -13,8 +13,40 @@
    "CSE",
    "CBOE-CANADA"
   ],
-  "events": 30747,
-  "issuers_with_events": 2681
+  "events": 32970,
+  "issuers_with_events": 2687,
+  "region": {
+   "azure": "Canada Central",
+   "city": "Toronto",
+   "store": "canadacentral",
+   "door": "canadacentral",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "KYP (Know Your Product), NI 31-103",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "TSX:SHOP",
+   "isin": "CA82509L1076",
+   "name": "Shopify Inc.",
+   "record_url": "https://mcp.ca-cm-kg.ai/record/TSX/SHOP"
+  },
+  "backfill": {
+   "history_from": "2021-01-04",
+   "rows": 21667,
+   "documents": 21315,
+   "year_in_progress": null,
+   "live_record_began": "2026-09-10",
+   "years": [
+    "2026",
+    "2025",
+    "2024",
+    "2023",
+    "2022",
+    "2021"
+   ],
+   "facts": "store backfill/facts.json"
+  }
  },
  {
   "node": "uk-cm-kg",
@@ -22,15 +54,31 @@
   "registry": "uk-cm-kg.org",
   "door": "https://mcp.uk-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-16",
+  "as_of": "2026-10-23",
   "records": 1570,
   "exchanges": [
    "LSE",
    "AIM",
    "AQSE"
   ],
-  "events": 137724,
-  "issuers_with_events": 1227
+  "events": 142552,
+  "issuers_with_events": 1227,
+  "region": {
+   "azure": "UK South",
+   "city": "London",
+   "store": "uksouth",
+   "door": "uksouth",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "product governance (FCA PROD sourcebook)",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "SHEL.L",
+   "isin": "GB00BP6MXD84",
+   "name": "SHELL PLC",
+   "record_url": "https://mcp.uk-cm-kg.ai/record/LSE/SHEL"
+  }
  },
  {
   "node": "au-cm-kg",
@@ -38,15 +86,31 @@
   "registry": "au-cm-kg.org",
   "door": "https://mcp.au-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-16",
+  "as_of": "2026-10-26",
   "records": 1874,
   "exchanges": [
    "ASX",
    "NSX",
    "TMX-AU"
   ],
-  "events": 130740,
-  "issuers_with_events": 1782
+  "events": 134267,
+  "issuers_with_events": 1784,
+  "region": {
+   "azure": "Australia East",
+   "city": "New South Wales",
+   "store": "australiaeast",
+   "door": "australiaeast",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "DDO (Design and Distribution Obligations)",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "BHP.AX",
+   "isin": "AU000000BHP4",
+   "name": "BHP GROUP LIMITED",
+   "record_url": "https://mcp.au-cm-kg.ai/record/ASX/BHP"
+  }
  },
  {
   "node": "sg-cm-kg",
@@ -54,14 +118,30 @@
   "registry": "sg-cm-kg.org",
   "door": "https://mcp.sg-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-16",
+  "as_of": "2026-10-23",
   "records": 639,
   "exchanges": [
    "SGX",
    "SGX-CATALIST"
   ],
-  "events": 4006,
-  "issuers_with_events": 554
+  "events": 4269,
+  "issuers_with_events": 555,
+  "region": {
+   "azure": "Southeast Asia",
+   "city": "Singapore",
+   "store": "southeastasia",
+   "door": "southeastasia",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MAS product due diligence",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "D05.SI",
+   "isin": "SG1L01001701",
+   "name": "DBS GROUP HOLDINGS LTD",
+   "record_url": "https://mcp.sg-cm-kg.ai/record/SGX/D05"
+  }
  },
  {
   "node": "ch-cm-kg",
@@ -69,14 +149,30 @@
   "registry": "ch-cm-kg.org",
   "door": "https://mcp.ch-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-16",
+  "as_of": "2026-10-23",
   "records": 829,
   "exchanges": [
    "SIX",
    "BX"
   ],
-  "events": 1972,
-  "issuers_with_events": 199
+  "events": 2203,
+  "issuers_with_events": 199,
+  "region": {
+   "azure": "Switzerland North",
+   "city": "Zurich",
+   "store": "switzerlandnorth",
+   "door": "switzerlandnorth",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "FinSA product duties",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "NESN.SW",
+   "isin": "CH0038863350",
+   "name": "NESTLE N",
+   "record_url": "https://mcp.ch-cm-kg.ai/record/SIX/NESN"
+  }
  },
  {
   "node": "de-cm-kg",
@@ -84,14 +180,30 @@
   "registry": "de-cm-kg.org",
   "door": "https://mcp.de-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-16",
+  "as_of": "2026-10-23",
   "records": 3436,
   "exchanges": [
    "XETRA",
    "EUREX"
   ],
-  "events": 36029,
-  "issuers_with_events": 3345
+  "events": 36340,
+  "issuers_with_events": 3357,
+  "region": {
+   "azure": "Germany West Central",
+   "city": "Frankfurt",
+   "store": "germanywestcentral",
+   "door": "germanywestcentral",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance (Produkt\u00fcberwachung)",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "SAP.DE",
+   "isin": "DE0007164600",
+   "name": "SAP SE O.N.",
+   "record_url": "https://mcp.de-cm-kg.ai/record/XETRA/SAP"
+  }
  },
  {
   "node": "fr-cm-kg",
@@ -99,15 +211,31 @@
   "registry": "fr-cm-kg.org",
   "door": "https://mcp.fr-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-16",
+  "as_of": "2026-10-23",
   "records": 712,
   "exchanges": [
    "XPAR",
    "ALXP",
    "XMLI"
   ],
-  "events": 11959,
-  "issuers_with_events": 463
+  "events": 12527,
+  "issuers_with_events": 463,
+  "region": {
+   "azure": "France Central",
+   "city": "Paris",
+   "store": "francecentral",
+   "door": "francecentral",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "FR0000120271",
+   "isin": "FR0000120271",
+   "name": "TOTALENERGIES",
+   "record_url": "https://mcp.fr-cm-kg.ai/record/XPAR/FR0000120271"
+  }
  },
  {
   "node": "nl-cm-kg",
@@ -115,14 +243,30 @@
   "registry": "nl-cm-kg.org",
   "door": "https://mcp.nl-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-16",
+  "as_of": "2026-10-23",
   "records": 123,
   "exchanges": [
    "XAMS",
    "ALXA"
   ],
-  "events": 3003,
-  "issuers_with_events": 84
+  "events": 3084,
+  "issuers_with_events": 84,
+  "region": {
+   "azure": "West Europe",
+   "city": "Netherlands",
+   "store": "westeurope",
+   "door": "westeurope",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "NL0010273215",
+   "isin": "NL0010273215",
+   "name": "ASML HOLDING",
+   "record_url": "https://mcp.nl-cm-kg.ai/record/XAMS/NL0010273215"
+  }
  },
  {
   "node": "hk-cm-kg",
@@ -130,15 +274,31 @@
   "registry": "hk-cm-kg.org",
   "door": "https://mcp.hk-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-22",
+  "as_of": "2026-10-23",
   "records": 2820,
   "exchanges": [
    "HKEX",
    "HKEX-GEM",
    "HKEX-REIT"
   ],
-  "events": 162874,
-  "issuers_with_events": 2795
+  "events": 163422,
+  "issuers_with_events": 2795,
+  "region": {
+   "azure": "East Asia",
+   "city": "Hong Kong",
+   "store": "eastasia",
+   "door": "eastasia",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "suitability (SFC Code of Conduct paragraph 5.2)",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "0700.HK",
+   "isin": "KYG875721634",
+   "name": "TENCENT",
+   "record_url": "https://mcp.hk-cm-kg.ai/record/HKEX/00700"
+  }
  },
  {
   "node": "jp-cm-kg",
@@ -146,7 +306,7 @@
   "registry": "jp-cm-kg.org",
   "door": "https://mcp.jp-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-16",
+  "as_of": "2026-10-26",
   "records": 3964,
   "exchanges": [
    "TSE-PRIME",
@@ -155,8 +315,24 @@
    "TSE-PRO",
    "TSE-REIT"
   ],
-  "events": 40359,
-  "issuers_with_events": 3708
+  "events": 40567,
+  "issuers_with_events": 3708,
+  "region": {
+   "azure": "Japan East",
+   "city": "Tokyo, Saitama",
+   "store": "japaneast",
+   "door": "japaneast",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "suitability principle (FIEA Article 40)",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "7203.T",
+   "isin": "JP3633400001",
+   "name": "TOYOTA MOTOR CORPORATION",
+   "record_url": "https://mcp.jp-cm-kg.ai/record/TSE-PRIME/7203"
+  }
  },
  {
   "node": "kr-cm-kg",
@@ -164,15 +340,31 @@
   "registry": "kr-cm-kg.org",
   "door": "https://mcp.kr-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-16",
+  "as_of": "2026-10-26",
   "records": 2802,
   "exchanges": [
    "KOSPI",
    "KOSDAQ",
    "KONEX"
   ],
-  "events": 146567,
-  "issuers_with_events": 2700
+  "events": 148433,
+  "issuers_with_events": 2700,
+  "region": {
+   "azure": "Korea Central",
+   "city": "Seoul",
+   "store": "koreacentral",
+   "door": "koreacentral",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "suitability and appropriateness (FSCMA Articles 46 and 46-2)",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "KOSPI:005930",
+   "isin": "KR7005930003",
+   "name": "SAMSUNG ELECTRONICS CO,.LTD",
+   "record_url": "https://mcp.kr-cm-kg.ai/record/KOSPI/005930"
+  }
  },
  {
   "node": "us-cm-kg",
@@ -180,14 +372,717 @@
   "registry": "us-cm-kg.org",
   "door": "https://mcp.us-cm-kg.ai",
   "live": true,
-  "as_of": "2026-10-16",
-  "records": 7693,
+  "as_of": "2026-10-23",
+  "records": 7691,
   "exchanges": [
    "NYSE",
    "NASDAQ",
-   "CBOE"
+   "CBOE",
+   "TXSE"
   ],
-  "events": 1875609,
-  "issuers_with_events": 7687
+  "events": 1878530,
+  "issuers_with_events": 7686,
+  "region": {
+   "azure": "East US",
+   "city": "Virginia",
+   "store": "eastus",
+   "door": "eastus",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "reasonable-basis suitability (FINRA Rule 2111)",
+  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "example": {
+   "ticker": "NASDAQ:AAPL",
+   "isin": "US0378331005",
+   "name": "Apple Inc.",
+   "record_url": "https://mcp.us-cm-kg.ai/record/NASDAQ/AAPL"
+  }
+ },
+ {
+  "node": "it-cm-kg",
+  "country": "Italy",
+  "registry": null,
+  "door": "https://it.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 400,
+  "exchanges": [
+   "MTAA",
+   "EXGM"
+  ],
+  "events": 14981,
+  "issuers_with_events": 271,
+  "region": {
+   "azure": "Italy North",
+   "city": "Milan",
+   "store": "italynorth",
+   "door": "italynorth",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "IT0003128367",
+   "isin": "IT0003128367",
+   "name": "ENEL",
+   "record_url": "https://it.eu-cm-kg.ai/record/MTAA/IT0003128367"
+  }
+ },
+ {
+  "node": "es-cm-kg",
+  "country": "Spain",
+  "registry": null,
+  "door": "https://es.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 234,
+  "exchanges": [
+   "XMAD",
+   "GROW"
+  ],
+  "events": 4443,
+  "issuers_with_events": 123,
+  "region": {
+   "azure": "Spain Central",
+   "city": "Madrid",
+   "store": "spaincentral",
+   "door": "spaincentral",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "ES0144580Y14",
+   "isin": "ES0144580Y14",
+   "name": "IBERDROLA",
+   "record_url": "https://es.eu-cm-kg.ai/record/XMAD/ES0144580Y14"
+  }
+ },
+ {
+  "node": "se-cm-kg",
+  "country": "Sweden",
+  "registry": null,
+  "door": "https://se.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 725,
+  "exchanges": [
+   "XSTO",
+   "SSME"
+  ],
+  "events": 24350,
+  "issuers_with_events": 697,
+  "region": {
+   "azure": "Sweden Central",
+   "city": "G\u00e4vle",
+   "store": "swedencentral",
+   "door": "swedencentral",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "SE0000108656",
+   "isin": "SE0000108656",
+   "name": "ERICSSON B",
+   "record_url": "https://se.eu-cm-kg.ai/record/XSTO/SE0000108656"
+  }
+ },
+ {
+  "node": "dk-cm-kg",
+  "country": "Denmark",
+  "registry": null,
+  "door": "https://dk.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 146,
+  "exchanges": [
+   "XCSE",
+   "DSME"
+  ],
+  "events": 5609,
+  "issuers_with_events": 139,
+  "region": {
+   "azure": "Sweden Central",
+   "city": "G\u00e4vle",
+   "store": "swedencentral",
+   "door": "swedencentral",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "DK0062498333",
+   "isin": "DK0062498333",
+   "name": "NOVO NORDISK B",
+   "record_url": "https://dk.eu-cm-kg.ai/record/XCSE/DK0062498333"
+  }
+ },
+ {
+  "node": "no-cm-kg",
+  "country": "Norway",
+  "registry": null,
+  "door": "https://no.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 292,
+  "exchanges": [
+   "XOSL",
+   "XOAS",
+   "MERK"
+  ],
+  "events": 16402,
+  "issuers_with_events": 286,
+  "region": {
+   "azure": "Norway East",
+   "city": "Norway",
+   "store": "norwayeast",
+   "door": "norwayeast",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "NO0010096985",
+   "isin": "NO0010096985",
+   "name": "EQUINOR",
+   "record_url": "https://no.eu-cm-kg.ai/record/XOSL/NO0010096985"
+  }
+ },
+ {
+  "node": "fi-cm-kg",
+  "country": "Finland",
+  "registry": null,
+  "door": "https://fi.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 198,
+  "exchanges": [
+   "XHEL",
+   "FSME"
+  ],
+  "events": 13142,
+  "issuers_with_events": 191,
+  "region": {
+   "azure": "Sweden Central",
+   "city": "G\u00e4vle",
+   "store": "swedencentral",
+   "door": "swedencentral",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "FI0009000681",
+   "isin": "FI0009000681",
+   "name": "NOKIA",
+   "record_url": "https://fi.eu-cm-kg.ai/record/XHEL/FI0009000681"
+  }
+ },
+ {
+  "node": "be-cm-kg",
+  "country": "Belgium",
+  "registry": null,
+  "door": "https://be.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 122,
+  "exchanges": [
+   "XBRU",
+   "ALXB"
+  ],
+  "events": 2458,
+  "issuers_with_events": 109,
+  "region": {
+   "azure": "Belgium Central",
+   "city": "Brussels",
+   "store": "belgiumcentral",
+   "door": "westeurope",
+   "door_azure": "West Europe",
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "BE0974293251",
+   "isin": "BE0974293251",
+   "name": "AB INBEV",
+   "record_url": "https://be.eu-cm-kg.ai/record/XBRU/BE0974293251"
+  }
+ },
+ {
+  "node": "ie-cm-kg",
+  "country": "Ireland",
+  "registry": null,
+  "door": "https://ie.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 25,
+  "exchanges": [
+   "XMSM",
+   "XESM"
+  ],
+  "events": 2938,
+  "issuers_with_events": 22,
+  "region": {
+   "azure": "North Europe",
+   "city": "Ireland",
+   "store": "northeurope",
+   "door": "westeurope",
+   "door_azure": "West Europe",
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "IE0004906560",
+   "isin": "IE0004906560",
+   "name": "KERRY GROUP",
+   "record_url": "https://ie.eu-cm-kg.ai/record/XMSM/IE0004906560"
+  }
+ },
+ {
+  "node": "at-cm-kg",
+  "country": "Austria",
+  "registry": null,
+  "door": "https://at.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 64,
+  "exchanges": [
+   "WBAH",
+   "WBDM"
+  ],
+  "events": 1907,
+  "issuers_with_events": 59,
+  "region": {
+   "azure": "Austria East",
+   "city": "Vienna",
+   "store": "austriaeast",
+   "door": "germanywestcentral",
+   "door_azure": "Germany West Central",
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "AT0000652011",
+   "isin": "AT0000652011",
+   "name": "ERSTE GROUP",
+   "record_url": "https://at.eu-cm-kg.ai/record/WBAH/AT0000652011"
+  }
+ },
+ {
+  "node": "pl-cm-kg",
+  "country": "Poland",
+  "registry": null,
+  "door": "https://pl.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 778,
+  "exchanges": [
+   "XWAR",
+   "XNCO"
+  ],
+  "events": 15404,
+  "issuers_with_events": 398,
+  "region": {
+   "azure": "Poland Central",
+   "city": "Warsaw",
+   "store": "polandcentral",
+   "door": "germanywestcentral",
+   "door_azure": "Germany West Central",
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "PLPKO0000016",
+   "isin": "PLPKO0000016",
+   "name": "PKO BP",
+   "record_url": "https://pl.eu-cm-kg.ai/record/XWAR/PLPKO0000016"
+  }
+ },
+ {
+  "node": "pt-cm-kg",
+  "country": "Portugal",
+  "registry": null,
+  "door": "https://pt.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 48,
+  "exchanges": [
+   "XLIS",
+   "ENXL",
+   "ALXL"
+  ],
+  "events": 2274,
+  "issuers_with_events": 46,
+  "region": {
+   "azure": "Spain Central",
+   "city": "Madrid",
+   "store": "spaincentral",
+   "door": "spaincentral",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "PTEDP0AM0009",
+   "isin": "PTEDP0AM0009",
+   "name": "EDP",
+   "record_url": "https://pt.eu-cm-kg.ai/record/XLIS/PTEDP0AM0009"
+  }
+ },
+ {
+  "node": "lu-cm-kg",
+  "country": "Luxembourg",
+  "registry": null,
+  "door": "https://mcp.lu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 23,
+  "exchanges": [
+   "XLUX",
+   "EMTF"
+  ],
+  "events": 281,
+  "issuers_with_events": 11,
+  "region": {
+   "azure": "Belgium Central",
+   "city": "Brussels",
+   "store": "belgiumcentral",
+   "door": "westeurope",
+   "door_azure": "West Europe",
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "LU0569974404",
+   "isin": "LU0569974404",
+   "name": "APERAM",
+   "record_url": "https://mcp.lu-cm-kg.ai/record/XLUX/LU0569974404"
+  }
+ },
+ {
+  "node": "gr-cm-kg",
+  "country": "Greece",
+  "registry": null,
+  "door": "https://gr.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 149,
+  "exchanges": [
+   "XATH",
+   "ENAX"
+  ],
+  "events": 5739,
+  "issuers_with_events": 147,
+  "region": {
+   "azure": "Italy North",
+   "city": "Milan",
+   "store": "italynorth",
+   "door": "italynorth",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "GRS003003035",
+   "isin": "GRS003003035",
+   "name": "NATIONAL BANK OF GREECE",
+   "record_url": "https://gr.eu-cm-kg.ai/record/XATH/GRS003003035"
+  }
+ },
+ {
+  "node": "cz-cm-kg",
+  "country": "Czech Republic",
+  "registry": null,
+  "door": "https://cz.eu-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 31,
+  "exchanges": [
+   "XPRA",
+   "XPRM"
+  ],
+  "events": 232,
+  "issuers_with_events": 31,
+  "region": {
+   "azure": "Austria East",
+   "city": "Vienna",
+   "store": "austriaeast",
+   "door": "germanywestcentral",
+   "door_azure": "Germany West Central",
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "MiFID II product governance",
+  "duty_source": "https://eu-eco.ai/eco.json (mifid_ii_product_governance)",
+  "example": {
+   "ticker": "CZ0005112300",
+   "isin": "CZ0005112300",
+   "name": "CEZ",
+   "record_url": "https://cz.eu-cm-kg.ai/record/XPRA/CZ0005112300"
+  }
+ },
+ {
+  "node": "ky-cm-kg",
+  "country": "Cayman Islands",
+  "registry": null,
+  "door": "https://mcp.ky-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 147,
+  "exchanges": [
+   "XCAY"
+  ],
+  "events": 252,
+  "issuers_with_events": 96,
+  "region": {
+   "azure": "East US",
+   "city": "Virginia",
+   "store": "eastus",
+   "door": "eastus",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "record held by the listing market",
+  "duty_source": "CEO ruling 2026-10-25: a domicile carries no duty of its own",
+  "example": {
+   "ticker": "KYG932561080",
+   "isin": "KYG932561080",
+   "name": "VBT Holdings Ltd.",
+   "record_url": "https://mcp.ky-cm-kg.ai/record/XCAY/KYG932561080"
+  }
+ },
+ {
+  "node": "bm-cm-kg",
+  "country": "Bermuda",
+  "registry": null,
+  "door": "https://mcp.bm-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 27,
+  "exchanges": [
+   "XBDA"
+  ],
+  "events": 890,
+  "issuers_with_events": 27,
+  "region": {
+   "azure": "East US",
+   "city": "Virginia",
+   "store": "eastus",
+   "door": "eastus",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "record held by the listing market",
+  "duty_source": "CEO ruling 2026-10-25: a domicile carries no duty of its own",
+  "example": {
+   "ticker": "BMG0772R2087",
+   "isin": "BMG0772R2087",
+   "name": "The Bank of N.T. Butterfield & Son Limited",
+   "record_url": "https://mcp.bm-cm-kg.ai/record/XBDA/BMG0772R2087"
+  }
+ },
+ {
+  "node": "je-cm-kg",
+  "country": "Jersey",
+  "registry": null,
+  "door": "https://mcp.je-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 20,
+  "exchanges": [
+   "XCIE"
+  ],
+  "events": 190,
+  "issuers_with_events": 20,
+  "region": {
+   "azure": "UK South",
+   "city": "London",
+   "store": "uksouth",
+   "door": "uksouth",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "record held by the listing market",
+  "duty_source": "CEO ruling 2026-10-25: a domicile carries no duty of its own",
+  "example": {
+   "ticker": "JE00BTGQPZ41",
+   "isin": "JE00BTGQPZ41",
+   "name": "Broadgate REIT",
+   "record_url": "https://mcp.je-cm-kg.ai/record/XCIE/JE00BTGQPZ41"
+  }
+ },
+ {
+  "node": "tw-cm-kg",
+  "country": "Taiwan",
+  "registry": null,
+  "door": "https://mcp.tw-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 1984,
+  "exchanges": [
+   "XTAI",
+   "ROCO"
+  ],
+  "events": 77773,
+  "issuers_with_events": 1984,
+  "region": {
+   "azure": "East Asia",
+   "city": "Hong Kong",
+   "store": "eastasia",
+   "door": "eastasia",
+   "door_azure": null,
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "FSC suitability \u2014 Financial Consumer Protection Act, Article 9",
+  "duty_source": "https://tw-eco.ai/eco.json (duty)",
+  "duty_gap": null,
+  "example": {
+   "ticker": "TW0002330008",
+   "isin": "TW0002330008",
+   "name": "\u53f0\u7063\u7a4d\u9ad4\u96fb\u8def\u88fd\u9020\u80a1\u4efd\u6709\u9650\u516c\u53f8",
+   "record_url": "https://mcp.tw-cm-kg.ai/record/XTAI/TW0002330008"
+  }
+ },
+ {
+  "node": "ae-cm-kg",
+  "country": "United Arab Emirates",
+  "registry": null,
+  "door": "https://mcp.ae-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 69,
+  "exchanges": [
+   "XDFM",
+   "DIFX",
+   "XADS"
+  ],
+  "events": 2535,
+  "issuers_with_events": 65,
+  "region": {
+   "azure": "UAE North",
+   "city": "Dubai",
+   "store": "uaenorth",
+   "door": "italynorth",
+   "door_azure": "Italy North",
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "SCA (now CMA) suitability \u2014 Rulebook (Manual of the Financial Activities, Chairman Resolution No. 13/Chairman of 2021), Section Three, Ch. 2, Art. 8 (onshore); DFSA Rulebook COB 3.4 Suitability (DIFC)",
+  "duty_source": "https://ae-eco.ai/eco.json (duty)",
+  "duty_gap": null,
+  "example": {
+   "ticker": "AEE000301011",
+   "isin": "AEE000301011",
+   "name": "Emaar Properties PJSC",
+   "record_url": "https://mcp.ae-cm-kg.ai/record/XDFM/AEE000301011"
+  }
+ },
+ {
+  "node": "br-cm-kg",
+  "country": "Brazil",
+  "registry": null,
+  "door": "https://mcp.br-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 661,
+  "exchanges": [
+   "BVMF"
+  ],
+  "events": 51668,
+  "issuers_with_events": 496,
+  "region": {
+   "azure": "Brazil South",
+   "city": "Sao Paulo State",
+   "store": "brazilsouth",
+   "door": "eastus",
+   "door_azure": "East US",
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "CVM suitability \u2014 Resolu\u00e7\u00e3o CVM n\u00ba 30/2021, arts. 2\u20133",
+  "duty_source": "https://br-eco.ai/eco.json (duty)",
+  "duty_gap": null,
+  "example": {
+   "ticker": "BRPETRACNPR6",
+   "isin": "BRPETRACNPR6",
+   "name": "PETROLEO BRASILEIRO S.A. PETROBRAS",
+   "record_url": "https://mcp.br-cm-kg.ai/record/BVMF/BRPETRACNPR6"
+  }
+ },
+ {
+  "node": "mx-cm-kg",
+  "country": "Mexico",
+  "registry": null,
+  "door": "https://mcp.mx-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 156,
+  "exchanges": [
+   "XMEX",
+   "BIVA"
+  ],
+  "events": 12873,
+  "issuers_with_events": 142,
+  "region": {
+   "azure": "Mexico Central",
+   "city": "Quer\u00e9taro State",
+   "store": "mexicocentral",
+   "door": "eastus",
+   "door_azure": "East US",
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "CNBV investor profile (perfil de inversi\u00f3n) \u2014 Disposiciones de car\u00e1cter general aplicables a las entidades financieras y dem\u00e1s personas que proporcionen servicios de inversi\u00f3n, art. 4 and Anexo 3",
+  "duty_source": "https://mx-eco.ai/eco.json (duty)",
+  "duty_gap": null,
+  "example": {
+   "ticker": "MX01AM050019",
+   "isin": "MX01AM050019",
+   "name": "AMERICA MOVIL, S.A.B. DE C.V.",
+   "record_url": "https://mcp.mx-cm-kg.ai/record/XMEX/MX01AM050019"
+  }
+ },
+ {
+  "node": "in-cm-kg",
+  "country": "India",
+  "registry": null,
+  "door": "https://mcp.in-cm-kg.ai",
+  "live": true,
+  "as_of": "2026-10-23",
+  "records": 4406,
+  "exchanges": [
+   "XNSE",
+   "XBOM"
+  ],
+  "events": 117189,
+  "issuers_with_events": 1807,
+  "region": {
+   "azure": "Central India",
+   "city": "Pune",
+   "store": "centralindia",
+   "door": "southeastasia",
+   "door_azure": "Southeast Asia",
+   "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
+  },
+  "duty": "SEBI suitability \u2014 SEBI (Investment Advisers) Regulations, 2013, regs 16\u201317",
+  "duty_source": "https://in-eco.ai/eco.json (duty)",
+  "duty_gap": null,
+  "example": {
+   "ticker": "INE002A01018",
+   "isin": "INE002A01018",
+   "name": "Reliance Industries Limited",
+   "record_url": "https://mcp.in-cm-kg.ai/record/XNSE/INE002A01018"
+  }
  }
 ]

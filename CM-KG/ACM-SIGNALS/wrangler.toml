@@ -1,0 +1,9 @@
+# acm-signals — ACM-SIGNALS-01 (DAY ORDER 3, 2026-10-24). Zone routes on acm-000/200/300/403/404/451/500 .ai/.org/.com, written by routes_acm.py (not here).
+name = "acm-signals"
+main = "worker/index.js"
+compatibility_date = "2026-10-01"
+account_id = "dd2832b36f171b815f84c8487aada36b"
+workers_dev = false
+
+[vars]
+X402_FREE_PER_DAY = "100"

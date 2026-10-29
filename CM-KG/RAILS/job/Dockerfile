@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
  && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
  && apt-get update && apt-get install -y --no-install-recommends powershell azure-cli nodejs \
  && rm -rf /var/lib/apt/lists/*
-RUN pip install --no-cache-dir requests==2.32.3 openpyxl==3.1.5 azure-storage-blob==12.26.0 azure-identity==1.19.0 pypdf==5.1.0 boto3==1.35.99 \
+RUN pip install --no-cache-dir requests==2.32.3 openpyxl==3.1.5 azure-storage-blob==12.26.0 azure-identity==1.19.0 pypdf==5.1.0 boto3==1.35.99 reportlab==4.2.5 cryptography \
  && npm install -g wrangler@4
 COPY shim/sitecustomize.py /usr/local/lib/python3.12/site-packages/sitecustomize.py
 COPY shim/python /opt/shim/bin/python

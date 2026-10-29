@@ -1,0 +1,14 @@
+# eco-pages — ECO-01 (CEO day order 2, 2026-10-23). Routes are zone routes on the 174 xx-eco zones + allooloo.ai/markets*, written by routes_eco.py (not here).
+name = "eco-pages"
+main = "worker/index.js"
+compatibility_date = "2026-10-01"
+account_id = "dd2832b36f171b815f84c8487aada36b"
+workers_dev = false   # verification address retired 2026-10-24: the readers use <cc>-eco.ai
+
+# X402-A-01 (2026-10-24): the shared x402 register
+[[kv_namespaces]]
+binding = "X402"
+id = "dd183811c9b34c4db1a91029f5343fde"
+
+[vars]
+X402_FREE_PER_DAY = "100"

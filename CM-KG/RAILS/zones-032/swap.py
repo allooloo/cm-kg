@@ -10,9 +10,10 @@ Standby-deployer for ECS/EC2 (never printed); C:\ALLOOLOO\AGENT KEYS\cloudflare.
 import os, sys, json, time, datetime, subprocess
 import requests, boto3
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = r'C:\ALLOOLOO'
-ARK = {'nl': 'eu-central-1', 'ch': 'eu-central-2', 'fr': 'eu-west-3', 'de': 'eu-central-1', 'sg': 'ap-southeast-1', 'au': 'ap-southeast-2', 'uk': 'eu-west-2', 'ca': 'ca-central-1', 'jp': 'ap-northeast-1', 'kr': 'ap-northeast-2', 'us': 'us-east-1'}
-CF_ZONES = {'ca': '4d2c6dc2f534dd8c013f6e66544eed4c', 'uk': '999f8cab6ae570a878379f0e37cd87b0', 'au': '8732370fd5742f40dba657be3eab5d37', 'sg': '0d4ae29fdde22945ffd2858bc2922576', 'ch': '0ea4358fbd0c1dc5ccf069448ccefe48', 'de': '0e7b54741212fb036c2cf18b9392ed25', 'fr': '645c30886df97804e3b793399e303c2b', 'nl': 'e5a042d3df88b7e170d5225ecfacb008', 'jp': 'f1c120f9d544c4af28bd6029ce071b96', 'kr': 'cd87134802ca140f4767253f39453ce1', 'us': '64516e94b82d13781980dff99c20c8b0'}
-IDENT = {'nl': 'NL0000009165', 'uk': 'SHEL', 'de': 'SAP', 'fr': 'MC', 'ch': 'NESN', 'au': 'BHP', 'sg': 'D05', 'ca': 'SHOP', 'jp': '7203', 'kr': '005930', 'us': 'AAPL'}
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import infra_policy as _ip   # ENUM-01 (DAY ORDER 6): ark region, zone, ident read from the roster and the policy of record
+ARK = _ip.Lazy(_ip.ark_region)
+CF_ZONES = _ip.Lazy(_ip.cf_zone_id)
+IDENT = _ip.Lazy(_ip.ident)   # the roster example issuer (was eleven typed)
 a = sys.argv[1:]; cc, mode = a[0], a[1]; NODE = f'{cc}-cm-kg'; REGION = ARK[cc]
 MIN_ASOF = a[a.index('--min-asof') + 1] if '--min-asof' in a else '2026-10-23'; ID = a[a.index('--ident') + 1] if '--ident' in a else IDENT[cc]
 HOSTS = [f'mcp.{NODE}.ai', f'agent.{NODE}.ai']

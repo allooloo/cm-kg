@@ -5,7 +5,8 @@ region's Log Analytics workspace (the environment already streams ContainerAppSy
 Create-only; an existing rule is left as it is (Rule One)."""
 import os, sys, json, subprocess
 TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-41ee6d087b41'
-NODES = {'nl': 'westeurope', 'ch': 'switzerlandnorth', 'fr': 'francecentral', 'de': 'germanywestcentral', 'sg': 'southeastasia', 'au': 'australiaeast', 'uk': 'uksouth', 'ca': 'canadacentral', 'jp': 'japaneast', 'kr': 'koreacentral', 'us': 'eastus'}
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import roster   # ENUM-01 (DAY ORDER 6): the roster of record
+NODES = {roster.cc_of(n): (n.get('region') or {}).get('store') for n in roster.load()}   # ENUM-01: one rule per roster job (eleven were typed)
 CFG = json.load(open(r'C:\ALLOOLOO\ROOT-CONFIG.json', encoding='utf-8')); EMAIL = CFG['alert_email']
 def az(*a, raw=False, check=True):
     p = subprocess.run(['az', *a] + ([] if raw else ['-o', 'json']), capture_output=True, text=True, encoding='utf-8', errors='replace', shell=(os.name == 'nt'))

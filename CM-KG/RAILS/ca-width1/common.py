@@ -52,6 +52,39 @@ def name_match(text, name):
         if w in uniq and w not in common: return 'distinctive', w
     return ('ambiguous', present[0]) if present else ('none', '')
 def name_in(text, name): return name_match(text, name)[0] in ('full', 'distinctive')
+# SHELF-01 fix (2026-10-27): the subject rule. A wire release is the issuer's only when the issuer is the release's subject — its name opens the title (after an
+# optional "correction / update / media advisory / reminder / notice" tag, and an optional leading "the"). A title that only mentions the issuer
+# ("Poq is now a Shopify Certified Technology Partner", filed under SHOP on 2026-10-22) is a third party's release and is not taken.
+SUBJECT_TAGS = re.compile(r'^((correction|corrected|correction from source|update|updated|media advisory|advisory|reminder|notice|press release|news release|replacing|repeat|retransmission|translation)\b[\s:-]*'
+                          r'|(cse|tsx venture exchange|tsxv|tsx) bulletin\s*:[^-–]*[-–]\s*)', re.I)
+def subject_in(title, name, tickers=()):
+    t = (title or '').strip()
+    for _ in range(3): t = SUBJECT_TAGS.sub('', t).strip()   # tags can stack ("RETRANSMISSION -- CORRECTION ...")
+    w = norm(t).split()
+    if w[:1] == ['the']: w = w[1:]
+    if not w: return False
+    if any(w[0] == norm(x).strip() for x in tickers if x): return True   # the issuer's own ticker opens the title ("CPKC announces ...")
+    toks = keytoks(name)
+    if toks and w[0] in (toks[0], ''.join(toks[:2])): return True   # the name's first key token opens the title, or the name written as one word ("OpenText ...")
+    # a joint release: "<other> and <issuer> announce ..." — the issuer's first key token right after the opening "and"
+    if toks and 'and' in w[:6] and toks[0] in w[w.index('and') + 1:w.index('and') + 3]: return True
+    kind, tok = name_match(t, name)
+    if kind == 'full':   # every key token of the name inside the opening words, in any order ("Mines Abcourt améliore ...")
+        return all(k in w[:len(toks) + 2] for k in toks)
+    if kind == 'distinctive': return tok in w[:2]
+    return False
+# The page check, where the title cannot tell: the release page's own line naming who issued it — PR Newswire / Cision "News provided by",
+# GlobeNewswire "Source:", Newsfile "Source:", Business Wire "Contacts" block's company, any page's meta author / og:site organisation.
+PROVIDER = [re.compile(p, re.I | re.S) for p in (r'News provided by\s*</?[^>]*>\s*(?:<[^>]+>\s*)*([^<]{2,120})', r'<meta[^>]+name="author"[^>]+content="([^"]{2,120})"',
+            r'Source:\s*(?:<[^>]+>\s*)*([^<\n]{2,120})', r'"publisher"\s*:\s*\{[^}]*"name"\s*:\s*"([^"]{2,120})"', r'<meta[^>]+name="dc\.creator"[^>]+content="([^"]{2,120})"')]
+def provider_of(html):
+    for p in PROVIDER:
+        m = p.search(html or '')
+        if m and m.group(1).strip() and not re.match(r'(PR Newswire|GlobeNewswire|Business Wire|Newsfile|Cision|Accesswire|TheNewswire)\b', m.group(1).strip(), re.I): return re.sub(r'\s+', ' ', m.group(1)).strip()
+    return None
+def issued_by(html, name, tickers=()):
+    p = provider_of(html)
+    return (p, bool(p) and (name_in(p, name) or any(norm(x).strip() and norm(x).strip() in norm(p).split() for x in tickers if x)))
 def load_issuers():
     """Corporate issuers from ca-issuers.xlsx, plus TSXV PO ids from the TMX workbook."""
     wb = openpyxl.load_workbook(ISSUERS_XLSX, read_only=True); out = []

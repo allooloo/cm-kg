@@ -5,8 +5,12 @@ Usage: python build_index.py [cc ...]   (no args = all eleven nodes)"""
 import json, os, subprocess, sys, tempfile
 
 TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-41ee6d087b41'
-NODES = {'ca': 'canadacentral', 'uk': 'uksouth', 'au': 'australiaeast', 'sg': 'southeastasia', 'ch': 'switzerlandnorth',
-         'de': 'germanywestcentral', 'fr': 'francecentral', 'nl': 'westeurope', 'jp': 'japaneast', 'kr': 'koreacentral', 'us': 'eastus', 'hk': 'eastasia'}   # hk: ORDER-035 (2026-10-22)
+# ENUM-01 (DAY ORDER 6, 2026-10-25): the stores indexed are the roster entries themselves (static/nodes.json; region.store written by apex_join and
+# nodes_region.py) — no typed list, no second roster file. A roster entry with no store region stops the build and is named.
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__)))
+_o.environ.setdefault('ROSTER_FILE', _o.path.join(_o.path.dirname(_o.path.abspath(__file__)), 'static', 'nodes.json')); import roster
+NODES = {roster.cc_of(n): (n.get('region') or {}).get('store') for n in roster.load(live_only=False)}
+roster.require('store region (region.store)', {c: r for c, r in NODES.items() if r})
 HERE = os.path.dirname(os.path.abspath(__file__)); STATIC = os.path.join(HERE, 'static')
 CONT = os.environ.get('STORAGE_CONTAINER', 'pond')   # ORDER-031 (2026-10-18): 'pond' on the wire, 'staging' for a dry run; default unchanged
 
@@ -38,6 +42,13 @@ for cc in want:
             elif isinstance(cur, list):
                 if node not in cur: cur.append(node)
             elif cur != node: idx[kind][ident] = [cur, node]
+    # BACKFILL-01 B-7 (DAY ORDER 7, 2026-10-25): the store's backfill counts of record (backfill/facts.json) onto the roster entry, so apex facts and the ECO
+    # page read them from one list; history depth is never a market count
+    bp = os.path.join(tmp, f'{cc}-backfill-facts.json')
+    az('storage', 'blob', 'download', '--account-name', sa, '--account-key', k, '-c', CONT, '-n', 'backfill/facts.json', '-f', bp, '--no-progress', '-o', 'none')
+    bfx = json.load(open(bp, encoding='utf-8')) if os.path.exists(bp) else None
+    for y in nodes:
+        if y.get('node') == node and bfx: y['backfill'] = {kk: bfx.get(kk) for kk in ('history_from', 'rows', 'documents', 'year_in_progress', 'live_record_began')} | {'years': sorted(bfx.get('years') or {}, reverse=True), 'facts': 'store backfill/facts.json'}
     fx = ((got.get('facts.json') or {}).get('nodes') or {}).get(node) or {}
     for x in (got['nodes.json'] or []):
         if x.get('node') == node:

@@ -6,3 +6,12 @@ workers_dev = false
 [assets]
 directory = "./static"
 binding = "ASSETS"
+
+# X402-A-01 (2026-10-24): the shared x402 register (free-tier meters, counts of settlements and offers)
+[[kv_namespaces]]
+binding = "X402"
+id = "dd183811c9b34c4db1a91029f5343fde"
+
+# X402-A-01: the free tier, reads per agent per UTC day (the CEO sets N)
+[vars]
+X402_FREE_PER_DAY = "100"

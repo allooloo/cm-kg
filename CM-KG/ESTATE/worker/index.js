@@ -73,7 +73,7 @@ ${NOTE[c.cc] ? `<p><strong>Local partner wanted.</strong> ${esc(NOTE[c.cc])} Enq
 <body><h1>${esc(title)}</h1>${body}<footer>${esc(host)} · ${OPERATOR} · public-record only · <a href="/llms.txt">llms.txt</a> · <a href="/facts.json">facts.json</a></footer></body></html>`;
 }
 function llms(host, c, f) {
-  const lines = [`# ${host}`, `Operator: ${OPERATOR} (Vancouver, Canada). Corporate: https://allooloo.io`, `What this domain is: ${f.kind}.`];
+  const lines = [`# ${host}`, `Operator: ${OPERATOR} (Richmond, BC, Canada). Corporate: https://allooloo.io`, `What this domain is: ${f.kind}.`];
   if (c.kind === 'node') lines.push(`Node: ${f.node} (${f.country}). Live: ${f.live ? 'yes' : 'no'}.${f.live ? ` Records: ${f.records} as of ${f.node_as_of}. Door: ${f.door_url}` : ' The door is not published until it answers.'}${f.duty ? ` Duty served: ${f.duty}.` : ''}`);
   if (c.kind === 'root') lines.push(`Live nodes: ${f.live_nodes.join(', ') || 'none'}. Global door (Streamable HTTP MCP, no auth): ${f.global_door}. Tools: resolve_issuer, get_record, list_events_since, list_aliases, list_nodes.`);
   if (c.kind === 'record') lines.push(`Spec: ${f.spec}. Signing: ${f.signing}. Records served by ${f.records_served_by}.`);

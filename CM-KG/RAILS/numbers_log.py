@@ -31,6 +31,8 @@ if sys.argv[1:]:
         print(lines[-1])
     s = s[:m.start(2)] + '\n'.join(lines) + '\n' + s[m.start(3):]
     open(BOOT, 'w', encoding='utf-8').write(s)
-rows = [parse(l) for l in lines]
+# RADAR-01 addendum (2026-10-26): the mirror is public — a note that carries a usage, plan, credit or cost figure is struck from it (the boot file keeps it)
+PRIVATE = re.compile(r'(?i)tavily|\bplan\b[^·]*\d|credits?\b|pay-as-you-go|paygo|\bspend\b|\bcost\b|\$\s*\d|\bUSD\b')
+rows = [dict(r, note='') if PRIVATE.search(r['note']) else r for r in (parse(l) for l in lines)]
 json.dump({'as_of': datetime.date.today().isoformat(), 'source': 'START_ME_UP/NODE-SURFACES.md §9 NUMBERS LOG (one line per sweep per node; counts from list_nodes after the store reload)', 'lines': rows}, open(ASSET, 'w', encoding='utf-8'), indent=1)
 print('numbers-log.json', len(rows), 'lines')

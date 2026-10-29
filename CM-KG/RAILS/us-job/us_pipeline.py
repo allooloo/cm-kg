@@ -76,8 +76,8 @@ def width0():
     r = edgar('https://www.sec.gov/files/company_tickers_exchange.json')
     if r is None or r.status_code != 200: raise SystemExit(f'EDGAR roster refused: {r.status_code if r is not None else None} — the container address is blocked too (HITL)')
     j = r.json(); rows = [dict(zip(j['fields'], d)) for d in j['data']]; put(f'pond/width0/{DROP}/company_tickers_exchange.json', r.text)
-    EXCH = {'NYSE': 'NYSE', 'Nasdaq': 'NASDAQ', 'CBOE': 'CBOE'}
-    listed = [x for x in rows if (x.get('exchange') or '') in EXCH]; log('EDGAR roster', len(rows), 'listed on NYSE/Nasdaq/Cboe', len(listed))
+    EXCH = {'NYSE': 'NYSE', 'Nasdaq': 'NASDAQ', 'CBOE': 'CBOE', 'TXSE': 'TXSE'}   # TXSE (2026-10-24): EDGAR labels Texas Stock Exchange primary listings 'TXSE'
+    listed = [x for x in rows if (x.get('exchange') or '') in EXCH]; log('EDGAR roster', len(rows), 'listed on NYSE/Nasdaq/Cboe/TXSE', len(listed))
     subs = {}; lock = threading.Lock(); n = [0]
     def one(cik):
         rr = edgar(f'https://data.sec.gov/submissions/CIK{int(cik):010d}.json')
@@ -104,7 +104,7 @@ def width0():
         seen.add(k); s = subs.get(x['cik']) or {}; sic = str(s.get('sic') or ''); nm = (s.get('name') or x['name'] or '').strip(); et = (s.get('entity_type') or '').lower()
         st = 'Fund / trust (by SIC or name)' if sic in ('6722', '6726') or re.search(r'\b(ETF|EXCHANGE TRADED FUND|TRUST SERIES|INDEX FUND)\b', nm.upper()) else ('SPAC (by SIC 6770)' if sic == '6770' else (f'Non-operating entity type ({et})' if et and et != 'operating' else 'Corporate'))
         roster.append({'exchange': k[0], 'ticker': x['ticker'], 'cik': x['cik'], 'name': nm, 'list_name': x['name'], 'security_type': st, **{kk: s.get(kk) for kk in ('sic', 'sic_desc', 'state_inc', 'state_inc_desc', 'fye', 'category', 'entity_type', 'ein', 'former', 'tickers', 'business', 'city', 'website', 'ir', 'annual', 'src')}, 'n_recent': len(s.get('recent') or [])})
-    log('roster', len(roster), {e: sum(1 for r in roster if r['exchange'] == e) for e in ('NYSE', 'NASDAQ', 'CBOE')}); put(f'pond/width0/{DROP}/roster.json', json.dumps(roster, ensure_ascii=False))
+    log('roster', len(roster), {e: sum(1 for r in roster if r['exchange'] == e) for e in ('NYSE', 'NASDAQ', 'CBOE', 'TXSE')}); put(f'pond/width0/{DROP}/roster.json', json.dumps(roster, ensure_ascii=False))
     return roster, subs
 # ---------------- GLEIF (local joins over the staged golden-copy extract)
 def norm(s): return ' '.join(re.sub(r'[^A-Z0-9 ]', ' ', (s or '').upper().replace('&', ' AND ')).split())
@@ -243,7 +243,43 @@ def F(v, src, rb, state='sourced', note=None):
     o = {'value': v if v not in ('', []) else None, 'source_url': src, 'read_by': rb, 'state': state if v not in ('', [], None) else None}
     if note and o['value'] is None: o['reason'] = note
     return o
-def render(roster, match, isins, events, fills):
+# ---- DAY ORDER 4 (2026-10-24): NODE-ISIN-01 + NODE-HALT-01 on the us node
+#  ISIN route 2 — SEC Fails-to-Deliver data (the SEC's own SYMBOL→CUSIP pairs; one consistent CUSIP per symbol, conflicts kept apart): ISIN = 'US' + CUSIP +
+#  the ISO 6166 check digit (computed from the sourced CUSIP, labelled so). Route 1 (GLEIF ISIN↔LEI) stands where it gives exactly one US ISIN.
+#  TXSE — the Texas Stock Exchange's own listing list: a txse_listing field on the records it lists (listing type, first trade date, source).
+#  halt — tonight's US halt list (RAILS\halts\halt_us.py) on every record, through RAILS\door\enrich_node.py's functions.
+import importlib.util as _ilu
+def _mod(path, name):
+    if not os.path.exists(path): return None
+    s = _ilu.spec_from_file_location(name, path); m = _ilu.module_from_spec(s); s.loader.exec_module(m); return m
+_RAILS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+def isin_check(body):
+    digits = ''.join(str(int(c, 36)) for c in body); s = 0
+    for i, ch in enumerate(reversed(digits)):
+        d = int(ch) * (2 if i % 2 == 0 else 1); s += d // 10 + d % 10
+    return str((10 - s % 10) % 10)
+def extras():
+    out = {'ftd': {}, 'ftd_meta': None, 'txse': {}, 'txse_meta': None, 'halt': None, 'halt_why': None}
+    try:
+        cached = get_blob('pond/sec-ftd/latest.json'); fresh = None
+        if cached:
+            j = json.loads(cached.decode('utf-8'))
+            if (datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(j['read_at'].replace('Z', '+00:00'))).days < 14: fresh = j
+        if not fresh:
+            m = _mod(os.path.join(_RAILS, 'isin-fill', 'sec_ftd.py'), 'sec_ftd'); fresh = m.fetch() if m else None
+            if fresh: put('pond/sec-ftd/latest.json', json.dumps(fresh, ensure_ascii=False)); put(f"pond/sec-ftd/{STAMP}/symbols.json", json.dumps(fresh, ensure_ascii=False))
+        if fresh: out['ftd'] = fresh.get('symbols') or {}; out['ftd_meta'] = {k: fresh.get(k) for k in ('source_url', 'read_by', 'read_at', 'count')}
+    except Exception as e: log('SEC FTD not read:', repr(e)[:160])
+    try:
+        m = _mod(os.path.join(_RAILS, 'isin-fill', 'txse_roster.py'), 'txse_roster'); tx = m.fetch() if m else None
+        if tx: out['txse'] = {r['ticker'].upper(): r for r in tx.get('rows', []) if r.get('symbol_file_TXSEListed') == 'Y' or 'TXSE listing' in str(r.get('listing_type') or '')}; out['txse_meta'] = {k: tx.get(k) for k in ('source_url', 'read_by', 'read_at')}
+    except Exception as e: log('TXSE list not read:', repr(e)[:160])
+    en = _mod(os.path.join(_RAILS, 'door', 'enrich_node.py'), 'enrich_node')
+    if en: out['halt'], out['halt_why'] = en.read_halts('us'); out['enrich'] = en
+    log('extras: FTD symbols', len(out['ftd']), '· TXSE listings', len(out['txse']), '· halt list', 'read' if out['halt'] else out['halt_why'])
+    return out
+def render(roster, match, isins, events, fills, X=None):
+    X = X or {'ftd': {}, 'txse': {}, 'halt': None, 'halt_why': 'not read'}; hi, hc = (X['enrich'].halt_index('us', X['halt']) if X.get('enrich') else ({}, {}))
     idx = {'ticker': {}, 'isin': {}, 'lei': {}, 'alias': {}, 'name': {}, 'cmr': {}, 'keys': []}; n = 0; ev_total = 0; counts = {}
     todo = []
     RB_H = 'EDGAR submissions API (issuer header as filed)'; RB_L = 'EDGAR company_tickers_exchange.json (SEC list of exchange-listed filers)'
@@ -266,8 +302,16 @@ def render(roster, match, isins, events, fills):
             if nm and nkey(nm) != nkey(r['name']) and not any(nkey(nm) == nkey(a['value']) for a in aliases): aliases.append({'value': nm, 'source_url': rec.get('src', ''), 'read_by': 'GLEIF LEI record (other entity names)'})
         pa = (fl.get('perplexity') or {}).get('alias')
         if pa and not any(nkey(pa) == nkey(a['value']) for a in aliases): aliases.append({'value': pa, 'source_url': fl['perplexity'].get('url', ''), 'read_by': 'issuer page <title> (found by Perplexity (agent · fast))'})
+        if not ident['isin']['value']:
+            fd = X['ftd'].get(r['ticker'].upper()) if X.get('ftd') else None
+            if fd and fd.get('cusip') and len(fd['cusip']) == 9:
+                body = 'US' + fd['cusip'].upper(); ident['isin'] = {'value': body + isin_check(body), 'source_url': (X.get('ftd_meta') or {}).get('source_url'), 'read_by': 'SEC Fails-to-Deliver data (CUSIP for the symbol) · ISIN = US + CUSIP + ISO 6166 check digit', 'state': 'sourced', 'cusip': fd['cusip'], 'last_seen': fd.get('last_seen'), 'derived': 'check digit computed from the SEC-published CUSIP'}
+        tx = X['txse'].get(r['ticker'].upper()) if X.get('txse') else None
+        if tx: ident['txse_listing'] = {'value': tx.get('listing_type'), 'first_trade_date': tx.get('first_trade_date'), 'source_url': (X.get('txse_meta') or {}).get('source_url'), 'read_by': 'Texas Stock Exchange all-listings data (TXSE)', 'state': 'sourced'}
         evs = events.get((r['exchange'], r['ticker'])) or []; gaps = [{'field': k, 'reason': v['reason']} for k, v in ident.items() if v.get('reason')]
         recd = {'cmr': key, 'node': NODE, 'as_of': STAMP, 'version': 1, 'identity': ident, 'aliases': aliases, 'events_url': f"{HOST}/events/{r['exchange']}/{r['ticker']}", 'event_count': len(evs), 'gaps': gaps}
+        recd['halt'] = X['enrich'].record_halt('us', recd, X['halt'], hi, hc, X['halt_why']) if X.get('enrich') else {'value': None, 'state': None, 'reason': 'halt reader not in the image'}
+        if tx: idx['ticker'].setdefault('TXSE:' + r['ticker'].upper(), []).append(key)
         todo.append((f"door/records/{r['exchange']}/{slug(r['ticker'])}.json", json.dumps(recd, ensure_ascii=False, separators=(',', ':')))); todo.append((f"door/events/{r['exchange']}/{slug(r['ticker'])}.json", json.dumps(evs, ensure_ascii=False, separators=(',', ':'))))
         idx['keys'].append(key); idx['cmr'][key.upper()] = [key]; idx['ticker'].setdefault(r['ticker'].upper(), []).append(key); root = r['ticker'].split('.')[0].upper()
         if root != r['ticker'].upper(): idx['ticker'].setdefault(root, []).append(key)
@@ -279,13 +323,13 @@ def render(roster, match, isins, events, fills):
         if n % 500 == 0: log('rendered', n)
     with ThreadPoolExecutor(max_workers=8) as ex: list(ex.map(lambda t: put(*t), todo))
     log('door blobs uploaded', len(todo))
-    facts = {'as_of': STAMP, 'records': n, 'events': ev_total, 'nodes': {NODE: {'as_of': STAMP, 'version': 1, 'records': n, 'records_by_exchange': counts, 'events': ev_total, 'issuers_with_events': sum(1 for v in events.values() if v), 'exchanges': ['NYSE', 'NASDAQ', 'CBOE']}}, 'source': 'public-record', 'operator': 'Allooloo Technologies Corp.', 'store': f'Azure Storage (regional pond, {REGION}) — blob per record and per issuer event list', 'tools': ['resolve_issuer', 'get_record', 'list_events_since', 'list_aliases', 'list_nodes'], 'mcp': '/mcp (Streamable HTTP, JSON-RPC 2.0, no auth)', 'region': REGION}
+    facts = {'as_of': STAMP, 'records': n, 'events': ev_total, 'nodes': {NODE: {'as_of': STAMP, 'version': 1, 'records': n, 'records_by_exchange': counts, 'events': ev_total, 'issuers_with_events': sum(1 for v in events.values() if v), 'exchanges': ['NYSE', 'NASDAQ', 'CBOE', 'TXSE']}}, 'source': 'public-record', 'operator': 'Allooloo Technologies Corp.', 'store': f'Azure Storage (regional pond, {REGION}) — blob per record and per issuer event list', 'tools': ['resolve_issuer', 'get_record', 'list_events_since', 'list_aliases', 'list_nodes'], 'mcp': '/mcp (Streamable HTTP, JSON-RPC 2.0, no auth)', 'region': REGION}
     nodes_b = get_blob('door/nodes.json'); nodes = json.loads(nodes_b.decode('utf-8')) if nodes_b else []
     for x in nodes:
-        if x.get('node') == NODE: x.update({'live': True, 'as_of': STAMP, 'records': n, 'exchanges': ['NYSE', 'NASDAQ', 'CBOE']})
+        if x.get('node') == NODE: x.update({'live': True, 'as_of': STAMP, 'records': n, 'exchanges': ['NYSE', 'NASDAQ', 'CBOE', 'TXSE']})
     put('door/index.json', json.dumps(idx, separators=(',', ':'))); put('door/facts.json', json.dumps(facts, indent=1)); put('door/nodes.json', json.dumps(nodes, indent=1))
     log('door rendered', n, 'records', ev_total, 'events', counts)
 if __name__ == '__main__':
     t0 = time.time(); log('US rail start', STAMP, 'drop', DROP, 'window since', SINCE, 'UA', UA['User-Agent'])
-    roster, subs = width0(); match, isins = gleif(roster); events = width1(roster, subs); fills = fill(roster, subs); render(roster, match, isins, events, fills)
+    roster, subs = width0(); match, isins = gleif(roster); events = width1(roster, subs); fills = fill(roster, subs); render(roster, match, isins, events, fills, extras())
     log('spend: gemini', GU); put(f'pond/width0/{DROP}/job-{int(t0)}.log', '\n'.join(LOG), 'text/plain'); log('US rail DONE in', round((time.time() - t0) / 60, 1), 'minutes')

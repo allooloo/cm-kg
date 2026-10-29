@@ -1,36 +1,59 @@
 {
- "as_of": "2026-09-12",
- "card": {
-  "title": "Capital Markets Agents: MCP+A2A Canada",
-  "description": "Know every Canadian and UK issuer, agent-ready. Instantly. Provably. Eleven markets, in-country.",
-  "website": "https://capitalmarketsknowledgegraph.ai",
-  "remote": "https://mcp.capitalmarketsknowledgegraph.ai/mcp"
- },
+ "as_of": "2026-10-23T04:02:08Z",
+ "source": "CM-KG/RAILS/filings_json.py — rewritten from what answers (nightly in the apex job, before the estate deploy)",
  "filings": [
   {
-   "registry": "MCP registry (registry.modelcontextprotocol.io)",
-   "state": "v0.11.0 published, latest",
-   "as_of": "2026-09-12"
+   "registry": "MCP registry",
+   "entry": "io.github.allooloo/cm-kg",
+   "state": "live · latest 0.12.3 (published 2026-10-23) · 9 versions",
+   "as_of": "2026-10-23T04:02:08Z",
+   "read": "answered",
+   "url": "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.allooloo%2Fcm-kg/versions"
   },
   {
-   "registry": "Azure API Center (Allooloo tenant)",
-   "state": "pending \u2014 see ORDER-020 build log",
-   "as_of": "2026-09-12"
+   "registry": "MCP registry",
+   "entry": "io.github.allooloo/issuerwire",
+   "state": "live · latest 1.3.0 (published 2026-10-23) · 2 versions",
+   "as_of": "2026-10-23T04:02:08Z",
+   "read": "answered",
+   "url": "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.allooloo%2Fissuerwire/versions"
   },
   {
-   "registry": "Google \u2014 enterprise MCP / agent catalogue",
-   "state": "HITL: needs a Google Cloud console account; card of record ready",
-   "as_of": "2026-09-12"
+   "registry": "Anthropic — Claude directory",
+   "entry": "https://claude.ai/directory/manage/capital-markets-knowledge-graph-allooloo",
+   "state": "live (as reported by the CEO, 2026-10-22)",
+   "as_of": "2026-10-23T04:02:08Z",
+   "read": "as reported — the listing page is behind a sign-in (HTTP 403 to a plain read)"
   },
   {
-   "registry": "Anthropic \u2014 connector directory",
-   "state": "HITL: submission form needs a human account; card of record ready",
-   "as_of": "2026-09-12"
+   "registry": "Google — Agent Registry",
+   "entry": "Capital Markets Knowledge Graph (Allooloo)",
+   "state": "registered 2026-09-13 (as reported by the CEO)",
+   "as_of": "2026-09-13",
+   "read": "as reported — no public read endpoint"
   },
   {
-   "registry": "GitHub MCP listing / A2A agent directories",
-   "state": "HITL: as they stabilise; same card",
-   "as_of": "2026-09-12"
+   "registry": "Azure API Center",
+   "entry": "allooloo-apic",
+   "state": "live · 14 APIs registered: cm-kg-apex, cm-kg-ca, cm-kg-uk, cm-kg-au, cm-kg-sg, cm-kg-ch, cm-kg-de, cm-kg-fr, cm-kg-nl, cm-kg-jp, cm-kg-kr, cm-kg-us, agentic-x402-api, issuerwire",
+   "as_of": "2026-10-23T04:02:08Z",
+   "read": "answered",
+   "apis": [
+    "cm-kg-apex",
+    "cm-kg-ca",
+    "cm-kg-uk",
+    "cm-kg-au",
+    "cm-kg-sg",
+    "cm-kg-ch",
+    "cm-kg-de",
+    "cm-kg-fr",
+    "cm-kg-nl",
+    "cm-kg-jp",
+    "cm-kg-kr",
+    "cm-kg-us",
+    "agentic-x402-api",
+    "issuerwire"
+   ]
   }
  ]
 }

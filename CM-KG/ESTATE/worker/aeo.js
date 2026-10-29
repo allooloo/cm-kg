@@ -10,8 +10,9 @@ export const TOOLS = [
   ['get_record', 'Read the record', 'Return the full Capital Markets Record for an issuer: every identity field with value, source URL, reader and state; aliases; gaps; the events URL.', 'identifier (string), version (optional)'],
   ['list_aliases', 'List the names', 'Every name the issuer has traded or filed under, each with its source.', 'identifier (string)'],
   ['list_events_since', 'Disclosure events since a date', 'Dated, typed disclosure events for an issuer over the trailing twelve months, newest first, paged.', 'identifier (string), since (YYYY-MM-DD), cursor, limit'],
-  ['list_nodes', 'The twelve nodes', 'Which node holds which market, live or not, record and event counts, drop date, door and Agent Card URLs.', '(none)']
-];
+  ['list_nodes', 'The nodes', 'Which node holds which market, live or not, record and event counts, drop date, door and Agent Card URLs.', '(none)'],
+  ['get_signal', 'The signal', 'The ACM-68000 signal for a listed security in its home market: ACM-200 TRADING, ACM-403 HALTED, ACM-404 NOT ON THE REGISTER, ACM-451 READ THE FILING, ACM-300 CONDITIONAL; with the record signature and the record, events and ECO URLs.', 'identifier (string)']
+];   // SITE-02 (2026-10-28): six tools
 export const CONTENT_SIGNAL = 'Content-Signal: search=yes, ai-input=yes, ai-train=yes';
 export const KEYRING = 'https://agentic-x402.ai/x402/jwks.json';   // the estate keyring of record (x402 receipts key, kid allooloo-x402-receipts-2026-09); the CMR keyring joins when signing ships
 
@@ -153,7 +154,7 @@ Response: \`{ "access_token": "<ES256 JWT>", "token_type": "Bearer", "expires_in
 
 Credential layer: \`POST ${AS}/oauth/revoke\` with \`token=<access_token or identity_assertion>\` (RFC 7009; always 200). Registration layer: a registration is set inactive by the operator on the firm's instruction, on licence expiry (\`valid_until\`) or on misuse; its tokens stop at their next request. Revocation events for registered agents are accepted at \`${AS}/agent/event/notify\` (RFC 8935, \`application/secevent+jwt\`). Nothing is deleted; registrations and receipts stay on the registry.
 
-Operator: ${OPERATOR}. The agents that built this read their own mail: ${CONTACT2}. Questions: the contact form at ${CONTACT}. Surface version ${SURFACES_VERSION}; as of ${today()}.
+Operator: ${OPERATOR}. Questions: the contact form at ${CONTACT}. Surface version ${SURFACES_VERSION}; as of ${today()}.
 `;
 }
 export function mcpServerCard(host, t, live, label) {
@@ -186,8 +187,8 @@ export function aiCatalog(host, t, label, description) {
   const door = t.mcp ? t.name : 'the apex router';
   const entries = [];
   if (t.mcp) {
-    entries.push({ identifier: urn('server', t.kind === 'node' ? t.name.replace(' door', '') : 'cm-kg'), displayName: t.name, type: 'application/mcp-server-card+json', url: `https://${host}/.well-known/mcp/server-card.json`, description: `MCP door of the Capital Markets Knowledge Graph reached from ${host}: five read-only tools, public-record only, no auth, served in the issuer's own jurisdiction.`, capabilities: TOOLS.map(x => x[0]), representativeQueries: ['resolve TSX:SHOP and tell me which node holds the record', 'give me the Capital Markets Record for LSE:BARC with the source of every field', 'list the disclosure events for XETRA:SAP since 2026-01-01', 'which of the twelve market nodes are live and how many issuer records does each hold'] });
-    entries.push({ identifier: urn('agent', t.kind === 'node' ? t.name.replace(' door', '') : 'cm-kg'), displayName: label, type: 'application/a2a-agent-card+json', url: t.agent, description: `A2A Agent Card of the agent that answers for ${host}; skills mirror the five MCP tools.`, capabilities: ['a2a', 'jsonrpc'], representativeQueries: ['what can the Capital Markets Knowledge Graph agent do for a dealer', 'which skills does the cm-kg agent expose over A2A'] });
+    entries.push({ identifier: urn('server', t.kind === 'node' ? t.name.replace(' door', '') : 'cm-kg'), displayName: t.name, type: 'application/mcp-server-card+json', url: `https://${host}/.well-known/mcp/server-card.json`, description: `MCP door of the Capital Markets Knowledge Graph reached from ${host}: six read-only tools, public-record only, no auth, served in the issuer's own jurisdiction.`, capabilities: TOOLS.map(x => x[0]), representativeQueries: ['resolve TSX:SHOP and tell me which node holds the record', 'give me the Capital Markets Record for LSE:BARC with the source of every field', 'list the disclosure events for XETRA:SAP since 2026-01-01', 'which market nodes are live and how many issuer records does each hold'] });
+    entries.push({ identifier: urn('agent', t.kind === 'node' ? t.name.replace(' door', '') : 'cm-kg'), displayName: label, type: 'application/a2a-agent-card+json', url: t.agent, description: `A2A Agent Card of the agent that answers for ${host}; skills mirror the six MCP tools.`, capabilities: ['a2a', 'jsonrpc'], representativeQueries: ['what can the Capital Markets Knowledge Graph agent do for a dealer', 'which skills does the cm-kg agent expose over A2A'] });
     entries.push({ identifier: urn('api', 'read-paths'), displayName: 'HTTP read paths', type: 'application/vnd.oai.openapi+json', url: t.openapi, description: 'OpenAPI 3.1 description of the door\'s HTTP read paths (record, events, aliases, nodes).', capabilities: ['openapi', 'read-only'], representativeQueries: ['fetch the record for uk-cm-kg/LSE/BARC over plain HTTPS', 'what HTTP paths does the door expose without MCP'] });
     entries.push({ identifier: urn('skills', 'catalog'), displayName: `${host} agent skills`, type: 'application/json', url: `https://${host}/.well-known/agent-skills/index.json`, description: 'Agent Skills index: one SKILL.md per tool with the door, the call shape and the answer shape.', capabilities: TOOLS.map(x => x[0].replace(/_/g, '-')), representativeQueries: ['show me the skill file for reading a Capital Markets Record', 'how do I call list_events_since from an agent'] });
   } else {

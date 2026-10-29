@@ -14,6 +14,7 @@ ZONES = {'ca': '4d2c6dc2f534dd8c013f6e66544eed4c', 'uk': '999f8cab6ae570a878379f
 cc, region, step = sys.argv[1], sys.argv[2], sys.argv[3]; tag = sys.argv[4] if len(sys.argv) > 4 else 'latest'
 CONT = os.environ.get('STORAGE_CONTAINER', 'pond')   # ORDER-031 (2026-10-17): the store container is a parameter — 'pond' on the wire, 'staging' for a dry run; default unchanged
 node = f'{cc}-cm-kg'; rg = f'allooloo-cmkg-{region}'; sa = f'allooloocmkg{cc}pond'; app = f'cmkg-door-{cc}'; host = f'mcp.{node}.ai'
+ENV_HOST = {'be': 'westeurope', 'lu': 'westeurope', 'ie': 'westeurope', 'at': 'germanywestcentral', 'pl': 'germanywestcentral', 'cz': 'germanywestcentral', 'ky': 'eastus', 'bm': 'eastus', 'je': 'uksouth', 'in': 'southeastasia', 'tw': 'eastasia', 'sa': 'italynorth', 'ae': 'italynorth', 'br': 'eastus', 'mx': 'eastus'}   # NODE-EU 2026-10-24: environment quota reached; door + job in the nearest existing environment, store in the node's region
 env_name = open(rf'C:\ALLOOLOO\AZURE\env-{cc}.txt').read().strip() if os.path.exists(rf'C:\ALLOOLOO\AZURE\env-{cc}.txt') else f'cmkg-env-{region}'
 LOG = r'C:\ALLOOLOO\AZURE\provision.log'
 def log(msg):
@@ -66,19 +67,11 @@ elif step == 'upload':
         if os.path.isdir(d):
             r = az('storage', 'blob', 'upload-batch', '--account-name', sa, '--account-key', k, '--destination', CONT, '--destination-path', f'door/{sub}', '--source', d, '--overwrite', 'true', '--no-progress', '--content-type', 'application/json', check=False)
             log(f'door/{sub}: {len(r) if isinstance(r, list) else "see log"} blobs')
-    # per-node index: ticker / isin / lei / alias / name -> cmr keys, from the record files
-    def nkey(s): return re.sub(r'[^a-z0-9]+', ' ', str(s).lower().replace('&', ' and ')).strip()
-    idx = {'ticker': {}, 'isin': {}, 'lei': {}, 'alias': {}, 'name': {}, 'cmr': {}, 'keys': []}
-    for f in recs:
-        r = json.load(open(f, encoding='utf-8')); key = r['cmr']; t = key.split('/')[2]; v = lambda x: (r['identity'].get(x) or {}).get('value')
-        idx['keys'].append(key); idx['cmr'][key.upper()] = [key]; idx['ticker'].setdefault(t.upper(), []).append(key)
-        root = t.split('.')[0].upper()
-        if root != t.upper(): idx['ticker'].setdefault(root, []).append(key)
-        if v('isin'): idx['isin'].setdefault(str(v('isin')).upper(), []).append(key)
-        if v('lei'): idx['lei'].setdefault(str(v('lei')).upper(), []).append(key)
-        if v('name'): idx['name'].setdefault(nkey(v('name')), []).append(key)
-        for a in r.get('aliases', []):
-            if a.get('value'): idx['alias'].setdefault(nkey(a['value']), []).append(key)
+    # per-node index: ticker / isin / lei / alias / name -> cmr keys, from the record files. ISIN disambiguation (2026-10-27): built by
+    # CM-KG\RAILS\door\store_index.py — a folded listing line resolves to its primary instead of adding a second copy of it, and a record with a
+    # parent (derivative, depositary, secondary venue) never answers an ISIN lookup on its own
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'CM-KG', 'RAILS', 'door')); import store_index
+    idx = store_index.build((os.path.basename(os.path.dirname(f)), os.path.basename(f)[:-5], json.load(open(f, encoding='utf-8'))) for f in recs)
     tmp = rf'C:\ALLOOLOO\AZURE\tmp-{node}'; os.makedirs(tmp, exist_ok=True)
     json.dump(idx, open(os.path.join(tmp, 'index.json'), 'w', encoding='utf-8'), separators=(',', ':'))
     facts = json.load(open(os.path.join(data, 'facts.json'), encoding='utf-8')); nf = {**facts, 'store_reloaded_at': datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'), 'nodes': {node: facts['nodes'].get(node, {})}, 'store': f'Azure Storage (regional pond, {region}) — blob per record and per issuer event list', 'region': region}
@@ -89,14 +82,19 @@ elif step == 'upload':
     log(f"door index: {len(idx['keys'])} keys, {len(idx['ticker'])} tickers, {len(idx['isin'])} isins, {len(idx['alias'])} aliases; facts + nodes uploaded")
 elif step == 'app':
     # a failed environment is left standing (Rule One) and the next name is used: cmkg-env-<region>, -2, -3 …
-    for suffix in ('', '-2', '-3'):
+    if cc in ENV_HOST:   # NODE-EU (2026-10-24): the host region's environment, by resource id; the app stays in the node's group
+        hrg = f'allooloo-cmkg-{ENV_HOST[cc]}'; env_name = az('containerapp', 'env', 'list', '-g', hrg, '--query', "[?properties.provisioningState=='Succeeded'].id | [0]", '-o', 'tsv', raw=True)
+        if not env_name: raise SystemExit(f'no environment in {hrg}')
+        log(f'environment: host {env_name.split("/")[-1]} ({ENV_HOST[cc]}); the store stays in {region}')
+    for suffix in (() if cc in ENV_HOST else ('', '-2', '-3')):
         cand = env_name + suffix; e = az('containerapp', 'env', 'show', '-n', cand, '-g', rg, check=False)
         if e and e['properties']['provisioningState'] in ('Succeeded', 'InProgress', 'Waiting', 'Updating'): env_name = cand; log(f"environment {cand} present ({e['properties']['provisioningState']})"); break
         if e: log(f"environment {cand} is {e['properties']['provisioningState']} — left standing, trying the next name"); continue
         e = az('containerapp', 'env', 'create', '-n', cand, '-g', rg, '-l', region, '--tags', 'order=ORDER-018', check=False)
         if e and e['properties']['provisioningState'] == 'Succeeded': env_name = cand; log(f"environment {cand} {e['properties']['provisioningState']} (Log Analytics workspace auto-created by the CLI)"); break
         log(f"environment {cand} create returned {(e or {}).get('properties', {}).get('provisioningState')}")
-    else: raise SystemExit('no usable environment')
+    else:
+        if cc not in ENV_HOST: raise SystemExit('no usable environment')
     open(rf'C:\ALLOOLOO\AZURE\env-{cc}.txt', 'w').write(env_name)
     k = storage_key(); acr_pw = az('acr', 'credential', 'show', '-n', ACR, '--query', 'passwords[0].value', '-o', 'tsv', raw=True)
     a = az('containerapp', 'show', '-n', app, '-g', rg, check=False)

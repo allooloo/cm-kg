@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-22",
+ "as_of": "2026-10-25",
  "source": "START_ME_UP/NODE-SURFACES.md \u00a79 NUMBERS LOG (one line per sweep per node; counts from list_nodes after the store reload)",
  "lines": [
   {
@@ -168,7 +168,7 @@
    "date": "2026-09-18",
    "records": "suspended",
    "events": "none",
-   "note": "ORDER-025: weekly sweep suspended (Tavily plan at 93,895 of 100,000; no customer waiting on the data)\u00b7resumes 2026-10-02 14:30, cadence stays weekly"
+   "note": ""
   },
   {
    "node": "nl-cm-kg",

@@ -26,7 +26,7 @@ def short_name(n):
     s = re.sub(r'\b(Inc\.?|Corp\.?|Corporation|Ltd\.?|Limited|Ltée|Company|Co\.?|plc|L\.?P\.?|Trust|REIT)\b\.?', '', n, flags=re.I)
     return re.sub(r'\s+', ' ', s).strip(' ,.-')
 def fetch(r):
-    evs = []; seen = set(); amb = 0; undated = []
+    evs = []; seen = set(); amb = 0; mention = 0; undated = []
     queries = [({'query': r['name'], 'max_results': 20, 'topic': 'news', 'days': WINDOW_DAYS, 'include_domains': DOMS}, 'Tavily search (wire domains) + published_date'),
                ({'query': f'"{short_name(r["name"])}" announces', 'max_results': 20, 'include_domains': DOMS}, 'Tavily search (wire domains) + dateline in indexed snippet')]
     if r['wire'] in ('GlobeNewswire', 'Business Wire') or not r['wire']:
@@ -39,15 +39,23 @@ def fetch(r):
             u = clean(x['url']); w = wire_of(u)
             if not w or INDEX.search(u) or u in seen: continue
             if not name_in(x['title'], r['name']): amb += 1; continue
+            # SHELF-01 fix (2026-10-27): the subject rule — a title that only mentions the issuer is a third party's release; where the title cannot tell,
+            # the release page's own issuer line decides (PR Newswire "News provided by", GlobeNewswire/Newsfile "Source:", meta author)
+            page_ok = None
+            if not subject_in(x['title'], r['name'], (r.get('ticker'), r.get('root'))):
+                try: pv, page_ok = issued_by(get(u, tries=2, timeout=30).text, r['name'], (r.get('ticker'), r.get('root')))
+                except Exception: pv, page_ok = None, False
+                if not page_ok: mention += 1; continue
             seen.add(u)
             date = to_iso(x.get('published_date', '')); how = rb
             if not date:
                 date = url_date(u); how = 'Tavily search (wire domains) + URL date'
             if not date:
                 date = dateline(x.get('content', '')); how = 'Tavily search (wire domains) + dateline in indexed snippet'
-            if not date: undated.append({'url': u, 'title': x['title'], 'wire': w}); continue
+            if page_ok: how += f' · issuer read on the release page ({pv})'   # the assembler keeps a line the page check passed
+            if not date: undated.append({'url': u, 'title': x['title'], 'wire': w, 'issuer_on_page': pv if page_ok else None}); continue
             if in_window(date): evs.append(event(r, classify(x['title']), date, x['title'], w, u, how, wire=w))
-    return {'events': evs, 'n': len(evs), 'ambiguous': amb, 'undated': undated[:40]}
+    return {'events': evs, 'n': len(evs), 'ambiguous': amb, 'mention_only': mention, 'undated': undated[:40]}
 issuers = load_issuers()
 if __name__ == '__main__':
     run_workers('wire_search', fetch, issuers, threads=int(os.environ.get('THREADS', '6')))

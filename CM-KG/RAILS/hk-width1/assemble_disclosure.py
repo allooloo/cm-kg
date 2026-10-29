@@ -94,6 +94,7 @@ if __name__ == '__main__':
     if incomplete: me.append(['Incomplete board-days', json.dumps(incomplete)[:30000]])
     wb.save(os.path.join(adir, 'hk-disclosure.xlsx'))
     for src, dst in ((os.path.join(adir, 'hk-events.jsonl'), r'C:\ALLOOLOO\CM-KG\DISCLOSURE\events\hk-events.jsonl'), (os.path.join(adir, 'hk-disclosure.xlsx'), r'C:\ALLOOLOO\CM-KG\DISCLOSURE\hk-disclosure.xlsx')):
-        if os.path.exists(dst): shutil.copy2(dst, f'{dst}.pre-{stamp}')
-        shutil.copy2(src, dst)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)   # DAY ORDER 4 (2026-10-24): the job image carries no DISCLOSURE folder — the first two hk nightlies failed here
+        if os.path.exists(dst): shutil.copyfile(dst, f'{dst}.pre-{stamp}')   # copyfile: the image's path shim does not cover the xattr calls of copy2
+        shutil.copyfile(src, dst)
     print(json.dumps({'assembled': adir, 'events': len(events), 'issuers_with_events': len(per), 'roster': len(R), 'stats': st, 'incomplete_board_days': len(incomplete), 'top_categories': cats.most_common(8)}, ensure_ascii=False, default=str))

@@ -4,7 +4,8 @@ Transport is curl with a browser-shaped User-Agent: the scanner's edge refuses P
 Spacing between scans is 20 s; a 429 waits 60 s and retries once. No key. One pass, never a loop."""
 import json, sys, time, os, datetime, subprocess
 sys.stdout.reconfigure(encoding='utf-8')
-NODES = ['ca', 'us', 'uk', 'fr', 'nl', 'ch', 'de', 'au', 'sg', 'jp', 'kr', 'hk']
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import roster   # ENUM-01 (DAY ORDER 6): the roster of record
+NODES = [roster.cc_of(n) for n in roster.load() if str(n.get('door') or '').startswith(f'https://mcp.{roster.cc_of(n)}-cm-kg.ai')]   # ENUM-01: every roster node with its own <cc>-cm-kg.ai zone (the European doors sit under eu-cm-kg.ai)
 PRODUCTS = ['trades', 'ask', 'coverage', 'esg', 'issuers', 'disclosure', 'registries', 'radar', 'x402']
 SCOPE = ['allooloo.io'] + [f'agentic-{p}.ai' for p in PRODUCTS] + ['kyp-model.ai'] + [f'{cc}-cm-kg.ai' for cc in NODES]
 label = sys.argv[1]; hosts = sys.argv[2:] or SCOPE

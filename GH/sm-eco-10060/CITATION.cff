@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use SM-ECO-10060, cite it as below."
+title: "SM-ECO-10060 — the jurisdiction layer for capital-markets issuer records"
+type: software
+authors:
+  - name: "Allooloo Technologies Corp."
+    city: "Richmond"
+    region: "BC"
+    country: "CA"
+    website: "https://allooloo.ai"
+version: "2026-10-28"
+date-released: "2026-10-28"
+license: MIT
+url: "https://sm-eco-10060.org/"
+repository-code: "https://github.com/allooloo/sm-eco-10060"
+abstract: "SM-ECO-10060 defines 49 sovereign jurisdiction members plus the SM apex. Each jurisdiction is an authority for its own rule-set namespace; every Allooloo issuer record states the jurisdiction it was read under and the duty that applies there. It pairs with ACM-68000 (the signal vocabulary) and the per-market Electronic Compliance Object pages."
+keywords:
+  - capital markets
+  - issuer record
+  - jurisdiction
+  - ACM-68000
+  - open standard

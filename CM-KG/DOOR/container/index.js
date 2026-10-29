@@ -9,8 +9,9 @@ import path from 'node:path';
 import https from 'node:https';
 import zlib from 'node:zlib';
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
-const OPERATOR = 'Allooloo Technologies Corp.'; const SERVER_VERSION = '0.13.3';   // 0.13.3 = ORDER-035 (2026-10-22): the Hong Kong node (copy, HKEX prefixes, .HK suffix, five-digit codes) const PROTOCOL = '2025-06-18';
-const NODE = process.env.NODE || 'ca-cm-kg'; const REGION = process.env.REGION || ''; const PUBLIC_HOST = process.env.PUBLIC_HOST || `mcp.${NODE}.ai`; const AGENT_HOST = `agent.${NODE}.ai`;
+const OPERATOR = 'Allooloo Technologies Corp.'; const SERVER_VERSION = '0.17.0';   // 0.17.0 = SHELF-01 (2026-10-27): get_timeline · list_events · get_score beside the five; get_record takes an optional as_of (Replay, sealed years only)
+// prior:   // 0.16.4 = LOCATION-ALIGN (2026-10-27): operator line reads Richmond, BC, Canada.   // 0.16.3 = LIST-02 (2026-10-26): the agent card carries the roster (count, live, source, this node's example) read from the apex   // 0.16.2 = ENUM-01 (DAY ORDER 6, 2026-10-25): no typed market count in list_nodes or the OpenAPI summary.   // 0.16.1 = CEO ruling 2026-10-24: no x402 rationing in the door's own payment block.   // 0.16.0 = NODE-ROW (DAY ORDER 5, 2026-10-24): the nine ROW markets' copy.     // 0.15.0 = DAY ORDER 5 (2026-10-24): PUBLIC_HOST / AGENT_CARD_URL name the zone door (xx.eu-cm-kg.ai, mcp.xx-cm-kg.ai).   // 0.14.0 = NODE-EU (2026-10-24): the fourteen European doors, routing/payment/receipts in the door's own files.   // 0.13.3 = ORDER-035 (2026-10-22): the Hong Kong node (copy, HKEX prefixes, .HK suffix, five-digit codes) const PROTOCOL = '2025-06-18';
+const NODE = process.env.NODE || 'ca-cm-kg'; const REGION = process.env.REGION || ''; const PUBLIC_HOST = process.env.PUBLIC_HOST || `mcp.${NODE}.ai`; const AGENT_HOST = process.env.AGENT_HOST || `agent.${NODE}.ai`; const AGENT_CARD = process.env.AGENT_CARD_URL || `https://${AGENT_HOST}/.well-known/agent-card.json`;   // DAY ORDER 5: European doors name xx.eu-cm-kg.ai (path card)
 const CONTACT = process.env.CONTACT || 'allooloo@users.noreply.github.com'; const PORT = parseInt(process.env.PORT || '8080', 10);
 // ORDER-032 (2026-10-18): ORIGIN=azure (default) reads the node's regional Azure store, as before. ORIGIN=aws is the warm standby: at boot it loads the
 // newest door bundle from the node's own ark bucket (ARK_BUCKET, ARK_REGION, same country as the node; task role, read-only) into DOOR_DIR and serves
@@ -19,19 +20,58 @@ const ORIGIN = (process.env.ORIGIN || 'azure').toLowerCase() === 'aws' ? 'aws' :
 const cred = ORIGIN === 'azure' ? new StorageSharedKeyCredential(process.env.STORAGE_ACCOUNT, process.env.STORAGE_KEY) : null;
 const container = ORIGIN === 'aws' ? null : new BlobServiceClient(`https://${process.env.STORAGE_ACCOUNT}.blob.core.windows.net`, cred).getContainerClient(process.env.STORAGE_CONTAINER || 'pond');
 const ANN = { readOnlyHint: true, destructiveHint: false, openWorldHint: false, idempotentHint: true };
+// SHELF-01 (0.17.0): DOOR_MODE=bench | review runs this image as a shelf door on the apex store; unset = a market door, exactly as before
+const DOOR_MODE = (process.env.DOOR_MODE || '').toLowerCase();
+const SHELF_TOOLS = {
+  bench: [
+    { name: 'list_benches', title: 'List published benches', annotations: { title: 'List published benches', ...ANN }, description: 'Return the market-years with a published bench (questions public; answers held at this door).', inputSchema: { type: 'object', properties: {} } },
+    { name: 'get_bench', title: 'Get a bench', annotations: { title: 'Get a bench', ...ANN }, description: 'Return the question set of one market-year bench: issuers, dated questions, the sealed manifest it was drawn from.', inputSchema: { type: 'object', properties: { market: { type: 'string' }, year: { type: 'integer' } }, required: ['market', 'year'] } },
+    { name: 'score_bench', title: 'Score answers against a bench', annotations: { title: 'Score answers against a bench', readOnlyHint: true, destructiveHint: false, openWorldHint: false, idempotentHint: true }, description: 'Score an agent\'s answers to one market-year bench: per-question pass or fail, the score, a signed scorecard. The expected answers never leave this door.', inputSchema: { type: 'object', properties: { market: { type: 'string' }, year: { type: 'integer' }, agent: { type: 'string', description: 'Who answered (named on the scorecard).' }, answers: { type: 'array', items: { type: 'object', properties: { id: { type: 'string' }, answer: {} }, required: ['id', 'answer'] } } }, required: ['market', 'year', 'answers'] } }],
+  review: [
+    { name: 'list_reviews', title: 'List published reviews', annotations: { title: 'List published reviews', ...ANN }, description: 'Return the market-years with a published review.', inputSchema: { type: 'object', properties: {} } },
+    { name: 'get_review', title: 'Get a review', annotations: { title: 'Get a review', ...ANN }, description: 'Return one market-year disclosure review: counts by type, latency distribution, auditor concentration, listings and delistings, silent issuers — signed, from the sealed layer.', inputSchema: { type: 'object', properties: { market: { type: 'string' }, year: { type: 'integer' } }, required: ['market', 'year'] } }] };
 const TOOLS = [
   { name: 'resolve_issuer', title: 'Resolve issuer', annotations: { title: 'Resolve issuer', ...ANN }, description: 'Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version.',
     inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker with or without exchange (SHOP, TSX:SHOP, SHOP.TO, SHEL.L, BHP.AX, D05.SI, NESN.SW, SAP.DE, 7203.T, 005930.KS; on the Euronext nodes the ISIN is the key), ISIN, LEI (20 characters), or an exact legal name or sourced alias.' } }, required: ['identifier'] } },
   { name: 'get_record', title: 'Get Capital Markets Record', annotations: { title: 'Get Capital Markets Record', ...ANN }, description: 'Return the full Capital Markets Record for an issuer, with per-field source, reader and state; optionally a prior version.',
-    inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker, ISIN, LEI, or a CMR key such as ca-cm-kg/TSX/SHOP.' }, version: { type: 'integer', description: 'Prior version number; omitted = current.' } }, required: ['identifier'] } },
+    inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker, ISIN, LEI, or a CMR key such as ca-cm-kg/TSX/SHOP.' }, version: { type: 'integer', description: 'Prior version number; omitted = current.' }, as_of: { type: 'string', description: 'YYYY-MM-DD (Replay): the record as it stood on that date, from the sealed market-year only; a date in a year not sealed answers \'not sealed\'. Omitted = current.' } }, required: ['identifier'] } },
   { name: 'list_events_since', title: 'List disclosure events since a date', annotations: { title: 'List disclosure events since a date', ...ANN }, description: 'Return dated, URL\'d disclosure events for an issuer (regulatory announcements, registry filings, releases, bulletins, halts, corporate actions, statement and record dates) since a date.',
     inputSchema: { type: 'object', properties: { identifier: { type: 'string' }, since: { type: 'string', description: 'YYYY-MM-DD; omitted = full 12-month window.' }, cursor: { type: 'integer', description: 'Offset returned by the previous page.' }, limit: { type: 'integer', description: 'Page size, default 50, max 200.' } }, required: ['identifier'] } },
   { name: 'list_aliases', title: 'List sourced aliases', annotations: { title: 'List sourced aliases', ...ANN }, description: 'Return the sourced trade and former names an issuer releases under.', inputSchema: { type: 'object', properties: { identifier: { type: 'string' } }, required: ['identifier'] } },
-  { name: 'list_nodes', title: 'List market nodes', annotations: { title: 'List market nodes', ...ANN }, description: 'Return the twelve market nodes, which are live, and their record counts.', inputSchema: { type: 'object', properties: {} } },
+  { name: 'get_timeline', title: 'Get an issuer timeline', annotations: { title: 'Get an issuer timeline', ...ANN }, description: 'Return the full dated list of an issuer\'s event lines from its record start date, oldest first, no window cap: date, type, title as filed, source URL. The same lines list_events_since serves; each line is signed by the door.',
+    inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker, ISIN, LEI, or a CMR key.' } }, required: ['identifier'] } },
+  { name: 'list_events', title: 'List lifecycle events', annotations: { title: 'List lifecycle events', ...ANN }, description: 'Return dated lifecycle events on this market — listing, delisting, name_change, domicile_change, auditor_change, segment_move — each with issuer, type, source URL; the type map of this register and its gaps are published with the answer.',
+    inputSchema: { type: 'object', properties: { type: { type: 'string', description: 'listing · delisting · name_change · domicile_change · auditor_change · segment_move; omitted = all.' }, since: { type: 'string', description: 'YYYY-MM-DD; omitted = everything held.' }, identifier: { type: 'string', description: 'Optional: one issuer only.' }, cursor: { type: 'integer' }, limit: { type: 'integer' } } } },
+  { name: 'get_score', title: 'Get an issuer filing score', annotations: { title: 'Get an issuer filing score', ...ANN }, description: 'Return an issuer\'s filing cadence, latency (days from period end to filing) and silence (longest gap): the issuer\'s value, its exchange percentile and its sector percentile; as-of date and the years scored. Numbers and percentiles only.',
+    inputSchema: { type: 'object', properties: { identifier: { type: 'string', description: 'Ticker, ISIN, LEI, or a CMR key.' } }, required: ['identifier'] } },
+  { name: 'list_nodes', title: 'List market nodes', annotations: { title: 'List market nodes', ...ANN }, description: 'Return the market nodes on the roster of record, which are live, and their record counts.', inputSchema: { type: 'object', properties: {} } },
 ];
 const SUFFIX = { TO: ['TSX'], V: ['TSXV'], CN: ['CSE'], C: ['CSE'], NE: ['CBOE-CANADA'], CB: ['CBOE-CANADA'], L: ['LSE', 'AIM'], LN: ['LSE', 'AIM'], AQ: ['AQSE'], AX: ['ASX'], AU: ['ASX'], NS: ['NSX'], SI: ['SGX', 'SGX-CATALIST'], SG: ['SGX', 'SGX-CATALIST'], SW: ['SIX'], VX: ['SIX'], BX: ['BX'], DE: ['XETRA'], F: ['XETRA'], XE: ['XETRA'], PA: ['XPAR', 'ALXP', 'XMLI'], AS: ['XAMS', 'ALXA'], NA: ['XAMS', 'ALXA'], T: ['TSE-PRIME', 'TSE-STANDARD', 'TSE-GROWTH', 'TSE-PRO', 'TSE-REIT'], JP: ['TSE-PRIME', 'TSE-STANDARD', 'TSE-GROWTH', 'TSE-PRO', 'TSE-REIT'], KS: ['KOSPI'], KQ: ['KOSDAQ'], KN: ['KONEX'], N: ['NYSE'], O: ['NASDAQ'], OQ: ['NASDAQ'], US: ['NYSE', 'NASDAQ', 'CBOE'], HK: ['HKEX', 'HKEX-GEM', 'HKEX-REIT'] };
 const PREFIX = { TSX: 'TSX', TSXV: 'TSXV', 'TSX-V': 'TSXV', CVE: 'TSXV', CSE: 'CSE', CNSX: 'CSE', CNQ: 'CSE', NEO: 'CBOE-CANADA', CBOE: 'CBOE-CANADA', 'CBOE-CANADA': 'CBOE-CANADA', LSE: 'LSE', LON: 'LSE', MAIN: 'LSE', AIM: 'AIM', AQSE: 'AQSE', AQUIS: 'AQSE', NEX: 'AQSE', ASX: 'ASX', XASX: 'ASX', NSX: 'NSX', XNEC: 'NSX', SGX: 'SGX', XSES: 'SGX', SES: 'SGX', MAINBOARD: 'SGX', CATALIST: 'SGX-CATALIST', 'SGX-CATALIST': 'SGX-CATALIST', SIX: 'SIX', SWX: 'SIX', XSWX: 'SIX', VTX: 'SIX', BX: 'BX', XBRN: 'BX', XETRA: 'XETRA', XETR: 'XETRA', ETR: 'XETRA', FRA: 'XETRA', FWB: 'XETRA', DE: 'XETRA', EUREX: 'EUREX', XEUR: 'EUREX', XPAR: 'XPAR', EPA: 'XPAR', PAR: 'XPAR', ENXTPA: 'XPAR', EURONEXT: 'XPAR', 'EURONEXT-PARIS': 'XPAR', ALXP: 'ALXP', 'EURONEXT-GROWTH': 'ALXP', XMLI: 'XMLI', 'EURONEXT-ACCESS': 'XMLI', XAMS: 'XAMS', AMS: 'XAMS', AEX: 'XAMS', ENXTAM: 'XAMS', 'EURONEXT-AMSTERDAM': 'XAMS', ALXA: 'ALXA', TSE: ['TSE-PRIME', 'TSE-STANDARD', 'TSE-GROWTH', 'TSE-PRO', 'TSE-REIT'], TYO: ['TSE-PRIME', 'TSE-STANDARD', 'TSE-GROWTH', 'TSE-PRO', 'TSE-REIT'], JPX: ['TSE-PRIME', 'TSE-STANDARD', 'TSE-GROWTH', 'TSE-PRO', 'TSE-REIT'], XJPX: ['TSE-PRIME', 'TSE-STANDARD', 'TSE-GROWTH', 'TSE-PRO', 'TSE-REIT'], 'TSE-PRIME': 'TSE-PRIME', 'TSE-STANDARD': 'TSE-STANDARD', 'TSE-GROWTH': 'TSE-GROWTH', 'TSE-PRO': 'TSE-PRO', 'TSE-REIT': 'TSE-REIT', KRX: ['KOSPI', 'KOSDAQ', 'KONEX'], XKRX: ['KOSPI', 'KOSDAQ', 'KONEX'], KOSPI: 'KOSPI', KOSDAQ: 'KOSDAQ', XKOS: 'KOSDAQ', KONEX: 'KONEX', NYSE: 'NYSE', XNYS: 'NYSE', NASDAQ: 'NASDAQ', XNAS: 'NASDAQ', NAS: 'NASDAQ', BATS: 'CBOE', XCBO: 'CBOE', HKEX: ['HKEX', 'HKEX-GEM', 'HKEX-REIT'], SEHK: ['HKEX', 'HKEX-GEM', 'HKEX-REIT'], XHKG: ['HKEX', 'HKEX-GEM', 'HKEX-REIT'], HKG: ['HKEX', 'HKEX-GEM', 'HKEX-REIT'], 'HKEX-GEM': 'HKEX-GEM', GEM: 'HKEX-GEM', 'HKEX-REIT': 'HKEX-REIT' };
 const NODE_COPY = {
+  'ky-cm-kg': { country: 'Cayman Islands', jurisdiction: 'KY', duty: 'CIMA disclosure rules (see ky-eco.ai)', scope: 'Cayman Islands Stock Exchange (CSX) equity lines (the exchange\'s own list); records keyed by ISIN; filings from CSX market announcements.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },   // NODE-ROW (DAY ORDER 5)
+  'bm-cm-kg': { country: 'Bermuda', jurisdiction: 'BM', duty: 'BMA disclosure rules (see bm-eco.ai)', scope: 'Bermuda Stock Exchange (BSX) equity lines (the exchange\'s own list); records keyed by ISIN; filings from BSX market notices and company announcements.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },   // NODE-ROW (DAY ORDER 5)
+  'je-cm-kg': { country: 'Jersey', jurisdiction: 'JE', duty: 'JFSC disclosure rules (see je-eco.ai)', scope: 'The International Stock Exchange (TISE) equity lines (the exchange\'s own list); records keyed by ISIN; filings from TISE market news.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },   // NODE-ROW (DAY ORDER 5)
+  'in-cm-kg': { country: 'India', jurisdiction: 'IN', duty: 'SEBI disclosure rules (see in-eco.ai)', scope: 'National Stock Exchange of India (NSE) and BSE equity lines (the exchange\'s own list); records keyed by ISIN; filings from NSE and BSE corporate announcements.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },   // NODE-ROW (DAY ORDER 5)
+  'tw-cm-kg': { country: 'Taiwan', jurisdiction: 'TW', duty: 'FSC disclosure rules (see tw-eco.ai)', scope: 'Taiwan Stock Exchange (TWSE) and Taipei Exchange (TPEx) equity lines (the exchange\'s own list); records keyed by ISIN; filings from MOPS, the Market Observation Post System.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },   // NODE-ROW (DAY ORDER 5)
+  'sa-cm-kg': { country: 'Saudi Arabia', jurisdiction: 'SA', duty: 'CMA disclosure rules (see sa-eco.ai)', scope: 'Saudi Exchange (Main Market and Nomu Parallel Market) equity lines (the exchange\'s own list); records keyed by ISIN; filings from Saudi Exchange issuer announcements.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },   // NODE-ROW (DAY ORDER 5)
+  'ae-cm-kg': { country: 'United Arab Emirates', jurisdiction: 'AE', duty: 'SCA disclosure rules (see ae-eco.ai)', scope: 'Abu Dhabi Securities Exchange, Dubai Financial Market and Nasdaq Dubai equity lines (the exchange\'s own list); records keyed by ISIN; filings from the exchanges’ issuer disclosures.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },   // NODE-ROW (DAY ORDER 5)
+  'br-cm-kg': { country: 'Brazil', jurisdiction: 'BR', duty: 'CVM disclosure rules (see br-eco.ai)', scope: 'B3 equity lines (the exchange\'s own list); records keyed by ISIN; filings from CVM regulated information (IPE, Empresas.NET).', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },   // NODE-ROW (DAY ORDER 5)
+  'mx-cm-kg': { country: 'Mexico', jurisdiction: 'MX', duty: 'CNBV disclosure rules (see mx-eco.ai)', scope: 'Bolsa Mexicana de Valores (BMV) and Bolsa Institucional de Valores (BIVA) equity lines (the exchange\'s own list); records keyed by ISIN; filings from BMV EMISNET and BIVA issuer information.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },   // NODE-ROW (DAY ORDER 5)
+  'it-cm-kg': { country: 'Italy', jurisdiction: 'IT', duty: 'MiFID II product governance', scope: 'Euronext Milan and Euronext Growth Milan equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'es-cm-kg': { country: 'Spain', jurisdiction: 'ES', duty: 'MiFID II product governance', scope: 'BME (Bolsa de Madrid) and BME Growth equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'se-cm-kg': { country: 'Sweden', jurisdiction: 'SE', duty: 'MiFID II product governance', scope: 'Nasdaq Stockholm and First North Sweden equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'dk-cm-kg': { country: 'Denmark', jurisdiction: 'DK', duty: 'MiFID II product governance', scope: 'Nasdaq Copenhagen and First North Denmark equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'no-cm-kg': { country: 'Norway', jurisdiction: 'NO', duty: 'MiFID II product governance', scope: 'Euronext Oslo Børs, Euronext Expand and Euronext Growth Oslo equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'fi-cm-kg': { country: 'Finland', jurisdiction: 'FI', duty: 'MiFID II product governance', scope: 'Nasdaq Helsinki and First North Finland equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'be-cm-kg': { country: 'Belgium', jurisdiction: 'BE', duty: 'MiFID II product governance', scope: 'Euronext Brussels and Euronext Growth Brussels equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'ie-cm-kg': { country: 'Ireland', jurisdiction: 'IE', duty: 'MiFID II product governance', scope: 'Euronext Dublin and Euronext Growth Dublin equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'at-cm-kg': { country: 'Austria', jurisdiction: 'AT', duty: 'MiFID II product governance', scope: 'Wiener Börse equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'pl-cm-kg': { country: 'Poland', jurisdiction: 'PL', duty: 'MiFID II product governance', scope: 'GPW Warsaw Main Market and NewConnect equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'pt-cm-kg': { country: 'Portugal', jurisdiction: 'PT', duty: 'MiFID II product governance', scope: 'Euronext Lisbon equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'lu-cm-kg': { country: 'Luxembourg', jurisdiction: 'LU', duty: 'MiFID II product governance', scope: 'Luxembourg Stock Exchange (regulated market and Euro MTF) equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'gr-cm-kg': { country: 'Greece', jurisdiction: 'GR', duty: 'MiFID II product governance', scope: 'Euronext Athens (Athens Exchange) and EN.A. Growth equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
+  'cz-cm-kg': { country: 'Czech Republic', jurisdiction: 'CZ', duty: 'MiFID II product governance', scope: 'Prague Stock Exchange (Prime, Standard) and START equity lines (ESMA FIRDS roster); records keyed by ISIN; filings from the national regulated-information store.', example: '', exchanges: 'by MIC', ids: 'ISIN (the record key), LEI, legal name' },
   'ca-cm-kg': { country: 'Canada', jurisdiction: 'CA', duty: 'KYP (Know Your Product)', scope: 'TSX, TSXV, CSE, Cboe Canada.', example: 'TSX/SHOP', exchanges: 'TSX, TSXV, CSE, CBOE-CANADA', ids: 'SHOP, TSX:SHOP, SHOP.TO, CSE:AWR, AUMB.V' },
   'uk-cm-kg': { country: 'United Kingdom', jurisdiction: 'GB', duty: 'product governance (FCA PROD sourcebook)', scope: 'LSE Main Market, AIM, Aquis Stock Exchange.', example: 'LSE/SHEL', exchanges: 'LSE, AIM, AQSE', ids: 'SHEL, LSE:SHEL, SHEL.L, AIM:4BB, AQSE:DGQ' },
   'au-cm-kg': { country: 'Australia', jurisdiction: 'AU', duty: 'DDO (Design and Distribution Obligations)', scope: 'ASX, NSX (National Stock Exchange of Australia).', example: 'ASX/BHP', exchanges: 'ASX, NSX', ids: 'BHP, ASX:BHP, BHP.AX, NSX:SBL' },
@@ -45,7 +85,11 @@ const NODE_COPY = {
   'kr-cm-kg': { country: 'South Korea', jurisdiction: 'KR', duty: 'suitability and appropriateness (FSCMA Articles 46 and 46-2)', scope: 'KOSPI, KOSDAQ and KONEX companies; Korean names as published.', example: 'KOSPI/005930', exchanges: 'KOSPI, KOSDAQ, KONEX', ids: '005930, KOSPI:005930, 005930.KS, Samsung Electronics' },
   'us-cm-kg': { country: 'United States', jurisdiction: 'US', duty: 'reasonable-basis suitability (FINRA Rule 2111)', scope: 'NYSE, Nasdaq and Cboe-listed EDGAR filers (SEC EDGAR roster and headers).', example: 'NASDAQ/AAPL', exchanges: 'NYSE, NASDAQ, CBOE', ids: 'AAPL, NASDAQ:AAPL, NYSE:IBM, Apple Inc.' },
 };
-const COPY = NODE_COPY[NODE] || { country: NODE, jurisdiction: '', duty: '', scope: '', example: '', exchanges: '', ids: '' };
+const COPY = { ...(NODE_COPY[NODE] || { country: NODE, jurisdiction: '', duty: '', scope: '', example: '', exchanges: '', ids: '' }) }; if (process.env.NODE_EXAMPLE) COPY.example = process.env.NODE_EXAMPLE;
+// 0.14.0 (NODE-EU, 2026-10-24): the door's own machine files carry the routing, the payment door and the receipt door
+const ROUTING = [{ resolves: 'gtin', what: 'GTINs', door: 'https://gtinfetch.ai/mcp' }, { resolves: 'issuer', what: 'Listed issuers (ticker, ISIN, LEI)', door: 'https://mcp.getissuer.ai/mcp' }, { resolves: 'receipt', what: 'Receipts — the Record of Cleared Orders', door: 'https://mcp.rco-a2a.ai/mcp' }];
+const PAYMENT = { protocol: 'x402', version: 2, network: 'eip155:8453', asset: 'USDC, OUSD', metered_at: 'none — every read is free for every agent (no rationing, CEO ruling 2026-10-24); an agent that chooses to pay asks for the offer (x402-pay: 1) at https://mcp.getissuer.ai/mcp or this door', pricing: 'https://allooloo.ai/x402/pricing.json' };
+const RECEIPTS = { door: 'https://mcp.rco-a2a.ai/mcp', keyring: 'https://allooloo.ai/.well-known/jwks.json', note: 'resolve_issuer and get_signal through the resolver leave an RCO receipt' };
 // ---- store
 let INDEX = null, FACTS = null, NODES = null, BOOTED = 0, BOOT_ERR = '';
 const CACHE = new Map(); const CACHE_MAX = 6000;
@@ -104,15 +148,84 @@ async function resolveKeys(idRaw) {
   { const k = scope(lookup('name', nk)); if (k.length) return { keys: k, kind: 'name', matched: id }; }
   return { keys: [], kind: 'ticker', exchange: exs ? exs.join('/') : null, ticker: t };
 }
+async function replay(key, asOf) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(asOf)) return { error: 'bad_as_of', as_of: asOf, note: 'YYYY-MM-DD' };
+  const y = asOf.slice(0, 4); const bf = await cached('backfill/facts.json');
+  const sealed = bf && bf.years && bf.years[y];
+  if (!sealed) return { status: 'not sealed', cmr: key, as_of: asOf, year: Number(y), ledger: bf ? { years_sealed: Object.keys(bf.years || {}).sort(), history_from: bf.history_from, year_in_progress: bf.year_in_progress } : null, note: 'no sealed market-year holds this date; the live record is never returned in its place' };
+  const man = await cached(`backfill/replay/${y}/_manifest.json`);   // the manifest the per-issuer split was built from (a re-seal lands beside the first)
+  if (!man) return { status: 'not sealed', cmr: key, as_of: asOf, year: Number(y), note: 'the year is sealed in the store but its Replay split is not built yet; the live record is never returned in its place' };
+  const [, ex, t] = key.split('/'); const mine = (await cached(`backfill/replay/${y}/${ex}/${slug(t)}.json`)) || { rows: [] };
+  const rows = (mine.rows || []).filter(r => (r.date || '') <= asOf);
+  const r = await record(key);
+  const ident = {}; for (const [f, v] of Object.entries((r && r.identity) || {})) { const at = v && (v.read_at || v.as_of); ident[f] = at && String(at).slice(0, 10) <= asOf ? v : { state: 'not held as of this date', first_read: at || null }; }
+  return { cmr: key, as_of: asOf, year: Number(y), sealed: true, manifest: man ? { hash_tree_root: man.hash_tree_root, rows: man.rows, run: man.run, rows_file: man.rows_file, signature: man.signature } : null,
+    identity_as_of: ident, events_as_of: rows, events_in_year_to_date: rows.length, note: 'the disclosure lines are the sealed rows of the market-year, each signed; an identity field read after this date is shown as not held, never back-filled' };
+}
+async function shelfList(prefix) { const out = []; for await (const b of container.listBlobsFlat({ prefix })) { const m = b.name.match(/-([a-z]{2})-(\d{4})\.json$/); if (m) out.push({ market: m[1], year: Number(m[2]), published: b.properties.lastModified }); } return out; }
+const normA = v => String(v).toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').replace(/ llp$| lp$/, '').trim();
+async function shelfSign(o) {
+  const j = process.env.CMR_SIGNING_JWK ? JSON.parse(process.env.CMR_SIGNING_JWK.replace(/^\uFEFF/, '').trim()) : null; if (!j) return { ...o, signature: null, note_signature: 'signing key not configured on this door' };
+  const { createPrivateKey, sign } = await import('node:crypto');
+  const sortDeep = v => Array.isArray(v) ? v.map(sortDeep) : (v && typeof v === 'object') ? Object.fromEntries(Object.keys(v).sort().map(k => [k, sortDeep(v[k])])) : v;
+  const b64u = b => Buffer.from(b).toString('base64url'); const ph = b64u(JSON.stringify({ alg: 'EdDSA', kid: 'allooloo-cmr-2026-10' }));
+  const key = createPrivateKey({ key: { kty: 'OKP', crv: 'Ed25519', x: j.x, d: j.d }, format: 'jwk' });
+  const sig = sign(null, Buffer.from(ph + '.' + b64u(JSON.stringify(sortDeep(o)))), key);
+  return { ...o, signature: { alg: 'EdDSA', kid: 'allooloo-cmr-2026-10', protected: ph, signature: b64u(sig), jwks: 'https://allooloo.ai/.well-known/jwks.json', over: "base64url(protected) + '.' + base64url(canonical JSON without signature: keys sorted, compact)" } };
+}
+async function shelfTool(name, args) {
+  const mk = String(args.market || '').toLowerCase(), yr = parseInt(args.year, 10);
+  if (name === 'list_benches') return { door: 'data-bench.ai', benches: await shelfList('bench/') };
+  if (name === 'list_reviews') return { door: 'data-review.ai', reviews: await shelfList('review/') };
+  if (name === 'get_bench') { const b = await cached(`bench/bench-${mk}-${yr}.json`); return b || { error: 'not_published', market: mk, year: yr, note: 'a bench is published only when the market\'s ledger entry is complete and the year\'s manifest verifies' }; }
+  if (name === 'get_review') { const r = await cached(`review/review-${mk}-${yr}.json`); return r || { error: 'not_published', market: mk, year: yr, note: 'a review is published only when the market\'s ledger entry is complete and the year\'s manifest verifies' }; }
+  if (name === 'score_bench') {
+    const priv = new BlobServiceClient(`https://${process.env.STORAGE_ACCOUNT}.blob.core.windows.net`, cred).getContainerClient('shelf-private');
+    let key; try { key = JSON.parse((await priv.getBlobClient(`bench/answers-${mk}-${yr}.json`).downloadToBuffer()).toString('utf8')); } catch (e) { return { error: 'not_published', market: mk, year: yr }; }
+    const want = new Map(key.answers.map(a => [a.id, a])); const per = [];
+    for (const g of (args.answers || [])) {
+      const a = want.get(g.id); if (!a) { per.push({ id: g.id, pass: false, why: 'unknown question' }); continue; }
+      const exp = a.answer, got = g.answer;
+      const ok = typeof exp === 'number' ? String(got).trim() === String(exp) : (/^\d{4}-\d{2}-\d{2}$/.test(String(exp)) ? String(got).trim().slice(0, 10) === exp : normA(got) === normA(exp));
+      per.push({ id: a.id, pass: !!ok });
+    }
+    const passed = per.filter(x => x.pass).length, n = want.size;
+    return shelfSign({ scorecard: `bench-${mk}-${yr}`, agent: args.agent || null, manifest_root: key.manifest_root, questions: n, answered: (args.answers || []).length, passed, score: n ? Math.round(1000 * passed / n) / 10 : null, per_question: per, scored_utc: new Date().toISOString(), note: 'expected answers are held at this door and never returned' });
+  }
+  return { error: 'unknown_tool', name };
+}
 async function callTool(name, args) {
   args = args || {};
+  if (SHELF_TOOLS[DOOR_MODE]) return shelfTool(name, args);
   if (name === 'list_nodes') return { door: `${NODE} node door (${REGION})`, live_nodes: liveNodes(), nodes: NODES };
+  // SHELF-01 (0.17.0): list_events reads the node's lifecycle index (door/events-by-type.json, written nightly beside the index); no identifier needed
+  if (name === 'list_events') {
+    const ix = await cached('door/events-by-type.json');
+    if (!ix) return { error: 'not_built', note: `the lifecycle index is not on ${NODE} yet` };
+    let keys = null;
+    if (args.identifier) { const r0 = await resolveKeys(args.identifier); if (!r0.keys.length) return { error: 'not_found', identifier: args.identifier }; keys = new Set(r0.keys); }
+    const want = args.type ? [args.type] : Object.keys(ix.types || {});
+    if (args.type && !(ix.types || {})[args.type]) return { error: 'unknown_type', type: args.type, types: Object.keys(ix.types || {}), gaps: ix.gaps };
+    let rows = []; for (const t of want) for (const e of (ix.types[t] || [])) if ((!args.since || (e.date || '') >= args.since) && (!keys || keys.has(e.cmr))) rows.push({ type: t, ...e });
+    rows.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const limit = Math.min(Math.max(parseInt(args.limit || 100, 10), 1), 500); const cursor = Math.max(parseInt(args.cursor || 0, 10), 0);
+    return { node: NODE, register: ix.register, type_map: ix.type_map, gaps: ix.gaps, built_utc: ix.built_utc, total: rows.length, cursor, limit, next_cursor: cursor + limit < rows.length ? cursor + limit : null, events: rows.slice(cursor, cursor + limit) };
+  }
   const res = await resolveKeys(args.identifier);
   if (!res.keys.length) return { error: 'not_found', identifier: args.identifier, kind: res.kind, note: `no record on ${NODE} for this identifier` };
   if (name === 'resolve_issuer') { const recs = await Promise.all(res.keys.map(record)); return { matches: recs.filter(Boolean).map(summary), matched_by: res.kind, ambiguous: res.keys.length > 1, note: res.keys.length > 1 ? 'identifier matches more than one listing; pick by exchange prefix or the CMR key' : (res.kind === 'alias' ? 'matched on a sourced alias' : undefined) }; }
   if (res.keys.length > 1) return { error: 'ambiguous', matches: res.keys, note: 'more than one listing matches; call again with an exchange prefix or the CMR key' };
   const key = res.keys[0];
+  if (name === 'get_record' && args.as_of) return replay(key, String(args.as_of));
   if (name === 'get_record') { const r = await record(key); if (!r) return { error: 'not_found', key }; if (args.version && args.version !== r.version) return { error: 'version_unavailable', requested: args.version, current: r.version, note: 'prior versions begin when the second signed-off sweep lands' }; return r; }
+  if (name === 'get_timeline') {
+    const r = await record(key); const evs = (await eventsOf(key)).slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    const bfx = await cached('backfill/facts.json'); return { cmr: key, record_started: (bfx && bfx.live_record_began) || null, total: evs.length, record_event_count: r ? r.event_count : null, events: evs, note: 'every event line on the record, oldest first, no window cap' };
+  }
+  if (name === 'get_score') {
+    const [, ex, t] = key.split('/'); const sc = await cached(`door/score/${ex}/${slug(t)}.json`);
+    return sc || { error: 'not_scored', cmr: key, note: `no score for this issuer on ${NODE} yet: a market is scored only when its ledger entry is complete and its manifests verify` };
+  }
   if (name === 'list_aliases') { const r = await record(key); if (!r) return { error: 'not_found', key }; return { cmr: r.cmr, name: r.identity.name.value, aliases: r.aliases, note: r.aliases.length ? undefined : 'no sourced alias on record' }; }
   if (name === 'list_events_since') {
     let evs = await eventsOf(key); if (args.since) evs = evs.filter(e => e.date >= args.since);
@@ -129,36 +242,49 @@ async function handleRpc(msg) {
   if (method === 'initialize') return rpcResult(id, { protocolVersion: (params && params.protocolVersion) || PROTOCOL, capabilities: { tools: { listChanged: false } }, serverInfo: { name: NODE, version: SERVER_VERSION }, instructions: `Capital Markets Knowledge Graph — ${COPY.country} node door, served from ${REGION}. Read-only, public-record only, no auth. Identify issuers by ticker, ISIN or LEI. Every field carries source_url, read_by and state; null values carry the reason. No prices or market data.` });
   if (method.startsWith('notifications/')) return null;
   if (method === 'ping') return rpcResult(id, {});
-  if (method === 'tools/list') return rpcResult(id, { tools: TOOLS });
-  if (method === 'tools/call') { const name = params && params.name; if (!TOOLS.find(t => t.name === name)) return rpcError(id, -32602, `Unknown tool: ${name}`); const out = await callTool(name, (params && params.arguments) || {}); return rpcResult(id, { content: [{ type: 'text', text: JSON.stringify(out) }], structuredContent: out, isError: !!(out && out.error && out.error !== 'ambiguous') }); }
+  if (method === 'tools/list') return rpcResult(id, { tools: SHELF_TOOLS[DOOR_MODE] || TOOLS });
+  if (method === 'tools/call') { const name = params && params.name; if (!(SHELF_TOOLS[DOOR_MODE] || TOOLS).find(t => t.name === name)) return rpcError(id, -32602, `Unknown tool: ${name}`); const out = await callTool(name, (params && params.arguments) || {}); return rpcResult(id, { content: [{ type: 'text', text: JSON.stringify(out) }], structuredContent: out, isError: !!(out && out.error && out.error !== 'ambiguous') }); }
   if (method === 'resources/list') return rpcResult(id, { resources: [] });
   if (method === 'prompts/list') return rpcResult(id, { prompts: [] });
   return rpcError(id, -32601, `Method not found: ${method}`);
 }
 // ---- Agent Card (A2A)
+// LIST-02 (2026-10-26): the card states the roster as read from the apex (index only, no record body): node count, live count, where the roster is, and this
+// node's example from its roster entry. Read at most every ten minutes; a roster that does not answer is said so, never typed.
+const ROSTER_URL = 'https://mcp.getissuer.ai/nodes.json'; let ROSTER = null, ROSTER_AT = 0;
+async function rosterBlock() {
+  if (!ROSTER || Date.now() - ROSTER_AT > 600000) { try { const r = await fetch(ROSTER_URL, { signal: AbortSignal.timeout(5000), headers: { 'user-agent': `cmkg-door ${NODE}` } }); if (r.ok) { ROSTER = await r.json(); ROSTER_AT = Date.now(); } } catch (e) { } }
+  if (!Array.isArray(ROSTER)) return { source: ROSTER_URL, state: 'roster did not answer at render' };
+  const me = ROSTER.find(n => n.node === NODE) || {};
+  return { nodes: ROSTER.length, live: ROSTER.filter(n => n.live).length, source: ROSTER_URL, also: 'list_nodes on this door and on https://mcp.getissuer.ai/mcp', read_at: new Date(ROSTER_AT).toISOString(), example: me.example || null };
+}
 function agentCard() {
   const nf = nodeFacts() || {};
   return { name: `${COPY.country} node — Capital Markets Knowledge Graph`, description: `Read-only door over the ${COPY.country} node of the Capital Markets Knowledge Graph: ${COPY.scope} ${nf.records ? nf.records + ' records, ' + nf.events + ' dated, URL-carrying disclosure events over 12 months.' : ''} Public-record only; no prices, quotes or licensed market data. Records and events are served from ${REGION} and never leave the jurisdiction.`,
     url: `https://${PUBLIC_HOST}/mcp`, provider: { organization: OPERATOR, url: 'https://allooloo.io' }, version: SERVER_VERSION, documentationUrl: `https://${PUBLIC_HOST}/llms.txt`, protocolVersion: '0.3.0',
     capabilities: { streaming: false, pushNotifications: false, stateTransitionHistory: false }, defaultInputModes: ['application/json', 'text/plain'], defaultOutputModes: ['application/json'],
     skills: TOOLS.map(t => ({ id: t.name, name: t.title, description: t.description, tags: ['capital-markets', 'public-record', COPY.jurisdiction.toLowerCase(), 'mcp'], examples: t.name === 'list_nodes' ? ['list_nodes'] : [`${t.name} ${COPY.ids.split(',')[0]}`] })),
-    'x-cmkg': { node: NODE, jurisdiction: COPY.jurisdiction, country: COPY.country, region: REGION, duty: COPY.duty, exchanges: COPY.exchanges, transport: 'MCP Streamable HTTP (JSON-RPC 2.0, stateless, no auth)', mcp_url: `https://${PUBLIC_HOST}/mcp`, agent_card_url: `https://${AGENT_HOST}/.well-known/agent-card.json`, registry: 'io.github.allooloo/cm-kg', contact: CONTACT, as_of: nf.as_of || null, records: nf.records || null, events: nf.events || null, source: 'public-record', store: `Azure Storage, ${REGION} (regional pond; blob per record and per issuer event list)` } };
+    'x-cmkg': { node: NODE, jurisdiction: COPY.jurisdiction, country: COPY.country, region: REGION, duty: COPY.duty, exchanges: COPY.exchanges, transport: 'MCP Streamable HTTP (JSON-RPC 2.0, stateless, no auth)', mcp_url: `https://${PUBLIC_HOST}/mcp`, agent_card_url: AGENT_CARD, registry: 'io.github.allooloo/cm-kg', contact: CONTACT, as_of: nf.as_of || null, records: nf.records || null, events: nf.events || null, source: 'public-record', store: `Azure Storage, ${REGION} (regional pond; blob per record and per issuer event list)` } };
 }
 function human(host) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Capital Markets Knowledge Graph — ${COPY.country} node door</title><link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="theme-color" content="#14213D"><style>body{font-family:system-ui,sans-serif;max-width:72ch;margin:2rem auto;padding:0 1rem;color:#14213D;line-height:1.5}code{background:#f3f4f6;padding:.1em .3em}h1{font-size:1.4rem}</style></head><body><h1>Capital Markets Knowledge Graph — ${COPY.country} node door</h1>
 <p>A read-only MCP door over the ${COPY.country} node. Scope: ${COPY.scope} Served from ${REGION}: records and events live in their own jurisdiction. Public-record only: no prices, no quotes, no licensed market data. No authentication.</p>
-<p>MCP endpoint (Streamable HTTP): <code>https://${host}/mcp</code><br>Agent Card: <a href="https://${AGENT_HOST}/.well-known/agent-card.json">https://${AGENT_HOST}/.well-known/agent-card.json</a><br>Facts: <a href="/facts.json">/facts.json</a> · <a href="/llms.txt">/llms.txt</a> · record: <code>/record/${COPY.example}</code> · events: <code>/events/${COPY.example}?since=2026-06-01</code></p>
+<p>MCP endpoint (Streamable HTTP): <code>https://${host}/mcp</code><br>Agent Card: <a href="${AGENT_CARD}">${AGENT_CARD}</a><br>Facts: <a href="/facts.json">/facts.json</a> · <a href="/llms.txt">/llms.txt</a> · record: <code>/record/${COPY.example}</code> · events: <code>/events/${COPY.example}?since=2026-06-01</code></p>
 <p>Tools: resolve_issuer · get_record · list_events_since · list_aliases · list_nodes. Identifiers: ${COPY.ids}, an ISIN or an LEI. Every field carries its source, its reader and a state (sourced · filled · confirmed · conflict). Records are versioned and never deleted.</p>
-<p>Duty served: ${COPY.duty}. Operator: Allooloo Technologies Corp., Vancouver, Canada.</p></body></html>`;
+<p>Duty served: ${COPY.duty}. Operator: Allooloo Technologies Corp., Richmond, BC, Canada.</p></body></html>`;
 }
 function llms(host) {
   const nf = nodeFacts();
   return `# Capital Markets Knowledge Graph — ${COPY.country} node door (${REGION})
+
+Doors by what they resolve:
+${ROUTING.map(r => `- ${r.what} → ${r.door}`).join('\n')}
+
 Operator: Allooloo Technologies Corp. Read-only MCP server, Streamable HTTP at https://${host}/mcp, JSON-RPC 2.0, no authentication. Public-record only: no prices, quotes or licensed market data. Data plane regional: this node's records and events are served from ${REGION} and never from another store.
 Scope: ${COPY.scope} ${nf ? nf.records + ' records, ' + nf.events + ' dated, URL-carrying disclosure events over 12 months.' : ''}
 Tools: resolve_issuer (ticker, ISIN or LEI -> record summary), get_record (full Capital Markets Record with per-field source_url, read_by and state), list_events_since (paged events since a date), list_aliases (sourced trade and former names), list_nodes (the twelve market nodes, which are live, record counts).
 Identifiers: ${COPY.ids}, ISIN, LEI. An ambiguous ticker returns every match; the door never guesses.
-A2A Agent Card: https://${AGENT_HOST}/.well-known/agent-card.json (also /.well-known/agent-card.json on this host).
+A2A Agent Card: ${AGENT_CARD} (also /.well-known/agent-card.json on this host).
 GET paths: /, /facts.json, /llms.txt, /nodes.json, /record/<EXCHANGE>/<CODE>, /events/<EXCHANGE>/<CODE>?since=YYYY-MM-DD&cursor=0&limit=50. Exchanges: ${COPY.exchanges}.
 `;
 }
@@ -170,14 +296,14 @@ const ROBOTS = host => `User-agent: *\nAllow: /\n\nUser-agent: GPTBot\nAllow: /\
 const SECURITY = host => `Contact: mailto:developers@allooloo.ai\nContact: https://allooloo.io\nExpires: 2027-09-12T00:00:00.000Z\nPreferred-Languages: en\nCanonical: https://${host}/.well-known/security.txt\nPolicy: https://allooloo.io\n`;
 const KIT_PATHS = ['/', '/llms.txt', '/facts.json', '/nodes.json', '/robots.txt', '/sitemap.xml', '/mcp.json', '/openapi.json', '/.well-known/agent-card.json', '/.well-known/security.txt'];
 function sitemap(host) { return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${KIT_PATHS.filter(x => x !== '/robots.txt').map(x => `<url><loc>https://${host}${x === '/' ? '/' : x}</loc></url>`).join('')}</urlset>\n`; }
-function mcpJson(host, nf) { return { name: `cm-kg ${NODE}`, description: `Capital Markets Knowledge Graph — ${NODE} regional door (${REGION}); read-only, public-record only; answers scoped to this node`, version: (nf && nf.version) ? String(nf.version) : '1', transport: 'streamable-http', url: `https://${host}/mcp`, authentication: 'none', tools: TOOLS.map(t => ({ name: t.name, description: t.description })), agent_card: `https://${AGENT_HOST}/.well-known/agent-card.json`, openapi: `https://${host}/openapi.json`, llms: `https://${host}/llms.txt`, facts: `https://${host}/facts.json`, operator: 'Allooloo Technologies Corp.', contact: 'developers@allooloo.ai', registry: 'io.github.allooloo/cm-kg', records: nf ? nf.records : null, events: nf ? nf.events : null, as_of: nf ? nf.as_of : null }; }
+function mcpJson(host, nf) { return { name: `cm-kg ${NODE}`, description: `Capital Markets Knowledge Graph — ${NODE} regional door (${REGION}); read-only, public-record only; answers scoped to this node`, version: (nf && nf.version) ? String(nf.version) : '1', transport: 'streamable-http', url: `https://${host}/mcp`, authentication: 'none', tools: TOOLS.map(t => ({ name: t.name, description: t.description })), agent_card: AGENT_CARD, openapi: `https://${host}/openapi.json`, llms: `https://${host}/llms.txt`, facts: `https://${host}/facts.json`, operator: 'Allooloo Technologies Corp.', contact: 'developers@allooloo.ai', registry: 'io.github.allooloo/cm-kg', records: nf ? nf.records : null, events: nf ? nf.events : null, as_of: nf ? nf.as_of : null }; }
 function openapi(host, nf) {
   const params = [{ name: 'exchange', in: 'path', required: true, schema: { type: 'string' } }, { name: 'code', in: 'path', required: true, schema: { type: 'string' } }];
   return { openapi: '3.1.0', info: { title: `cm-kg ${NODE} door`, version: (nf && nf.version) ? String(nf.version) : '1', description: `Regional door of the Capital Markets Knowledge Graph for ${NODE}: MCP over Streamable HTTP at /mcp plus read-only HTTP paths. Public-record only; every field carries its source URL, reader and state.`, contact: { name: 'Allooloo Technologies Corp.', email: 'developers@allooloo.ai', url: 'https://allooloo.io' } }, servers: [{ url: `https://${host}` }],
     paths: { '/mcp': { post: { summary: 'MCP JSON-RPC (tools/list, tools/call)', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object' } } } }, responses: { 200: { description: 'JSON-RPC response' } } } },
       '/record/{exchange}/{code}': { get: { summary: 'Capital Markets Record for one issuer', parameters: params, responses: { 200: { description: 'record' }, 404: { description: 'not on this node' } } } },
       '/events/{exchange}/{code}': { get: { summary: 'Dated disclosure events for one issuer', parameters: [...params, { name: 'since', in: 'query', schema: { type: 'string', format: 'date' } }, { name: 'cursor', in: 'query', schema: { type: 'integer' } }, { name: 'limit', in: 'query', schema: { type: 'integer' } }], responses: { 200: { description: 'events page' } } } },
-      '/facts.json': { get: { summary: 'Node facts (live counts)', responses: { 200: { description: 'facts' } } } }, '/nodes.json': { get: { summary: 'The twelve nodes', responses: { 200: { description: 'nodes' } } } }, '/llms.txt': { get: { summary: 'Machine instructions', responses: { 200: { description: 'text' } } } }, '/.well-known/agent-card.json': { get: { summary: 'A2A Agent Card', responses: { 200: { description: 'card' } } } }, '/healthz': { get: { summary: 'Health', responses: { 200: { description: 'ok' }, 503: { description: 'store not loaded' } } } } } };
+      '/facts.json': { get: { summary: 'Node facts (live counts)', responses: { 200: { description: 'facts' } } } }, '/nodes.json': { get: { summary: 'The roster of record', responses: { 200: { description: 'nodes' } } } }, '/llms.txt': { get: { summary: 'Machine instructions', responses: { 200: { description: 'text' } } } }, '/.well-known/agent-card.json': { get: { summary: 'A2A Agent Card', responses: { 200: { description: 'card' } } } }, '/healthz': { get: { summary: 'Health', responses: { 200: { description: 'ok' }, 503: { description: 'store not loaded' } } } } } };
 }
 const STATIC = path.join(process.cwd(), 'static'); const MIME = { '.ico': 'image/x-icon', '.svg': 'image/svg+xml', '.png': 'image/png', '.webmanifest': 'application/manifest+json' };
 const server = http.createServer(async (req, res) => {
@@ -199,15 +325,15 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.method !== 'GET' && req.method !== 'HEAD') return send(res, 405, 'Method Not Allowed', 'text/plain', asOf, ver);
     const isAgentHost = host.startsWith('agent.');
-    if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json' || (isAgentHost && p === '/')) return sendJson(res, agentCard(), 200, asOf, ver, 'public, max-age=300');
+    if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json' || (isAgentHost && p === '/')) { const c = agentCard(); c['x-cmkg'].roster = await rosterBlock(); c.supportedInterfaces = [{ url: 'https://mcp.getissuer.ai/mcp', transport: 'JSONRPC', description: 'getissuer — the listed-issuer resolver (start here)' }, ...(c.supportedInterfaces || [])]; c.resolver = 'https://mcp.getissuer.ai/mcp'; c.routing = ROUTING; c.payment = PAYMENT; return sendJson(res, c, 200, asOf, ver, 'public, max-age=300'); }
     if (p === '/') return send(res, 200, human(host), 'text/html; charset=utf-8', asOf, ver, 'public, max-age=300');
     if (p === '/llms.txt') return send(res, 200, llms(host), 'text/plain; charset=utf-8', asOf, ver, 'public, max-age=3600');
-    if (p === '/facts.json') return sendJson(res, { door: host, scope: NODE, region: REGION, ...(FACTS || {}), node: NODE, ...(nf || {}), live_nodes: liveNodes(), mcp_url: `https://${PUBLIC_HOST}/mcp`, agent_card_url: `https://${AGENT_HOST}/.well-known/agent-card.json` }, 200, asOf, ver, 'public, max-age=300');
+    if (p === '/facts.json') return sendJson(res, { door: host, scope: NODE, region: REGION, ...(FACTS || {}), node: NODE, ...(nf || {}), live_nodes: liveNodes(), mcp_url: `https://${PUBLIC_HOST}/mcp`, agent_card_url: AGENT_CARD }, 200, asOf, ver, 'public, max-age=300');
     if (p === '/nodes.json') return sendJson(res, NODES, 200, asOf, ver, 'public, max-age=3600');
     if (p === '/robots.txt') return send(res, 200, ROBOTS(host), 'text/plain; charset=utf-8', asOf, ver, 'public, max-age=86400');
     if (p === '/.well-known/security.txt') return send(res, 200, SECURITY(host), 'text/plain; charset=utf-8', asOf, ver, 'public, max-age=86400');
     if (p === '/sitemap.xml') return send(res, 200, sitemap(host), 'application/xml; charset=utf-8', asOf, ver, 'public, max-age=3600');
-    if (p === '/mcp.json') return sendJson(res, mcpJson(host, nf), 200, asOf, ver, 'public, max-age=300');
+    if (p === '/mcp.json' || p === '/.well-known/mcp.json') return sendJson(res, { ...mcpJson(host, nf), routing: ROUTING, payment: PAYMENT, receipts: RECEIPTS, resolver: 'https://mcp.getissuer.ai/mcp' }, 200, asOf, ver, 'public, max-age=300');
     if (p === '/openapi.json') return sendJson(res, openapi(host, nf), 200, asOf, ver, 'public, max-age=3600');
     const ext = path.extname(p); if (MIME[ext] && !p.includes('..')) { const f = path.join(STATIC, path.basename(p)); if (fs.existsSync(f)) return send(res, 200, fs.readFileSync(f), MIME[ext], asOf, ver, 'public, max-age=86400'); }
     let m = p.match(/^\/(record|events)\/([a-z]{2}-cm-kg)\/([A-Z\-]+)\/(.+)$/i) || p.match(/^\/(record|events)\/([A-Z\-]+)\/(.+)$/i);

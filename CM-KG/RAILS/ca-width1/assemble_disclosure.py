@@ -24,12 +24,17 @@ def load(fn):
             except Exception: pass
     return out
 events = []; gaps = []; src_stats = Counter(); worker_notes = defaultdict(list)
+# SHELF-01 fix (2026-10-27): releases whose own page names the issuer as the one issuing them (subject_check.py, one-time over the history; wire_search.py nightly)
+PAGE_OK = {d['url'] for d in load('raw/subject_check.jsonl') if d.get('issued_by_issuer')}
 def take(rows, worker):
     for d in rows:
         k = d.get('key')
         if d.get('error'): gaps.append((k, worker, 'error: ' + str(d['error'])[:160])); continue
         if d.get('gap') and d['gap'] != 'skipped in this pass': gaps.append((k, worker, d['gap']))
-        for e in d.get('events', []): events.append(e)
+        for e in d.get('events', []):
+            # SHELF-01 fix (2026-10-27): wire-search hits from every drop pass the subject rule again (older drops carry hits taken before the rule)
+            if worker == 'wire_search' and byk.get(k) and 'issuer read on the release page' not in str(e.get('read_by') or '') and e.get('url') not in PAGE_OK and not subject_in(e.get('title') or '', byk[k]['name'], (byk[k].get('ticker'), byk[k].get('root'))): worker_notes[k].append('wire hit naming the issuer only as a mention (not taken): ' + (e.get('title') or '')[:80]); continue
+            events.append(e)
         if d.get('ambiguous'): worker_notes[k].append(f"{d['ambiguous']} wire hits named another issuer (not taken)")
         if d.get('note'): worker_notes[k].append(d['note'])
 take(load('raw/wire_pages.jsonl'), 'wire_pages'); take(load('raw/wire_search.jsonl'), 'wire_search'); take(load('raw/release_dates.jsonl'), 'release_dates'); take(load('raw/tsxv_bulletins.jsonl'), 'tsxv_bulletins'); take(load('raw/newsfile_snippets.jsonl'), 'newsfile_snippets')
@@ -39,7 +44,7 @@ for d in load('raw/wire_search.jsonl'):
     if not r: continue
     for u in d.get('undated', []):
         dt = url_date(u['url'])
-        if dt and in_window(dt) and not re.search(r'/Resource/Download|attachmentng|/Tracker', u['url']):
+        if dt and in_window(dt) and not re.search(r'/Resource/Download|attachmentng|/Tracker', u['url']) and (u.get('issuer_on_page') or u['url'] in PAGE_OK or subject_in(u['title'], r['name'], (r.get('ticker'), r.get('root')))):   # SHELF-01 fix: the subject rule
             events.append(event(r, classify(u['title']), dt, u['title'], u['wire'], u['url'], 'Tavily search (wire domains) + URL date', wire=u['wire']))
 for e in load('raw/cse_bulletins.jsonl'): events.append(e)
 for e in load('raw/grok_live.jsonl'): events.append(e)   # 48-hour live layer (read by Grok (live)), present on daily runs only

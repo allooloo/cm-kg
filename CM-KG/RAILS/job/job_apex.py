@@ -8,7 +8,12 @@ No fallback, no retry: a node without a marker is written as "did not land". A m
 import os, sys, json, subprocess, datetime, re, io, traceback
 ROOT = os.environ.get('CMKG_ROOT', '/job/ALLOOLOO'); RAILS = f'{ROOT}/CM-KG/RAILS'; HERE = os.path.dirname(os.path.abspath(__file__))
 TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-41ee6d087b41'
-NODES = [('nl', 'westeurope'), ('ch', 'switzerlandnorth'), ('fr', 'francecentral'), ('de', 'germanywestcentral'), ('sg', 'southeastasia'), ('au', 'australiaeast'), ('uk', 'uksouth'), ('ca', 'canadacentral'), ('jp', 'japaneast'), ('kr', 'koreacentral'), ('us', 'eastus'), ('hk', 'eastasia')]   # hk: ORDER-035 (2026-10-22)
+NODES_TYPED_BEFORE_ENUM01 = [('nl', 'westeurope'), ('ch', 'switzerlandnorth'), ('fr', 'francecentral'), ('de', 'germanywestcentral'), ('sg', 'southeastasia'), ('au', 'australiaeast'), ('uk', 'uksouth'), ('ca', 'canadacentral'), ('jp', 'japaneast'), ('kr', 'koreacentral'), ('us', 'eastus'), ('hk', 'eastasia')]   # hk: ORDER-035 (2026-10-22)
+# NODE-EU (DAY ORDER 4, 2026-10-24): the European nodes join here when their door is live (RAILS\eu-node\live.json: {cc: region})
+import json as _j
+# ENUM-01 (DAY ORDER 6, 2026-10-25): the nodes are the roster of record (list_nodes / nodes.json); the typed list above is kept as the record of what it was
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); import roster   # ENUM-01 (DAY ORDER 6): the roster of record
+NODES = [(roster.cc_of(n), (n.get('region') or {}).get('store')) for n in roster.load()]
 DRY = os.environ.get('APEX_DRY', '0') == '1'   # dry run: build and report from the staging markers, deploy nothing, write under dry/<date>/, no ark
 CONT = os.environ.get('STORAGE_CONTAINER', 'pond'); APEX_SA = os.environ.get('APEX_STORAGE_ACCOUNT', 'allooloocmkgapex'); APEX_CONT = os.environ.get('APEX_CONTAINER', 'sweeps')
 T0 = datetime.datetime.now(datetime.timezone.utc); TODAY = T0.date()
@@ -63,6 +68,8 @@ def main():
         log(f"{cc}: {'landed' if cc in markers else ('FAILED' if cc in failed else ('skipped' if cc in skipped else 'did not land'))}")
     # apex index for every node that landed; nodes without a marker keep last week's door files (build_index reads the stores as they stand)
     sh(['/usr/local/bin/python3', 'build_index.py'], cwd=f'{ROOT}/CM-KG/DOOR/apex')
+    # SHELF-01 step 6 (2026-10-27): the shelf lights itself as each market seals — Replay, Score, Bench, Review per the ledger (holds in shelf/hold.json)
+    rc_shelf = sh(['/usr/local/bin/python3', '-X', 'utf8', 'auto.py'], cwd=f'{ROOT}/CM-KG/RAILS/shelf', check=False); log('shelf auto exit', rc_shelf if not isinstance(rc_shelf, tuple) else rc_shelf[0])
     apex_dep = 'Version ID: dry-run-not-deployed' if DRY else sh(['npx', '--yes', 'wrangler', 'deploy'], cwd=f'{ROOT}/CM-KG/DOOR/apex', check=False)[1]; apex_ver = (re.search(r'Version ID:\s*([0-9a-f-]+)', apex_dep) or re.search(r'Current Version ID:\s*([0-9a-f-]+)', apex_dep) or [None, 'see log'])[1]
     # NUMBERS LOG: the nodes' own lines (computed against what each door served before the upload), appended to the boot block; the asset mirrored
     boot = f'{ROOT}/START_ME_UP/NODE-SURFACES.md'; s = open(boot, encoding='utf-8').read(); m = re.search(r'(## 9 NUMBERS LOG[\s\S]*?```\n)([\s\S]*?)(```)', s)
@@ -88,7 +95,6 @@ def main():
         if not DRY: put(ac, 'swap/ark.json', json.dumps(arkj, ensure_ascii=False, indent=1))
         log('agent-swap logs pulled from the apex store; ark.json', 'updated' if not DRY else 'read (dry)')
     except Exception as e: log('agent-swap logs not refreshed (flag):', repr(e)[:200])
-    estate_dep = 'Version ID: dry-run-not-deployed' if DRY else sh(['npx', '--yes', 'wrangler', 'deploy'], cwd=f'{ROOT}/CM-KG/ESTATE', check=False)[1]; estate_ver = (re.search(r'Version ID:\s*([0-9a-f-]+)', estate_dep) or re.search(r'Current Version ID:\s*([0-9a-f-]+)', estate_dep) or [None, 'see log'])[1]
     # SPEND: the nodes' lines + the run-level Tavily reading (start = the last reading in SPEND.md, end = now)
     md = f'{ROOT}/CM-KG/SPEND/SPEND.md'; spend = []
     for cc, _ in NODES:
@@ -97,7 +103,8 @@ def main():
     try:
         import requests
         r = requests.get('https://api.tavily.com/usage', headers={'Authorization': 'Bearer ' + os.environ.get('TAVILY_API_KEY', '')}, timeout=30)
-        j = r.json().get('account', {}) if r.status_code == 200 else {}; tav = int(j['plan_usage']) if j.get('plan_usage') is not None else None
+        jj = r.json() if r.status_code == 200 else {}; j = jj.get('account', {}); tav = int(j['plan_usage']) if j.get('plan_usage') is not None else None
+        if jj: json.dump(jj, open('/tmp/tavily-usage.json', 'w', encoding='utf-8'))   # RADAR-02: the meter answer (spend.json no longer written, RADAR-01)
     except Exception: pass
     prev = re.findall(r'plan ([\d,]+) of', open(md, encoding='utf-8').read()) if os.path.exists(md) else []
     prev = int(prev[-1].replace(',', '')) if prev else None
@@ -106,6 +113,10 @@ def main():
     if os.path.exists(md):
         t = open(md, encoding='utf-8').read(); i = t.rstrip().rfind('```')
         t = t[:i] + '\n'.join(spend) + '\n' + t[i:]; open(md, 'w', encoding='utf-8').write(t)
+    # RADAR-02 (2026-10-23): RADAR §09 read nightly — filings.json rewritten from what answers, written before the estate deploy so tonight's deploy carries it.
+    # RADAR-01 (2026-10-26): spend is no longer written into the public estate (spend_json.py not run here; SPEND.md stays in cm-kg-ops)
+    sh(['/usr/local/bin/python3', 'filings_json.py'], cwd=RAILS, check=False)
+    estate_dep = 'Version ID: dry-run-not-deployed' if DRY else sh(['npx', '--yes', 'wrangler', 'deploy'], cwd=f'{ROOT}/CM-KG/ESTATE', check=False)[1]; estate_ver = (re.search(r'Version ID:\s*([0-9a-f-]+)', estate_dep) or re.search(r'Current Version ID:\s*([0-9a-f-]+)', estate_dep) or [None, 'see log'])[1]
     # surfaces snapshot to the pond (estate), uploaded to the shared store
     sh(['/usr/local/bin/python3', 'snapshot_surfaces.py'], cwd=RAILS, check=False)
     # sweepREVIEW — machine half from the job logs

@@ -131,7 +131,7 @@ function human(host, node) {
 <p>A read-only MCP door over the Capital Markets Knowledge Graph. ${c.scope} Public-record only: no prices, no quotes, no licensed market data. No authentication.</p>
 <p>MCP endpoint (Streamable HTTP): <code>https://${host}/mcp</code><br>Facts: <a href="/facts.json">/facts.json</a> · <a href="/llms.txt">/llms.txt</a> · record: <code>/record/${c.example}</code> · events: <code>/events/${c.example}?since=2026-06-01</code></p>
 <p>Tools: resolve_issuer · get_record · list_events_since · list_aliases · list_nodes. Identifiers: ${c.ids}, an ISIN or an LEI. Every field carries its source, its reader and a state (sourced · filled · confirmed · conflict). Records are versioned and never deleted; no signature is present until cm-record signing exists.</p>
-<p>Operator: Allooloo Technologies Corp., Vancouver, Canada.</p></body></html>`;
+<p>Operator: Allooloo Technologies Corp., Richmond, BC, Canada.</p></body></html>`;
 }
 function llms(host, node) {
   const c = NODE_COPY[node]; const nf = nodeFacts(node);

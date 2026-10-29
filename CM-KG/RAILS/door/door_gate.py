@@ -41,6 +41,15 @@ else:
 dr, de = new[0] - old[0], new[1] - old[1]
 if dr >= 0 and de >= 0:
     print(f'{node} gate: forward (records {old[0]} -> {new[0]}, events {old[1]} -> {new[1]}); publish'); sys.exit(0)
+# IW-01 (2026-10-26): a drop the machine half has explained is released once, for its own market date — the explanation sits in the store at
+# door-release/<market date>.json (node, reason, the held build's records/events, the classification file). Only the window roll releases, and only a
+# build no smaller than the one explained; anything else holds as before.
+if not after_job:
+    try: rel = json.load(open(get(f'door-release/{mdate}.json'), encoding='utf-8'))
+    except (Exception, SystemExit): rel = None   # no note (az exits on a missing blob): hold as before
+    if rel and rel.get('node') == node and rel.get('reason') == 'window roll' and new[0] >= int(rel.get('records_min', 10 ** 9)) and new[1] >= int(rel.get('events_min', 10 ** 9)):
+        print(f"{node} gate: RELEASED · market date {mdate} · records {old[0]} -> {new[0]} ({dr:+d}) · events {old[1]} -> {new[1]} ({de:+d}) · explained: {rel['reason']} ({rel.get('explained_by')}); publish")
+        sys.exit(0)
 # HOLD — the new index goes beside the old; the door keeps its last good data
 held = f'door-held/{mdate}'
 if after_job:

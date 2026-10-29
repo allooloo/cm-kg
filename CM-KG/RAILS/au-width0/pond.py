@@ -16,9 +16,11 @@ import re, os, json, datetime, shutil
 POND = r'C:\ALLOOLOO\CM-KG\POND'
 def _today(): return datetime.date.today().isoformat()
 def _new_dir(base):
-    d = os.path.join(base, _today()); n = 1
-    while os.path.exists(d):
-        n += 1; d = os.path.join(base, f'{_today()}-{n}')
+    # DOORS-05 (2026-10-26): number above the day's highest drop present, not the first free name — a job holds only the newest drop of the day,
+    # and a bare <date> written after <date>-2 sorts below it (the node job then sees no new drop)
+    t = _today(); os.makedirs(base, exist_ok=True)
+    ns = [int(x[len(t) + 1:] or 1) if x != t else 1 for x in os.listdir(base) if x == t or (x.startswith(t + '-') and x[len(t) + 1:].isdigit())]
+    d = os.path.join(base, t if not ns else f'{t}-{max(ns) + 1}')
     os.makedirs(d); return d
 def drops(node, source):
     base = os.path.join(POND, node, source)

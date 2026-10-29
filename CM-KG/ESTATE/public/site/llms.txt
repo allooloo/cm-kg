@@ -1,7 +1,7 @@
 # Allooloo Technologies Corp.
 
 > Agentic Capital Markets Global Desk. 2027, today.
-> Vancouver, Canada. https://allooloo.io
+> Richmond, BC, Canada. https://allooloo.io
 
 ## Who Allooloo is
 
@@ -74,6 +74,6 @@ Canada Width 0 sweep, 10 September 2026: 4,820 listed securities across TSX, TSX
 ## Contact
 
 https://allooloo.io/#contact. Tell us what you trade. We reply within one business day.
-Allooloo Technologies Corp., Vancouver, Canada.
+Allooloo Technologies Corp., Richmond, BC, Canada.
 
 Keywords: capital markets knowledge graph, MCP server, AI agents finance, agentic capital markets, issuer record, KYP, product governance, continuous disclosure, ISIN, LEI, SEDAR+, listed companies, investment dealer compliance, Model Context Protocol.

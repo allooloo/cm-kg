@@ -31,15 +31,28 @@ def friday_on_or_before(d): return d - datetime.timedelta(days=(d.weekday() - 4)
 # lands on Friday's marker); MDATE = the market date = the last trading date before the night (weekends roll back to Friday; exchange holidays are not
 # carried — the run that night reads the window and the as_of stays the date the rule gives). Supersedes the Friday-on-or-before rule (ORDER-027 A1).
 STD_OFFSET = {'ca': -5, 'us': -5, 'uk': 0, 'de': 1, 'fr': 1, 'nl': 1, 'ch': 1, 'au': 10, 'sg': 8, 'hk': 8, 'jp': 9, 'kr': 9}
+STD_OFFSET.update({'it': 1, 'es': 1, 'se': 1, 'dk': 1, 'no': 1, 'fi': 2, 'be': 1, 'ie': 0, 'at': 1, 'pl': 1, 'pt': 0, 'lu': 1, 'gr': 2, 'cz': 1})   # NODE-EU (2026-10-24)
+STD_OFFSET.update({'ky': -5, 'bm': -4, 'je': 0, 'in': 5.5, 'tw': 8, 'sa': 3, 'ae': 4, 'br': -3, 'mx': -6})   # NODE-ROW (DAY ORDER 5, 2026-10-24)
 def last_trading(d):
     while d.weekday() >= 5: d -= datetime.timedelta(days=1)
     return d
 NIGHT = os.environ.get('NIGHT') or (T0 + datetime.timedelta(hours=STD_OFFSET.get(CC, 0))).date().isoformat(); datetime.date.fromisoformat(NIGHT)
+# DAY ORDER 5 (CEO 2026-10-24): a job armed ahead of its first night (NOT_BEFORE=<UTC date>) exits clean, writing no marker, on a fire before that date
+# ENUM-01 (DAY ORDER 6, 2026-10-25): the market clock is policy keyed by market — a roster node with no STD_OFFSET line refuses to run (named), never defaults
+# to UTC; and a NOT_BEFORE guard on a node the roster already shows live reads as cleared (the guard existed only to wait for a node's first night)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); import roster
+if CC != 'apex' and CC not in STD_OFFSET: raise SystemExit(f'ROSTER POLICY GAP · market clock (STD_OFFSET) · no line for: {CC} — rail refused')
+if os.environ.get('NOT_BEFORE') and T0.date().isoformat() < os.environ['NOT_BEFORE']:
+    try: _live = CC in roster.codes()
+    except Exception: _live = False
+    if _live: print(f"NOT_BEFORE {os.environ['NOT_BEFORE']} reads as cleared: {CC}-cm-kg is live on the roster of record", flush=True); os.environ.pop('NOT_BEFORE')
+if os.environ.get('NOT_BEFORE') and T0.date().isoformat() < os.environ['NOT_BEFORE']: print(f"not before {os.environ['NOT_BEFORE']}: fire of {T0.isoformat()} exits clean, no marker", flush=True); sys.exit(0)
 MDATE = os.environ.get('MARKET_DATE') or last_trading(datetime.date.fromisoformat(NIGHT) - datetime.timedelta(days=1)).isoformat(); datetime.date.fromisoformat(MDATE)
 # depth gated by day inside the job: the Width 1 read runs every night over a three-day window (a 48-hour window plus the weekend margin); the Fill +
 # Confirm passes (Canada's rail carries them) run on the node's rotation night only — CC's rotation of record, logged in done.json
 os.environ.setdefault('WINDOW_DAYS', os.environ.get('NIGHTLY_WINDOW_DAYS', '3'))
 FILL_ROTATION = {'ca': 4, 'us': 4, 'uk': 4, 'de': 4, 'fr': 4, 'nl': 4, 'ch': 4, 'au': 4, 'sg': 4, 'hk': 4, 'jp': 4, 'kr': 4}   # market-date weekday of the Fill + Confirm night (4 = Friday: the depth the weekly sweep ran)
+FILL_ROTATION.update({c: 4 for c in STD_OFFSET if c not in FILL_ROTATION})   # ENUM-01: every market with a clock line carries a rotation line (Friday, as the twelve), written rather than a silent .get default
 FILL_CONFIRM = os.environ.get('FILL_CONFIRM') or ('1' if datetime.date.fromisoformat(MDATE).weekday() == FILL_ROTATION.get(CC, 4) and datetime.date.fromisoformat(NIGHT).weekday() == (FILL_ROTATION.get(CC, 4) + 1) % 7 else '0')
 os.environ['FILL_CONFIRM'] = FILL_CONFIRM
 os.environ['SWEEP_MARKET_DATE'] = MDATE; os.environ['STORAGE_CONTAINER'] = CONT; os.environ['PYTHONIOENCODING'] = 'utf-8'
@@ -163,6 +176,17 @@ def main():
     if acct.get('tenantId') != TENANT or acct.get('id') != SUB: raise SystemExit('STOP: not the tenant/subscription of record')
     _key = az('storage', 'account', 'keys', 'list', '-n', SA, '-g', RG, '--query', '[0].value', '-o', 'tsv', raw=True)
     os.environ['STORAGE_ACCOUNT'] = SA; os.environ['STORAGE_KEY'] = _key
+    # BACKFILL-01 (DAY ORDER 7, 2026-10-25): the node's backfill job (cmkg-<cc>-backfill) is this image with JOB_MODE=backfill — the pond inputs synced as the
+    # live night syncs them, then RAILS\backfill\backfill.py run <cc> (B-3 order gate, newest year first, resumable, paced to the archive). It never touches
+    # door/, the live markers, Issuerwire or the digest counts; its marker is sweeps-backfill/<night>/<cc>/done.json (or failed.json) in the node's store.
+    if os.environ.get('JOB_MODE') == 'backfill':
+        if CC != 'us': sync_pond()
+        t1 = datetime.datetime.now(datetime.timezone.utc)
+        p = subprocess.run(['/usr/local/bin/python3', '-X', 'utf8', 'backfill.py', 'run', CC], cwd=f'{RAILS}/backfill', capture_output=True, text=True, encoding='utf-8', errors='replace')
+        for l in (p.stdout + p.stderr).splitlines()[-200:]: log('backfill |', l)
+        mk = {'node': NODE, 'night': NIGHT, 'mode': 'backfill', 'exit': p.returncode, 'tail': (p.stdout + p.stderr)[-3000:], 'image': IMAGE_TAG, 'execution': EXEC, 'started_utc': t1.isoformat(), 'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat()}
+        blob_put(f'sweeps-backfill/{NIGHT}/{CC}/{"done" if p.returncode == 0 else "failed"}.json', json.dumps(mk, ensure_ascii=False, indent=1))
+        return p.returncode
     tav0 = tavily_usage(); log('tavily plan counter at start:', tav0)
     old = blob_json('door/facts.json'); o_rec, o_ev, o_asof = counts(old); log(f'door serves now: records {o_rec} events {o_ev} as_of {o_asof}')
     hold = ''; gate = 0; result = {}
@@ -172,6 +196,8 @@ def main():
         gate = sh(['/usr/local/bin/python3', 'door_gate.py', 'us', REGION, MDATE, '--after-job'], cwd=f'{RAILS}/door', check=False); log('gate exit', gate)
         if gate == 0: sh(['/usr/local/bin/python3', 'restamp_asof.py', 'us', REGION, MDATE], cwd=f'{RAILS}/door')
         else: hold = MDATE
+        # DOORS-03 (2026-10-26): one record per listed company — the us pipeline publishes from inside the job, so the fold runs on the store after the gate
+        if not hold: rc_fold = sh(['/usr/local/bin/python3', 'fold_listings.py', 'us', '--store'], cwd=f'{RAILS}/door', check=False); log('fold exit', rc_fold); result['fold'] = rc_fold   # store key: STORAGE_KEY, set above
         new = blob_json('door/facts.json')
         # the drop this run wrote: the newest pond/width0/<today>[-n] (the pipeline writes the next drop beside when an earlier one of the day had another window)
         _ds = sorted({b.name.split('/')[2] for b in store().list_blobs(name_starts_with=f'pond/width0/{TODAY.isoformat()}')}, key=lambda d: (d[:10], int(d[11:] or 0)))
@@ -188,10 +214,17 @@ def main():
         drop = newest_drop('width1'); after = newest_drop('assembled'); log(f'pond drop {drop}; assembled before {before} after {after}')
         if not after or after == before: raise RuntimeError('no new assembled drop from this run (the door would be rebuilt from an older assembly)')
         sh(['/usr/local/bin/python3', 'load_nodes.py', CC], cwd=f'{RAILS}/door', env={f'AS_OF_{CC.upper()}': MDATE})
-        gate = sh(['/usr/local/bin/python3', 'door_gate.py', CC, REGION, MDATE], cwd=f'{RAILS}/door', check=False); log('gate exit', gate)
+        # DAY ORDER 4 (2026-10-24): NODE-HALT-01 — every record carries tonight's halt state from the market's own list; NODE-ISIN-01 — kr ISINs from KRX
+        rc_en = sh(['/usr/local/bin/python3', 'enrich_node.py', CC], cwd=f'{RAILS}/door', check=False); log('enrich exit', rc_en); result['enrich'] = rc_en
+        # DOORS-03 (2026-10-26): one record per listed company — listing lines of one issuer under one ISIN fold into one record before the gate reads the counts
+        rc_fold = sh(['/usr/local/bin/python3', 'fold_listings.py', CC, '--data'], cwd=f'{RAILS}/door', check=False); log('fold exit', rc_fold); result['fold'] = rc_fold
+        gate =sh(['/usr/local/bin/python3', 'door_gate.py', CC, REGION, MDATE], cwd=f'{RAILS}/door', check=False); log('gate exit', gate)
         if gate != 0: hold = MDATE
         sh(['/usr/local/bin/python3', 'provision_region.py', CC, REGION, 'upload'], cwd=f'{ROOT}/AZURE', env=({'DOOR_HOLD': hold} if hold else {}))
         new = json.load(open(f'{DOOR}/data/facts.json', encoding='utf-8'))
+        if not hold:   # SHELF-01 (2026-10-27): beside the record, after it is published — the lifecycle index (Events) and the score (a FAIL never holds the record)
+            rc_lc = sh(['/usr/local/bin/python3', '-X', 'utf8', 'lifecycle.py', 'build', CC, '--store'], cwd=f'{RAILS}/shelf', check=False); log('lifecycle exit', rc_lc); result['lifecycle'] = rc_lc
+            rc_sc = sh(['/usr/local/bin/python3', '-X', 'utf8', 'score.py', CC], cwd=f'{RAILS}/shelf', check=False); log('score exit', rc_sc); result['score'] = rc_sc
     if os.environ.get('DOOR_RESTART', '1') == '1' and CONT == 'pond' and not hold:
         try:
             rev = az('containerapp', 'show', '-g', RG, '-n', f'cmkg-door-{CC}', '--query', 'properties.latestRevisionName', '-o', 'tsv', raw=True)
@@ -280,8 +313,8 @@ if __name__ == '__main__':
     except SystemExit as e: rc = e.code if isinstance(e.code, int) else 1; log('STOP', e)
     except Exception as e:
         rc = 1; log('FAILED', repr(e)[:400]); log(traceback.format_exc()[-2000:])
-        try: blob_put(f'sweeps/{NIGHT}/{CC}/failed.json', json.dumps({'node': NODE, 'market_date': MDATE, 'error': repr(e)[:400], 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'execution': EXEC}))
+        try: blob_put(f'{"sweeps-backfill" if os.environ.get("JOB_MODE") == "backfill" else "sweeps"}/{NIGHT}/{CC}/failed.json', json.dumps({'node': NODE, 'market_date': MDATE, 'error': repr(e)[:400], 'at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'execution': EXEC}))
         except Exception: pass
-    try: blob_put(f'sweeps/{NIGHT}/{CC}/job-{EXEC}.log', '\n'.join(LOG) + '\n', 'text/plain')
+    try: blob_put(f'{"sweeps-backfill" if os.environ.get("JOB_MODE") == "backfill" else "sweeps"}/{NIGHT}/{CC}/job-{EXEC}.log', '\n'.join(LOG) + '\n', 'text/plain')
     except Exception: pass
     sys.exit(rc)
