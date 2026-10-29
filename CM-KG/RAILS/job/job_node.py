@@ -28,13 +28,15 @@ T0 = datetime.datetime.now(datetime.timezone.utc); TODAY = T0.date()
 def friday_on_or_before(d): return d - datetime.timedelta(days=(d.weekday() - 4) % 7)
 # ORDER-036 NIGHTLY (2026-10-22): every regional job fires at 02:00 its own region's local STANDARD time (fixed UTC cron, never moved for daylight time),
 # seven nights a week. NIGHT = the local calendar date at the fire (the key of the night's markers: sweeps/<night>/<cc>/ — a Saturday or Sunday night never
-# lands on Friday's marker); MDATE = the market date = the last trading date before the night (weekends roll back to Friday; exchange holidays are not
-# carried — the run that night reads the window and the as_of stays the date the rule gives). Supersedes the Friday-on-or-before rule (ORDER-027 A1).
+# lands on Friday's marker); MDATE = the market date = the last trading date before the night (weekends roll back to Friday; since CHAIN-CLOSE 2026-10-29 a
+# full-day closure of the market's exchange rolls back the same way — the one table holidays.py, read from each exchange's own calendar; a market with
+# no calendar read rolls weekends only). Supersedes the Friday-on-or-before rule (ORDER-027 A1).
 STD_OFFSET = {'ca': -5, 'us': -5, 'uk': 0, 'de': 1, 'fr': 1, 'nl': 1, 'ch': 1, 'au': 10, 'sg': 8, 'hk': 8, 'jp': 9, 'kr': 9}
 STD_OFFSET.update({'it': 1, 'es': 1, 'se': 1, 'dk': 1, 'no': 1, 'fi': 2, 'be': 1, 'ie': 0, 'at': 1, 'pl': 1, 'pt': 0, 'lu': 1, 'gr': 2, 'cz': 1})   # NODE-EU (2026-10-24)
 STD_OFFSET.update({'ky': -5, 'bm': -4, 'je': 0, 'in': 5.5, 'tw': 8, 'sa': 3, 'ae': 4, 'br': -3, 'mx': -6})   # NODE-ROW (DAY ORDER 5, 2026-10-24)
 def last_trading(d):
-    while d.weekday() >= 5: d -= datetime.timedelta(days=1)
+    from holidays import closed   # CHAIN-CLOSE (2026-10-29): exchange closures, the one table (holidays.py beside this file)
+    while d.weekday() >= 5 or closed(CC, d): d -= datetime.timedelta(days=1)
     return d
 NIGHT = os.environ.get('NIGHT') or (T0 + datetime.timedelta(hours=STD_OFFSET.get(CC, 0))).date().isoformat(); datetime.date.fromisoformat(NIGHT)
 # DAY ORDER 5 (CEO 2026-10-24): a job armed ahead of its first night (NOT_BEFORE=<UTC date>) exits clean, writing no marker, on a fire before that date
