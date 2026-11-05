@@ -1,3 +1,4 @@
+import { acmFirstResponse } from './acm_first.js';   // TEXTS-01 (ACM-68000 v1.1)
 // protocols.js — PROTOCOLS-A-01 (DAY ORDER 3, CEO 2026-10-24): the entry of estate-pages wraps surfaces.js (unchanged). On every surface it serves, the
 // machine files say where an agent goes: the A2A card names the resolver (getissuer, https://mcp.getissuer.ai/mcp) as an interface and a skill; mcp.json
 // (/.well-known/mcp.json, /mcp.json, /.well-known/mcp/server-card.json) carries the x402 payment door, the routing block and the receipt door; llms.txt
@@ -5,10 +6,11 @@
 import inner from './surfaces.js';
 import { paymentDoor } from './x402gate.js';
 import { classify5, handle5 } from './do5.js';
+import * as N2 from './nav02.js';   // NAV-02 (2026-11-02): the door check, the keyring, llms-full.txt, the Organization schema, the About/Investor page
 import { withPrompt } from './prompt.js';   // PROMPT-01 (DAY ORDER 6, 2026-10-25)   // DAY ORDER 5 (2026-10-24): the 28 zones of the day + the European subdomains, before surfaces.js
 const RESOLVER = 'https://mcp.getissuer.ai/mcp';
-const ROUTING = [{ resolves: 'gtin', what: 'GTINs', door: 'https://gtinfetch.ai/mcp' }, { resolves: 'issuer', what: 'Listed issuers (ticker, ISIN, LEI)', door: RESOLVER }, { resolves: 'receipt', what: 'Receipts — the Record of Cleared Orders', door: 'https://mcp.rco-a2a.ai/mcp' }];
-const RECEIPTS = { door: 'https://mcp.rco-a2a.ai/mcp', keyring: 'https://allooloo.ai/.well-known/jwks.json', note: 'every resolve_issuer and get_signal on the Allooloo doors leaves an RCO receipt; the answer carries its decision_id' };
+const ROUTING = [{ resolves: 'gtin', what: 'GTINs', door: 'https://gtinfetch.ai/mcp' }, { resolves: 'issuer', what: 'Listed issuers (ticker, ISIN, LEI)', door: RESOLVER }, { resolves: 'receipt', what: 'Receipts — the Record of Cleared Orders', door: 'https://mcp.rco-records.ai/mcp' }];
+const RECEIPTS = { door: 'https://mcp.rco-records.ai/mcp', keyring: 'https://allooloo.ai/.well-known/jwks.json', note: 'every resolve_issuer and get_signal on the Allooloo doors leaves an RCO receipt; the answer carries its decision_id' };
 const MCP_PATHS = ['/.well-known/mcp.json', '/mcp.json', '/.well-known/mcp/server-card.json'];
 async function rewrite(request, env, r) {
   const p = new URL(request.url).pathname;
@@ -30,7 +32,7 @@ async function rewrite(request, env, r) {
   } else { j.payment = paymentDoor(env); j.routing = ROUTING; j.receipts = RECEIPTS; j.resolver = RESOLVER; }
   return new Response(JSON.stringify(j, null, 1), { status: 200, headers: h });
 }
-export default {
+const ESTATE = {
   scheduled: inner.scheduled,
   async fetch(request, env, ctx) {
     // HEALTH-01 (DAY ORDER 6, 2026-10-25): a2a-health.ai renders allooloo.io/status — the same handler, the same KV data, no copy. / and /status answer the
@@ -46,3 +48,15 @@ export default {
     }
     const c5 = classify5(new URL(request.url).hostname); if (c5) return c5.cc === 'sa' ? handle5(request, env, c5) : withPrompt(u0.hostname, u0.pathname, await rewrite(request, env, await handle5(request, env, c5)));   /* SEEKING PARTNER hosts carry that only: no routing or payment overlay (CEO ruling 2026-10-24) */ return withPrompt(u0.hostname, u0.pathname, await rewrite(request, env, await inner.fetch(request, env, ctx))); }   // PROMPT-01: the prompt block on the issuer pages
 };
+// TEXTS-01: Agent Clearance Manifest written out once on first use on every text page the estate serves
+const NAV02 = {   // NAV-02: wraps ESTATE; every host the estate serves gets the machine files of the FOR AGENTS row, the doors readout and the schema
+  async fetch(request, env, ctx) {
+    const u = new URL(request.url); const p = u.pathname.replace(/\/+$/, '') || '/'; const h = u.hostname.replace(/^www\./, '');
+    const ua = request.headers.get('user-agent') || '';   // the door check runs only for a page someone reads: never a machine file, never the estate's own subrequests
+    if (!/^Allooloo (estate|llms-full) /.test(ua) && (request.method === 'GET' || request.method === 'HEAD') && !/\.(json|txt|xml|js|css|png|ico|svg|webmanifest)$/.test(p) && !p.startsWith('/.well-known/')) await N2.doorCheck(ctx);
+    if (p === '/.well-known/jwks.json' && (request.method === 'GET' || request.method === 'HEAD')) { const k = await N2.jwks(); return k ? new Response(JSON.stringify(k, null, 1), { headers: { 'content-type': 'application/jwk-set+json; charset=utf-8', 'cache-control': 'public, max-age=300', 'access-control-allow-origin': '*', 'X-Keyring-Of-Record': 'https://allooloo.ai/.well-known/jwks.json' } }) : new Response('{"error":"keyring not read"}', { status: 503, headers: { 'content-type': 'application/json' } }); }
+    const handler = (rq, e, c) => (N2.isAbout(new URL(rq.url).hostname) ? N2.about(rq, e, c, inner) : ESTATE.fetch(rq, e, c));
+    if (p === '/llms-full.txt' && (request.method === 'GET' || request.method === 'HEAD')) return N2.llmsFull(request, env, ctx, handler, N2.isAbout(h) ? 'about.allooloo.ai' : (h));
+    return N2.withOrg(await handler(request, env, ctx));
+  } };
+export default { scheduled: ESTATE.scheduled, async fetch(request, env, ctx) { const r = await NAV02.fetch(request, env, ctx); return request.method === 'GET' ? acmFirstResponse(r) : r; } };

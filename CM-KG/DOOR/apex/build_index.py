@@ -56,6 +56,7 @@ for cc in want:
                 if y.get('node') == node:
                     y.update({kk: x[kk] for kk in ('live', 'as_of', 'records', 'exchanges') if kk in x})
                     if 'events' in fx: y['events'] = fx['events']; y['issuers_with_events'] = fx.get('issuers_with_events')
+                    if isinstance(fx.get('records'), int): y['records'] = fx['records']   # NIGHTLY-02: the door's own record count (facts.json, after the fold), not nodes.json's cmr count
 for kind in idx:
     for ident, v in idx[kind].items():
         if isinstance(v, list): idx[kind][ident] = sorted(v)

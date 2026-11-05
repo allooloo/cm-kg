@@ -15,7 +15,7 @@ import { totals } from './products.js';
 import * as Z3 from './zones03.js';   // ZONES-03 (2026-10-27): seven pages under Data Now and Data Vintage, merged into P and classifyZ below
 
 const GI_MCP = 'https://mcp.getissuer.ai/mcp';
-const RCO_MCP = 'https://mcp.rco-a2a.ai/mcp';
+const RCO_MCP = 'https://mcp.rco-records.ai/mcp';
 const IW = 'https://issuerwire.ai/'; const IW_MCP = 'https://mcp.issuerwire.ai/mcp';
 const KYP = 'https://kyp-model.ai/';
 const JWKS = 'https://allooloo.ai/.well-known/jwks.json';

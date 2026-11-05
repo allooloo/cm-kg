@@ -18,6 +18,7 @@ import { KYP_COPY, kypBody, kypFacts, kypLlms, kypVals } from './kyp.js';
 import { handlePaid, paidStats, handleApi, handleSettled, receiptJwks, receiptLookup, openapi as x402Openapi } from './x402.js';
 import * as OAUTH from './oauth.js';
 import { docsBody, supportBody, newsBody, NEWS_AS_OF, setupBody } from './docs.js';
+import * as N2 from './nav02.js';   // NAV-02: sameAs on the home page's Organization
 import * as D27 from './doors027.js';   // ORDER-027: six duty doors, getissuer.ai, cite-fact.ai / cite-dd.ai
 import * as S34 from './sovereign034.js';   // ORDER-034: twelve <country>-issuer.ai node pages, gb-issuer.ai → uk-issuer.ai, kyp-model.org + issuerwire.org standards
 // §5 — the paid door on every surface: /api answers 402 with the surface's own one-resource statement; the receipt resolves on the surface that served it
@@ -146,7 +147,7 @@ const rootCard = (host, c, f) => ({ name: `${host} — Allooloo`, description: `
 export default {
   async scheduled(event, env, ctx) { ctx.waitUntil(probe(env)); },
   async fetch(request, env) {
-    const url = new URL(request.url); const host = url.hostname;
+    const url = new URL(request.url); const host = D27.serveAs(url.hostname) || url.hostname;   // GETORD-01: getorderability .com/.org/.io and every www answer as getorderability.ai (same body, no 301)
     const s34 = S34.classify34(host);   // ORDER-034 zones are served whole by their own module (own shell, no script, no paid route)
     if (s34) return s34.kind === 'redirect' ? Response.redirect(s34.canonical + url.pathname + url.search, s34.status) : S34.handle34(request, env, url, s34, liveNodes);
     const c = classify(host); const apex = host.replace(/^www\./, '');
@@ -192,6 +193,21 @@ export default {
     const label = D27.isNew(c) ? D27.label27(c) : c.kind === 'node' ? `${NODE_DATA[c.cc].country} node — Capital Markets Knowledge Graph` : c.kind === 'product' ? PRODUCTS[c.product].title : c.kind === 'site' ? 'Allooloo Technologies Corp. — Capital Markets Knowledge Graph' : c.kind === 'kyp' ? KYP_COPY.title : `${host} — Capital Markets Knowledge Graph`;
     const desc0 = D27.isNew(c) ? D27.desc27(c, live) : c.kind === 'node' ? fill(NODE_DATA[c.cc].meta, nodeVals(c.cc, live)) : c.kind === 'product' ? PRODUCTS[c.product].reason : c.kind === 'site' ? homeMeta(ctx) : c.kind === 'kyp' ? KYP_COPY.meta.replace(/\{records\}/g, kypVals(ctx).records).replace(/\{events\}/g, kypVals(ctx).events).replace(/\{live_nodes\}/g, kypVals(ctx).live_nodes) : 'Estate host of the Capital Markets Knowledge Graph; the apex router answers for every market.';
     const HTML = (body, m) => AEO.wantsMarkdown(request) ? markdown(AEO.toMarkdown(body, host), m, LINK) : html(body, m, LINK);
+    if (c.kind === 'paygo' || c.kind === 'licence') {   // TMKT-02: a page with no door: its own descriptor (payment.page), no card, skills or OpenAPI
+      if (p === '/mcp.json' || p === '/.well-known/mcp.json' || p === '/.well-known/mcp/server-card.json') return json(D27.descriptorP(c.kind), kmeta);
+      if (p === '/openapi.json' || p === '/.well-known/skills.json' || p.startsWith('/.well-known/agent-skills') || p === '/.well-known/mcp/server-cards.json') return notFound(D27.paths27(c), kmeta);   // NAV-02 (R-043): the Agent card answers here (the FOR AGENTS row links it)
+    }
+    if (c.kind === 'asof') {   // ASOF-01: the As Of door's own card, descriptor and x402 file (the door is the router: mcp.getasof.ai); no generic CM-KG card, skills or OpenAPI here
+      if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json') return json(D27.agentCardA(host), kmeta);
+      if (p === '/mcp.json' || p === '/.well-known/mcp.json' || p === '/.well-known/mcp/server-card.json' || p === '/.well-known/mcp/server-cards.json') return json(D27.descriptorA(), kmeta);
+      if (p === '/.well-known/x402.json' || p === '/.well-known/x402') return json(D27.x402A(), kmeta);
+      if (p === '/openapi.json' || p === '/.well-known/skills.json' || p.startsWith('/.well-known/agent-skills')) return notFound(D27.paths27(c), kmeta);
+    }
+    if (c.kind === 'tm') {   // TMKT-01: the Target Market door's own card and descriptor (the router serves this door from TMKT-02); no generic CM-KG card, skills or OpenAPI here
+      if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json') return json(D27.agentCardT(host), kmeta);
+      if (p === '/mcp.json' || p === '/.well-known/mcp.json' || p === '/.well-known/mcp/server-card.json' || p === '/.well-known/mcp/server-cards.json') return json(D27.descriptorT(), kmeta);
+      if (p === '/openapi.json' || p === '/.well-known/skills.json' || p.startsWith('/.well-known/agent-skills')) return notFound(D27.paths27(c), kmeta);
+    }
     if (p === '/.well-known/oauth-authorization-server' || p === '/.well-known/openid-configuration') return json(OAUTH.metadata(), kmeta, 'public, max-age=3600');
     if (p === '/.well-known/api-catalog') return json(AEO.apiCatalog(host, T), kmeta, 'public, max-age=3600', 200, 'application/linkset+json');
     if (p === '/.well-known/oauth-protected-resource') return json(AEO.protectedResource(host, T), kmeta, 'public, max-age=3600');
@@ -205,18 +221,29 @@ export default {
     if (p === '/.well-known/ard.json') return json(cat(), kmeta, 'public, max-age=300', 200, 'application/ard+json; charset=utf-8');
     if (p.startsWith('/.well-known/') && p !== '/.well-known/allooloo.json') return notFound(['/.well-known/agent-card.json', '/.well-known/mcp.json', '/.well-known/mcp/server-card.json', '/.well-known/api-catalog', '/.well-known/oauth-protected-resource', '/.well-known/agent-skills/index.json', '/.well-known/skills.json', '/.well-known/ai-catalog.json', '/.well-known/ard.json', '/.well-known/security.txt'], kmeta);
     if (D27.isNew(c)) {   // ORDER-027: duty doors, getissuer.ai, cite quiet zones
+      if (c.kind === 'tm') ctx.book = await D27.bookDataT(live);   // TMKT-01: every node's signed AIO section (manufacturer_evidence_accepted) and the AIO text version, read at render
+      if (c.kind === 'asof') ctx.asof = await D27.asofData(env, url);   // ASOF-01: the shelf ledger and the receipt counter, read at render
+      if (c.kind === 'getord') ctx.book = await D27.bookDataG(live);   // GETORD-01: every node's signed AIO section and the gate version, read at render
       if (c.kind === 'swap') ctx.swap = await D27.swapData(env, url);   // ORDER-032 C.4: the serving cloud per node, live at render
       if (c.kind === 'zone02' && c.key === 'ark') ctx.ark = await D27.arkData(env, url);   // ZONES-02: data-ark.ai reads the ark log at render
       if (c.kind === 'zone02' && ['replay', 'bench', 'cleanroom', 'review', 'score', 'timeline', 'events'].includes(c.key)) ctx.shelf = await D27.shelfData(env, url);   // SHELF-01: the markets live per tool, from the ledger (shelf/state.json, written by the apex job)
       const a = D27.pageArgs27(c, ctx, host); const meta = a.meta; const paths = D27.paths27(c);
-      if (p === '/') { const r0 = HTML((c.kind === 'swap' || c.kind === 'zone02' ? D27.stripScripts : (x => x))(page({ host, title: a.title, desc: desc0, h1: a.h1, state: a.state, asOf: a.asOf, body: a.body, jsonld: [{ '@context': 'https://schema.org', '@type': 'WebPage', name: a.title, description: desc0, url: `https://${host}/`, publisher: { '@type': 'Organization', name: OPERATOR, url: CORPORATE } }] })), meta);
+      if (p === '/') { const r0 = HTML((c.kind === 'swap' || c.kind === 'zone02' ? D27.stripScripts : (x => x))(page({ host, title: a.title, desc: desc0, h1: a.h1, state: a.state, asOf: a.asOf, version: a.version, vlabel: a.vlabel, eyebrow: a.eyebrow, body: a.body, jsonld: [{ '@context': 'https://schema.org', '@type': 'WebPage', name: a.title, description: desc0, url: `https://${host}/`, publisher: { '@type': 'Organization', name: OPERATOR, url: CORPORATE } }] })), meta);
         if (c.kind === 'zone02') r0.headers.set('cache-control', 'public, max-age=60, must-revalidate, no-transform');   // ZONES-02: the edge must not inject the Web Analytics beacon (house method of sovereign034.js)
         return r0; }
+      if (p === '/index.md' && c.kind === 'asof') return markdown(AEO.toMarkdown(page({ host, title: a.title, desc: desc0, h1: a.h1, state: a.state, asOf: a.asOf, body: a.body }), host), meta, LINK);   // ASOF-01: the Markdown twin by path
       if (p === '/llms.txt') return text(D27.llms27(c, host, live, ctx), meta, undefined, c.kind === 'swap' ? 'public, max-age=60' : undefined);
       if (p === '/facts.json') return json(D27.facts27(c, host, live, ctx), meta, c.kind === 'swap' ? 'public, max-age=60' : undefined);
       if (p === '/sitemap.xml') return text(sitemap(host, paths.filter(x => x === '/' || x === '/docs' || x === '/llms.txt' || x === '/facts.json')), meta, 'application/xml; charset=utf-8', 'public, max-age=3600');
       if ((p === '/mcp.json' || p === '/openapi.json') && c.kind !== 'cite' && c.kind !== 'zone02') return json(D27.pointer27(c, p === '/mcp.json' ? 'mcp' : 'openapi'), meta);
       // the documentation page moves with the human page (capitalmarketsknowledgegraph.ai/docs 301s here, path kept); copy unchanged until ORDER-028
+      if (c.kind === 'tm' && (p === '/docs' || p === '/docs/emt' || p === '/file')) {   // TMKT-01: the pages the copy names
+        const tt = { '/docs': ['Documentation — gettargetmarket, the Target Market door for AI agents', 'Documentation — the Target Market door', D27.docsBodyT()],
+          '/docs/emt': ['The EMT mapping — gettargetmarket', 'The European MiFID Template mapping', D27.emtBodyT()],   // TMKT-02: written
+          '/file': ['Request a filer identity — gettargetmarket', 'Request a filer identity', D27.fileBodyT()] }[p];
+        return HTML(page({ host, title: tt[0], desc: tt[1], h1: tt[1], state: 'live', asOf: a.asOf, version: a.version, vlabel: a.vlabel, path: p, nocurrent: true, body: tt[2] }), meta);
+      }
+      if (p === '/docs' && c.kind === 'getord') return HTML(page({ host, title: 'Documentation — getorderability, the orderability door for AI agents', desc: 'Connector documentation for the orderability door: access, one call, the signal, the outcome and its provenance.', h1: 'Documentation — the orderability door', state: 'live', asOf: a.asOf, version: a.version, vlabel: a.vlabel, path: '/docs', nocurrent: true, body: D27.docsBodyG() }), meta);   // GETORD-01
       if (p === '/docs' && c.kind === 'getissuer') return HTML(page({ host, title: 'Documentation — Capital Markets Knowledge Graph apex door for AI agents', desc: 'Connector documentation for the apex door: connect, six read-only tools with wire examples, identifiers, the record shape, residency by node, data handling, limits and versioning, support.', h1: 'Documentation — the apex door', state: 'live', asOf: today(), path: '/docs', nocurrent: true, body: docsBody(live) }), meta);
       return notFound(paths, meta);
     }
@@ -240,7 +267,7 @@ export default {
       // NEWS-01 (2026-10-27): allooloo.io/news on the shared template, no nav tab (like a node page); in the register (sitemap + llms.txt item 6).
       if (p === '/news') return HTML(page({ host, title: 'News — Allooloo', desc: 'News from Allooloo Technologies Corp., newest first: releases of record with their dates and links.', h1: 'News', state: 'live', asOf: NEWS_AS_OF, path: '/news', nocurrent: true, body: newsBody() }), meta);
       if (p === '/support') return HTML(page({ host, title: 'Support — Allooloo', desc: 'Support for the Allooloo estate doors: what to bring, the contact form of record, status, security and documentation links.', h1: 'Support', state: 'live', asOf: today(), path: '/support', nocurrent: true, body: supportBody(host) }), meta);
-      if (p === '/') return HTML(page({ host, title: COMPANY_TITLE, desc: homeMeta(ctx), h1: HOME_H1, sub: homeSub(ctx), actions: homeActions(), state: 'live', asOf: t.last || today(), body: homeBody(ctx, host), jsonld: [{ '@context': 'https://schema.org', '@type': 'Organization', name: OPERATOR, url: CORPORATE, logo: `${CORPORATE}/icon-512.png`, address: { '@type': 'PostalAddress', streetAddress: '260-4611 Viking Way', addressLocality: 'Richmond', addressRegion: 'BC', postalCode: 'V6V 2K9', addressCountry: 'CA' }, contactPoint: { '@type': 'ContactPoint', url: CONTACT, contactType: 'support' } }] }), meta);
+      if (p === '/') return HTML(page({ host, title: COMPANY_TITLE, desc: homeMeta(ctx), h1: HOME_H1, sub: homeSub(ctx), actions: homeActions(), state: 'live', asOf: t.last || today(), body: homeBody(ctx, host), jsonld: [{ '@context': 'https://schema.org', '@type': 'Organization', name: OPERATOR, url: CORPORATE, logo: `${CORPORATE}/icon-512.png`, address: { '@type': 'PostalAddress', streetAddress: '260-4611 Viking Way', addressLocality: 'Richmond', addressRegion: 'BC', postalCode: 'V6V 2K9', addressCountry: 'CA' }, sameAs: N2.SAME_AS, contactPoint: { '@type': 'ContactPoint', url: CONTACT, contactType: 'support' } }] }), meta);   // NAV-02: sameAs
       if (p === '/record') { const rec = await heroRecord(); return HTML(page({ host, title: 'What a record looks like — a live Capital Markets Record for AI agents — Allooloo', desc: 'One live Capital Markets Record from the Canada door, every field with its value, source, reader and state — the shape AI agents read on every node.', h1: 'What a record looks like: one live Capital Markets Record from the Canada door.', state: rec ? 'live' : 'record', asOf: rec ? rec.as_of : today(), version: rec ? `${SURFACES_VERSION} · record v${rec.version}` : SURFACES_VERSION, path: '/record', body: recordPageBody(rec) }), { node: 'ca-cm-kg', as_of: rec ? rec.as_of : today(), version: rec ? rec.version : '' }); }
       if (p === '/status') { const st = await readStatus(env); return HTML(page({ host, title: 'Status — Allooloo estate doors', desc: 'Every live node door on the roster probed every five minutes with one real resolve_issuer; response times, 24h median, last drop.', h1: 'Status — the node doors', state: 'live', asOf: today(), body: statusBody(ctx, st) }), meta); }
       if (p === '/status.json') { const st = await readStatus(env); return json(statusJson(ctx, st), meta, 'public, max-age=60'); }

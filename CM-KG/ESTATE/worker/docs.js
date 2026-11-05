@@ -89,7 +89,7 @@ const COVERAGE_20261022 = [
   ['Macau Business', 'https://macaubusiness.com/allooloo-technologies-corp-launches-ai-agent-products-for-financial-services-agents-know-your-product-and-news/'],
   ['AAP News', 'https://aapnews.aap.com.au/aapreleases/cision20261022AE79501'],
 ];
-const NEWS = [
+export const NEWS = [   // NAV-02: exported (the About page's "In the news" reads the latest release from here)
   { date: '2026-10-22', title: 'Allooloo Technologies Corp. Launches AI Agent Products for Financial Services Agents: Know Your Product and News', url: 'https://www.prnewswire.co.uk/news-releases/allooloo-technologies-corp-launches-ai-agent-products-for-financial-services-agents-know-your-product-and-news-302917526.html', coverage: COVERAGE_20261022, line: 'Agentic capital markets products for the AI agents of banks, dealers and issuers. Two products — KYP and Issuerwire — 34 countries, paid per read, in the call.' },
 ];
 export const NEWS_AS_OF = NEWS[0].date;
