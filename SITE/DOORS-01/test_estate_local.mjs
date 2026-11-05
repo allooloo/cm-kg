@@ -8,7 +8,7 @@ const env = { ASSETS: { fetch: async r => { const p = new URL(r.url).pathname; t
 const waits = []; const get = async (u, acc = 'text/html') => { const r = await W.fetch(new Request(u, { headers: { accept: acc, 'user-agent': 'doors01-local reader' }, redirect: 'manual' }), env, { waitUntil: p => waits.push(p) }); return { status: r.status, body: await r.text(), h: r.headers }; };
 const R = []; const ok = (n, c, d) => { R.push(!!c); console.log(`${c ? 'PASS' : 'FAIL'} ${n}${d ? ' · ' + d : ''}`); };
 const NAV = 'Issuer|Orderability|Target Market|As Of|Issuerwire';
-await get('https://getissuer.ai/'); await Promise.all(waits);   // the first render starts the door check; the second reads it
+await get('https://getissuer.ai/'); await Promise.all(waits); await get('https://getissuer.ai/');   // the first render starts the door check; the second reads it
 for (const h of ['allooloo.io', 'getissuer.ai', 'getasof.ai', 'gettargetmarket.ai', 'getfilings.ai', 'getticker.ai', 'getauditor.ai', 'data-vintage.ai', 'ca-cm-kg.ai']) {
   const p = await get(`https://${h}/`); const f = (/<footer>([\s\S]*)<\/footer>/.exec(p.body) || [, ''])[1];
   const bands = [...f.matchAll(/<span class="kicker">([A-Z ]+)<\/span>/g)].map(m => m[1]).join('|');

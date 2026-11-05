@@ -8,7 +8,7 @@
 //   withOrg     the Organization schema on every HTML page: sameAs LinkedIn, X, Crunchbase; the Richmond address
 //   about       about.allooloo.ai and investor.allooloo.ai: one page, the same body on both hosts (served as about.allooloo.ai); investor lands at Investor
 //               Relations (/about.js scrolls there on that host); the eight live tiles read from the record at render; no form (the CEO footer line is the contact)
-import { OPERATOR, CORPORATE, CONTACT, SURFACES_VERSION, ICONS, ROBOTS, SECURITY, esc, int, today, page, scale, text, json, headers, sitemap, setDoors } from './chrome.js';
+import { OPERATOR, CORPORATE, CONTACT, SURFACES_VERSION, ICONS, ROBOTS, SECURITY, esc, int, today, page, scale, text, json, headers, sitemap, setDoors, setDesks } from './chrome.js';
 import * as AEO from './aeo.js';
 import { NEWS } from './docs.js';
 import COPY from './about-copy.js';
@@ -37,9 +37,21 @@ async function runCheck() {
       if (r.status >= 300 && r.status < 400) { const w = await fetch(d + '/mcp', { method: 'POST', headers: { ...UA, 'content-type': 'application/json', accept: 'application/json, text/event-stream' }, body: '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}', redirect: 'manual', signal: AbortSignal.timeout(8000) }); return w.status === 200; }   // the door itself at its gate (tools/list), never a path this Worker serves (.11 read /.well-known/mcp.json, which the estate serves: a loop)
       return false; } catch (e) { return false; }
   }));
-  const desks = (await Promise.all(DESKS.map(async ([t, u, mj]) => { try { const r = await fetch(mj, { headers: UA, redirect: 'manual', cf: { cacheTtl: 300 }, signal: AbortSignal.timeout(8000) }); return r.status === 200 ? [t, u] : null; } catch (e) { return null; } }))).filter(Boolean);   // DOORS-01: the get_ doors that answer
-  DOORS = { live: nl.length, answering: up.filter(Boolean).length, desks, read_at: new Date().toISOString(), method: 'list_nodes, then each live door /mcp.json (the digest\'s door check); each get_ door /mcp.json for FOR DESKS' }; DOORS_AT = Date.now(); setDoors(DOORS);
+  DOORS = { live: nl.length, answering: up.filter(Boolean).length, read_at: new Date().toISOString(), method: 'list_nodes, then each live door /mcp.json (the digest\'s door check)' }; DOORS_AT = Date.now(); setDoors(DOORS);
   return DOORS;
+}
+// DOORS-01 fix: the desk check (FOR DESKS) — its own, fast, independent of the node check
+let DK = null, DK_AT = 0, DK_RUN = null; const GATE_TOOL = { get_issuer: 'resolve_issuer' };
+async function runDesks() {
+  const gate = await Promise.any(['https://mcp.us-cm-kg.ai/mcp', 'https://mcp.ca-cm-kg.ai/mcp', 'https://mcp.uk-cm-kg.ai/mcp'].map(g => rpc(g, 'tools/list').then(j => { const t = (j.result && j.result.tools) || []; if (!t.length) throw new Error('no tools'); return new Set(t.map(x => x.name)); }))).catch(() => new Set());
+  const live = await Promise.all(DESKS.map(async ([t, u, mj]) => { let ok = false; try { const r = await fetch(mj, { headers: UA, redirect: 'manual', cf: { cacheTtl: 300 }, signal: AbortSignal.timeout(4000) }); ok = r.status === 200; } catch (e) { ok = false; } return ok || gate.has(GATE_TOOL[t] || t) ? [t, u] : null; }));
+  DK = live.filter(Boolean); DK_AT = Date.now(); setDesks(DK); return DK;
+}
+export async function deskCheck(ctx) {
+  if (DK && Date.now() - DK_AT < 300000) return DK;
+  if (!DK_RUN) { DK_RUN = runDesks().catch(() => DK).finally(() => { DK_RUN = null; }); if (ctx && ctx.waitUntil) ctx.waitUntil(DK_RUN); }
+  if (DK) return DK;   // stale: answer with the last check, refresh behind
+  try { return await Promise.race([DK_RUN, new Promise(r => setTimeout(() => r(DK), 4500))]); } catch (e) { return DK; }
 }
 export async function doorCheck(ctx) {
   if (DOORS && Date.now() - DOORS_AT < 300000) return DOORS;

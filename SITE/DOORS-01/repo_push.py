@@ -7,7 +7,7 @@ MODE = sys.argv[1]; ROOT = r'C:\ALLOOLOO'
 src = open(os.path.join(ROOT, r'CM-KG\RAILS\job\ops_split.py'), encoding='utf-8').read(); ns = {}; exec(src.split('def ls():')[0], ns); is_ops = ns['is_ops']
 ps = open(os.path.join(ROOT, r'CM-KG\RAILS\job\public_scan.py'), encoding='utf-8').read(); PAT = eval(ps[ps.index('PAT = ') + 6: ps.index('}\n', ps.index('PAT = ')) + 1])
 CODE = ('.py', '.js', '.mjs', '.toml', '.json'); DIRS = ['CM-KG/NODE-GATE/worker', 'CM-KG/DOOR/apex', 'CM-KG/ESTATE/worker', 'CM-KG/DOOR/getasof', 'CM-KG/DOOR/getdoors', 'SITE/DOORS-01']
-MSG = ('DOORS-01 (2026-11-05): getfilings.ai, getticker.ai, getauditor.ai and the three-band footer\n\n'
+MSG = ('DOORS-01 fix (2026-11-05): FOR DESKS from its own desk check; read dates on get_ticker and get_auditor fields\n\n'
        'The gate answers get_filings, get_ticker and get_auditor on every node door (fields on the record, signed, receipted); the router serves the three door hosts; '
        'the estate gains the three pages and FOR AGENTS / FOR DESKS / FOR HUMANS on every surface; rails in SITE/DOORS-01.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>')
 def git(*a, check=True):
