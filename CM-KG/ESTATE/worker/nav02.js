@@ -12,6 +12,7 @@ import { OPERATOR, CORPORATE, CONTACT, SURFACES_VERSION, ICONS, ROBOTS, SECURITY
 import * as AEO from './aeo.js';
 import { NEWS } from './docs.js';
 import COPY from './about-copy.js';
+import { DESKS } from './desks.js';   // DOORS-01
 const UA = { 'user-agent': 'Allooloo estate (NAV-02)' };
 const APEX = 'https://mcp.getissuer.ai/mcp';
 export const SAME_AS = ['https://www.linkedin.com/company/allooloo-technologies-corp/', 'https://x.com/allooloo_ai', 'https://www.crunchbase.com/organization/allooloo'];
@@ -36,7 +37,8 @@ async function runCheck() {
       if (r.status >= 300 && r.status < 400) { const w = await fetch(d + '/mcp', { method: 'POST', headers: { ...UA, 'content-type': 'application/json', accept: 'application/json, text/event-stream' }, body: '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}', redirect: 'manual', signal: AbortSignal.timeout(8000) }); return w.status === 200; }   // the door itself at its gate (tools/list), never a path this Worker serves (.11 read /.well-known/mcp.json, which the estate serves: a loop)
       return false; } catch (e) { return false; }
   }));
-  DOORS = { live: nl.length, answering: up.filter(Boolean).length, read_at: new Date().toISOString(), method: 'list_nodes, then each live door /mcp.json (the digest\'s door check)' }; DOORS_AT = Date.now(); setDoors(DOORS);
+  const desks = (await Promise.all(DESKS.map(async ([t, u, mj]) => { try { const r = await fetch(mj, { headers: UA, redirect: 'manual', cf: { cacheTtl: 300 }, signal: AbortSignal.timeout(8000) }); return r.status === 200 ? [t, u] : null; } catch (e) { return null; } }))).filter(Boolean);   // DOORS-01: the get_ doors that answer
+  DOORS = { live: nl.length, answering: up.filter(Boolean).length, desks, read_at: new Date().toISOString(), method: 'list_nodes, then each live door /mcp.json (the digest\'s door check); each get_ door /mcp.json for FOR DESKS' }; DOORS_AT = Date.now(); setDoors(DOORS);
   return DOORS;
 }
 export async function doorCheck(ctx) {
@@ -122,7 +124,7 @@ export async function about(request, env, ctx, inner) {
   if (p === '/') { const v = await tileData(env, url); return new Response(page({ host, title: TITLE, desc, h1: COPY.about.head, state: 'record', eyebrow: COPY.about.label, asOf: today(), body: aboutBody(v), head: '<script src="/about.js" defer></script>', nocurrent: true }), { headers: headers(meta, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=60, must-revalidate', 'Vary': 'Accept' }) }); }
   if (p === '/llms.txt') return text([`# ${host} — About Us · Investor Relations`, `1. ${COPY.about.head}`, `2. ${COPY.investor.head}`, `3. One page on two hosts: https://about.allooloo.ai (About Us) and https://investor.allooloo.ai (Investor Relations), the same body. Contact: the CEO footer line. Copy of record v${COPY.version}.`, `4. Operator: ${OPERATOR}. Surface version: ${SURFACES_VERSION}. Full text: /llms-full.txt.`].join('\n') + '\n', meta);
   if (p === '/facts.json') { const v = await tileData(env, url); return json({ domain: host, hosts: ABOUT_HOSTS, kind: 'the About/Investor page', operator: OPERATOR, corporate: CORPORATE, copy_of_record: 'v' + COPY.version, tiles: v, surface_version: SURFACES_VERSION, as_of: today() }, meta); }
-  if (p === '/.well-known/mcp.json' || p === '/mcp.json' || p === '/.well-known/mcp/server-card.json') return json({ name: 'about-allooloo', kind: 'page (no MCP door on this host)', page: 'https://about.allooloo.ai/', doors: ['https://mcp.getissuer.ai/mcp', 'https://mcp.getorderability.ai/mcp', 'https://mcp.gettargetmarket.ai/mcp', 'https://mcp.getasof.ai/mcp', 'https://mcp.issuerwire.ai/mcp'], operator: OPERATOR }, meta);
+  if (p === '/.well-known/mcp.json' || p === '/mcp.json' || p === '/.well-known/mcp/server-card.json') return json({ name: 'about-allooloo', kind: 'page (no MCP door on this host)', page: 'https://about.allooloo.ai/', doors: ['https://mcp.getissuer.ai/mcp', 'https://mcp.getorderability.ai/mcp', 'https://mcp.gettargetmarket.ai/mcp', 'https://mcp.getasof.ai/mcp', 'https://mcp.getfilings.ai/mcp', 'https://mcp.getticker.ai/mcp', 'https://mcp.getauditor.ai/mcp', 'https://mcp.issuerwire.ai/mcp'], operator: OPERATOR }, meta);   // DOORS-01: the doors order
   if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json') return json({ name: 'Allooloo — About Us · Investor Relations', description: desc, url: 'https://about.allooloo.ai/', provider: { organization: OPERATOR, url: CORPORATE }, version: SURFACES_VERSION, capabilities: {}, skills: [], defaultInputModes: ['text/plain'], defaultOutputModes: ['text/html'], supportedInterfaces: [] }, meta);
   if (p === '/sitemap.xml') return text(sitemap(host, ['/', '/llms.txt', '/llms-full.txt']), meta, 'application/xml; charset=utf-8', 'public, max-age=3600');
   return json({ error: 'not_found', status: 404, paths: ['/', '/llms.txt', '/llms-full.txt', '/facts.json', '/.well-known/mcp.json', '/.well-known/agent-card.json', '/.well-known/jwks.json', '/.well-known/security.txt'] }, meta, 'no-store', 404);

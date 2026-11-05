@@ -65,6 +65,6 @@ export function llms(k, host) {
 // the descriptor: no door here — the page names where each door is and how a read is paid
 export function descriptor(k) {
   return { name: k === 'paygo' ? 'data-paygo' : 'data-licence', kind: 'page (no MCP door on this host)', page: canon(k) + '/', payment: { page: 'https://data-paygo.ai/' },
-    ...(k === 'paygo' ? { doors: ['https://mcp.getissuer.ai/mcp', 'https://mcp.getorderability.ai/mcp', 'https://mcp.gettargetmarket.ai/mcp', 'https://mcp.getasof.ai/mcp', 'https://mcp.issuerwire.ai/mcp', 'https://mcp.rco-records.ai/mcp', 'https://mcp.<market>-cm-kg.ai/mcp'], ask_for_the_offer: 'header x402-pay: 1' } : { licence: 'https://data-licence.ai/', contact: 'https://data-licence.ai/#contact' }), operator: OPERATOR };
+    ...(k === 'paygo' ? { doors: ['https://mcp.getissuer.ai/mcp', 'https://mcp.getorderability.ai/mcp', 'https://mcp.gettargetmarket.ai/mcp', 'https://mcp.getasof.ai/mcp', 'https://mcp.getfilings.ai/mcp', 'https://mcp.getticker.ai/mcp', 'https://mcp.getauditor.ai/mcp', 'https://mcp.issuerwire.ai/mcp', 'https://mcp.rco-records.ai/mcp', 'https://mcp.<market>-cm-kg.ai/mcp'], ask_for_the_offer: 'header x402-pay: 1' } : { licence: 'https://data-licence.ai/', contact: 'https://data-licence.ai/#contact' }), operator: OPERATOR };
 }
 export const paths = () => ['/'].concat(KIT);

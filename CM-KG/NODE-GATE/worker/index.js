@@ -13,13 +13,15 @@ import { bookPath, serveBook, cardWithBook, ECO_JWK_PUBLIC } from './book.js';  
 import { AIO_TOOL, getOrderability, cardWithTool, withListing } from './aio.js';   // AIO-01: the orderability door
 import { stampClass } from './stampclass.js';   // BOOK-05: instrument_class on the record (schema v0.2), stamped before signing
 import { TM_NAMES, TM_READS, TM_TOOLS, TM_JWK_PUBLIC, tmCall, tmSkills } from './tm.js';   // TMKT-02: the Target Market door (read and file) on every node door
-import { ASOF_NAME, ASOF_TOOL, getAsOf, asofLine, asofLlms, asofSkill, ASOF_PAGE, ASOF_MCP } from './asof.js';   // ASOF-01: get_as_of, the point-in-time door, on every node door
+import { ASOF_NAME, ASOF_TOOL, getAsOf, asofLine, asofLlms, asofSkill, ASOF_PAGE, ASOF_MCP } from './asof.js';
+import { DOORS, DOOR_NAMES, DOOR_TOOLS, doorCall, doorsLine, doorsLlms, doorsSkills } from './doors.js';   // DOORS-01: get_filings · get_ticker · get_auditor on every node door   // ASOF-01: get_as_of, the point-in-time door, on every node door
 const JWKS = { keys: [ECO_JWK_PUBLIC, {"kty": "OKP", "crv": "Ed25519", "x": "cqa-iPbl2AD_Yw3bIxQCPAmzSiBemxU6ajL2nI1w9QA", "kid": "allooloo-cmr-2026-10", "alg": "EdDSA", "use": "sig"}, {"kty": "OKP", "crv": "Ed25519", "x": "N-knqz1-H9xwNGvOS0Eu7CDrmdPgzFjCgvExLJt2lQw", "kid": "allooloo-rco-2026-10", "alg": "EdDSA", "use": "sig"}, TM_JWK_PUBLIC] };   // TMKT-02: + the Target Market key (kid allooloo-tm-2026-11)
 const signs = (env, node) => { const s = String(env.SIGN_NODES || '').trim(); return s === 'all' || s.split(/[ ,]+/).includes(node.split('-')[0]); };
 // DAY ORDER 5 ZONES-01 (2026-10-24): the door name rule of record — a market with its own zone answers on mcp.<cc>-cm-kg.ai (card agent.<cc>-cm-kg.ai);
 // the European nodes answer under the EU regime zone, <cc>.eu-cm-kg.ai (door /mcp, card /.well-known/agent-card.json). Receipts name the door they were read on.
 const nodeOf = h => { const m = /^([a-z]{2})\.eu-cm-kg\.ai$/.exec(h); return m ? `${m[1]}-cm-kg` : h.replace(/^(mcp|agent)\./, '').replace(/\.ai$/, ''); };
-const VERSION = '2026-11-05.1';   // .1 = ASOF-01: get_as_of answered here (the sealed vintage via the door's own get_record as_of; signed kid allooloo-cmr-2026-10; receipted with the node as writer); on tools/list, the card, the page, llms.txt, facts.json, mcp.json; was 2026-11-02.4
+const VERSION = '2026-11-05.2';   // .2 = DOORS-01: get_filings · get_ticker · get_auditor answered here (fields already on the record; signed; receipted with the node as writer); was 2026-11-05.1
+const VERSION_PRIOR_DOORS01 = '2026-11-05.1';   // .1 = ASOF-01: get_as_of answered here (the sealed vintage via the door's own get_record as_of; signed kid allooloo-cmr-2026-10; receipted with the node as writer); on tools/list, the card, the page, llms.txt, facts.json, mcp.json; was 2026-11-02.4
 const VERSION_PRIOR_ASOF01 = '2026-11-02.4';   // .4 = TMKT-04: get_target_market carries tm-verify's drift marks; outcomes stamp AIO-10060 v1.2; was 2026-11-02.3 —   // .3 = TMKT-03: get_orderability carries the discharge (the statement on file against the Book's manufacturer_evidence_accepted; the signal never changed); R-039 on the wire (the offer only when asked); the filing receipt record beside each statement; was 2026-11-02.2 —   // .2 = TMKT-02 fix: the store is the container target-market (blobs tm/<subject>/v<N>.json; tm alone is under Azure's three-character minimum); was 2026-11-02.1 —   // .1 = TMKT-02: get_target_market · list_target_market_versions · verify_target_market · file_target_market answered here (tm.js; the node's pond, container tm); the descriptor's payment.page (data-paygo.ai)
 const VERSION_PRIOR_TMKT02 = '2026-11-01.4';   // .4 = DEFECTS-01: ACM-404 on the category lists the categories the chapter names (evidence_gaps); the caller key on get_orderability receipts
 const VERSION_PRIOR_DEFECTS01 = '2026-11-01.3';   // .3 = BOOK-08: the product-scope test reads the scope bridge (product_scope cfi_categories, ISO 10962)
@@ -70,18 +72,18 @@ async function tmCard(resp, door) {
   if (!c || typeof c !== 'object' || Array.isArray(c)) return resp;
   const skills = (Array.isArray(c.skills) ? c.skills.filter(s => s && !TM_NAMES.includes(s.id)) : []).concat(tmSkills(door));
   const h = new Headers(resp.headers); h.delete('content-length');
-  const sk2 = skills.filter(s => s && s.id !== ASOF_NAME).concat([asofSkill(door)]);   // ASOF-01
+  const sk2 = skills.filter(s => s && s.id !== ASOF_NAME && !DOOR_NAMES.includes(s.id)).concat([asofSkill(door)], doorsSkills(door));   // ASOF-01 · DOORS-01
   return new Response(JSON.stringify({ ...c, skills: sk2, target_market: { door: `${door}/mcp`, tools: TM_NAMES, page: 'https://gettargetmarket.ai/', router: 'https://mcp.gettargetmarket.ai/mcp (routes by subject to the home node)' }, as_of: { door: `${door}/mcp`, tool: ASOF_NAME, page: ASOF_PAGE, router: `${ASOF_MCP} (routes by issuer to the owning node)` } }), { status: resp.status, headers: h });
 }
 async function tmListing(resp, p, door) {
   const ct = resp.headers.get('content-type') || ''; if (!resp.ok) return resp;
   let t = await resp.text(); const h = new Headers(resp.headers); h.delete('content-length');
-  if (p === '/facts.json' && ct.includes('json')) { try { const j = JSON.parse(t); if (Array.isArray(j.tools)) for (const n of TM_NAMES) if (!j.tools.includes(n)) j.tools.push(n); j.target_market = { door: `${door}/mcp`, tools: TM_NAMES, page: 'https://gettargetmarket.ai/', store: "this node's own pond, container target-market (tm/<subject>/v<N>.json)" }; if (Array.isArray(j.tools) && !j.tools.includes(ASOF_NAME)) j.tools.push(ASOF_NAME); j.as_of = { door: `${door}/mcp`, tool: ASOF_NAME, page: ASOF_PAGE, store: "the node's sealed vintage (backfill/replay/<year>/), read through get_record as_of" }; t = JSON.stringify(j); } catch (e) {} }   // ASOF-01
-  else if (p === '/' && ct.includes('html')) t = t.replace(/(<p>Orderability door:[\s\S]*?<\/p>)/, `$1<p>Target Market door: <a href="${door}/mcp">${door}/mcp</a> — ${TM_NAMES.join(' · ')}: the manufacturer's target market statement for a product listed on this node, stored here under tm/, signed by the node and receipted at mcp.rco-records.ai (<a href="https://gettargetmarket.ai/">gettargetmarket.ai</a>).</p>${asofLine(door)}`);   // ASOF-01: the As Of line after the Target Market line
-  else if (p === '/llms.txt') t = t.replace(/^(Tools: .*)$/m, `$1, ${TM_NAMES.join(', ')} (the manufacturer's target market statement for a product listed on this node: read, list, verify, file — https://gettargetmarket.ai/), ${asofLlms()}`);   // ASOF-01
+  if (p === '/facts.json' && ct.includes('json')) { try { const j = JSON.parse(t); if (Array.isArray(j.tools)) for (const n of TM_NAMES) if (!j.tools.includes(n)) j.tools.push(n); j.target_market = { door: `${door}/mcp`, tools: TM_NAMES, page: 'https://gettargetmarket.ai/', store: "this node's own pond, container target-market (tm/<subject>/v<N>.json)" }; if (Array.isArray(j.tools) && !j.tools.includes(ASOF_NAME)) j.tools.push(ASOF_NAME); if (Array.isArray(j.tools)) for (const n of DOOR_NAMES) if (!j.tools.includes(n)) j.tools.push(n); j.as_of = { door: `${door}/mcp`, tool: ASOF_NAME, page: ASOF_PAGE, store: "the node's sealed vintage (backfill/replay/<year>/), read through get_record as_of" }; t = JSON.stringify(j); } catch (e) {} }   // ASOF-01
+  else if (p === '/' && ct.includes('html')) t = t.replace(/(<p>Orderability door:[\s\S]*?<\/p>)/, `$1<p>Target Market door: <a href="${door}/mcp">${door}/mcp</a> — ${TM_NAMES.join(' · ')}: the manufacturer's target market statement for a product listed on this node, stored here under tm/, signed by the node and receipted at mcp.rco-records.ai (<a href="https://gettargetmarket.ai/">gettargetmarket.ai</a>).</p>${asofLine(door)}${doorsLine(door)}`);   // ASOF-01: the As Of line after the Target Market line · DOORS-01: the three door lines
+  else if (p === '/llms.txt') t = t.replace(/^(Tools: .*)$/m, `$1, ${TM_NAMES.join(', ')} (the manufacturer's target market statement for a product listed on this node: read, list, verify, file — https://gettargetmarket.ai/), ${asofLlms()}, ${doorsLlms()}`);   // ASOF-01 · DOORS-01
   return new Response(t, { status: resp.status, headers: h });
 }
-const tmDescTools = tools => Array.isArray(tools) ? tools.concat(TM_TOOLS.concat([ASOF_TOOL]).filter(t => !tools.find(x => x && x.name === t.name)).map(t => ({ name: t.name, description: t.description }))) : tools;   // ASOF-01: + get_as_of
+const tmDescTools = tools => Array.isArray(tools) ? tools.concat(TM_TOOLS.concat([ASOF_TOOL], DOOR_TOOLS).filter(t => !tools.find(x => x && x.name === t.name)).map(t => ({ name: t.name, description: t.description }))) : tools;   // ASOF-01: + get_as_of
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url); const p = url.pathname.replace(/\/+$/, '') || '/';
@@ -132,6 +134,25 @@ export default {
         'X-RCO-Receipt-Id': mine.map(m => (m.result.structuredContent || {}).receipt_id).filter(Boolean).join(', '), 'access-control-expose-headers': 'X-RCO-Receipt-Id, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE' } });
       return withPay(resp, tmPay);
     }
+    // DOORS-01: get_filings · get_ticker · get_auditor are answered by the gate (the door's own reads of the record, the node's record key, the receipt writer); free for
+    // every agent, the signed HTTP 402 offer only when asked (x402-pay: 1) or paid; a call routed by the router was metered there and names its settlement
+    const dCalls = list.filter(x => x && x.method === 'tools/call' && x.params && DOOR_NAMES.includes(x.params.name));
+    if (dCalls.length) {
+      let dPay = null, dSettle = null; const dRouted = /^getissuer apex \(doors route\)/.test(request.headers.get('user-agent') || '');
+      if (dRouted) { try { dSettle = JSON.parse(request.headers.get('x-door-settlement') || 'null'); } catch (e) { dSettle = null; } }
+      if (!internal && !dRouted && (request.headers.get('x402-pay') === '1' || request.headers.get('payment-signature') || request.headers.get('x-payment'))) {
+        const g = await decide(request, env, { door: node, resource: `https://${url.hostname}/mcp`, description: `One record read on the ${node} node door (Allooloo Technologies Corp.)`, units: dCalls.length });
+        if (g.response) return signOffer(env, node, g.response);
+        if (g.paid) { dPay = await settle(env, g.paid, node); if (!dPay.settled) return settleFail(dPay); dSettle = { network: dPay.pr.network, transaction: dPay.tx, payer: dPay.payer }; }
+      }
+      const rest = list.filter(x => !dCalls.includes(x));
+      const mine = await Promise.all(dCalls.map(async x => { const r = await doorCall(env, ctx, { node, host: url.hostname, door: RDOOR, callerKey: request.headers.get('rco-key') || undefined, payer: dSettle ? dSettle.payer : undefined, settlement: dSettle ? { network: dSettle.network, transaction: dSettle.transaction } : undefined }, x.params.name, (x.params && x.params.arguments) || {}); return { m: { jsonrpc: '2.0', id: x.id, result: { content: [{ type: 'text', text: JSON.stringify(r.o) }], structuredContent: r.o, isError: !!r.err } }, rid: r.receipt_id }; }));
+      let others = [];
+      if (rest.length) { const r2 = await fetch(new Request(request, { body: JSON.stringify(Array.isArray(msg) ? rest : rest[0]) })); try { const j2 = await r2.json(); others = Array.isArray(j2) ? j2 : [j2]; } catch (e) { others = []; } }
+      const all = mine.map(x => x.m).concat(others);
+      return withPay(new Response(JSON.stringify(Array.isArray(msg) ? all : all[0]), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'no-store', 'access-control-allow-origin': '*', 'X-Node-Gate': VERSION,
+        'X-RCO-Receipt-Id': mine.map(x => x.rid).filter(Boolean).join(', '), 'access-control-expose-headers': 'X-RCO-Receipt-Id, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE' } }), dPay);
+    }
     // ASOF-01: get_as_of is answered by the gate (the door's own get_record as_of, the node's record key, the receipt writer); free for every agent, the signed
     // HTTP 402 offer only when asked (x402-pay: 1) or paid (R-039, as get_orderability); a call routed by the router was metered there and names its settlement
     const asofCalls = list.filter(x => x && x.method === 'tools/call' && x.params && x.params.name === ASOF_NAME);
@@ -180,6 +201,7 @@ export default {
       if (j0 && j0.result && Array.isArray(j0.result.tools) && !j0.result.tools.find(t => t.name === 'get_orderability')) j0.result.tools.push(AIO_TOOL);
       if (j0 && j0.result && Array.isArray(j0.result.tools)) for (const tt of TM_TOOLS) if (!j0.result.tools.find(t => t.name === tt.name)) j0.result.tools.push(tt);   // TMKT-02
       if (j0 && j0.result && Array.isArray(j0.result.tools) && !j0.result.tools.find(t => t.name === ASOF_NAME)) j0.result.tools.push(ASOF_TOOL);   // ASOF-01
+      if (j0 && j0.result && Array.isArray(j0.result.tools)) for (const tt of DOOR_TOOLS) if (!j0.result.tools.find(t => t.name === tt.name)) j0.result.tools.push(tt);   // DOORS-01
       const h0 = new Headers(resp.headers); h0.delete('content-length'); h0.set('X-Node-Gate', VERSION); return withPay(new Response(JSON.stringify(j0), { status: resp.status, headers: h0 }), pay);
     }
     const calls = internal ? [] : list.filter(x => x && x.method === 'tools/call' && x.params && x.params.name === 'resolve_issuer');

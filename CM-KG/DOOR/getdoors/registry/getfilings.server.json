@@ -1,0 +1,47 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.allooloo/getfilings",
+  "title": "getfilings: the Filings door",
+  "description": "The disclosures of an issuer in a date range, from the record: signed and receipted (RCO-10060).",
+  "version": "0.1.0",
+  "websiteUrl": "https://getfilings.ai",
+  "repository": {
+    "url": "https://github.com/allooloo/cm-kg",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.getfilings.ai/mcp"
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "operator": "Allooloo Technologies Corp.",
+      "category": "issuer record door (from fields already on the record)",
+      "keywords": [
+        "filings",
+        "disclosures",
+        "date range",
+        "issuer record",
+        "RCO-10060",
+        "receipt",
+        "capital markets"
+      ],
+      "authentication": "none",
+      "access": "free reads; the x402 offer only when asked (x402-pay: 1); every read receipted at mcp.rco-records.ai",
+      "same_router_as": "https://mcp.getissuer.ai/mcp (same index)",
+      "tools": [
+        "get_filings",
+        "resolve_issuer",
+        "list_nodes"
+      ],
+      "errors": [
+        "unknown_issuer",
+        "ambiguous",
+        "not_on_record",
+        "invalid_request"
+      ]
+    }
+  }
+}

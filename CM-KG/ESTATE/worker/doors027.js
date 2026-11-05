@@ -6,7 +6,8 @@ import { OPERATOR, CORPORATE, CONTACT, APEX, APEX_AGENT, SURFACES_VERSION, REGIO
 import { nodesTable, totals } from './products.js';
 import CAP from './duty-captures.js';
 import * as G from './getord.js';
-import * as A from './asof.js';   // ASOF-01 (2026-11-05): getasof.ai, the point-in-time door's page (kind 'asof')
+import * as A from './asof.js';
+import * as DK from './desks.js';   // DOORS-01 (2026-11-05): getfilings.ai · getticker.ai · getauditor.ai (kind 'desk')   // ASOF-01 (2026-11-05): getasof.ai, the point-in-time door's page (kind 'asof')
 import * as T from './tm.js';
 import * as PG from './paygo.js';   // TMKT-02 (PAYGO-01, LICENCE-01): data-paygo.ai and data-licence.ai (kinds 'paygo', 'licence')   // TMKT-01 (2026-11-01): gettargetmarket.ai, the Target Market door's page (kind 'tm')   // GETORD-01 (2026-11-02): getorderability.ai, the orderability door's page (kind 'getord')
 import * as Z from './zones02.js';   // ZONES-02 (2026-10-26): the nine pages of the zones paid 2026-10-25 ride this dispatch (kind 'zone02')
@@ -66,7 +67,8 @@ export const DUTIES = {
 };
 
 export function classify27(h) {
-  let m; const as = A.classifyA(h); if (as) return as;   // ASOF-01
+  let m; const dk = DK.classifyD(h); if (dk) return dk;   // DOORS-01
+  const as = A.classifyA(h); if (as) return as;   // ASOF-01
   const pg = PG.classifyP(h); if (pg) return pg; const t = T.classifyT(h); if (t) return t; const g = G.classifyG(h); if (g) return g; const z = Z.classifyZ(h); if (z) return z;
   if ((m = h.match(/^agent-?(kyp|prod|mifid|finsa|ddo|regbi)\.(ai|com|co\.uk)$/)) && DUTIES[m[1]]) { const canon = `agent-${m[1]}.ai`; return h === canon ? { kind: 'duty', fam: m[1] } : { kind: 'redirect', canonical: `https://${canon}`, status: 301 }; }
   if (/^get-?issuer\.(ai|com|io|org|co\.uk)$/.test(h)) return h === 'getissuer.ai' ? { kind: 'getissuer' } : { kind: 'redirect', canonical: GI, status: 301 };
@@ -74,12 +76,13 @@ export function classify27(h) {
   if (/^agent-swap\.(ai|com|io|org|co\.uk)$/.test(h)) return h === 'agent-swap.ai' ? { kind: 'swap' } : { kind: 'redirect', canonical: SWAP, status: 301 };   // ORDER-032 C.4
   return null;
 }
-export const serveAs = h => A.serveAs(h) || G.serveAs(h) || T.serveAs(h) || PG.serveAs(h);   // ASOF-01: www.getasof.ai answers as getasof.ai   // TMKT-02: the data-paygo and data-licence twins and every www answer as the .ai host
+export const serveAs = h => DK.serveAs(h) || A.serveAs(h) || G.serveAs(h) || T.serveAs(h) || PG.serveAs(h);   // ASOF-01: www.getasof.ai answers as getasof.ai   // TMKT-02: the data-paygo and data-licence twins and every www answer as the .ai host
 export const descriptorP = k => PG.descriptor(k);   // TMKT-01: the gettargetmarket twins, every www and agent.gettargetmarket.ai answer as gettargetmarket.ai
 export const bookDataT = T.bookData; export const docsBodyT = T.docsBodyT; export const pendingBodyT = T.pendingBody; export const emtBodyT = T.emtBody; export const fileBodyT = T.fileBody; export const agentCardT = T.agentCardT; export const descriptorT = T.descriptorT;
 export const bookDataG = G.bookData; export const docsBodyG = G.docsBodyG;
+export const deskData = DK.deskData; export const agentCardD = DK.agentCardD; export const descriptorD = DK.descriptorD; export const x402D = DK.x402D;   // DOORS-01
 export const asofData = A.asofData; export const agentCardA = A.agentCardA; export const descriptorA = A.descriptorA; export const x402A = A.x402A;   // ASOF-01   // GETORD-01: the twins and every www of getorderability answer as getorderability.ai
-export const isNew = c => c && (c.kind === 'asof' || c.kind === 'paygo' || c.kind === 'licence' || c.kind === 'tm' || c.kind === 'getord' || c.kind === 'duty' || c.kind === 'getissuer' || c.kind === 'cite' || c.kind === 'swap' || c.kind === 'zone02');
+export const isNew = c => c && (c.kind === 'desk' || c.kind === 'asof' || c.kind === 'paygo' || c.kind === 'licence' || c.kind === 'tm' || c.kind === 'getord' || c.kind === 'duty' || c.kind === 'getissuer' || c.kind === 'cite' || c.kind === 'swap' || c.kind === 'zone02');
 
 const nv = (live, cc) => { const n = live[`${cc}-cm-kg`] || {}; return { live: !!n.live, records: n.live ? int(n.records) : '', events: n.live ? int(n.events) : '', as_of: n.live ? (n.as_of || '') : '' }; };
 function famVals(live, fam) {
@@ -93,6 +96,7 @@ export function target27(c) {
   if (c.kind === 'tm') return T.targetT();
   if (c.kind === 'getord') return G.targetG();
   if (c.kind === 'asof') return A.targetA();   // ASOF-01
+  if (c.kind === 'desk') return DK.targetD(c);   // DOORS-01
   if (c.kind === 'zone02') return Z.targetZ(c);
   if (c.kind === 'duty') {
     const d = DUTIES[c.fam];
@@ -106,12 +110,13 @@ const CITE = {
   fact: { title: 'Agentic cite-fact — the receipt for an answer an agent was served', h1: 'cite-fact — the receipt for a served answer.', what: 'A receipt is a permanent address on cite-fact.ai that resolves to exactly what an Allooloo door served: the record or event payload, the node, the as-of, the serving time, the signing key and the source page of each field. A second call never changes the first receipt.', state: 'Receipts are not issued yet and none is stubbed. This host serves its machine kit only.' },
   dd: { title: 'Agentic cite-DD — the due-diligence file, every fact receipted', h1: 'cite-DD — the due-diligence file, every fact receipted.', what: 'cite-DD is the due diligence (DD) file for one issuer: a bundle of cite-fact receipts, gathered through the duty doors, each fact traceable to the answer that served it.', state: 'No file is issued yet and none is stubbed. This host serves its machine kit only.' }
 };
-export function label27(c) { if (c.kind === 'asof') return A.TITLE; if (c.kind === 'paygo' || c.kind === 'licence') return PG.TITLES[c.kind]; if (c.kind === 'tm') return T.TITLE; if (c.kind === 'getord') return G.TITLE; if (c.kind === 'zone02') return Z.labelZ(c); if (c.kind === 'swap') return SWAP_COPY.title; return c.kind === 'duty' ? DUTIES[c.fam].title : c.kind === 'getissuer' ? 'KYP — get_issuer, the capital markets issuer record for AI agents' : CITE[c.which].title; }
+export function label27(c) { if (c.kind === 'desk') return DK.titleD(c); if (c.kind === 'asof') return A.TITLE; if (c.kind === 'paygo' || c.kind === 'licence') return PG.TITLES[c.kind]; if (c.kind === 'tm') return T.TITLE; if (c.kind === 'getord') return G.TITLE; if (c.kind === 'zone02') return Z.labelZ(c); if (c.kind === 'swap') return SWAP_COPY.title; return c.kind === 'duty' ? DUTIES[c.fam].title : c.kind === 'getissuer' ? 'KYP — get_issuer, the capital markets issuer record for AI agents' : CITE[c.which].title; }
 export function desc27(c, live) {
   if (c.kind === 'paygo' || c.kind === 'licence') return PG.desc(c.kind);
   if (c.kind === 'tm') return T.descT();
   if (c.kind === 'getord') return G.descG();
   if (c.kind === 'asof') return A.descA();   // ASOF-01
+  if (c.kind === 'desk') return DK.descD(c);   // DOORS-01
   if (c.kind === 'zone02') return Z.descZ(c, live);
   if (c.kind === 'swap') return SWAP_COPY.desc;
   if (c.kind === 'duty') { const d = DUTIES[c.fam]; const v = famVals(live, c.fam); return `The record an agent cites under ${d.long} (${d.short}), ${d.market}: ${v.records} issuer records and ${v.events} dated disclosure events, live from list_nodes, served in-country.`; }
@@ -209,6 +214,7 @@ export function citeLlms(host, which) { const q = CITE[which]; return [`# ${host
 export function pageArgs27(c, ctx, host) {
   if (c.kind === 'paygo' || c.kind === 'licence') return { title: PG.TITLES[c.kind], h1: PG.h1(c.kind), state: 'live', eyebrow: PG.eyebrow(c.kind), body: PG.body(c.kind, host), meta: { node: 'estate', as_of: today() } };   // TMKT-02: the eyebrow of the copy
   if (c.kind === 'tm') { const d = T.sweep(ctx.live); const v = (ctx.book && ctx.book.aio) || 'not read'; return { title: T.TITLE, h1: T.H1, state: 'live', asOf: d, version: v, vlabel: 'aio', body: T.tmBody(ctx, host), meta: { node: 'apex', as_of: d } }; }   // TMKT-01: LIVE · AS OF <sweep market date> · AIO <text version> · GETTARGETMARKET.AI
+  if (c.kind === 'desk') { const d = DK.sweepD(ctx.live); return { title: DK.titleD(c), h1: DK.h1D(c), state: 'live', asOf: d, body: DK.deskBody(c, ctx, host), meta: { node: 'apex', as_of: d } }; }   // DOORS-01
   if (c.kind === 'asof') { const d = A.sweep(ctx.live); return { title: A.TITLE, h1: A.H1, state: 'live', asOf: d, body: A.asofBody(ctx, host), meta: { node: 'apex', as_of: d } }; }   // ASOF-01
   if (c.kind === 'getord') { const d = G.sweep(ctx.live); const gate = (ctx.book && ctx.book.gate) || 'not read'; return { title: G.TITLE, h1: G.H1, state: 'live', asOf: d, version: gate, vlabel: 'gate', body: G.getordBody(ctx, host), meta: { node: 'apex', as_of: d } }; }   // GETORD-01: LIVE · AS OF <sweep market date> · GATE <gate version> · GETORDERABILITY.AI
   if (c.kind === 'zone02') return Z.pageArgsZ(c, ctx, host);
@@ -217,9 +223,9 @@ export function pageArgs27(c, ctx, host) {
   if (c.kind === 'getissuer') { const t = totals(ctx); return { title: label27(c), h1: 'get_issuer — the capital markets issuer record, for AI agents.', state: 'live', asOf: t.last || today(), body: getissuerBody(ctx, host), meta: { node: 'apex', as_of: t.last || today() } }; }
   const q = CITE[c.which]; return { title: q.title, h1: q.h1, state: 'record', asOf: today(), body: citeBody(host, c.which), meta: { node: 'estate', as_of: today() } };
 }
-export function facts27(c, host, live, ctx) { if (c.kind === 'asof') return A.factsA(host, live, ctx && ctx.asof); if (c.kind === 'paygo' || c.kind === 'licence') return PG.facts(c.kind, host); if (c.kind === 'tm') return T.factsT(host, live, ctx && ctx.book); if (c.kind === 'getord') return G.factsG(host, live, ctx && ctx.book); if (c.kind === 'zone02') return Z.factsZ(c, host, live, ctx); if (c.kind === 'swap') return swapFacts((ctx && ctx.swap) || { rows: [], swap_log: [], at: new Date().toISOString() }, host); return c.kind === 'duty' ? dutyFacts(host, c.fam, live) : c.kind === 'getissuer' ? getissuerFacts(host, live) : citeFacts(host, c.which, live); }
-export function llms27(c, host, live, ctx) { if (c.kind === 'asof') return A.llmsA(host, live, ctx && ctx.asof); if (c.kind === 'paygo' || c.kind === 'licence') return PG.llms(c.kind, host); if (c.kind === 'tm') return T.llmsT(host, live, ctx && ctx.book); if (c.kind === 'getord') return G.llmsG(host, live, ctx && ctx.book); if (c.kind === 'zone02') return Z.llmsZ(c, host, live, ctx); if (c.kind === 'swap') return swapLlms((ctx && ctx.swap) || { rows: [], swap_log: [], at: new Date().toISOString() }, host); return c.kind === 'duty' ? dutyLlms(host, c.fam, live) : c.kind === 'getissuer' ? getissuerLlms(host, live) : citeLlms(host, c.which); }
-export function paths27(c) { if (c.kind === 'asof') return A.pathsA(); if (c.kind === 'paygo' || c.kind === 'licence') return PG.paths(); if (c.kind === 'tm') return T.pathsT(); if (c.kind === 'getord') return G.pathsG(); if (c.kind === 'zone02') return Z.pathsZ(); if (c.kind === 'swap') return ['/', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt', '/sitemap.xml', '/robots.txt']; return (c.kind === 'getissuer' ? ['/', '/docs'] : ['/']).concat(['/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt', '/sitemap.xml', '/robots.txt']).concat(c.kind === 'cite' ? [] : ['/mcp.json', '/openapi.json']); }
+export function facts27(c, host, live, ctx) { if (c.kind === 'desk') return DK.factsD(c, host, live, ctx); if (c.kind === 'asof') return A.factsA(host, live, ctx && ctx.asof); if (c.kind === 'paygo' || c.kind === 'licence') return PG.facts(c.kind, host); if (c.kind === 'tm') return T.factsT(host, live, ctx && ctx.book); if (c.kind === 'getord') return G.factsG(host, live, ctx && ctx.book); if (c.kind === 'zone02') return Z.factsZ(c, host, live, ctx); if (c.kind === 'swap') return swapFacts((ctx && ctx.swap) || { rows: [], swap_log: [], at: new Date().toISOString() }, host); return c.kind === 'duty' ? dutyFacts(host, c.fam, live) : c.kind === 'getissuer' ? getissuerFacts(host, live) : citeFacts(host, c.which, live); }
+export function llms27(c, host, live, ctx) { if (c.kind === 'desk') return DK.llmsD(c, host, live, ctx); if (c.kind === 'asof') return A.llmsA(host, live, ctx && ctx.asof); if (c.kind === 'paygo' || c.kind === 'licence') return PG.llms(c.kind, host); if (c.kind === 'tm') return T.llmsT(host, live, ctx && ctx.book); if (c.kind === 'getord') return G.llmsG(host, live, ctx && ctx.book); if (c.kind === 'zone02') return Z.llmsZ(c, host, live, ctx); if (c.kind === 'swap') return swapLlms((ctx && ctx.swap) || { rows: [], swap_log: [], at: new Date().toISOString() }, host); return c.kind === 'duty' ? dutyLlms(host, c.fam, live) : c.kind === 'getissuer' ? getissuerLlms(host, live) : citeLlms(host, c.which); }
+export function paths27(c) { if (c.kind === 'desk') return DK.pathsD(); if (c.kind === 'asof') return A.pathsA(); if (c.kind === 'paygo' || c.kind === 'licence') return PG.paths(); if (c.kind === 'tm') return T.pathsT(); if (c.kind === 'getord') return G.pathsG(); if (c.kind === 'zone02') return Z.pathsZ(); if (c.kind === 'swap') return ['/', '/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt', '/sitemap.xml', '/robots.txt']; return (c.kind === 'getissuer' ? ['/', '/docs'] : ['/']).concat(['/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt', '/sitemap.xml', '/robots.txt']).concat(c.kind === 'cite' ? [] : ['/mcp.json', '/openapi.json']); }
 export function pointer27(c, kind) { const t = target27(c); return { pointer: true, [kind]: kind === 'mcp' ? t.mcpjson : t.openapi, door: t.mcp, note: 'this host is a product surface; the door descriptor is served by the door' }; }
 
 // ---------- ORDER-032 C.4 — agent-swap.ai: which cloud serves each market's record now, its last swap, and when the record last reached the second cloud.

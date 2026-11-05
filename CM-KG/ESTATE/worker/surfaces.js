@@ -197,6 +197,12 @@ export default {
       if (p === '/mcp.json' || p === '/.well-known/mcp.json' || p === '/.well-known/mcp/server-card.json') return json(D27.descriptorP(c.kind), kmeta);
       if (p === '/openapi.json' || p === '/.well-known/skills.json' || p.startsWith('/.well-known/agent-skills') || p === '/.well-known/mcp/server-cards.json') return notFound(D27.paths27(c), kmeta);   // NAV-02 (R-043): the Agent card answers here (the FOR AGENTS row links it)
     }
+    if (c.kind === 'desk') {   // DOORS-01: each door page's own card, descriptor and x402 file (the door is the router); no generic CM-KG card, skills or OpenAPI here
+      if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json') return json(D27.agentCardD(c, host), kmeta);
+      if (p === '/mcp.json' || p === '/.well-known/mcp.json' || p === '/.well-known/mcp/server-card.json' || p === '/.well-known/mcp/server-cards.json') return json(D27.descriptorD(c), kmeta);
+      if (p === '/.well-known/x402.json' || p === '/.well-known/x402') return json(D27.x402D(c), kmeta);
+      if (p === '/openapi.json' || p === '/.well-known/skills.json' || p.startsWith('/.well-known/agent-skills')) return notFound(D27.paths27(c), kmeta);
+    }
     if (c.kind === 'asof') {   // ASOF-01: the As Of door's own card, descriptor and x402 file (the door is the router: mcp.getasof.ai); no generic CM-KG card, skills or OpenAPI here
       if (p === '/.well-known/agent-card.json' || p === '/.well-known/agent.json') return json(D27.agentCardA(host), kmeta);
       if (p === '/mcp.json' || p === '/.well-known/mcp.json' || p === '/.well-known/mcp/server-card.json' || p === '/.well-known/mcp/server-cards.json') return json(D27.descriptorA(), kmeta);
@@ -222,6 +228,7 @@ export default {
     if (p.startsWith('/.well-known/') && p !== '/.well-known/allooloo.json') return notFound(['/.well-known/agent-card.json', '/.well-known/mcp.json', '/.well-known/mcp/server-card.json', '/.well-known/api-catalog', '/.well-known/oauth-protected-resource', '/.well-known/agent-skills/index.json', '/.well-known/skills.json', '/.well-known/ai-catalog.json', '/.well-known/ard.json', '/.well-known/security.txt'], kmeta);
     if (D27.isNew(c)) {   // ORDER-027: duty doors, getissuer.ai, cite quiet zones
       if (c.kind === 'tm') ctx.book = await D27.bookDataT(live);   // TMKT-01: every node's signed AIO section (manufacturer_evidence_accepted) and the AIO text version, read at render
+      if (c.kind === 'desk') ctx.desk = await D27.deskData(env, c.key);   // DOORS-01: the gate's receipt counter, read at render
       if (c.kind === 'asof') ctx.asof = await D27.asofData(env, url);   // ASOF-01: the shelf ledger and the receipt counter, read at render
       if (c.kind === 'getord') ctx.book = await D27.bookDataG(live);   // GETORD-01: every node's signed AIO section and the gate version, read at render
       if (c.kind === 'swap') ctx.swap = await D27.swapData(env, url);   // ORDER-032 C.4: the serving cloud per node, live at render
@@ -231,7 +238,7 @@ export default {
       if (p === '/') { const r0 = HTML((c.kind === 'swap' || c.kind === 'zone02' ? D27.stripScripts : (x => x))(page({ host, title: a.title, desc: desc0, h1: a.h1, state: a.state, asOf: a.asOf, version: a.version, vlabel: a.vlabel, eyebrow: a.eyebrow, body: a.body, jsonld: [{ '@context': 'https://schema.org', '@type': 'WebPage', name: a.title, description: desc0, url: `https://${host}/`, publisher: { '@type': 'Organization', name: OPERATOR, url: CORPORATE } }] })), meta);
         if (c.kind === 'zone02') r0.headers.set('cache-control', 'public, max-age=60, must-revalidate, no-transform');   // ZONES-02: the edge must not inject the Web Analytics beacon (house method of sovereign034.js)
         return r0; }
-      if (p === '/index.md' && c.kind === 'asof') return markdown(AEO.toMarkdown(page({ host, title: a.title, desc: desc0, h1: a.h1, state: a.state, asOf: a.asOf, body: a.body }), host), meta, LINK);   // ASOF-01: the Markdown twin by path
+      if (p === '/index.md' && (c.kind === 'asof' || c.kind === 'desk')) return markdown(AEO.toMarkdown(page({ host, title: a.title, desc: desc0, h1: a.h1, state: a.state, asOf: a.asOf, body: a.body }), host), meta, LINK);   // ASOF-01: the Markdown twin by path
       if (p === '/llms.txt') return text(D27.llms27(c, host, live, ctx), meta, undefined, c.kind === 'swap' ? 'public, max-age=60' : undefined);
       if (p === '/facts.json') return json(D27.facts27(c, host, live, ctx), meta, c.kind === 'swap' ? 'public, max-age=60' : undefined);
       if (p === '/sitemap.xml') return text(sitemap(host, paths.filter(x => x === '/' || x === '/docs' || x === '/llms.txt' || x === '/facts.json')), meta, 'application/xml; charset=utf-8', 'public, max-age=3600');
