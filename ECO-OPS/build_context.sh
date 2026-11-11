@@ -13,5 +13,8 @@ S=/c/GREENCORE/AUDITS/GREAT-CULL-02-2026-10-10/snapshots
 for h in $(python -X utf8 -c "import csv,io;r={x['app']:x for x in csv.DictReader(io.open(r'C:/GREENCORE/AUDITS/GREAT-CULL-02-2026-10-10/AUDIT.csv',encoding='utf-8'))};print(' '.join(sorted(h for h in r['gp-sm']['hostnames'].split() if not h.startswith('www.'))))"); do
   mkdir -p "$OUT/app/CULL/snapshots/$h"; cp -r "$S/$h/." "$OUT/app/CULL/snapshots/$h/"; cp "$S/$h.manifest.json" "$OUT/app/CULL/snapshots/"
 done
+# STACK-01 (2026-10-30): the trunk renderer + the canonical texts (sm-eco-10060.org body) and the Book of Markets (duty, regulator, store on the member pages)
+mkdir -p "$OUT/app/STACK" "$OUT/app/BOOK/rail"; cp /c/ALLOOLOO/SITE/STACK-01/trunk.py /c/ALLOOLOO/SITE/STACK-01/canon-texts.json "$OUT/app/STACK/"; cp /c/ALLOOLOO/BOOK/rail/book.py /c/ALLOOLOO/BOOK/rail/book_pull.py /c/ALLOOLOO/BOOK/rail/catalogue-canon.json /c/ALLOOLOO/SITE/TEXTS-01/acm_first.py "$OUT/app/BOOK/rail/"
+for d in /c/ALLOOLOO/BOOK/[a-z][a-z]; do c=$(basename $d); mkdir -p "$OUT/app/BOOK/$c"; cp -r "$d/sections" "$d/chapters" "$OUT/app/BOOK/$c/"; done
 find "$OUT/app" -name "*.pre*" -delete
 echo "context: $(find "$OUT" -type f | wc -l) files, $(du -sh "$OUT" | cut -f1)"

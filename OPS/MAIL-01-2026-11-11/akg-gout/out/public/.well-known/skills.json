@@ -1,0 +1,95 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "operator": "Agentic KG Holdings",
+  "principal": "Matthew Keddy",
+  "surface": "https://agent-kg.ai",
+  "version": "0.12.4",
+  "skills": [
+    {
+      "name": "office_statement",
+      "type": "skill-md",
+      "description": "The office's current holdings summary, signed EdDSA (kid mk-office-x402-2026-09): via MCP tool office_statement, the paid call GET /api, or the licensed route /licensed/statement.",
+      "url": "/.well-known/agent-skills/office_statement/SKILL.md",
+      "digest": "sha256:027f8adc775b5109b610995f4b4fd6770e28cb07cfe43bb9ee63f8734853ac27",
+      "input": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "statement": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "kid": {
+            "type": "string"
+          },
+          "jwks": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "statement",
+          "data"
+        ]
+      },
+      "endpoints": [
+        "https://agent-kg.ai/mcp",
+        "https://agent-kg.ai/api",
+        "https://agent-kg.ai/licensed/statement"
+      ]
+    },
+    {
+      "name": "holding_attestation",
+      "type": "skill-md",
+      "description": "A line signed with the office key (kid mk-office-2026-09) that a company estate is the office's: GET /attest/{holding-host} for wefetch.ai or allooloo.io.",
+      "url": "/.well-known/agent-skills/holding_attestation/SKILL.md",
+      "digest": "sha256:2ac882299c7af3f1f2240bf3c48fd771f0cd9790174aaa82fd568f77f99ebd4e",
+      "input": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "type": "string",
+            "enum": [
+              "wefetch.ai",
+              "allooloo.io",
+              "familyofficeknowledgegraph.ai",
+              "rco-a2a.ai"
+            ]
+          }
+        },
+        "required": [
+          "host"
+        ]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "attestation": {
+            "type": "string"
+          },
+          "claims": {
+            "type": "object"
+          },
+          "kid": {
+            "type": "string"
+          },
+          "jwks": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "attestation",
+          "claims"
+        ]
+      },
+      "endpoints": [
+        "https://agent-kg.ai/attest/{host}"
+      ]
+    }
+  ]
+}

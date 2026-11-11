@@ -143,8 +143,9 @@ elif cmd == 'apex':
     if not ex or ex['properties']['template']['containers'][0]['image'] != image:
         az('containerapp', 'job', 'registry', 'set', '-n', job, '-g', rg, '--server', ACR_SERVER, '--identity', 'system')
         az('containerapp', 'job', 'update', '-n', job, '-g', rg, '--image', image, '--container-name', job, '--command', '/usr/local/bin/python3', '/job/ALLOOLOO/CM-KG/RAILS/job/job_apex.py', '--set-env-vars', *base_env); log(f'  {job}: image {image} (pull by identity)')
-    kv_secrets(job, rg, kv, ['cloudflare-d1-token', 'tavily-key', 'ark-aws-key-id', 'ark-aws-secret'])
-    set_env(job, rg, ['CLOUDFLARE_API_TOKEN=secretref:cloudflare-d1-token', 'TAVILY_API_KEY=secretref:tavily-key', 'AWS_ACCESS_KEY_ID=secretref:ark-aws-key-id', 'AWS_SECRET_ACCESS_KEY=secretref:ark-aws-secret'])
+    # EU-DOORS-01 addendum (2026-10-30): the apex deploys Workers with cloudflare-workers-token (the D1 token was refused by wrangler, code 10000); cloudflare-d1-token stays mounted
+    kv_secrets(job, rg, kv, ['cloudflare-d1-token', 'cloudflare-workers-token', 'tavily-key', 'ark-aws-key-id', 'ark-aws-secret'])
+    set_env(job, rg, ['CLOUDFLARE_API_TOKEN=secretref:cloudflare-workers-token', 'TAVILY_API_KEY=secretref:tavily-key', 'AWS_ACCESS_KEY_ID=secretref:ark-aws-key-id', 'AWS_SECRET_ACCESS_KEY=secretref:ark-aws-secret'])
     log(f'  {job}: vault references wired')
 elif cmd == 'digest':
     # ORDER-037 (2026-10-23): two more triggers of the apex image run job_digest.py — cmkg-apex-digest (daily, after the 14:00 UTC Issuerwire close) and

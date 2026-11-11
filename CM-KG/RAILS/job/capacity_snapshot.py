@@ -24,6 +24,15 @@ snap = {'read_utc': now.isoformat(), 'read_by': 'capacity_snapshot.py (laptop, a
         'stores': {'node_stores': sum(1 for s in stores if s['n'].endswith('pond')), 'regions': sorted({s['l'] for s in stores})}}
 k = az('storage', 'account', 'keys', 'list', '-g', 'allooloo-cmkg-shared', '-n', 'allooloocmkgapex', '--query', '[0].value')
 with tempfile.NamedTemporaryFile('w', suffix='.json', delete=False, encoding='utf-8') as f: json.dump(snap, f, indent=1); fn = f.name
+# BOOKOPS-02 (2026-11-01): the key goes in by environment (AZURE_STORAGE_KEY), never on the command line, and a failed upload prints the blob name and exit
+# status only — never the command. latest.json is the copy of record (a failure stops the run); the dated copy is beside, never over one, so a second
+# run in the same minute finds it written and that is not a failure.
+rc_latest = 0
 for name in ('capacity/latest.json', f'capacity/{now.date().isoformat()}-{now.strftime("%H%M")}.json'):
-    subprocess.run([*AZ, 'storage', 'blob', 'upload', '--account-name', 'allooloocmkgapex', '--account-key', k, '-c', 'ops', '-n', name, '-f', fn, '--overwrite', 'true' if name.endswith('latest.json') else 'false', '--no-progress', '-o', 'none'], env=ENV, check=True, capture_output=True)
+    r = subprocess.run([*AZ, 'storage', 'blob', 'upload', '--account-name', 'allooloocmkgapex', '-c', 'ops', '-n', name, '-f', fn, '--overwrite', 'true' if name.endswith('latest.json') else 'false', '--no-progress', '-o', 'none'],
+                       env={**ENV, 'AZURE_STORAGE_KEY': k}, capture_output=True)
+    if r.returncode:
+        print(f'upload {name}: exit {r.returncode}' + ('' if name.endswith('latest.json') else ' (the dated copy is already written this minute; latest.json is the copy of record)'), file=sys.stderr, flush=True)
+        if name.endswith('latest.json'): rc_latest = r.returncode
 os.unlink(fn); print(json.dumps(snap, indent=1))
+if rc_latest: sys.exit(rc_latest)

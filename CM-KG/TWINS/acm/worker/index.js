@@ -15,6 +15,7 @@ export default {
     const url = new URL(request.url); const h = url.hostname.toLowerCase().replace(/^www\./, '');
     const fam = env.FAMILY; const c = (MAP[fam] || (() => null))(h);
     if (!c) return new Response('not a twin of this family', { status: 404 });
+    if (fam === 'acm' && /^acm-(000|300|500)\./.test(h)) return new Response(null, { status: 301, headers: { location: 'https://acm-68000.org/', 'cache-control': 'public, max-age=3600', 'X-Twins-Version': VERSION } });   // TEXTS-01: ACM-68000 v1.1 — reserved codes, never served; their zones forward to the standard's page
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method Not Allowed', { status: 405, headers: { allow: 'GET, HEAD' } });
     const path = (c.base && (url.pathname === '/' || url.pathname === '')) ? c.base : (c.base && !['/llms.txt', '/robots.txt', '/sitemap.xml'].includes(url.pathname) && !url.pathname.startsWith('/.well-known/') ? c.base + url.pathname : url.pathname);
     const canonical = `https://${c.host}${path}${url.search}`;

@@ -1,0 +1,208 @@
+{
+  "name": "Agentic Private Office — Matthew Keddy",
+  "host": "agent-kg.ai",
+  "canonical": "https://agent-kg.ai/",
+  "version": "0.12.4",
+  "as_of": "2026-09-14",
+  "access": "open, read-only, no auth — except /api, a paid call (x402)",
+  "resources": [
+    {
+      "id": "home",
+      "url": "https://agent-kg.ai/",
+      "type": "text/html",
+      "description": "The office page, copy of record cut 2026-09-13: head, bio, sections 1–13, profile, contact form"
+    },
+    {
+      "id": "llms",
+      "url": "https://agent-kg.ai/llms.txt",
+      "type": "text/plain",
+      "description": "Plain-text guide for language models"
+    },
+    {
+      "id": "facts",
+      "url": "https://agent-kg.ai/facts.json",
+      "type": "application/json",
+      "description": "Office facts of record"
+    },
+    {
+      "id": "ai-catalog",
+      "url": "https://agent-kg.ai/ai-catalog.json",
+      "type": "application/json",
+      "description": "This catalogue; also served at https://agent-kg.ai/.well-known/ai-catalog.json"
+    },
+    {
+      "id": "agent-card",
+      "url": "https://agent-kg.ai/.well-known/agent-card.json",
+      "type": "application/json",
+      "description": "A2A agent card, read-only skills"
+    },
+    {
+      "id": "jwks",
+      "url": "https://agent-kg.ai/.well-known/jwks.json",
+      "type": "application/json",
+      "description": "Office public key set, kid mk-office-2026-09"
+    },
+    {
+      "id": "security",
+      "url": "https://agent-kg.ai/.well-known/security.txt",
+      "type": "text/plain",
+      "description": "Security contact (RFC 9116)"
+    },
+    {
+      "id": "sitemap",
+      "url": "https://agent-kg.ai/sitemap.xml",
+      "type": "application/xml",
+      "description": "Sitemap"
+    },
+    {
+      "id": "robots",
+      "url": "https://agent-kg.ai/robots.txt",
+      "type": "text/plain",
+      "description": "Crawl policy: open"
+    },
+    {
+      "id": "photo",
+      "url": "https://agent-kg.ai/MatthewKeddy.jpg",
+      "type": "image/jpeg",
+      "description": "Matthew Keddy, portrait"
+    },
+    {
+      "id": "entity-mark",
+      "url": "https://agent-kg.ai/akgh-icon.svg",
+      "type": "image/svg+xml",
+      "description": "Agentic KG Holdings entity mark (also /akgh-icon-64.png)"
+    },
+    {
+      "id": "x402",
+      "url": "https://agent-kg.ai/x402",
+      "type": "text/html",
+      "description": "x402: a paid call with a signed receipt"
+    },
+    {
+      "id": "api",
+      "url": "https://agent-kg.ai/api",
+      "type": "application/json",
+      "description": "Paid call: 402 without payment (x402 v2, $0.01 USDC on Base mainnet); with payment { receipt, statement, data } — a signed statement of the office's current holdings summary"
+    },
+    {
+      "id": "x402-jwks",
+      "url": "https://agent-kg.ai/x402/jwks.json",
+      "type": "application/json",
+      "description": "Receipt signing key, kid mk-office-x402-2026-09"
+    },
+    {
+      "id": "x402-receipt",
+      "url": "https://agent-kg.ai/x402/receipt/{nonce}",
+      "type": "application/json",
+      "description": "Resolve a receipt, forever"
+    },
+    {
+      "id": "mcp",
+      "url": "https://agent-kg.ai/mcp",
+      "type": "application/json",
+      "description": "MCP door (streamable-http), tool office_statement; card /.well-known/mcp.json"
+    },
+    {
+      "id": "attest",
+      "url": "https://agent-kg.ai/attest/{host}",
+      "type": "application/json",
+      "description": "Holding attestation signed with the office key"
+    },
+    {
+      "id": "oauth",
+      "url": "https://agent-kg.ai/.well-known/oauth-authorization-server",
+      "type": "application/json",
+      "description": "Office authorization server metadata; registration at /oauth/register; licensed statement /licensed/statement"
+    },
+    {
+      "id": "auth-md",
+      "url": "https://agent-kg.ai/auth.md",
+      "type": "text/markdown",
+      "description": "Agent registration instructions"
+    },
+    {
+      "id": "ard",
+      "url": "https://agent-kg.ai/.well-known/ai-catalog.json",
+      "type": "application/json",
+      "description": "ARD catalog (envelope), also /.well-known/ard.json"
+    },
+    {
+      "id": "skills",
+      "url": "https://agent-kg.ai/.well-known/skills.json",
+      "type": "application/json",
+      "description": "Skills with input/output shapes; index with digests at /.well-known/agent-skills/index.json"
+    },
+    {
+      "id": "api-catalog",
+      "url": "https://agent-kg.ai/.well-known/api-catalog",
+      "type": "application/linkset+json",
+      "description": "RFC 9727 API catalog"
+    },
+    {
+      "id": "openapi",
+      "url": "https://agent-kg.ai/openapi.json",
+      "type": "application/openapi+json",
+      "description": "OpenAPI 3.1 for the doors"
+    },
+    {
+      "id": "health",
+      "url": "https://agent-kg.ai/health.json",
+      "type": "application/json",
+      "description": "Status"
+    },
+    {
+      "id": "fo-kg",
+      "url": "https://familyofficeknowledgegraph.ai/",
+      "type": "text/html",
+      "description": "Family Office Knowledge Graph — the office's product surface (held, through the office)"
+    },
+    {
+      "id": "fo-kg-door",
+      "url": "https://mcp.fo-kg.ai/mcp",
+      "type": "application/json",
+      "description": "Family Office Knowledge Graph apex MCP door — resolve_family_office, get_record, list_events_since, list_aliases, list_nodes; card https://familyofficeknowledgegraph.ai/.well-known/mcp.json",
+      "url_long": "https://mcp.familyofficeknowledgegraph.ai/mcp"
+    },
+    {
+      "id": "fo-kg-agent-card",
+      "url": "https://agent.fo-kg.ai/.well-known/agent-card.json",
+      "type": "application/json",
+      "description": "Family Office Knowledge Graph A2A Agent Card",
+      "url_long": "https://agent.familyofficeknowledgegraph.ai/.well-known/agent-card.json"
+    }
+  ],
+  "holdings": [
+    {
+      "name": "wefetch",
+      "url": "https://wefetch.ai/"
+    },
+    {
+      "name": "Allooloo Technologies Corp.",
+      "url": "https://allooloo.io"
+    },
+    {
+      "name": "Family Office Knowledge Graph",
+      "url": "https://familyofficeknowledgegraph.ai"
+    }
+  ],
+  "page_sections": [
+    "Bio",
+    "1. The turn",
+    "2. Why the office exists",
+    "3. What is inside the office",
+    "4. Structure",
+    "5. What the office provides",
+    "6. Holdings",
+    "7. Keys, not coin",
+    "8. The keyring",
+    "9. RADAR",
+    "10. Record",
+    "11. Rulings",
+    "12. Machine kit",
+    "13. Model",
+    "Profile",
+    "Contact Us"
+  ],
+  "operator": "Agentic KG Holdings",
+  "principal": "Matthew Keddy"
+}

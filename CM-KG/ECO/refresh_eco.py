@@ -9,6 +9,10 @@ r"""refresh_eco.py — the eco-refresh agent (ECO-01 RUN; weekly, Sunday 05:00 U
 Usage: python -X utf8 -I refresh_eco.py [--no-deploy]"""
 import os, sys, re, json, glob, hashlib, datetime, subprocess, urllib.request, urllib.error, html
 HERE = os.path.dirname(os.path.abspath(__file__)); POND = os.path.join(HERE, "..", "POND", "eco", "refresh")
+try:   # BOOK-02 addendum (CEO ruling 4): read the Book mirror by the job identity when the grant is placed; else the image copy, said in the record
+    sys.path.insert(0, os.environ.get("BOOK_RAIL", "/app/BOOK/rail")); import book_pull; BOOK_FROM = book_pull.use_mirror()
+except Exception as _e: BOOK_FROM = f"image copy (book_pull unavailable: {type(_e).__name__})"
+print("Book read from:", BOOK_FROM, flush=True)
 UA = "Allooloo eco-refresh (ECO-01; developers@allooloo.ai)"
 # DOORS-02 (2026-10-26): the latest build by date then same-day number (eco-<date>.json is 1, -2, -3 …); a plain string sort put -9 after -24
 def build_no(p): m = re.match(r"eco-(\d{4}-\d{2}-\d{2})(?:-(\d+))?\.json$", os.path.basename(p)); return (m.group(1), int(m.group(2) or 1)) if m else ("", 0)

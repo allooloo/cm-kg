@@ -1,0 +1,44 @@
+# agent-kg.ai — Agentic Private Office — Matthew Keddy · Operator: Agentic KG Holdings
+# Open to all agents. Machine register: https://agent-kg.ai/llms.txt
+
+User-agent: *
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-Web
+Allow: /
+User-agent: anthropic-ai
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Googlebot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Perplexity-User
+Allow: /
+User-agent: Bingbot
+Allow: /
+User-agent: CCBot
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+User-agent: meta-externalagent
+Allow: /
+
+Sitemap: https://agent-kg.ai/sitemap.xml
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+# LLM discovery:  https://agent-kg.ai/llms.txt
+# Agent Card:     https://agent-kg.ai/.well-known/agent-card.json
+# ARD catalog:    https://agent-kg.ai/.well-known/ai-catalog.json
+# MCP:            https://agent-kg.ai/.well-known/mcp.json → https://agent-kg.ai/mcp
+# Keyring:        https://agent-kg.ai/.well-known/jwks.json
+# Paid door:      https://agent-kg.ai/api (x402) · human door https://agent-kg.ai/x402

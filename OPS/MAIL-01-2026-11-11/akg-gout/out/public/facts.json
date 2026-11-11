@@ -1,0 +1,430 @@
+{
+  "office": "Agentic Private Office — Matthew Keddy",
+  "principal": "Matthew Keddy",
+  "canonical": "https://agent-kg.ai/",
+  "twins": [
+    "https://agent-kg.com/",
+    "https://agent-kg.io/",
+    "https://agent-kg.org/"
+  ],
+  "holdings": [
+    {
+      "name": "wefetch",
+      "url": "https://wefetch.ai/",
+      "line": "held, through the office"
+    },
+    {
+      "name": "Allooloo Technologies Corp.",
+      "url": "https://allooloo.io",
+      "line": "held, through the office"
+    },
+    {
+      "name": "Family Office Knowledge Graph",
+      "url": "https://familyofficeknowledgegraph.ai",
+      "line": "familyofficeknowledgegraph.ai",
+      "kind": "product",
+      "door": "https://mcp.fo-kg.ai/mcp",
+      "agent_card": "https://agent.fo-kg.ai/.well-known/agent-card.json",
+      "facts": "https://familyofficeknowledgegraph.ai/facts.json",
+      "door_long": "https://mcp.familyofficeknowledgegraph.ai/mcp",
+      "agent_card_long": "https://agent.familyofficeknowledgegraph.ai/.well-known/agent-card.json"
+    },
+    {
+      "name": "RCO — Record of Cleared Orders",
+      "url": "https://rco-a2a.ai",
+      "line": "rco-a2a.ai",
+      "kind": "standard",
+      "since": "2026-10-23"
+    }
+  ],
+  "tenancies": [
+    {
+      "provider": "Microsoft Azure",
+      "line": "two tenants.",
+      "count": 2
+    },
+    {
+      "provider": "Google Cloud",
+      "line": "two tenants.",
+      "count": 2
+    },
+    {
+      "provider": "Amazon Web Services",
+      "line": "two accounts, custodial.",
+      "count": 2,
+      "custodial": true
+    },
+    {
+      "provider": "Cloudflare",
+      "line": "four accounts, custodial, all zones.",
+      "count": 4,
+      "custodial": true
+    }
+  ],
+  "profile": {
+    "linkedin": "https://www.linkedin.com/in/matthew-keddy-0670828a/"
+  },
+  "record": [
+    {
+      "title": "CEO Letter",
+      "url": "https://kyp-model.ai"
+    },
+    {
+      "title": "The LinkedIn series"
+    },
+    {
+      "title": "NeurIPS 2025 — Schrödinger bridges"
+    },
+    {
+      "title": "Company records — through each operating company's own estate"
+    }
+  ],
+  "rulings": [
+    {
+      "date": "2026-09-13",
+      "text": "The office holds no cryptocurrency. A key is a signature, not a wallet."
+    },
+    {
+      "date": "2026-09-13",
+      "text": "The office is the owner of record for the principal's cloud tenancies; identifiers stay in the private register."
+    },
+    {
+      "date": "2026-09-13",
+      "text": "mk@agent-kg.ai is not published; the form is the door."
+    },
+    {
+      "date": "2026-09-13",
+      "text": "Multi-family office model, agentic in scope; one principal on this page."
+    }
+  ],
+  "contact": {
+    "form": "https://agent-kg.ai/#contact"
+  },
+  "keys": {
+    "jwks": "https://agent-kg.ai/.well-known/jwks.json",
+    "kid": "mk-office-2026-09",
+    "alg": "EdDSA",
+    "crv": "Ed25519",
+    "ring": [
+      "mk-office-2026-09",
+      "mk-office-x402-2026-09",
+      "padel-2026-09",
+      "bev-record-2026-10",
+      "bev-x402-2026-10",
+      "hunter-2026-09",
+      "rail-agent-bev-2026-09",
+      "rail-allooloo-2026-09",
+      "rail-gsc-2026-09",
+      "rail-a2a-cosmetics-2026-09",
+      "rail-a2a-peptides-2026-09",
+      "rail-office-2026-09"
+    ],
+    "x402": {
+      "jwks": "https://agent-kg.ai/x402/jwks.json",
+      "kid": "mk-office-x402-2026-09",
+      "alg": "EdDSA"
+    },
+    "padel": {
+      "jwks": "https://agent-padel.ai/.well-known/jwks.json",
+      "kid": "padel-2026-09",
+      "alg": "EdDSA",
+      "mirrored_on": "https://familyofficeknowledgegraph.ai/.well-known/jwks.json"
+    },
+    "agent_bev": {
+      "jwks": "https://bev-registry.ai/.well-known/jwks.json",
+      "kids": [
+        "bev-record-2026-10",
+        "bev-x402-2026-10"
+      ],
+      "alg": "EdDSA",
+      "receipts_jwks": "https://bev-x402.ai/.well-known/jwks.json",
+      "holder_line": "agent-bev.ai — Agent Holdings S.A., held by Agentic KG Holdings (AB-003, 2026-09-26)"
+    },
+    "compound": {
+      "jwks": "https://agent-kg.ai/.well-known/jwks.json",
+      "statement_kid": "hunter-2026-09",
+      "rail_kids": [
+        "rail-agent-bev-2026-09",
+        "rail-allooloo-2026-09",
+        "rail-gsc-2026-09",
+        "rail-a2a-cosmetics-2026-09",
+        "rail-a2a-peptides-2026-09",
+        "rail-office-2026-09"
+      ],
+      "alg": "EdDSA",
+      "ledger": "https://agent-hunter.ai/ledger/events",
+      "added": "2026-09-29 (ORDER-C04 close-out, CEO ruling C01-10)"
+    }
+  },
+  "a2a": {
+    "agent_card": "https://agent-kg.ai/.well-known/agent-card.json",
+    "mode": "read-only"
+  },
+  "radar": {
+    "agents_on_staff": 0,
+    "keys_on_ring": 2,
+    "signed_statements_issued": 0,
+    "tenancies_held": 10,
+    "doors_answered_30d": null,
+    "last_ruling": "2026-09-13 — Multi-family office model, agentic in scope; one principal on this page.",
+    "notes": "RADAR (CEO rider 2026-09-14): eight tiles read at request time — graphs held, records under management, fields with a source URL, jurisdictions (union) and nodes on the wire summed across every holding whose facts.json answers (holdings[].facts); tenancies held = sum of tenancies[].count; Frontier AI Labs = laboratories.list length; keys on the ring = keys.ring length. Nothing typed. Usage counts stay in KV (CEO ruling 2026-09-14).",
+    "sources": {
+      "office": "https://agent-kg.ai/facts.json (this file; the six office figures)",
+      "gsc": "https://gsc-radar.ai/radar.json (census.datapoints, network.transactions_per_month, infrastructure.resident_countries)",
+      "allooloo": "https://agentic-radar.ai/radar.json (record.events, record.issuers, record.nodes_live, calls.daily over calls.window_days)",
+      "hero": {
+        "datapoints_under_management": "radar.annual.datapoints — annual figure of record (as of 2026-09)",
+        "agentic_volume_year_to_date": "radar.annual.volume_ytd — annual figure of record (as of 2026-09)",
+        "annualised": "radar.annual.annualised — annual figure of record (as of 2026-09)",
+        "global_markets": "radar.annual.markets — annual figure of record (as of 2026-09)",
+        "measured": "radar.volume carries the measured Cloudflare-request line (monthly snapshot rail); it does not drive the hero"
+      },
+      "cache": "estate radars cached one hour at the edge; a source that does not answer renders an em dash",
+      "volume": {
+        "block": "Agentic volume — three phrases: year to date · annualised · global markets",
+        "year_to_date": "sum of Cloudflare account daily requests, all zones, from 2026-01-01 to yesterday (UTC); API days first, the office's own archive drops next, then the wefetch Radar archive reading for a month the API no longer holds (spread evenly over the month), blank otherwise; floored to the leading digit",
+        "annualised": "trailing-90-day daily average x 365, floored to the nearest 50M; 250M/500M/750M read as ¼/½/¾ billion; never above the phrase",
+        "global_markets": "gsc.infrastructure.resident_countries + allooloo.record.nodes_live, floored to the leading digit (rendered live by the Worker)",
+        "api": "Cloudflare GraphQL accounts.httpRequestsOverviewAdaptiveGroups, account dd2832b3…, readable for the last 4w4d only",
+        "archive": "https://gsc-radar.ai/archive/readings.json",
+        "own_archive": "SITE/rails/volume/api/<run-date>.json, immutable drops, one per run",
+        "cadence": "snapshot on the first of each month (Windows task 'agent-kg volume snapshot'), then deploy"
+      }
+    },
+    "volume": {
+      "as_of": "2026-10-01",
+      "snapshot_run": "2026-10-02",
+      "ytd_requests": 99439940,
+      "ytd_phrase": "90M+ year to date",
+      "trailing_90d_daily_avg": 883562,
+      "annualised": 322500153,
+      "annualised_floor_50m": 300000000,
+      "annualised_phrase": "300M annualised",
+      "api_window": {
+        "first": "2026-08-14",
+        "last": "2026-10-01",
+        "days": 49
+      },
+      "months_from_archive": {
+        "2026-05": 9500000,
+        "2026-06": 9500000,
+        "2026-07": 9500000,
+        "2026-08": 24500000
+      },
+      "gaps_blank": [
+        "2026-01",
+        "2026-02",
+        "2026-03",
+        "2026-04"
+      ],
+      "by_month": {
+        "2026-01": {
+          "requests": 0,
+          "source": "blank"
+        },
+        "2026-02": {
+          "requests": 0,
+          "source": "blank"
+        },
+        "2026-03": {
+          "requests": 0,
+          "source": "blank"
+        },
+        "2026-04": {
+          "requests": 0,
+          "source": "blank"
+        },
+        "2026-05": {
+          "requests": 9500000,
+          "source": "archive"
+        },
+        "2026-06": {
+          "requests": 9500000,
+          "source": "archive"
+        },
+        "2026-07": {
+          "requests": 9500000,
+          "source": "archive"
+        },
+        "2026-08": {
+          "requests": 26984302,
+          "source": "api+archive"
+        },
+        "2026-09": {
+          "requests": 42883376,
+          "source": "api"
+        },
+        "2026-10": {
+          "requests": 1072262,
+          "source": "api"
+        }
+      }
+    },
+    "annual": {
+      "as_of": "2026-09",
+      "datapoints": "4.5B+",
+      "datapoints_line": "4.5B+ datapoints under management across two knowledge graphs",
+      "markets": "20+",
+      "markets_line": "across 20+ global markets",
+      "source": "Intro of record, CEO, 2026-09-14 — static annual figures (datapoints, markets), refreshed on the CEO's word; the hero's volume figures are read from radar.volume (ORDER AK-x402-03, 2026-10-03)"
+    },
+    "readiness": {
+      "date": "2026-11-08",
+      "level": 5,
+      "level_name": "Agent-Native",
+      "pass": 18,
+      "fail": 1,
+      "neutral": 4,
+      "scanner": "isitagentready.com /api/scan",
+      "source": "rails/aeo/2026-11-08-weekly.json"
+    }
+  },
+  "kit": [
+    "https://agent-kg.ai/.well-known/agent-card.json",
+    "https://agent-kg.ai/.well-known/agent-skills/index.json",
+    "https://agent-kg.ai/.well-known/ai-catalog.json",
+    "https://agent-kg.ai/.well-known/api-catalog",
+    "https://agent-kg.ai/.well-known/ard.json",
+    "https://agent-kg.ai/.well-known/http-message-signatures-directory",
+    "https://agent-kg.ai/.well-known/jwks.json",
+    "https://agent-kg.ai/.well-known/mcp.json",
+    "https://agent-kg.ai/.well-known/oauth-authorization-server",
+    "https://agent-kg.ai/.well-known/oauth-protected-resource",
+    "https://agent-kg.ai/.well-known/security.txt",
+    "https://agent-kg.ai/.well-known/skills.json",
+    "https://agent-kg.ai/ai-catalog.json",
+    "https://agent-kg.ai/api",
+    "https://agent-kg.ai/attest/{host}",
+    "https://agent-kg.ai/auth.md",
+    "https://agent-kg.ai/facts.json",
+    "https://agent-kg.ai/health.json",
+    "https://agent-kg.ai/licensed/statement",
+    "https://agent-kg.ai/llms.txt",
+    "https://agent-kg.ai/mcp",
+    "https://agent-kg.ai/openapi.json",
+    "https://agent-kg.ai/robots.txt",
+    "https://agent-kg.ai/sitemap.xml",
+    "https://agent-kg.ai/x402",
+    "https://agent-kg.ai/x402/jwks.json"
+  ],
+  "copy_of_record": "Cut 2026-09-13",
+  "surface_version": "0.12.4",
+  "as_of": "2026-10-02",
+  "entity": {
+    "name": "Agentic KG Holdings",
+    "mark": "https://agent-kg.ai/akgh-icon-64.png",
+    "mark_svg": "https://agent-kg.ai/akgh-icon.svg"
+  },
+  "x402": {
+    "page": "https://agent-kg.ai/x402",
+    "route": "https://agent-kg.ai/api",
+    "price_usdc": "0.01",
+    "amount": "10000",
+    "network": "eip155:8453",
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "scheme": "exact",
+    "x402Version": 2,
+    "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+    "receipts": "https://agent-kg.ai/x402/receipt/{nonce}",
+    "jwks": "https://agent-kg.ai/x402/jwks.json",
+    "kid": "mk-office-x402-2026-09",
+    "paid_calls_line": "radar.paid_calls (served live from KV on this document)",
+    "resource": "GET /api → { receipt, statement, data }: data = the office's current holdings summary; statement = its EdDSA JWT (kid mk-office-x402-2026-09); receipt = the signed settlement receipt",
+    "copy_of_record": "2026-09-14"
+  },
+  "intro_of_record": {
+    "as_of": "2026-09-14",
+    "paragraphs": [
+      "The Agentic Private Office of Matthew Keddy holds, on the record, 4.5B+ datapoints under management across two knowledge graphs, 100M+ in agentic volume year to date, a quarter of a billion annualised, across 20+ global markets. An agentic private office combines the people of the traditional office with the agentic assets of the new era — the agents, the keys, the tenancies and the record — under one signature.",
+      "Per the Iceberg Index (MIT and Oak Ridge National Laboratory, arXiv:2510.25137), the change is system-wide and sector-wide: roughly fifteen per cent of the economy is in flux to agentic systems, task by task rather than firm by firm. The assets that shift with those tasks — identities, credentials, doors, records — belong to the person before they belong to any company. The office is where they are held."
+    ]
+  },
+  "tenancies_line": "Ten hyperscaler tenancies in the portfolio, under agentic management.",
+  "logo_of_record": {
+    "name": "Agentic KG Holdings rings",
+    "svg": "https://agent-kg.ai/favicon.svg",
+    "png": [
+      "https://agent-kg.ai/icon-192.png",
+      "https://agent-kg.ai/icon-512.png",
+      "https://agent-kg.ai/icon-1024.png"
+    ],
+    "as_of": "2026-09-14",
+    "retired": "MK signet (nav, favicon)"
+  },
+  "operator": "Agentic KG Holdings",
+  "record_pages": {
+    "status": "https://agent-kg.ai/status",
+    "terms": "https://agent-kg.ai/terms",
+    "privacy": "https://agent-kg.ai/privacy",
+    "security": "https://agent-kg.ai/security",
+    "no_cookies": "https://agent-kg.ai/no-cookies",
+    "copy_of_record": "START_ME_UP/agent-kg-ai-footer-pages.md, cut 2026-09-13"
+  },
+  "page_script": {
+    "path": "https://agent-kg.ai/webmcp.js",
+    "purpose": "WebMCP registration of the contact form (tool office_contact) — the one page script, CEO ruling 2026-09-14",
+    "stores": "nothing"
+  },
+  "products": [
+    {
+      "name": "Family Office Knowledge Graph",
+      "url": "https://familyofficeknowledgegraph.ai",
+      "line": "Family Office Knowledge Graph — familyofficeknowledgegraph.ai",
+      "door": "https://mcp.fo-kg.ai/mcp",
+      "agent_card": "https://agent.fo-kg.ai/.well-known/agent-card.json",
+      "nodes": [
+        "ca-fo-kg"
+      ],
+      "order": "ORDER-002 2026-09-13",
+      "facts": "https://familyofficeknowledgegraph.ai/facts.json"
+    },
+    {
+      "name": "PADEL",
+      "long_name": "Persistent Agentic Door Evidence Ledger",
+      "url": "https://agent-padel.ai",
+      "line": "PADEL — agent-padel.ai",
+      "door": null,
+      "agent_card": "https://agent-padel.ai/.well-known/agent-card.json",
+      "facts": "https://agent-padel.ai/facts.json",
+      "windows": {
+        "wefetch": "https://gsc-padel.ai"
+      },
+      "order": "PADEL HUB BUILD 2026-09-17",
+      "ip": "PADEL and the Caseback are office IP (CEO ruling 2026-09-17)"
+    }
+  ],
+  "laboratories": {
+    "book": "AI laboratory holdings",
+    "note": "seats, seven laboratories (FO_START_ME_UP_8); the RADAR tile Frontier AI Labs counts the laboratories in this book, never a typed number",
+    "list": [
+      {
+        "name": "Anthropic",
+        "seats": 2
+      },
+      {
+        "name": "OpenAI",
+        "seats": 1
+      },
+      {
+        "name": "Google",
+        "seats": 1
+      },
+      {
+        "name": "Microsoft",
+        "seats": 1
+      },
+      {
+        "name": "xAI",
+        "seats": 1
+      },
+      {
+        "name": "Perplexity",
+        "seats": 1
+      },
+      {
+        "name": "Mistral",
+        "seats": 1
+      }
+    ]
+  }
+}

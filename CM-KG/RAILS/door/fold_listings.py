@@ -106,6 +106,48 @@ def reparent(node, index, get, put, plan):
                 m[i] = [k for k in m[i] if k != key]
                 if not m[i]: m.pop(i)
         plan['reparented'].append({'cmr': key, 'parent': p.get('cmr'), 'relation': p.get('relation')})
+# IDENT-01 (CEO order 2026-11-04): a listing line never carries its issuer's common ISIN. Own ISINs of record — RAILS\door\listing_isins.json,
+# {node: {cmr: {isin, cusip, state, source_url, read_by, read_at, note}}} — go on the line inside its issuer's record (and on the record when the line is
+# the primary); a line folded tonight on the same exchange whose ISIN came by LEI and equals its primary's, with none of record, carries a blank and the
+# reason. Run after the fold; the fold's groups, lines, index remap and counts are untouched.
+OWN = os.path.join(HERE, 'listing_isins.json')
+LEI_ROUTE = lambda f: 'isin-lei' in str((f or {}).get('source_url') or '') or 'LEI' in str((f or {}).get('read_by') or '')
+def own_isins(node, index, get, put, plan):
+    O = (json.load(open(OWN, encoding='utf-8')).get(node) or {}) if os.path.exists(OWN) else {}
+    plan['own_isins'] = []; tonight = {k: f['primary'] for f in plan['folded'] for k, t in f['lines'].items() if t == 'line'}
+    prim = {}
+    for k in set(O) | set(tonight):
+        r = get(k)
+        if r is None: plan['own_isins'].append({'cmr': k, 'state': 'record not readable'}); continue
+        prim.setdefault(r.get('cmr') or k, set()).add(k)
+    for p, ks in sorted(prim.items()):
+        pr = get(p)
+        if pr is None: continue
+        pr = json.loads(json.dumps(pr)); changed = False
+        P0 = ((pr.get('identity') or {}).get('isin') or {}); p_isin = P0.get('value')
+        lines = {x.get('cmr'): x for x in pr.get('listings') or []}
+        for k in sorted(ks):
+            o = O.get(k); tgt = [lines[k]['identity']] if k in lines and isinstance(lines[k].get('identity'), dict) else []
+            if k == p: tgt.append(pr.setdefault('identity', {}))
+            for idn in tgt:
+                cur = idn.get('isin') or {}
+                if o:
+                    if cur.get('value') == o['isin'] and cur.get('read_at') == o['read_at']: continue
+                    idn['isin'] = {'value': o['isin'], 'source_url': o['source_url'], 'read_by': o['read_by'], 'read_at': o['read_at'], 'state': o['state'], 'cusip': o.get('cusip')} \
+                        | ({'figi': o['figi']} if o.get('figi') else {}) | ({'note': o['note']} if o.get('note') else {}) \
+                        | ({'replaced': {'value': cur.get('value'), 'source_url': cur.get('source_url'), 'read_by': cur.get('read_by'), 'state': cur.get('state')}} if cur.get('value') and cur.get('value') != o['isin'] else {})
+                    changed = True; plan['own_isins'].append({'cmr': k, 'primary': p, 'from': cur.get('value'), 'to': o['isin'], 'state': o['state']})
+                elif k in tonight and k != p and cur.get('value') and cur.get('value') == p_isin and LEI_ROUTE(cur):
+                    idn['isin'] = {'value': None, 'state': None, 'issuer_isin': cur.get('value'), 'read_at': cur.get('read_at'),
+                                   'reason': "the issuer's ISIN came by LEI (GLEIF ISIN-to-LEI), not per security; this line's own ISIN is not read yet (IDENT-01: a listing line never inherits the common ISIN)",
+                                   'replaced': {'value': cur.get('value'), 'source_url': cur.get('source_url'), 'read_by': cur.get('read_by'), 'state': cur.get('state')}}
+                    changed = True; plan['own_isins'].append({'cmr': k, 'primary': p, 'from': cur.get('value'), 'to': None, 'state': 'blank (inherited)'})
+            if o:
+                m = index.setdefault('isin', {}); m.setdefault(o['isin'], [])
+                if p not in m[o['isin']]: m[o['isin']].append(p)
+        if changed:
+            put(p, pr)
+            for k in {x.get('cmr') for x in pr.get('listings') or []} - {p, None}: put(k, pr)   # every line's address serves the one record
 def fold(cc, index, get, put, stamp):
     node = f'{cc}-cm-kg'; plan = {'node': node, 'at': stamp, 'folded': [], 'hand': [], 'lines_folded': 0, 'by_exchange': {}, 'corrected': []}
     correct(node, index, get, put, plan)   # DOORS-04: ISINs re-read at the register of record go in first, so the fold sees the corrected index
@@ -140,6 +182,7 @@ def fold(cc, index, get, put, stamp):
                     if k2 not in nk: nk.append(k2)
                 m[ident] = nk
     if 'keys' in index: index['keys'] = [k for k in index['keys'] if k not in remap]
+    own_isins(node, index, get, put, plan)   # IDENT-01: each listing line its own ISIN; the fold above unchanged
     return plan
 def fix_facts(facts, node, plan):
     n = (facts.get('nodes') or {}).get(node)
@@ -193,6 +236,6 @@ def main():
         plan = fold(cc, index, get, put, stamp); fix_facts(facts, node, plan)
         if not dry: json.dump(index, open(ip, 'w', encoding='utf-8'), separators=(',', ':')); json.dump(facts, open(fp, 'w', encoding='utf-8'), indent=1)
     out = os.path.join(HERE, f'fold-{cc}-{stamp}.json'); json.dump(plan, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-    print(f"{node} fold{' (dry)' if dry else ''}: {len(plan['corrected'])} ISIN corrections applied, {len(plan.get('reparented') or [])} records re-parented,LEI rule {(plan.get('lei') or {}).get('counts')} changed {(plan.get('lei') or {}).get('changed')}, {len(plan['folded'])} ISINs folded, {plan['lines_folded']} listing lines, {len(plan['hand'])} hand items -> {out}")
+    print(f"{node} fold{' (dry)' if dry else ''}: {len(plan['corrected'])} ISIN corrections applied, {len(plan.get('reparented') or [])} records re-parented,LEI rule {(plan.get('lei') or {}).get('counts')} changed {(plan.get('lei') or {}).get('changed')}, {len(plan['folded'])} ISINs folded, {plan['lines_folded']} listing lines, {len(plan.get('own_isins') or [])} own-ISIN changes, {len(plan['hand'])} hand items -> {out}")
     return 0
 if __name__ == '__main__': sys.exit(main())

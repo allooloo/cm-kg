@@ -302,10 +302,13 @@ def main():
             files.append((tb, f'door/{n_asof or MDATE}/door-bundle.tar.gz'))
             open(f'/tmp/{NODE}-numbers.txt', 'w', encoding='utf-8').write(line + '\n'); files.append((f'/tmp/{NODE}-numbers.txt', f'numbers/{NIGHT}.txt'))
             ark['objects'] = ark_write(files, NODE); log(f"ark: {len(ark['objects'])} objects written to s3://{os.environ['ARK_BUCKET']}/{NODE}/")
+            try: import ark_tm; store(); r_tm = ark_tm.run(bsc=_bsc, node=NODE, log=log); ark['target_market'] = {'blobs': r_tm['blobs_in_container'], 'put': len(r_tm['put']), 'present': len(r_tm['present_in_ark']), 'complete': r_tm['complete']}   # TMKT-04: the target-market container in the ark
+            except Exception as e: ark['target_market'] = {'error': repr(e)[:200]}; log('ark-tm FAILED:', ark['target_market']['error'])
         except Exception as e: ark['error'] = repr(e)[:300]; log('ark write FAILED (a failed close for the apex):', ark['error'])
     done = {'node': NODE, 'night': NIGHT, 'market_date': MDATE, 'window_days': os.environ.get('WINDOW_DAYS'), 'fill_confirm': FILL_CONFIRM, 'region': REGION, 'store': f'{SA}/{CONT}', 'pond_drop': drop, 'records': n_rec, 'events': n_ev, 'as_of': n_asof, 'records_delta': n_rec - o_rec, 'events_delta': n_ev - o_ev,
             'served_before': {'records': o_rec, 'events': o_ev, 'as_of': o_asof}, 'gate_exit': gate, 'held': bool(hold), 'held_flag': held_flag, 'numbers_line': line, 'spend_lines': spend_lines,
             'tavily': {'start': tav0, 'end': tav1}, 'ark': ark, 'image': IMAGE_TAG, 'execution': EXEC, 'started_utc': T0.isoformat(), 'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), **result}
+    if os.path.exists(f'/tmp/{NODE}-gate-window.json'): done['window_roll'] = json.load(open(f'/tmp/{NODE}-gate-window.json', encoding='utf-8'))   # HOLD-WINDOW-01: events that left with the rolling window, counted apart
     blob_put(f'sweeps/{NIGHT}/{CC}/done.json', json.dumps(done, ensure_ascii=False, indent=1)); blob_put(f'sweeps/{NIGHT}/{CC}/numbers.txt', line + '\n', 'text/plain'); blob_put(f'sweeps/{NIGHT}/{CC}/spend.txt', '\n'.join(spend_lines) + '\n', 'text/plain')
     if held_flag: blob_put(f'sweeps/{NIGHT}/{CC}/held.txt', held_flag, 'text/plain')
     log(f'DONE {NODE} night {NIGHT} market date {MDATE}: marker sweeps/{NIGHT}/{CC}/done.json'); return 0

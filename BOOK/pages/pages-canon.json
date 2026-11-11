@@ -1,0 +1,1967 @@
+{
+ "source": {
+  "SM-ECO-10060": "C:\\ALLOOLOO\\START_ME_UP\\SM-ECO-10060_Canonical-Text_v1.0_2026-10-30.docx",
+  "ACM-68000": "C:\\ALLOOLOO\\START_ME_UP\\ACM-68000_Canonical-Text_v1.1_2026-10-31.docx",
+  "AIO-10060": "C:\\ALLOOLOO\\START_ME_UP\\AIO-10060_Canonical-Text_v1.2_2026-11-02.docx",
+  "AMP-10060": "C:\\ALLOOLOO\\START_ME_UP\\AMP-10060_Canonical-Text_v1.0_2026-10-31.docx",
+  "ESG-10060": "C:\\ALLOOLOO\\START_ME_UP\\ESG-10060_Canonical-Text_v1.0_2026-10-31.docx"
+ },
+ "sm_eco": {
+  "head": [
+   "SM-ECO-10060",
+   "Sovereign Manifest of Electronic Compliance Objects · Canonical text and the Book of Markets chapter contract",
+   "Version 1.0 · 30 October 2026 · Standard held by Allooloo Technologies Corp. · Open standard, MIT licence"
+  ],
+  "appendices": {
+   "ECO": {
+    "heading": "Appendix A · ECO market section",
+    "text": [
+     "The catalogue starts from identifying the duty, obtaining the relevant facts, recognising constraints, supporting an action and preserving evidence. It retains the current page's sourceable information and extends the chapter beyond the page. Each regime is scoped to the instruments, actors and activities its evidence applies to. No tax or settlement value is treated as universal to a market."
+    ]
+   },
+   "ACM": {
+    "heading": "Appendix B · ACM register section",
+    "text": [
+     "The register revision is incorporated by reference to ACM-68000 canonical text v1.0 §8.1 and is not redrawn here. These are chapter attachment fields connecting the chapter to that register; they never redefine rule_version, signal meanings or revision internals."
+    ]
+   },
+   "AIO": {
+    "heading": "Appendix C · AIO orderability section",
+    "text": [
+     "The chapter describes the source-backed determination framework. A product-specific orderability result requires the product record, the client category, the relevant evidence and the applicable rule revision; this section never manufactures that result from market membership alone. It adds no field to the deployed receipt."
+    ]
+   },
+   "AMP": {
+    "heading": "Appendix D · AMP venue section",
+    "text": [
+     "Each venue record is keyed by its evidenced Market Identifier Code (MIC). Where an activity has no applicable code, the gap is preserved with a separately typed reference; no code is invented. This section supplies reference information only; it establishes no entitlement, permission to route or order placement. A later permission profile requires its own actor, instrument, action and endpoint evidence."
+    ]
+   },
+   "ESG": {
+    "heading": "Appendix E · ESG disclosure section",
+    "text": [
+     "Sustainability disclosure remains a specialised ECO record with its rules in ACM. A jurisdiction's adoption of a framework is distinct from the framework's application to a particular issuer or period; the schema preserves that distinction and never turns disclosure availability into a sustainability rating."
+    ]
+   }
+  },
+  "field_element": "7.2 The field element (every catalogue entry below is one of these)"
+ },
+ "acm": {
+  "head": [
+   "ACM-68000",
+   "Clearance rules and the immutable rule register · Canonical text",
+   "Version 1.1 · 31 October 2026 · Standard held by Allooloo Technologies Corp. · Open standard, MIT licence"
+  ],
+  "register_heading": "Clearance rules and the immutable rule register · Canonical text",
+  "register_text": [
+   "ACM-68000 (Agent Clearance Manifest) defines the clearance rule reference and the signal vocabulary used when an artificial-intelligence (AI) agent reads or acts on a listed issuer's record. It makes a clearance outcome interpretable: which duty applied, in which jurisdiction, under which revision, on what evidence and within what scope. Its central object is the rule register. Every rule_version value written into a receipt resolves to an immutable revision of that register.",
+   "A rule family names a duty. A registered revision identifies the particular statement of that duty, and its clearance bindings, that governed the read. A family name alone does not satisfy the historical contract: the rule_version in a receipt identifies the revision that was applied, never an alias whose meaning changes when the register is updated.",
+   "Each registered revision binds the duty, the jurisdiction, the legal reference, the revision identity, the sources and the effective dates. It also states the applicability conditions and the mapping from the family's resolved outcomes to the clearance signals. A later reader recovers the rule as it stood, without substituting today's text for the revision used at the time.",
+   "The register preserves an attributable representation of the rule and the evidence used to encode it. A source reference leads to identifiable source material; a bare label is not a source. Source publication, source observation, rule effectiveness and register publication are four distinct events and are represented distinctly."
+  ],
+  "revision_heading": "8.1 A register revision"
+ },
+ "catalogue": {
+  "ECO": [
+   {
+    "name": "jurisdiction_scope",
+    "array": false,
+    "type": "object",
+    "meaning": "Territory, regime boundaries and cross-border applicability"
+   },
+   {
+    "name": "competent_authorities",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Regulators, competent authorities and allocation of responsibility"
+   },
+   {
+    "name": "duty_map",
+    "array": true,
+    "type": "array of reference",
+    "meaning": "Applicable product-governance and suitability duties by activity and actor"
+   },
+   {
+    "name": "regulated_activities",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Activities requiring authorisation and their scope"
+   },
+   {
+    "name": "participant_categories",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Issuer, intermediary, investor and client categories"
+   },
+   {
+    "name": "product_categories",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Instrument classes, exclusions and special regimes"
+   },
+   {
+    "name": "issuer_and_listing_scope",
+    "array": false,
+    "type": "object",
+    "meaning": "Domicile, listing and issuer-status distinctions"
+   },
+   {
+    "name": "exchanges_and_venues",
+    "array": true,
+    "type": "array of reference",
+    "meaning": "Venue identities linked to AMP records"
+   },
+   {
+    "name": "information_stores",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Authoritative regulated-information repositories"
+   },
+   {
+    "name": "store_lookup",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Documented lookup methods and identifier requirements"
+   },
+   {
+    "name": "periodic_reporting",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Periodic duties, deadlines, triggering events and exceptions"
+   },
+   {
+    "name": "ad_hoc_disclosure",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Event-driven and inside-information disclosure obligations"
+   },
+   {
+    "name": "filing_formats",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Required formats, validation requirements and document types"
+   },
+   {
+    "name": "filing_languages",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Required or accepted languages and translation conditions"
+   },
+   {
+    "name": "prospectus_regime",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Offering and admission requirements, exemptions and thresholds"
+   },
+   {
+    "name": "product_disclosures",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Product documents and pre-contract information duties"
+   },
+   {
+    "name": "takeover_regime",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Offer rules, control triggers and shareholder treatment"
+   },
+   {
+    "name": "ownership_reporting",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Significant holdings, beneficial ownership and notification duties"
+   },
+   {
+    "name": "short_selling",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Restrictions, disclosure, locate or borrowing requirements, emergency measures"
+   },
+   {
+    "name": "market_abuse",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Insider dealing, manipulation and related disclosure regimes"
+   },
+   {
+    "name": "trading_controls",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Market-wide trading constraints and intervention powers"
+   },
+   {
+    "name": "market_calendar",
+    "array": true,
+    "type": "array of reference",
+    "meaning": "Authoritative calendars and exceptional closures"
+   },
+   {
+    "name": "halts_sources",
+    "array": true,
+    "type": "array of reference",
+    "meaning": "Official halt and suspension sources with scope"
+   },
+   {
+    "name": "identifiers",
+    "array": false,
+    "type": "object",
+    "meaning": "Security and entity identifier conventions and validation sources"
+   },
+   {
+    "name": "isin_prefix",
+    "array": false,
+    "type": "object",
+    "meaning": "ISIN prefix information and its limits as a jurisdiction indicator"
+   },
+   {
+    "name": "lei_requirements",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Legal Entity Identifier requirements and authoritative lookup references"
+   },
+   {
+    "name": "settlement",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Settlement cycles by instrument and venue, exceptions and transition dates"
+   },
+   {
+    "name": "clearing_and_custody",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Clearing, depository, custody and asset-protection frameworks"
+   },
+   {
+    "name": "corporate_actions",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Rights, elections, notices and procedural deadlines"
+   },
+   {
+    "name": "retail_access",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Retail distribution limits, access restrictions and safeguards"
+   },
+   {
+    "name": "cross_border_access",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Foreign participation and cross-border offering or service restrictions"
+   },
+   {
+    "name": "tax_at_source",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Withholding regimes by income, instrument and recipient category; relief conditions"
+   },
+   {
+    "name": "fees_and_levies",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Transaction taxes, statutory levies and relevant charges"
+   },
+   {
+    "name": "conduct_and_conflicts",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Conduct, inducement and conflict-management duties relevant to distribution"
+   },
+   {
+    "name": "recordkeeping",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Retention, evidence, format and reconstruction requirements"
+   },
+   {
+    "name": "complaints_and_redress",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Complaint, escalation and redress routes"
+   },
+   {
+    "name": "effective_changes",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Enacted, proposed and transitional changes, kept distinguishable"
+   },
+   {
+    "name": "additional_duty_fields",
+    "array": true,
+    "type": "array of field",
+    "meaning": "Further sourceable duty-relevant fields, introduced through a versioned catalogue extension"
+   }
+  ],
+  "ACM": [
+   {
+    "name": "register_revision_ref",
+    "array": false,
+    "type": "reference",
+    "meaning": "Exact immutable revision governed by ACM-68000 §8.1"
+   },
+   {
+    "name": "register_schema_ref",
+    "array": false,
+    "type": "reference",
+    "meaning": "Authoritative register-revision schema and its version"
+   },
+   {
+    "name": "chapter_evidence_ref",
+    "array": false,
+    "type": "reference",
+    "meaning": "Immutable chapter version and section from which the revision was produced"
+   },
+   {
+    "name": "rule_applicability",
+    "array": true,
+    "type": "array of field",
+    "meaning": "Market-specific applicability evidence for the referenced revision"
+   },
+   {
+    "name": "shared_revision_ref",
+    "array": true,
+    "type": "array of reference",
+    "meaning": "Shared-family revisions produced by the apex, where applicable"
+   },
+   {
+    "name": "national_overlay_ref",
+    "array": true,
+    "type": "array of reference",
+    "meaning": "Separately versioned national additions or exceptions"
+   },
+   {
+    "name": "revision_change_evidence",
+    "array": true,
+    "type": "array of field",
+    "meaning": "Sources supporting selection or succession of the referenced revision"
+   }
+  ],
+  "AIO": [
+   {
+    "name": "duty_revision_ref",
+    "array": false,
+    "type": "reference",
+    "meaning": "Applicable immutable ACM rule revision"
+   },
+   {
+    "name": "product_scope",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Products and instrument categories covered by the target-market regime"
+   },
+   {
+    "name": "client_categories",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Client classifications and source-backed qualification criteria"
+   },
+   {
+    "name": "target_market",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Positive target-market criteria and their applicability"
+   },
+   {
+    "name": "negative_target_market",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Explicit exclusions or incompatible client characteristics"
+   },
+   {
+    "name": "distribution_conditions",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Permitted distribution methods and constraints"
+   },
+   {
+    "name": "required_assessments",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Suitability, appropriateness or other assessment requirements and triggers"
+   },
+   {
+    "name": "product_documentation",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Required product, risk and target-market documents"
+   },
+   {
+    "name": "manufacturer_distributor_roles",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Responsibilities and information exchange between actors"
+   },
+   {
+    "name": "review_triggers",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Required review events and periodic review conditions"
+   },
+   {
+    "name": "evidence_requirements",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Evidence needed to support a scoped outcome"
+   },
+   {
+    "name": "exceptions",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Source-backed exceptions with conditions and boundaries"
+   },
+   {
+    "name": "orderability_profile_ref",
+    "array": false,
+    "type": "reference",
+    "meaning": "Schema for the product, market and client-class outcome produced under these rules"
+   },
+   {
+    "name": "sources",
+    "array": true,
+    "type": "array of field",
+    "meaning": "Supporting documents and provenance not attached to a specific field"
+   }
+  ],
+  "AMP": [
+   {
+    "name": "venue_mic",
+    "array": false,
+    "type": "string",
+    "meaning": "Market Identifier Code, the venue key"
+   },
+   {
+    "name": "venue_identity",
+    "array": false,
+    "type": "object",
+    "meaning": "Venue name, operator and authoritative identity evidence"
+   },
+   {
+    "name": "venue_scope",
+    "array": false,
+    "type": "object",
+    "meaning": "Operating or segment scope, products and jurisdiction bindings"
+   },
+   {
+    "name": "rules_page",
+    "array": false,
+    "type": "reference",
+    "meaning": "Authoritative venue rule source"
+   },
+   {
+    "name": "halts",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Official halt information and applicability scope"
+   },
+   {
+    "name": "calendar",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Sessions, holidays and exceptional closures"
+   },
+   {
+    "name": "clearing_house",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Clearing relationships by instrument and service"
+   },
+   {
+    "name": "participant_roles",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Defined participant categories and responsibilities"
+   },
+   {
+    "name": "market_maker_obligations",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Source-backed obligations and exemptions for market makers"
+   },
+   {
+    "name": "gates",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Documented entry, membership and access prerequisites"
+   },
+   {
+    "name": "reference_endpoints",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Public reference locations with purpose and source"
+   },
+   {
+    "name": "settlement_links",
+    "array": true,
+    "type": "array of reference",
+    "meaning": "Related market or venue settlement records"
+   },
+   {
+    "name": "change_notices",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Versioned rules changes and operational notices"
+   },
+   {
+    "name": "sources",
+    "array": true,
+    "type": "array of field",
+    "meaning": "Additional source-backed venue evidence"
+   }
+  ],
+  "ESG": [
+   {
+    "name": "regime",
+    "array": false,
+    "type": "object",
+    "meaning": "Named sustainability-disclosure regime and its scope"
+   },
+   {
+    "name": "authority",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Responsible issuing or supervisory authorities"
+   },
+   {
+    "name": "applicability",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Covered entities, products, thresholds and exemptions"
+   },
+   {
+    "name": "adoption_stage",
+    "array": false,
+    "type": "object",
+    "meaning": "Proposal, adoption, commencement and transitional operation, distinguished"
+   },
+   {
+    "name": "effective_dates",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Effective intervals and staged commencement conditions"
+   },
+   {
+    "name": "disclosure_duties",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Required disclosures, reporting periods and filing obligations"
+   },
+   {
+    "name": "reporting_standards",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Referenced disclosure standards and applicable editions"
+   },
+   {
+    "name": "taxonomy",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Classification frameworks, criteria and binding status"
+   },
+   {
+    "name": "climate_requirements",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Source-backed climate disclosure requirements and scope"
+   },
+   {
+    "name": "assurance",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Required assurance, qualifications and transition conditions"
+   },
+   {
+    "name": "filing_store_and_format",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Authoritative destination and required filing format"
+   },
+   {
+    "name": "interoperability",
+    "array": true,
+    "type": "array of object",
+    "meaning": "Recognised equivalence, mapping or substituted-compliance provisions"
+   },
+   {
+    "name": "rule_revision_ref",
+    "array": true,
+    "type": "array of reference",
+    "meaning": "Applicable immutable ACM disclosure-rule revisions"
+   },
+   {
+    "name": "sources",
+    "array": true,
+    "type": "array of field",
+    "meaning": "Supporting regime and disclosure evidence"
+   }
+  ]
+ },
+ "revision_fields": [
+  {
+   "name": "schema_version",
+   "array": false,
+   "type": "string",
+   "meaning": "Version of the register schema"
+  },
+  {
+   "name": "rule_version",
+   "array": false,
+   "type": "string",
+   "meaning": "Unique immutable reference written into a receipt; resolves to this revision"
+  },
+  {
+   "name": "rule_family",
+   "array": false,
+   "type": "string",
+   "meaning": "Stable duty-family identifier for grouping and discovery"
+  },
+  {
+   "name": "duty",
+   "array": false,
+   "type": "string",
+   "meaning": "The duty, named as the market's node publishes it"
+  },
+  {
+   "name": "jurisdiction",
+   "array": true,
+   "type": "array of object",
+   "meaning": "Applicable jurisdiction bindings: namespace, scope"
+  },
+  {
+   "name": "legal_reference",
+   "array": true,
+   "type": "array of object",
+   "meaning": "Authoritative instruments and provisions: instrument, provision, authority"
+  },
+  {
+   "name": "revision",
+   "array": false,
+   "type": "string",
+   "meaning": "Revision identifier within the family; immutable after issue"
+  },
+  {
+   "name": "source",
+   "array": true,
+   "type": "array of object",
+   "meaning": "Evidence records: uri, read_at, published_at (optional), content_hash (optional)"
+  },
+  {
+   "name": "effective_dates",
+   "array": false,
+   "type": "object",
+   "meaning": "from; until (optional); transition (optional, source-backed)"
+  },
+  {
+   "name": "published_at",
+   "array": false,
+   "type": "datetime (UTC)",
+   "meaning": "When the register published this revision"
+  },
+  {
+   "name": "applicability",
+   "array": false,
+   "type": "object",
+   "meaning": "subject_types[], actions[], actor_classes[], client_classes[], venue_refs[], conditions[] (typed predicates in a separately specified profile)"
+  },
+  {
+   "name": "bindings",
+   "array": true,
+   "type": "array of object",
+   "meaning": "Family outcomes mapped to signals: outcome, signal, scope, prerequisites[], reason_codes[], source_refs[]"
+  },
+  {
+   "name": "dependencies",
+   "array": true,
+   "type": "array of string",
+   "meaning": "Component rule_version references, for a composite revision"
+  },
+  {
+   "name": "supersedes",
+   "array": true,
+   "type": "array of string",
+   "meaning": "Earlier revisions this one replaces"
+  },
+  {
+   "name": "producer",
+   "array": false,
+   "type": "object",
+   "meaning": "node_ref; authority_ref establishing the node's authority to publish this record"
+  },
+  {
+   "name": "content_hash",
+   "array": false,
+   "type": "string",
+   "meaning": "Digest of the record under the adopted ECO byte profile"
+  },
+  {
+   "name": "proof",
+   "array": false,
+   "type": "object",
+   "meaning": "Record signature under the ECO signature profile; never a receipt signature"
+  }
+ ],
+ "standards": {
+  "AIO": {
+   "id": "AIO-10060",
+   "name": "AI Orderability",
+   "head": [
+    "AIO-10060",
+    "AI Orderability · The structured outcome an agent can act on · Canonical text",
+    "Version 1.2 · 2 November 2026 · Standard held by Allooloo Technologies Corp. · Open standard, MIT licence"
+   ],
+   "page": "https://aio-10060.org/",
+   "twins": [
+    "https://aio-10060.ai/",
+    "https://aio-10060.com/"
+   ],
+   "second_door": "https://sm-eco-10060.org/aio/",
+   "descriptor": "https://aio-10060.org/aio-10060.json",
+   "mission": "AIO-10060 defines the structured orderability outcome: whether a specified product may be ordered for a specified client category in a specified market, under a named immutable rule revision, on evidence the outcome names element by element. The producing node signs the outcome under the record contract; the receipt of the read is signed separately. An outcome carries one clearance signal from the ACM-68000 vocabulary and the scope, conditions, exclusions tested, assessments and documents required and evidence gaps around it. It speaks about a product and a category, never an individual; it is not permission, not a venue and not an order. Missing evidence is reported as a gap, never as a finding. AIO makes the orderability question answerable in a form an agent can act on and a reader can verify.",
+   "contract": [
+    {
+     "n": 1,
+     "title": "The contract",
+     "blocks": [
+      {
+       "h": false,
+       "t": "AIO-10060 (AI Orderability) defines the structured outcome an artificial-intelligence (AI) agent can act on: whether a specified product may be ordered for a specified client category in a specified market, under a named rule revision, on evidence the outcome names. Its central object is the orderability outcome. The outcome answers one question, in four parts: which product, which client category, which market, which revision. It answers nothing else."
+      },
+      {
+       "h": false,
+       "t": "AI Orderability is the only expansion of AIO. The word is orderability, not suitability and not advice: an outcome speaks about a product and a category of client under a market's rules, never about an individual."
+      },
+      {
+       "h": false,
+       "t": "Every outcome published under AIO-10060 makes the same four promises."
+      },
+      {
+       "h": false,
+       "t": "Scope. The outcome names its product by the product's own record, its client category by the market's own classification, its market by the deployed market value, and its rule by an immutable ACM-68000 revision. An outcome with an unnamed part is not an outcome."
+      },
+      {
+       "h": false,
+       "t": "Basis. Every element of the outcome — each condition, each exclusion tested, each assessment or document required — references the chapter field instance or product-record field it rests on. An element without a basis is not written."
+      },
+      {
+       "h": false,
+       "t": "Signal. The outcome carries one clearance signal from the ACM-68000 vocabulary and adds no signal of its own. The structure around the signal is AIO's; the meaning of the signal is ACM's."
+      },
+      {
+       "h": false,
+       "t": "Gaps. Where the evidence does not reach a conclusion, the outcome says so, lists the evidence it lacked and the pages it checked, and stops. A not-determinable outcome carries no signal: the signal field is absent and evidence_gaps[] is not empty. A gap is reported as a gap. It is never closed by assumption, and no signal is invented to stand for it."
+      }
+     ]
+    }
+   ],
+   "owns": [
+    {
+     "n": 5,
+     "title": "The thing AIO owns",
+     "blocks": [
+      {
+       "h": false,
+       "t": "The outcome. AIO owns the shape of the answer to the orderability question: its four-part scope, its basis references, its conditions, its exclusions tested, its assessments and documents required, its evidence gaps and its single ACM signal. No other standard defines that object."
+      },
+      {
+       "h": false,
+       "t": "The orderability section of the chapter. AIO owns the catalogue of fields a market chapter must carry for outcomes to be produced in that market (the Appendix C catalogue of SM-ECO-10060): product scope, client categories, target market, negative target market, distribution conditions, required assessments, product documentation, manufacturer and distributor roles, review triggers, evidence requirements, exceptions, the orderability profile reference, and manufacturer evidence accepted — for each required item, whether the regime names the manufacturer's target market statement as the evidence a distributor may rely on, cited to the provision (Appendix C 0.2). The chapter holds the values; AIO defines what they mean."
+      },
+      {
+       "h": false,
+       "t": "The client category. AIO owns the rule that the client is always a category from the market's own classification with source-backed qualification criteria, never an individual, and that the same product may carry different outcomes for different categories in the same market."
+      },
+      {
+       "h": false,
+       "t": "The conditions. AIO owns the representation of a conditional outcome: each condition names the rule element it comes from, the party it falls on and the evidence that would discharge it. A condition without an owner or a discharge is a gap, not a condition."
+      },
+      {
+       "h": false,
+       "t": "The review. AIO owns the rule that an outcome names the review triggers and periodic review conditions the rules impose, so that a reader knows when an outcome must be produced again. An outcome never names its own expiry from memory."
+      }
+     ]
+    },
+    {
+     "n": 6,
+     "title": "The target market statement",
+     "blocks": [
+      {
+       "h": false,
+       "t": "A target market statement is the manufacturer's statement of who a product is for and who it is not for, filed against the product's International Securities Identification Number (ISIN). It is one of the items the orderability section already names as required — the target market, the negative target market, the product scope statement, the product documentation and the required assessments — supplied by the party the regime places it on, the manufacturer. AIO owns its shape; the door that files and serves it is not a standard."
+      },
+      {
+       "h": false,
+       "t": "One statement per ISIN per manufacturer per version. A statement is immutable once filed; a change is a new version with a supersedes link; earlier versions stay published for the outcomes that cite them."
+      },
+      {
+       "table": [
+        [
+         "Field",
+         "Meaning"
+        ],
+        [
+         "subject",
+         "the ISIN; resolved through the apex index to the record and its home node"
+        ],
+        [
+         "manufacturer",
+         "the manufacturer's Legal Entity Identifier (LEI) and name as on the LEI record"
+        ],
+        [
+         "version · filed_at · supersedes",
+         "integer version, filing time (UTC), the version it replaces"
+        ],
+        [
+         "markets",
+         "the markets the statement speaks for, each by its chapter; a statement may name one or many"
+        ],
+        [
+         "positive_target_market",
+         "per market, in the regime's own category words: the client categories; knowledge and experience; ability to bear loss; risk tolerance; objectives and needs — the European MiFID Template (EMT) field groups, carried as the manufacturer states them"
+        ],
+        [
+         "negative_target_market",
+         "per market, the categories and profiles the product is not for, in the regime's words"
+        ],
+        [
+         "distribution_strategy",
+         "execution-only · with appropriateness · advised · portfolio management — as the regime names them"
+        ],
+        [
+         "product_scope_statement",
+         "the manufacturer's statement of what the product is, by instrument class, mapped to the scope bridge term"
+        ],
+        [
+         "documentation",
+         "the product documents the regime requires (key information document, prospectus, factsheet) — URL, document date, hash at filing"
+        ],
+        [
+         "assessments",
+         "the assessments the manufacturer states it performed (product approval, scenario analysis, charging structure review) — named, dated, not attached"
+        ],
+        [
+         "source",
+         "where the statement came from: an EMT file (its version and hash) or a direct filing"
+        ],
+        [
+         "sig · kid",
+         "the manufacturer's signature over the canonical statement and the key id it was made with (the signature rule below)"
+        ],
+        [
+         "node_sig",
+         "the home node's signature over the stored statement, under its record key, as for any record"
+        ]
+       ]
+      },
+      {
+       "h": false,
+       "t": "Nothing inferred. A statement carries what the manufacturer filed, in the manufacturer's words. Its shape, the manufacturer's identity and the signature are validated; its content is the manufacturer's representation and is served as such, never judged."
+      },
+      {
+       "h": false,
+       "t": "The manufacturer's signature. Every statement carries the manufacturer's signature over its canonical form and the key id it was made with, made in one of two ways: under a filer identity bound to the manufacturer's LEI, issued after the manufacturer has shown control of the issuer domain on the product's record, with the filer id inside the signed payload; or under a key the manufacturer holds and publishes at its own domain's /.well-known/jwks.json. Either signature verifies offline against a published key, without asking the operator. A statement whose signature does not verify is not stored."
+      },
+      {
+       "h": false,
+       "t": "The node's signature. The home node of the ISIN stores the statement and signs it again under its record key (node_sig), following the ECO-10060 content contract. A statement for a subject listed on two nodes is stored at each, each under its own key; nothing is joined across borders."
+      },
+      {
+       "h": false,
+       "t": "A filing against a subject whose record the manufacturer's LEI does not issue is refused. A filing never overwrites; it supersedes."
+      }
+     ]
+    },
+    {
+     "n": 7,
+     "title": "The discharge rule",
+     "blocks": [
+      {
+       "h": false,
+       "t": "A condition on an outcome is discharged by a target market statement only where the chapter's orderability section field manufacturer evidence accepted records, for the required item the condition concerns, that the regime names the manufacturer's statement as the evidence that discharges it, cited to the provision. Otherwise the condition stays firm-held: where a statement is on file it is shown on the outcome as present, not as discharging."
+      },
+      {
+       "h": false,
+       "t": "A statement never clears or blocks. It discharges conditions on an outcome that is already ACM-200; the clearance signal, and the rule that blocking is scope only, are unchanged."
+      },
+      {
+       "h": false,
+       "t": "An outcome that read a statement names the statement version, the manufacturer's key id and the filing receipt id, so the trace runs receipt → outcome → statement version → manufacturer signature → source file where there is one."
+      },
+      {
+       "h": false,
+       "t": "Review trigger: a new statement version for the subject. review_triggers[] carries it on every outcome that read a statement or could have."
+      },
+      {
+       "h": false,
+       "t": "The producing node reads the statement from its own store at outcome time, never from the manufacturer's site."
+      },
+      {
+       "h": false,
+       "t": "The status words. For each required item the chapter lists on the distributor, an outcome carries one status, read from the asked market's field manufacturer evidence accepted and the statement on file at the subject's home node: \"discharged by manufacturer statement v<N>, filed <date>, key <kid>\" with the statement's filing receipt id, where the field records the item as accepted; \"present, firm-held\" where it records the item as PARTIAL; \"firm-held\" with the field's own status word where it records the item as silent, not accepted or not found; \"firm-held, no statement\" on every item where no statement is on file."
+      },
+      {
+       "h": false,
+       "t": "The PARTIAL rule. Where the field records an item as PARTIAL, the outcome carries both quotes side by side: the regulator's sentence or sentences as the field holds them, and the statement's own value for the item. Nothing is reconciled between them; the firm holds the item."
+      },
+      {
+       "h": false,
+       "t": "The no-signal-change rule. A statement never changes the clearance signal (ACM-200, ACM-403, ACM-404, ACM-451) or the absence of one: the discharge is carried beside the signal, never into it. A subject listed in more than one market: the statement on file at its home node applies in every market it is listed; the field of the market being asked decides each status."
+      }
+     ]
+    }
+   ],
+   "schema": [
+    {
+     "n": 9,
+     "title": "Proposed machine schema v0.1 (unratified)",
+     "blocks": [
+      {
+       "h": false,
+       "t": "Names, types and meaning only. Proposals for review, not populated outcomes or a declaration of deployed field support."
+      },
+      {
+       "sub": "9.1 The orderability outcome"
+      },
+      {
+       "table": [
+        [
+         "Field",
+         "Type",
+         "Meaning"
+        ],
+        [
+         "schema_version",
+         "string",
+         "Outcome schema version"
+        ],
+        [
+         "outcome_id",
+         "string",
+         "Stable identity of this outcome"
+        ],
+        [
+         "subject",
+         "reference",
+         "Product record version the outcome speaks about"
+        ],
+        [
+         "subject_type",
+         "string",
+         "Product or instrument category of the subject"
+        ],
+        [
+         "market",
+         "string",
+         "Deployed receipt-market value"
+        ],
+        [
+         "client_category",
+         "reference",
+         "Client classification from the chapter's client_categories[]"
+        ],
+        [
+         "rule_version",
+         "string",
+         "Immutable ACM-68000 revision applied"
+        ],
+        [
+         "section_ref",
+         "reference",
+         "Exact chapter orderability-section version read"
+        ],
+        [
+         "signal",
+         "string",
+         "One ACM-68000 clearance signal; no other vocabulary"
+        ],
+        [
+         "conditions[]",
+         "array of object",
+         "Rule element, party it falls on, evidence that discharges it — which may be a target market statement version where the chapter accepts it (§7) — basis reference"
+        ],
+        [
+         "exclusions_tested[]",
+         "array of object",
+         "Negative target-market and distribution exclusions tested, with result and basis"
+        ],
+        [
+         "assessments_required[]",
+         "array of object",
+         "Assessments the rules require before an order, with trigger and party"
+        ],
+        [
+         "documents_required[]",
+         "array of object",
+         "Product, risk and target-market documents required, with basis"
+        ],
+        [
+         "evidence_gaps[]",
+         "array of object",
+         "Evidence the outcome lacked, pages checked, reason"
+        ],
+        [
+         "review_triggers[]",
+         "array of object",
+         "Events and periods after which the outcome must be produced again, including a new target market statement version (§7)"
+        ],
+        [
+         "statement_ref",
+         "reference",
+         "The target market statement version read — subject, manufacturer LEI, version, kid and filing receipt id — where one is on file; absent otherwise"
+        ],
+        [
+         "as_of",
+         "date",
+         "Date for which the outcome speaks"
+        ],
+        [
+         "produced_at",
+         "datetime (UTC)",
+         "Time this outcome was produced"
+        ],
+        [
+         "node",
+         "string",
+         "Producing node, inside the signed payload"
+        ],
+        [
+         "proof",
+         "object",
+         "ECO signature profile; no new signing scheme"
+        ]
+       ]
+      },
+      {
+       "h": false,
+       "t": "Every basis reference names a field instance in the SM-ECO-10060 7.2 shape — the chapter section's own field with its source_url, source_date and read_at — or a field of the product record. The outcome copies no value out of its basis; it points at it."
+      },
+      {
+       "sub": "9.2 The signal, as AIO carries it"
+      },
+      {
+       "table": [
+        [
+         "Signal",
+         "What the outcome says"
+        ],
+        [
+         "ACM-200",
+         "The rules as evidenced permit the product for the client category in the market, subject to any conditions[] listed"
+        ],
+        [
+         "ACM-403",
+         "The rules as evidenced restrict or halt the product for the client category in the market; the restricting element is in the basis"
+        ],
+        [
+         "ACM-404",
+         "The product, category or required register entry is not on the register the rules name; pages checked are listed"
+        ],
+        [
+         "ACM-451",
+         "The rules require the reader to read a named filing or document before any conclusion; the filing is referenced"
+        ]
+       ]
+      },
+      {
+       "h": false,
+       "t": "The signal's meaning is ACM-68000's and is not restated here. AIO adds the scope, the conditions, the exclusions, the gaps and the review triggers around it. An outcome that reaches no conclusion carries none of the four: its signal field is absent, its evidence_gaps[] names what was lacking and the pages checked, and a surface renders it as not determinable. The four signals are the whole vocabulary; there is no fifth."
+      }
+     ]
+    }
+   ],
+   "schema_fields": [
+    {
+     "section": "9.1 The orderability outcome",
+     "fields": [
+      "schema_version",
+      "outcome_id",
+      "subject",
+      "subject_type",
+      "market",
+      "client_category",
+      "rule_version",
+      "section_ref",
+      "signal",
+      "conditions[]",
+      "exclusions_tested[]",
+      "assessments_required[]",
+      "documents_required[]",
+      "evidence_gaps[]",
+      "review_triggers[]",
+      "statement_ref",
+      "as_of",
+      "produced_at",
+      "node",
+      "proof"
+     ]
+    },
+    {
+     "section": "9.2 The signal, as AIO carries it",
+     "fields": [
+      "ACM-200",
+      "ACM-403",
+      "ACM-404",
+      "ACM-451"
+     ]
+    }
+   ],
+   "stack_version": "https://cpg-68000.org/stack/6.json"
+  },
+  "AMP": {
+   "id": "AMP-10060",
+   "name": "Agentic Market Protocol",
+   "head": [
+    "AMP-10060",
+    "Agentic Market Protocol · The venue, by reference · Canonical text",
+    "Version 1.0 · 31 October 2026 · Standard held by Allooloo Technologies Corp. · Open standard, MIT licence"
+   ],
+   "page": "https://amp-10060.org/",
+   "twins": [
+    "https://amp-10060.ai/",
+    "https://amp-10060.com/"
+   ],
+   "second_door": "https://sm-eco-10060.org/amp/",
+   "descriptor": "https://amp-10060.org/amp-10060.json",
+   "mission": "AMP-10060 defines the venue reference record: the sourced, dated and versioned identity of a venue, keyed by its Market Identifier Code, with its rules source, halts, calendar, clearing, participant roles, gates, reference endpoints and change notices, each with the page and date it was read from. The producing market node signs the record under the record contract; the receipt of the read is signed separately. A venue record is reference only: it establishes no entitlement, no permission to route and no order. Venue, market and jurisdiction are never used interchangeably. Missing evidence is reported as not found, never as absence. AMP makes where recoverable, so that whether can be answered first and acted on correctly.",
+   "contract": [
+    {
+     "n": 1,
+     "title": "The contract",
+     "blocks": [
+      {
+       "h": false,
+       "t": "AMP-10060 (Agentic Market Protocol) defines the venue reference record: the sourced, dated and versioned identity of a venue on which instruments in a market trade, keyed by its Market Identifier Code (MIC), with the venue's rules source, halts, calendar, clearing relationships, participant roles, obligations, gates, reference endpoints, settlement links and change notices. Its central object is the venue record. It answers one question — where — by reference, and establishes nothing about whether a party may go there."
+      },
+      {
+       "h": false,
+       "t": "Agentic Market Protocol is the only expansion of AMP. The word is market: the venue a record points at, not a marketplace the protocol operates. AMP sells nothing, lists nothing for sale and ranks nothing."
+      },
+      {
+       "h": false,
+       "t": "Every venue record published under AMP-10060 makes the same four promises."
+      },
+      {
+       "h": false,
+       "t": "Key. The record is keyed by the venue's evidenced MIC from the official MIC register, with the register entry as the key's source. Where an activity has no applicable code, the gap is preserved with a separately typed reference. No code is invented, derived or guessed."
+      },
+      {
+       "h": false,
+       "t": "Reference. Every field is reference information: what the venue publishes about itself, read from the venue's or its regulator's own pages, with the page and date. The record describes; it never entitles."
+      },
+      {
+       "h": false,
+       "t": "Distinction. Venue, market and jurisdiction are three identifiers and are never used interchangeably. A venue record names the market it is read under and the jurisdictions its scope binds; it does not become either of them."
+      },
+      {
+       "h": false,
+       "t": "Time. Sessions, holidays, closures, halts and change notices carry the date the source bears and the date the record read it. A calendar read from memory is not a calendar."
+      }
+     ]
+    }
+   ],
+   "owns": [
+    {
+     "n": 5,
+     "title": "The thing AMP owns",
+     "blocks": [
+      {
+       "h": false,
+       "t": "The key. AMP owns the rule that the venue is identified by MIC and only by MIC, sourced from the official register, and that a venue without an applicable code is recorded with a typed gap rather than a substitute identifier."
+      },
+      {
+       "h": false,
+       "t": "The venue record. AMP owns the catalogue of fields a venue record carries (the Appendix D catalogue of SM-ECO-10060): venue identity, venue scope, rules page, halts, calendar, clearing house, participant roles, market-maker obligations, gates, reference endpoints, settlement links, change notices and sources. The chapter holds the values; AMP defines what they mean."
+      },
+      {
+       "h": false,
+       "t": "The reference endpoints. AMP owns the representation of a venue's public reference locations — each with its purpose and its source — as locations to read, never as endpoints to connect to."
+      },
+      {
+       "h": false,
+       "t": "The change notice. AMP owns the rule that a venue's rule changes and operational notices are recorded as versioned entries with the date the venue published them, so that a reader can tell which rules were in force on a given date."
+      },
+      {
+       "h": false,
+       "t": "The three-way distinction. AMP owns the rule that venue, market and jurisdiction are never used interchangeably, in any record, page or descriptor of the family."
+      }
+     ]
+    }
+   ],
+   "schema": [
+    {
+     "n": 7,
+     "title": "Proposed machine schema v0.1 (unratified)",
+     "blocks": [
+      {
+       "h": false,
+       "t": "Names, types and meaning only. Proposals for review, not populated records or a declaration of deployed field support."
+      },
+      {
+       "sub": "7.1 The venue record envelope"
+      },
+      {
+       "table": [
+        [
+         "Field",
+         "Type",
+         "Meaning"
+        ],
+        [
+         "schema_version",
+         "string",
+         "Venue record schema version"
+        ],
+        [
+         "venue_mic",
+         "string",
+         "Market Identifier Code, the venue key, with the register entry as its source"
+        ],
+        [
+         "mic_gap",
+         "object (optional)",
+         "Typed reference preserved where no applicable code exists; present only when venue_mic is absent"
+        ],
+        [
+         "market",
+         "string",
+         "Deployed receipt-market value the record is read under"
+        ],
+        [
+         "version",
+         "string",
+         "Immutable venue record version"
+        ],
+        [
+         "supersedes",
+         "string (optional)",
+         "Earlier venue record version replaced"
+        ],
+        [
+         "as_of",
+         "date",
+         "Date for which the record speaks"
+        ],
+        [
+         "produced_at",
+         "datetime (UTC)",
+         "Time this version was produced"
+        ],
+        [
+         "node",
+         "string",
+         "Producing node, inside the signed payload"
+        ],
+        [
+         "fields[]",
+         "array of field",
+         "The Appendix D catalogue, each entry a field instance in the 7.2 shape of SM-ECO-10060"
+        ],
+        [
+         "proof",
+         "object",
+         "ECO signature profile; no new signing scheme"
+        ]
+       ]
+      },
+      {
+       "h": false,
+       "t": "Every catalogue entry — venue_identity, venue_scope, rules_page, halts[], calendar[], clearing_house[], participant_roles[], market_maker_obligations[], gates[], reference_endpoints[], settlement_links[], change_notices[], sources[] — is a field instance with its own source_url, source_date and read_at. One source is never assigned to the whole record."
+      },
+      {
+       "sub": "7.2 Reserved: the route profile"
+      },
+      {
+       "h": false,
+       "t": "A later version may define a route object naming an actor, an instrument, an action, an endpoint and the clearance profile and orderability outcome it rests on. Version 1.0 reserves the name and defines nothing under it. No surface describes a venue record as a route."
+      }
+     ]
+    }
+   ],
+   "schema_fields": [
+    {
+     "section": "7.1 The venue record envelope",
+     "fields": [
+      "schema_version",
+      "venue_mic",
+      "mic_gap",
+      "market",
+      "version",
+      "supersedes",
+      "as_of",
+      "produced_at",
+      "node",
+      "fields[]",
+      "proof"
+     ]
+    }
+   ],
+   "stack_version": "https://cpg-68000.org/stack/6.json"
+  },
+  "ESG": {
+   "id": "ESG-10060",
+   "name": "Sustainability Disclosure",
+   "head": [
+    "ESG-10060",
+    "Sustainability Disclosure · The disclosure an agent may cite · Canonical text",
+    "Version 1.0 · 31 October 2026 · Standard held by Allooloo Technologies Corp. · Open standard, MIT licence"
+   ],
+   "page": "https://esg-10060.org/",
+   "twins": [
+    "https://esg-10060.ai/",
+    "https://esg-10060.com/"
+   ],
+   "second_door": "https://sm-eco-10060.org/esg/",
+   "descriptor": "https://esg-10060.org/esg-10060.json",
+   "mission": "ESG-10060 defines Sustainability Disclosure for capital products: the sourced, dated and versioned record of each market's disclosure regimes — their authorities, coverage, stages, dates, duties, reporting standards, taxonomies, assurance and filing stores — and the register of disclosure classes an agent may cite when a sustainability filing is the subject of a cleared read. The producing node signs the record under the record contract; the receipt of the read is signed separately and carries the class. The disclosure rules live in ACM-68000; a disclosure condition enters an AIO-10060 outcome as evidence. ESG-10060 rates nothing, certifies nothing and labels nothing; it makes what was disclosed, under which regime, in which state, recoverable with its sources — so that a sustainability-linked product's agent reads under the same arrow as every other agent, with the right record in hand.",
+   "contract": [
+    {
+     "n": 1,
+     "title": "The contract",
+     "blocks": [
+      {
+       "h": false,
+       "t": "ESG-10060 (Sustainability Disclosure) defines the sustainability-disclosure record of a market and the disclosure classes an artificial-intelligence (AI) agent may cite when it relies on a sustainability filing. Its central object is the disclosure record: for each market, the named regimes, the authorities behind them, who and what they cover, when they take effect, what they require to be disclosed, under which reporting standards and taxonomies, with what assurance, filed where and in what format — every value with the page it was read from and the date the page bears. Its second object is the disclosure class: the typed name of the kind of sustainability filing an agent relied on, carried in the receipt so that a later reader knows what sort of thing was cited."
+      },
+      {
+       "h": false,
+       "t": "Sustainability Disclosure is the only expansion of ESG. The letters name the subject the regimes themselves use — environmental, social and governance disclosure — and nothing more. ESG-10060 defines what was disclosed, under which regime, as evidenced; it never rates, scores, ranks or labels an issuer, a product or a filing as sustainable."
+      },
+      {
+       "h": false,
+       "t": "Every disclosure record published under ESG-10060 makes the same four promises."
+      },
+      {
+       "h": false,
+       "t": "Regime. The record names each disclosure regime by its own name and scope, with its authority, and keeps a jurisdiction's adoption of a framework distinct from that framework's application to a particular issuer or period."
+      },
+      {
+       "h": false,
+       "t": "Stage. Proposal, adoption, commencement and transitional operation are four distinguishable states with their own dates. A proposed regime is never recorded as in force; a transitional provision is never recorded as the settled duty."
+      },
+      {
+       "h": false,
+       "t": "Class. When a sustainability filing is the subject of a cleared read, the receipt's subject_type carries a disclosure class from this standard's vocabulary — the kind of filing relied on, never a judgement about its content."
+      },
+      {
+       "h": false,
+       "t": "Evidence. Every value carries its source page and source date or is not_found with the pages checked. Disclosure availability is never turned into a sustainability rating; the absence of a disclosure is never turned into a finding against the issuer."
+      }
+     ]
+    }
+   ],
+   "owns": [
+    {
+     "n": 5,
+     "title": "The thing ESG owns",
+     "blocks": [
+      {
+       "h": false,
+       "t": "The disclosure classes. ESG-10060 owns the vocabulary of subject_type values that name a sustainability filing as the subject of a read: the kinds of disclosure an agent may cite. The vocabulary is published as a register, each class with its definition and the regimes that produce it; a class is added by a new edition of the register, never by a value appearing in a receipt first."
+      },
+      {
+       "h": false,
+       "t": "The disclosure record. ESG-10060 owns the meaning of the Appendix E catalogue: regime, authority, applicability, adoption_stage, effective_dates, disclosure_duties, reporting_standards, taxonomy, climate_requirements, assurance, filing_store_and_format, interoperability, rule_revision_ref and sources. The chapter holds the values; ESG-10060 defines what they mean."
+      },
+      {
+       "h": false,
+       "t": "The four stages. ESG-10060 owns the rule that proposal, adoption, commencement and transitional operation are recorded as distinct states with distinct dates, and that a reader can tell from the record which state a regime was in on a given date."
+      },
+      {
+       "h": false,
+       "t": "The no-rating rule. ESG-10060 owns the rule, binding on every surface of the family, that nothing derived from a disclosure record is presented as a sustainability score, rating, ranking, label or claim."
+      },
+      {
+       "h": false,
+       "t": "The equivalence record. ESG-10060 owns the representation of interoperability — recognised equivalence, mapping and substituted-compliance provisions between regimes — as the authority publishes it, with its source, and never as an inference from similarity."
+      }
+     ]
+    }
+   ],
+   "schema": [
+    {
+     "n": 7,
+     "title": "Proposed machine schema v0.1 (unratified)",
+     "blocks": [
+      {
+       "h": false,
+       "t": "Names, types and meaning only. Proposals for review, not populated records, not a declaration of deployed field support, and not a list of regimes: the regimes a market adopts are values in the Book, read from their authorities, never typed into this text."
+      },
+      {
+       "sub": "7.1 The disclosure record envelope"
+      },
+      {
+       "table": [
+        [
+         "Field",
+         "Type",
+         "Meaning"
+        ],
+        [
+         "schema_version",
+         "string",
+         "Disclosure record schema version"
+        ],
+        [
+         "market",
+         "string",
+         "Deployed receipt-market value the record is read under"
+        ],
+        [
+         "version",
+         "string",
+         "Immutable disclosure record version"
+        ],
+        [
+         "supersedes",
+         "string (optional)",
+         "Earlier version replaced"
+        ],
+        [
+         "as_of",
+         "date",
+         "Date for which the record speaks"
+        ],
+        [
+         "produced_at",
+         "datetime (UTC)",
+         "Time this version was produced"
+        ],
+        [
+         "node",
+         "string",
+         "Producing node, inside the signed payload"
+        ],
+        [
+         "shared_revision_ref",
+         "reference (optional)",
+         "Exact apex-produced shared regime revision this record applies"
+        ],
+        [
+         "fields[]",
+         "array of field",
+         "The Appendix E catalogue, each entry a field instance in the 7.2 shape of SM-ECO-10060"
+        ],
+        [
+         "proof",
+         "object",
+         "ECO signature profile; no new signing scheme"
+        ]
+       ]
+      },
+      {
+       "sub": "7.2 The disclosure class register"
+      },
+      {
+       "table": [
+        [
+         "Field",
+         "Type",
+         "Meaning"
+        ],
+        [
+         "register_version",
+         "string",
+         "Version of the class register, tied to the standard's text version"
+        ],
+        [
+         "classes[]",
+         "array of object",
+         "Each class: identifier (the subject_type value), definition, the regime families that produce filings of this class, the date the class entered the register"
+        ],
+        [
+         "supersedes",
+         "string (optional)",
+         "Earlier register version replaced; classes are never removed, only marked superseded with a successor"
+        ],
+        [
+         "published_at",
+         "datetime (UTC)",
+         "Time this register version was published"
+        ]
+       ]
+      },
+      {
+       "h": false,
+       "t": "A class identifier is a stable string carried verbatim in subject_type. The definition says what kind of filing it is; it never says what the filing concludes."
+      }
+     ]
+    }
+   ],
+   "schema_fields": [
+    {
+     "section": "7.1 The disclosure record envelope",
+     "fields": [
+      "schema_version",
+      "market",
+      "version",
+      "supersedes",
+      "as_of",
+      "produced_at",
+      "node",
+      "shared_revision_ref",
+      "fields[]",
+      "proof"
+     ]
+    },
+    {
+     "section": "7.2 The disclosure class register",
+     "fields": [
+      "register_version",
+      "classes[]",
+      "supersedes",
+      "published_at"
+     ]
+    }
+   ],
+   "stack_version": "https://cpg-68000.org/stack/6.json"
+  }
+ },
+ "sm_eco_text": {
+  "head": [
+   "SM-ECO-10060",
+   "Sovereign Manifest of Electronic Compliance Objects · Canonical text and the Book of Markets chapter contract",
+   "Version 1.0 · 30 October 2026 · Standard held by Allooloo Technologies Corp. · Open standard, MIT licence"
+  ],
+  "mission": "SM-ECO-10060 defines the jurisdiction binding of a signed capital-product record and the market chapter from which that binding is published. Each chapter preserves the market's duties, authorities, sources, dates, conditions and exact section versions, with the producing node's signature. The jurisdiction namespace maps explicitly to the market value carried in the receipt. Member pages, node pages and specialised readouts derive from the same immutable chapter; ACM rule revisions point to the chapter evidence that produced them. SM-ECO makes the market context recoverable across the family while keeping separate the responsibilities of sourced content, clearance, orderability, venue reference and proof of the read.",
+  "parts": [
+   {
+    "n": 1,
+    "title": "The contract",
+    "blocks": [
+     {
+      "h": false,
+      "t": "SM-ECO-10060 defines the jurisdiction binding of a signed record. It owns the market field carried in the receipt, the jurisdiction namespace, and the relationship between a record, its market's duty and the responsible regulator. Its central object is the market chapter: the sourced, dated and versioned body of information an artificial-intelligence (AI) agent needs to understand the obligations and constraints relevant to its specified activity in that market."
+     },
+     {
+      "h": false,
+      "t": "The Book of Markets holds these chapters as structured records. A chapter brings together the market's authorities, applicable duties, disclosure infrastructure, product and client constraints, venue reference information and sustainability-disclosure regime. Each field preserves the evidence behind its value. Each section has a defined schema and an immutable version. A member page is a readout of its chapter."
+     },
+     {
+      "h": false,
+      "t": "The chapter begins with the activity and the duty. An agent must identify the product and subject, the actor and client category, the applicable jurisdiction, the governing revision, the information it must read, the restrictions it must test and the evidence it must retain. The chapter supplies the market context for those questions. Product-specific facts and client-specific assessments remain referenced records, never invented market-wide answers."
+     },
+     {
+      "h": false,
+      "t": "Every published chapter preserves subject and market scope, provenance, source observation time, applicability dates, revision identity and producing-node attribution. A field can be present, not found, unavailable, not applicable or conflicting without those states being collapsed. Sourceable information relevant to the duty stays in the chapter even when it has no place on the current page."
+     }
+    ]
+   },
+   {
+    "n": 2,
+    "title": "What the standard does not do",
+    "blocks": [
+     {
+      "h": false,
+      "t": "A chapter is a structured representation of sourced information. It does not certify a product, establish the truth of a source, give an individual legal opinion, or guarantee that every applicable obligation has been captured. Its declared scope and evidence gaps determine what it can support."
+     },
+     {
+      "h": false,
+      "t": "Finding a regulator, venue, filing or endpoint does not authorise an action. Missing evidence does not establish a prohibition. A failed source request does not establish that a rule is absent. A chapter supports a clearance evaluation only when its evidence, scope and rule references satisfy the evaluating profile."
+     },
+     {
+      "h": false,
+      "t": "Jurisdiction binding does not by itself prove data residency, regulatory recognition or an actor's entitlement. Hosting location, listing market, issuer domicile, client location and applicable regime are distinct attributes; cross-border applicability is represented through explicit references and conditions."
+     },
+     {
+      "h": false,
+      "t": "Artificial intelligence makes mistakes. Every field links the page it was read on. Read the regulator."
+     }
+    ]
+   },
+   {
+    "n": 3,
+    "title": "Who signs",
+    "blocks": [
+     {
+      "h": false,
+      "t": "The producing market node signs its chapter and its specialised section records under the record key, following the ECO-10060 content contract. Attribution names the producing node inside the signed payload. Shared regime material is referenced from its separately signed authoritative record; a market node never presents a shared revision as its own original publication."
+     },
+     {
+      "h": false,
+      "t": "A national rule revision is produced by the market's node; a shared rule-family revision is produced by the apex. Both use the record key. Market chapters reference the exact shared revision and record national applicability, additions or exceptions with their own evidence."
+     },
+     {
+      "h": false,
+      "t": "RCO-10060 separately governs the receipt, signed by the receipt door under the receipt key. The receipt carries the deployed market value and the applied rule_version; its answer_hash binds it to the exact signed answer supplied. The record key signs content; the receipt key signs the read. Neither signs the other's object."
+     }
+    ]
+   },
+   {
+    "n": 4,
+    "title": "The arrow",
+    "blocks": [
+     {
+      "h": false,
+      "t": "listed security  →  record (ECO-10060, the node)  →  market and duty (SM-ECO-10060, the chapter)  →  rule (ACM-68000)  →  whether (AIO)  →  where (AMP)  →  receipt (RCO-10060, under every door)"
+     },
+     {
+      "h": false,
+      "t": "A dependency model, not a ladder. ECO supplies attributable content; SM-ECO supplies jurisdiction and duty context; ACM-68000 supplies rule revisions and the clearance vocabulary; AI Orderability (AIO) supplies the structured product, market and client-class outcome; the Agentic Market Protocol (AMP) supplies venue reference information and, only under a separately evidenced clearance profile, route resolution; CPG-68000 is the umbrella."
+     },
+     {
+      "h": false,
+      "t": "AIO may require venue restrictions before it can conclude. Venue discovery can precede clearance, while an actionable route requires the relevant clearance and orderability results. Sustainability disclosure (ESG) is a specialised ECO record and a rule family in ACM, not a tier; it supplies evidence for a defined sustainability condition and never a generic sustainable outcome."
+     }
+    ]
+   },
+   {
+    "n": 5,
+    "title": "The thing SM-ECO owns",
+    "blocks": [
+     {
+      "h": false,
+      "t": "The jurisdiction namespace identifies the member and its scope. The receipt's market field keeps the deployed representation. Namespace and receipt value are explicitly mapped in the fleet registry; a richer namespace never silently replaces a deployed receipt value. Country, jurisdiction and venue identifiers are never used interchangeably."
+     },
+     {
+      "h": false,
+      "t": "The chapter is the durable source for the member page, the product node page and the per-market sections of the other standards. Protocol membership and live product service are separate layers with independent lifecycle states. Their addresses come from the fleet registry and are never constructed from a country code."
+     },
+     {
+      "h": false,
+      "t": "A chapter version is an immutable manifest naming exact section versions. Every section is immutable once written. A change produces a new version with a supersedes relationship and never overwrites the earlier one. An unchanged section may be referenced unchanged by a successor chapter. Historical versions remain recoverable for the records and receipts that refer to them."
+     },
+     {
+      "h": false,
+      "t": "A chapter version is the evidence event an ACM rule revision points at. The rule reference names the exact chapter version, section and evidence from which the rule was produced. A changed observation or calendar field creates a new chapter version but not, by itself, a new duty revision; a substantive rule or binding change creates a new immutable rule revision linked to its source chapter event."
+     },
+     {
+      "h": false,
+      "t": "Chapter content is committed first; rule revisions then reference that immutable content; a later chapter manifest may reference those revisions. A revision never depends on its own digest through a chapter that embeds the same revision. The implementation publishes the exact reference and hashing profile."
+     }
+    ]
+   },
+   {
+    "n": 6,
+    "title": "Publication discipline",
+    "blocks": [
+     {
+      "h": false,
+      "t": "One approved schema and one sourced record feed every readout. Readers populate the Book on a declared cadence, with additional passes for detected changes. The publication rail reads accepted chapter versions; pages conduct no searches of their own and introduce no unsupported values."
+     },
+     {
+      "h": false,
+      "t": "Each reading run records the source set, observation time, success or failure, changed fields, unresolved gaps and conflicts. A failed run never erases the last valid chapter or presents its observations as fresh; readers keep the last accepted record with visible age and failure status until a successor is validated."
+     },
+     {
+      "h": false,
+      "t": "The rail publishes a consistent chapter selection across related surfaces and makes each surface's source version inspectable. Validation rejects mismatched markets, broken references, missing provenance and invalid signatures. A partial publication is reported as drift, never concealed by updating displayed dates."
+     },
+     {
+      "h": false,
+      "t": "No coverage total, member ordinal or inventory total appears in authored prose; generated displays read the record. Acronyms are expanded on first use; definitions stay stable; reading guides index authoritative resources and add no doctrine. Publication supports discovery and grounded interpretation; it guarantees neither model training inclusion nor regulatory recognition."
+     },
+     {
+      "h": false,
+      "t": "The sequence is mission, schema, source reading, field population, validation, publication. A semantic amendment names its compatibility and affected schemas. Standard version, chapter version, section version, rule revision and deployment version stay distinct."
+     }
+    ]
+   }
+  ]
+ },
+ "acm_signals": [
+  [
+   "Signal",
+   "Reading",
+   "Boundary"
+  ],
+  [
+   "ACM-200",
+   "Cleared",
+   "The specified read or action has cleared the applicable registered checks in the stated context."
+  ],
+  [
+   "ACM-403",
+   "Restricted or halted",
+   "Evidence establishes a restriction or an applicable halt under the selected revision."
+  ],
+  [
+   "ACM-404",
+   "Not on the register",
+   "The named lookup target is absent from the identified register. This establishes neither global absence nor prohibition."
+  ],
+  [
+   "ACM-451",
+   "Read the filing",
+   "The binding requires the identified filing or source to be read before a conclusion or a progression."
+  ]
+ ],
+ "shell": {
+  "style": "*{margin:0;padding:0;box-sizing:border-box}body{background:#faf8f3;color:#1a1a1a;font:16px/1.65 -apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Arial,sans-serif}\n.container{max-width:900px;margin:0 auto;padding:32px 24px 96px}.topbar{font-size:12px;color:#6b6b6b;letter-spacing:.04em;margin-bottom:14px}\n.eyebrow{text-transform:uppercase;letter-spacing:.14em;color:#6b6b6b;font-size:11px;font-weight:600;margin:0 0 10px}h1{font:700 28px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0 0 4px}\nh1 .host{display:block;font-size:14px;color:#c84a1e;font-weight:600;margin-top:6px}h2{font-size:18px;font-weight:700;margin:34px 0 12px;padding-bottom:8px;border-bottom:2px solid #c84a1e}\nh3{font-size:15px;margin:22px 0 8px}p{margin:0 0 12px}.mission{font-size:17px;margin:18px 0 22px}.arrow{font-family:ui-monospace,monospace;font-size:13px;background:#f3eee0;padding:12px 14px;border-radius:4px}\n.meta{font-size:13px;color:#6b6b6b}table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0 24px}th,td{text-align:left;padding:9px 12px;border-bottom:1px solid #d4cfc1;vertical-align:top;overflow-wrap:anywhere}\nth{background:#f3eee0;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.04em}a{color:#2455a3;text-decoration:none}code,.mono{font-family:ui-monospace,monospace;font-size:13px}\n.surfaces{font-family:ui-monospace,monospace;font-size:12px;background:#1a1a1a;color:#f3eee0;padding:16px 20px;border-radius:4px;margin:12px 0 24px;white-space:pre-wrap;overflow-x:auto;line-height:1.7}\n.ok{color:#2e7d32;font-weight:700}.bad{color:#c62828;font-weight:700}footer{margin-top:64px;padding-top:28px;border-top:1px solid #d4cfc1;font-size:12px;color:#6b6b6b;line-height:1.7}\nform{display:grid;gap:6px;max-width:520px}form input,form textarea{font:inherit;padding:8px;border:1px solid #d4cfc1;border-radius:3px;background:#fff}form button{justify-self:start;padding:9px 16px;border:0;border-radius:3px;background:#c84a1e;color:#f3eee0}.hp{display:none}\n@media (max-width:600px){.container{padding:24px 16px 72px}th,td{padding:7px}}",
+  "topbar": "Standard held by Allooloo Technologies Corp. · Open standard, MIT licence.",
+  "footer": "<footer><p><b>Standard held by Allooloo Technologies Corp. · Open standard, MIT licence.</b></p><p class=\"stack\"><a href=\"https://eco-10060.org/\">ECO-10060</a> · <a href=\"https://sm-eco-10060.org/\">SM-ECO-10060</a> · <a href=\"https://acm-68000.org/\">ACM-68000</a> · <a href=\"https://aio-10060.org/\">AIO-10060</a> · <a href=\"https://amp-10060.org/\">AMP-10060</a> · <a href=\"https://rco-10060.org/\">RCO-10060</a> · <a href=\"https://esg-10060.org/\">ESG-10060</a> · <a href=\"https://cpg-68000.org/\">CPG-68000</a> · <a href=\"https://cpg-68000.org/stack/6.json\">stack version</a></p><p>RCO is the Record of Cleared Orders. Artificial intelligence makes mistakes; read the source.</p><p>© 2027 Allooloo Technologies Corp.</p></footer>"
+ },
+ "stack": "https://cpg-68000.org/stack/6.json",
+ "prior": {
+  "AIO@1.1": {
+   "id": "AIO-10060",
+   "name": "AI Orderability",
+   "head": [
+    "AIO-10060",
+    "AI Orderability · The structured outcome an agent can act on · Canonical text",
+    "Version 1.1 · 31 October 2026 · Standard held by Allooloo Technologies Corp. · Open standard, MIT licence"
+   ],
+   "page": "https://aio-10060.org/v1.1/",
+   "twins": [
+    "https://aio-10060.ai/",
+    "https://aio-10060.com/"
+   ],
+   "second_door": "https://sm-eco-10060.org/aio/",
+   "descriptor": "https://aio-10060.org/v1.1/aio-10060.json",
+   "mission": "AIO-10060 defines the structured orderability outcome: whether a specified product may be ordered for a specified client category in a specified market, under a named immutable rule revision, on evidence the outcome names element by element. The producing node signs the outcome under the record contract; the receipt of the read is signed separately. An outcome carries one clearance signal from the ACM-68000 vocabulary and the scope, conditions, exclusions tested, assessments and documents required and evidence gaps around it. It speaks about a product and a category, never an individual; it is not permission, not a venue and not an order. Missing evidence is reported as a gap, never as a finding. AIO makes the orderability question answerable in a form an agent can act on and a reader can verify.",
+   "contract": [
+    {
+     "n": 1,
+     "title": "The contract",
+     "blocks": [
+      {
+       "h": false,
+       "t": "AIO-10060 (AI Orderability) defines the structured outcome an artificial-intelligence (AI) agent can act on: whether a specified product may be ordered for a specified client category in a specified market, under a named rule revision, on evidence the outcome names. Its central object is the orderability outcome. The outcome answers one question, in four parts: which product, which client category, which market, which revision. It answers nothing else."
+      },
+      {
+       "h": false,
+       "t": "AI Orderability is the only expansion of AIO. The word is orderability, not suitability and not advice: an outcome speaks about a product and a category of client under a market's rules, never about an individual."
+      },
+      {
+       "h": false,
+       "t": "Every outcome published under AIO-10060 makes the same four promises."
+      },
+      {
+       "h": false,
+       "t": "Scope. The outcome names its product by the product's own record, its client category by the market's own classification, its market by the deployed market value, and its rule by an immutable ACM-68000 revision. An outcome with an unnamed part is not an outcome."
+      },
+      {
+       "h": false,
+       "t": "Basis. Every element of the outcome — each condition, each exclusion tested, each assessment or document required — references the chapter field instance or product-record field it rests on. An element without a basis is not written."
+      },
+      {
+       "h": false,
+       "t": "Signal. The outcome carries one clearance signal from the ACM-68000 vocabulary and adds no signal of its own. The structure around the signal is AIO's; the meaning of the signal is ACM's."
+      },
+      {
+       "h": false,
+       "t": "Gaps. Where the evidence does not reach a conclusion, the outcome says so, lists the evidence it lacked and the pages it checked, and stops. A not-determinable outcome carries no signal: the signal field is absent and evidence_gaps[] is not empty. A gap is reported as a gap. It is never closed by assumption, and no signal is invented to stand for it."
+      }
+     ]
+    }
+   ],
+   "owns": [
+    {
+     "n": 5,
+     "title": "The thing AIO owns",
+     "blocks": [
+      {
+       "h": false,
+       "t": "The outcome. AIO owns the shape of the answer to the orderability question: its four-part scope, its basis references, its conditions, its exclusions tested, its assessments and documents required, its evidence gaps and its single ACM signal. No other standard defines that object."
+      },
+      {
+       "h": false,
+       "t": "The orderability section of the chapter. AIO owns the catalogue of fields a market chapter must carry for outcomes to be produced in that market (the Appendix C catalogue of SM-ECO-10060): product scope, client categories, target market, negative target market, distribution conditions, required assessments, product documentation, manufacturer and distributor roles, review triggers, evidence requirements, exceptions and the orderability profile reference. The chapter holds the values; AIO defines what they mean."
+      },
+      {
+       "h": false,
+       "t": "The client category. AIO owns the rule that the client is always a category from the market's own classification with source-backed qualification criteria, never an individual, and that the same product may carry different outcomes for different categories in the same market."
+      },
+      {
+       "h": false,
+       "t": "The conditions. AIO owns the representation of a conditional outcome: each condition names the rule element it comes from, the party it falls on and the evidence that would discharge it. A condition without an owner or a discharge is a gap, not a condition."
+      },
+      {
+       "h": false,
+       "t": "The review. AIO owns the rule that an outcome names the review triggers and periodic review conditions the rules impose, so that a reader knows when an outcome must be produced again. An outcome never names its own expiry from memory."
+      }
+     ]
+    }
+   ],
+   "schema": [
+    {
+     "n": 7,
+     "title": "Proposed machine schema v0.1 (unratified)",
+     "blocks": [
+      {
+       "h": false,
+       "t": "Names, types and meaning only. Proposals for review, not populated outcomes or a declaration of deployed field support."
+      },
+      {
+       "sub": "7.1 The orderability outcome"
+      },
+      {
+       "table": [
+        [
+         "Field",
+         "Type",
+         "Meaning"
+        ],
+        [
+         "schema_version",
+         "string",
+         "Outcome schema version"
+        ],
+        [
+         "outcome_id",
+         "string",
+         "Stable identity of this outcome"
+        ],
+        [
+         "subject",
+         "reference",
+         "Product record version the outcome speaks about"
+        ],
+        [
+         "subject_type",
+         "string",
+         "Product or instrument category of the subject"
+        ],
+        [
+         "market",
+         "string",
+         "Deployed receipt-market value"
+        ],
+        [
+         "client_category",
+         "reference",
+         "Client classification from the chapter's client_categories[]"
+        ],
+        [
+         "rule_version",
+         "string",
+         "Immutable ACM-68000 revision applied"
+        ],
+        [
+         "section_ref",
+         "reference",
+         "Exact chapter orderability-section version read"
+        ],
+        [
+         "signal",
+         "string",
+         "One ACM-68000 clearance signal; no other vocabulary"
+        ],
+        [
+         "conditions[]",
+         "array of object",
+         "Rule element, party it falls on, evidence that discharges it, basis reference"
+        ],
+        [
+         "exclusions_tested[]",
+         "array of object",
+         "Negative target-market and distribution exclusions tested, with result and basis"
+        ],
+        [
+         "assessments_required[]",
+         "array of object",
+         "Assessments the rules require before an order, with trigger and party"
+        ],
+        [
+         "documents_required[]",
+         "array of object",
+         "Product, risk and target-market documents required, with basis"
+        ],
+        [
+         "evidence_gaps[]",
+         "array of object",
+         "Evidence the outcome lacked, pages checked, reason"
+        ],
+        [
+         "review_triggers[]",
+         "array of object",
+         "Events and periods after which the outcome must be produced again"
+        ],
+        [
+         "as_of",
+         "date",
+         "Date for which the outcome speaks"
+        ],
+        [
+         "produced_at",
+         "datetime (UTC)",
+         "Time this outcome was produced"
+        ],
+        [
+         "node",
+         "string",
+         "Producing node, inside the signed payload"
+        ],
+        [
+         "proof",
+         "object",
+         "ECO signature profile; no new signing scheme"
+        ]
+       ]
+      },
+      {
+       "h": false,
+       "t": "Every basis reference names a field instance in the SM-ECO-10060 7.2 shape — the chapter section's own field with its source_url, source_date and read_at — or a field of the product record. The outcome copies no value out of its basis; it points at it."
+      },
+      {
+       "sub": "7.2 The signal, as AIO carries it"
+      },
+      {
+       "table": [
+        [
+         "Signal",
+         "What the outcome says"
+        ],
+        [
+         "ACM-200",
+         "The rules as evidenced permit the product for the client category in the market, subject to any conditions[] listed"
+        ],
+        [
+         "ACM-403",
+         "The rules as evidenced restrict or halt the product for the client category in the market; the restricting element is in the basis"
+        ],
+        [
+         "ACM-404",
+         "The product, category or required register entry is not on the register the rules name; pages checked are listed"
+        ],
+        [
+         "ACM-451",
+         "The rules require the reader to read a named filing or document before any conclusion; the filing is referenced"
+        ]
+       ]
+      },
+      {
+       "h": false,
+       "t": "The signal's meaning is ACM-68000's and is not restated here. AIO adds the scope, the conditions, the exclusions, the gaps and the review triggers around it. An outcome that reaches no conclusion carries none of the four: its signal field is absent, its evidence_gaps[] names what was lacking and the pages checked, and a surface renders it as not determinable. The four signals are the whole vocabulary; there is no fifth."
+      }
+     ]
+    }
+   ],
+   "schema_fields": [
+    {
+     "section": "7.1 The orderability outcome",
+     "fields": [
+      "schema_version",
+      "outcome_id",
+      "subject",
+      "subject_type",
+      "market",
+      "client_category",
+      "rule_version",
+      "section_ref",
+      "signal",
+      "conditions[]",
+      "exclusions_tested[]",
+      "assessments_required[]",
+      "documents_required[]",
+      "evidence_gaps[]",
+      "review_triggers[]",
+      "as_of",
+      "produced_at",
+      "node",
+      "proof"
+     ]
+    },
+    {
+     "section": "7.2 The signal, as AIO carries it",
+     "fields": [
+      "ACM-200",
+      "ACM-403",
+      "ACM-404",
+      "ACM-451"
+     ]
+    }
+   ],
+   "stack_version": "https://cpg-68000.org/stack/5.json",
+   "superseded_by": "https://aio-10060.org/",
+   "canonical_text": "AIO-10060_Canonical-Text_v1.1_2026-10-31.docx"
+  }
+ }
+}

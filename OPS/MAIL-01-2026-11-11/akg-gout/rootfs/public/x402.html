@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>x402 — Agentic Private Office</title>
+<meta name="office-rev" content="office0928" />
+<meta name="description" content="agent-kg.ai x402: GET /api is a paid call — $0.01 USDC on Base mainnet, x402 v2 — answered with the office facts of record and an EdDSA-signed receipt that resolves forever." />
+<meta property="og:title" content="x402 — Agentic Private Office — Matthew Keddy" />
+<meta property="og:description" content="One call, one cent, one receipt. GET /api answers 402 Payment Required (x402 v2, $0.01 USDC on Base); pay and receive the office facts of record with a signed receipt." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://agent-kg.ai/x402" />
+<meta property="og:image" content="https://agent-kg.ai/icon-1024.png" />
+<meta name="twitter:card" content="summary" />
+<meta name="theme-color" content="#000000" />
+<link rel="canonical" href="https://agent-kg.ai/x402" />
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="alternate" type="application/json" href="/x402/jwks.json" title="x402 receipt signing key" />
+<link rel="stylesheet" href="/styles.css" />
+<script src="/chrome.js" defer></script>
+</head>
+<body>
+
+<header class="gh"><div class="gh-in"><a href="/" class="gh-brand" aria-label="Agentic Private Office — home"><img src="/akgh-icon-64.png" alt="" class="brand-signet" width="28" height="28" /><span class="brand-mark">Agentic Private Office</span></a><a class="gh-entity" href="https://agent-kg.ai/">Agentic KG Holdings</a><nav class="gh-nav" aria-label="Primary"><a href="/#turn">The turn</a><a href="/#holdings">Holdings</a><a href="/#radar">RADAR</a><a href="/#rulings">Rulings</a><a href="https://fo-kg.ai">FO-KG</a></nav><div class="gh-act"><button class="gh-theme" id="gh-theme" type="button" aria-label="Light or dark" aria-pressed="false"><svg class="gi i-moon" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></svg><svg class="gi i-sun" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg></button><a class="g-btn g-btn-p gh-pill" href="/#contact">Contact →</a></div></div></header>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <span class="status-dot" aria-hidden="true"></span>
+      X402  ·  {{x402.state}}
+    </div>
+    <h1 class="hero-h1">x402 — a paid call with a signed receipt</h1>
+    <p class="hero-p">GET /api is a paid call: $0.01 USDC on Base mainnet, x402 v2, scheme exact. Without payment it answers 402 with the offer. With a valid payment it answers the office facts of record and an EdDSA-signed receipt that resolves forever at /x402/receipt/{nonce}.</p>
+    <div class="hero-stat-row">
+      <div class="hero-stat">
+        <div class="hero-stat-num small">{{x402.state}}</div>
+        <div class="hero-stat-label">X402 · $0.01 USDC A CALL · BASE MAINNET</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num small">$0.01 USDC  ·  eip155:8453</div>
+        <div class="hero-stat-label">PRICE · NETWORK</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<section id="office-door" class="section section-dark">
+  <div class="sec-inner">
+    <div class="sec-eyebrow">X402  ·  THE OFFICE DOOR</div>
+    <h2 class="sec-h2">The office door</h2>
+    <div class="sec-prose"><p>x402 — the office door. Every door in the portfolio answers a request for payment the same way: HTTP 402, the x402 standard, settled in USDC on Base, receipt signed and served forever. This is the office's own door, so a counterparty can prove the loop end to end with the principal's signature on the receipt. One resource: /api returns a signed statement of the office's current holdings summary. Price $0.01. Receipts at /x402/receipt/{nonce}, verified against /x402/jwks.json (kid mk-office-x402-2026-09). Settlement address and amount live in the 402 payload only. The office holds no cryptocurrency: the address is the rail's, the receipt is the office's. Facilitator: Coinbase Developer Platform. Network: Base mainnet.</p></div>
+  </div>
+</section>
+
+<section id="door" class="section">
+  <div class="sec-inner">
+    <div class="sec-eyebrow">THE DOOR</div>
+    <h2 class="sec-h2">What the call buys</h2>
+    <ul class="line-list">
+      <li>Route — <a href="/api">https://agent-kg.ai/api</a> · GET · 402 without payment, 200 with it</li>
+      <li>Price — $0.01 USDC (10000 units) · Base mainnet eip155:8453 · asset 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913</li>
+      <li>Scheme — exact · EIP-3009 transferWithAuthorization · 60-second window · x402 v2</li>
+      <li>Facilitator — Coinbase CDP (verify, settle) · Bazaar discovery extension on the 402</li>
+      <li>Data — a signed statement of the office's current holdings summary (EdDSA, kid mk-office-x402-2026-09), drawn from <a href="/facts.json">/facts.json</a></li>
+      <li>Receipt — EdDSA-signed, kid {{x402.kid}}, key at <a href="/x402/jwks.json">/x402/jwks.json</a>, resolves at /x402/receipt/{nonce}</li>
+      <li>Receiver — {{x402.receiver}}</li>
+    </ul>
+  </div>
+</section>
+
+<section id="last" class="section section-dark">
+  <div class="sec-inner">
+    <div class="sec-eyebrow">LAST SETTLEMENT</div>
+    <h2 class="sec-h2">Paid calls</h2>
+    <ul class="line-list">
+      <li>Settled calls — counted from facilitator settlement receipts and held in KV for the office's own read; the count is not published (CEO ruling 2026-09-14)</li>
+      <li>Last transaction — {{x402.last_tx}}</li>
+      <li>Last receipt — {{x402.last_receipt}}</li>
+      <li>As of — {{x402.last_at}}</li>
+    </ul>
+  </div>
+</section>
+
+<section id="how" class="section">
+  <div class="sec-inner">
+    <div class="sec-eyebrow">HOW</div>
+    <h2 class="sec-h2">One call, one cent, one receipt</h2>
+    <ul class="line-list">
+      <li>1 — GET /api. The answer is 402 Payment Required: the offer in the body and in the PAYMENT-REQUIRED header.</li>
+      <li>2 — Sign the payment (x402 v2, scheme exact) and repeat the call with the PAYMENT-SIGNATURE header.</li>
+      <li>3 — The facilitator verifies, the office answers { receipt, data }, the facilitator settles, and PAYMENT-RESPONSE carries the transaction.</li>
+      <li>4 — The receipt's jwt verifies against /x402/jwks.json; its receipt_url resolves forever.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<section class="gband" aria-label="Agentic Private Office"><div class="gb-in"><p class="gb1">Agentic Private Office — Matthew Keddy</p><p class="gb2">The Agentic Private Office — agents, keys, tenancies and the record, under one signature.</p></div></section>
+<footer class="footer">
+  <div class="footer-bottom">
+    <span class="entity-line entity-line-footer">© 2026 <img src="/akgh-icon-64.png" alt="" class="entity-mark" width="64" height="64" />Agentic KG Holdings</span>
+    <span class="footer-sep">·</span>
+    <span>Agentic Private Office — Matthew Keddy</span>
+    <span class="footer-sep">·</span>
+    <span>agent-kg.ai</span>
+    <span class="footer-sep">·</span>
+    <span>Surface {{surface_version}} · as of {{as_of}}</span>
+    <span class="footer-sep">·</span>
+    <a href="/.well-known/agent-card.json">Agent Card</a>
+    <span class="footer-sep">·</span>
+    <a href="/.well-known/jwks.json">Keyring</a>
+    <span class="footer-sep">·</span>
+    <a href="/x402">x402</a>
+    <span class="footer-sep">·</span>
+    <a href="/llms.txt">llms.txt</a>
+    <span class="footer-sep">·</span>
+    <a href="/status">Status</a>
+    <span class="footer-sep">·</span>
+    <a href="/terms">Terms</a>
+    <span class="footer-sep">·</span>
+    <a href="/privacy">Privacy</a>
+    <span class="footer-sep">·</span>
+    <a href="/security">Security</a>
+    <span class="footer-sep">·</span>
+    <a href="/no-cookies">No cookies</a>
+  </div>
+</footer>
+
+</body>
+</html>

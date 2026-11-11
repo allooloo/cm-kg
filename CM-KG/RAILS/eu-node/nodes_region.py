@@ -31,9 +31,13 @@ DOMICILE = {'ky', 'bm', 'je'}
 def eco(cc):
     try: return json.loads(urllib.request.urlopen(urllib.request.Request(f'https://{cc}-eco.ai/eco.json', headers={'User-Agent': 'Allooloo digest (nodes_region)'}), timeout=30).read())
     except Exception: return {}
+import sys; sys.path.insert(0, r'C:\ALLOOLOO\BOOK\rail'); import book as _book   # DEFECTS-01a (CEO ruling 2026-11-01): these markets' duty line is the Book's first sourced duty
+BOOK_DUTY = ('au', 'ch', 'sg')
 for x in nodes:
     cc = x['node'].split('-')[0]
-    if cc in DUTY12: x['duty'] = DUTY12[cc]; x['duty_source'] = 'ESTATE\\worker\\products.js DUTY (the published duty line)'
+    if cc in BOOK_DUTY:
+        _ch = _book.chapter(cc); _d, _a = _book.duty(_ch); x['duty'] = _d or 'not found'; x['duty_source'] = _a or f"BOOK/{_ch['sec_paths']['ECO']} · duty_map (not found: the Book holds no sourced duty)"
+    elif cc in DUTY12: x['duty'] = DUTY12[cc]; x['duty_source'] = 'ESTATE\\worker\\products.js DUTY (the published duty line)'
     elif cc in EU: x['duty'] = 'MiFID II product governance'; x['duty_source'] = 'https://eu-eco.ai/eco.json (mifid_ii_product_governance)'
     elif cc in DOMICILE: x['duty'] = 'record held by the listing market'; x['duty_source'] = 'CEO ruling 2026-10-25: a domicile carries no duty of its own'
     else:   # CEO ruling 2026-10-25: a duty line is policy keyed by market — taken only from the market's ECO record; none there, nothing printed (a gap in the report)

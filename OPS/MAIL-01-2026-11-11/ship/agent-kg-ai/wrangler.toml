@@ -1,0 +1,33 @@
+name = "agent-kg-ai"
+main = "worker.js"   # MAIL-01: the live module unchanged (its source lags live; see report)
+no_bundle = true
+compatibility_date = "2026-09-01"
+# account_id: the CEO's personal Cloudflare account, set at deploy time via
+# CLOUDFLARE_ACCOUNT_ID from C:\MATTHEWKEDDY\AGENT KEYS\cloudflare-account.txt.
+# Never a company account (GSC AI Agent Stack dd2832b3… is NOT this office).
+workers_dev = false
+routes = [
+  { pattern = "agent-kg.ai",      custom_domain = true },
+  { pattern = "www.agent-kg.ai",  custom_domain = true },
+  { pattern = "agent-kg.com",     custom_domain = true },
+  { pattern = "www.agent-kg.com", custom_domain = true },
+  { pattern = "agent-kg.io",      custom_domain = true },
+  { pattern = "www.agent-kg.io",  custom_domain = true },
+  { pattern = "agent-kg.org",     custom_domain = true },
+  { pattern = "www.agent-kg.org", custom_domain = true }
+]
+
+[vars]
+X402_NETWORK = "base"
+
+[[kv_namespaces]]
+binding = "OFFICE_X402"
+id = "65ca03dc33504a51b5d69acc7b9f8704"
+
+[assets]
+directory = "C:/MATTHEWKEDDY/SITE/public"   # MAIL-01: the site assets of record
+binding = "ASSETS"
+run_worker_first = true
+
+[observability]
+enabled = true

@@ -177,11 +177,22 @@ def gleif_lei(isins):
 
 def fetch(lei=True):
     n_biva, beq = biva_equity()
-    bmv = bmv_issuers()
+    # OPS-06 (2026-11-07): bmv.com.mx answered its site-unavailable page on the 2026-11-07 night and the roster stopped the harvest (exit 1).
+    # The roster now takes the fallback events.py and halt.py already take: the BMV issuer list of the latest roster sample, the profile reads
+    # skipped (each would hit the same page), the fallback named in the result. BIVA (the ISIN source) is read live as before.
+    try:
+        bmv = bmv_issuers(); bmv_from = 'live'
+    except (BMVUnavailable, RuntimeError) as e:
+        bmv, at = bmv_issuers_from_sample()
+        if not bmv:
+            raise
+        bmv_from = f'roster sample read at {at} (bmv.com.mx unavailable: {str(e)[:120]})'
     rows, seen = [], set()
     by_key = {(b['clave'], b['serie']): b for b in beq}
     bmv_series_read, bmv_profiles = 0, {}
     for i in bmv:
+        if bmv_from != 'live':
+            bmv_profiles[i['clave']] = (i['razonSocial'], [], BMV_PROFILE.format(clave=i['clave'], id=i['idEmisora']), i['tipo']); continue
         name, series, url = bmv_series(i['clave'], i['idEmisora'])
         bmv_profiles[i['clave']] = (name or i['razonSocial'], series, url, i['tipo'])
         bmv_series_read += len(series)
@@ -219,7 +230,7 @@ def fetch(lei=True):
             'count_by_mic': {m: sum(1 for r in rows if r['mic'] == m) for m in sorted({r['mic'] for r in rows})},
             'bmv_issuers_not_on_biva': sorted({r['clave'] for r in rows if not r['on_biva_list']}),
             'lei_method': 'GLEIF exact ISIN map (api.gleif.org/api/v1/lei-records?filter[isin]=)' if lei else 'not looked up (--no-lei)',
-            'lei_hits': len(lei_hits), 'scope': 'XMEX + BIVA equity series', 'rows': rows}
+            'lei_hits': len(lei_hits), 'scope': 'XMEX + BIVA equity series', 'bmv_issuers_from': bmv_from, 'rows': rows}
 
 
 if __name__ == '__main__':

@@ -1,0 +1,12 @@
+{
+  "keys": [
+    {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "v1HxOgw6HDyetyPu2JSgAa6q6lIF4Frdqf2Gbbkie9Y",
+      "kid": "mk-office-x402-2026-09",
+      "use": "sig",
+      "alg": "EdDSA"
+    }
+  ]
+}

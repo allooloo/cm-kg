@@ -91,8 +91,8 @@ export async function settle(env, paid, door) {
   return { settled, tx, payer, header: b64(pr), pr };
 }
 export function paymentDoor(env) {
-  return { protocol: 'x402', version: 2, network: NETWORK.caip2, asset: env.X402_PAYTO_OUSD ? 'USDC, OUSD' : 'USDC', asset_address: NETWORK.usdc, ousd_address: env.X402_PAYTO_OUSD ? OUSD.asset : undefined, scheme: 'exact', facilitator: 'Coinbase CDP', free_reads_per_agent_per_day: 'unlimited', rationing: 'none — every read is free for every agent (CEO ruling 2026-10-24); pay only if you choose to: ask for the offer, then pay',
-    ask_for_the_offer: 'header x402-pay: 1 (or ?x402=1 on GET)', pay_with: 'PAYMENT-SIGNATURE header (x402 v2) on the same call', pricing: 'https://allooloo.ai/x402/pricing.json', settlements: 'https://allooloo.ai/x402/settled.json', receipts: 'a paid read carries its RCO receipt (decision_id) — https://mcp.rco-a2a.ai/mcp' };
+  return { page: 'https://data-paygo.ai/', protocol: 'x402', version: 2, network: NETWORK.caip2, asset: env.X402_PAYTO_OUSD ? 'USDC, OUSD' : 'USDC', asset_address: NETWORK.usdc, ousd_address: env.X402_PAYTO_OUSD ? OUSD.asset : undefined, scheme: 'exact', facilitator: 'Coinbase CDP', free_reads_per_agent_per_day: 'unlimited', rationing: 'none — every read is free for every agent (CEO ruling 2026-10-24); pay only if you choose to: ask for the offer, then pay',
+    ask_for_the_offer: 'header x402-pay: 1 (or ?x402=1 on GET)', pay_with: 'PAYMENT-SIGNATURE header (x402 v2) on the same call', pricing: 'https://allooloo.ai/x402/pricing.json', settlements: 'https://allooloo.ai/x402/settled.json', receipts: 'a paid read carries its RCO receipt (id) — https://mcp.rco-records.ai/mcp' };
 }
 // counts by day and door (for allooloo.ai/x402 and the digest)
 export async function counts(env, days = 14) {

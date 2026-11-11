@@ -18,6 +18,10 @@ HERE = os.path.dirname(os.path.abspath(__file__)); PY = sys.executable
 SNAP = os.environ["SITE03A_SNAP"]; LANE = os.environ["SITE03A_LANE"]; REGF = os.environ["SITE03A_REGISTRY"]; CULL = os.environ["CULL_ROOT"]; PROT = os.environ["PROTOCOLS_DIR"]
 DRY = os.environ.get("DRY_DIR"); T0 = datetime.datetime.now(datetime.timezone.utc); NIGHT = os.environ.get("NIGHT") or T0.date().isoformat()
 EXEC = os.environ.get("CONTAINER_APP_JOB_EXECUTION_NAME", os.environ.get("HOSTNAME", "laptop")); IMAGE_TAG = os.environ.get("IMAGE_TAG", "?")
+try:   # BOOK-02 addendum (CEO ruling 4): read the Book mirror by the job identity when the grant is placed; else the image copy, said in the record
+    sys.path.insert(0, os.environ.get("BOOK_RAIL", "/app/BOOK/rail")); import book_pull; BOOK_FROM = book_pull.use_mirror()
+except Exception as _e: BOOK_FROM = f"image copy (book_pull unavailable: {type(_e).__name__})"
+print("Book read from:", BOOK_FROM, flush=True)
 # VAULT-DROP-01 (2026-10-28): PROVE=1 is set only on a manual start (never on the schedule). It signs and rolls with no difference and commits
 # registry.json even when the repo already matches, so every credential path is proven once. The nightly never carries it.
 PROVE = os.environ.get("PROVE") == "1"
@@ -66,7 +70,7 @@ def get_text(name):
         if DRY or ops is None: return open(os.path.join(DRY or LANE, "ops", name), encoding="utf-8").read()
         return ops.get_blob_client(name).download_blob().readall().decode("utf-8")
     except Exception: return None
-row = {"agent": "eco-ops", "night": NIGHT, "verdict": "PASS", "hosts_changed": 0, "paths_changed": 0, "flags": [], "hand_items": [], "rolled": False, "execution": EXEC, "image": IMAGE_TAG}
+row = {"agent": "eco-ops", "night": NIGHT, "verdict": "PASS", "hosts_changed": 0, "paths_changed": 0, "flags": [], "hand_items": [], "rolled": False, "execution": EXEC, "image": IMAGE_TAG, "book_from": BOOK_FROM}
 hands = row["hand_items"]; flags = row["flags"]
 try:
     log(f"ECO-OPS-01 night {NIGHT} image {IMAGE_TAG} execution {EXEC}")
@@ -74,6 +78,7 @@ try:
     # 2. rebuild from the live reads
     rc, out = sh([PY, "-X", "utf8", os.path.join(PROT, "site03a.py"), "apply"], cwd=PROT); log("site03a apply rc", rc, out.strip().splitlines()[-1][:200] if out.strip() else "")
     if rc: raise RuntimeError("site03a.py apply failed: " + out[-400:])
+    rc2, out2 = sh([PY, "-X", "utf8", os.path.join(os.environ.get("BOOK_RAIL", "/app/BOOK/rail"), "acm_first.py"), SNAP]); log("ACM first use (TEXTS-01)", rc2, out2.strip()[-120:])   # ACM-68000 v1.1: Agent Clearance Manifest once on first use
     after = snapshot_hashes(); changed = sorted(p for p in set(after) | set(prev) if after.get(p) != prev.get(p)); hosts_changed = sorted({p.split("/")[0] for p in changed})
     row["hosts_changed"] = len(hosts_changed); row["paths_changed"] = len(changed); row["changed_sample"] = changed[:40]
     log("diff vs last build:", len(hosts_changed), "hosts,", len(changed), "paths", changed[:5])
@@ -81,19 +86,20 @@ try:
     rc, out = sh([PY, "-X", "utf8", os.path.join(LANE, "grep_banned.py")]); g = json.load(open(os.path.join(LANE, "grep-banned.json"), encoding="utf-8")); banned = sum(g["banned"].values())
     log("banned grep:", g["banned"] or 0)
     if banned: row["verdict"] = "FAIL"; flags.append(f"banned words {g['banned']} — roll blocked"); hands.append("rule the wording (grep-banned.json names the files)")
-    # 6. REF-01: the member lines live against the registry order
-    want = {cc: i + 1 for i, cc in enumerate(CCS)}; bad = []
+    # 6. REF-01: the member lines live against the registry — STACK-01 (2026-10-30): no ordinal any more (no count in prose); each registry member's
+    # ECO page carries "Member · <country> under SM-ECO-10060" linking its own <cc>-eco-10060.org
+    want = {cc: True for cc in CCS}; bad = []
     def member_live(cc):
         for attempt in range(3):
             try:
                 b = urllib.request.urlopen(urllib.request.Request(f"https://{cc}-eco.ai/", headers={"User-Agent": "Allooloo eco-ops (REF-01 check)"}), timeout=30).read().decode("utf-8", "replace")
-                m = re.search(r"Member (\d+) of 49 under SM-ECO-10060", b); return cc, int(m.group(1)) if m else None
+                return cc, bool(re.search(r"Member · [^<]+ under SM-ECO-10060 · <a href=\"https://" + cc + r"-eco-10060\.org/\">", b))
             except Exception: time.sleep(3 * (attempt + 1))
         return cc, "unreachable"
     import concurrent.futures as cf
     with cf.ThreadPoolExecutor(8) as ex:
         for cc, n in ex.map(member_live, CCS):
-            if n != want[cc]: bad.append(f"{cc}-eco.ai: {n} (registry {want[cc]})")
+            if n != want[cc]: bad.append(f"{cc}-eco.ai: member line {'missing' if n is False else n}")
     row["ref01_mismatch"] = bad
     if bad: flags.append(f"REF-01 lines off on {len(bad)} ECO pages"); hands.append("re-run CM-KG\\ECO\\patch_ref01.py and redeploy eco-pages (" + "; ".join(bad[:5]) + ")")
     log("REF-01 check: mismatches", len(bad))

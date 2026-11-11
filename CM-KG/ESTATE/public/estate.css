@@ -113,3 +113,4 @@ footer .line,footer .row{margin:.5rem 0;line-height:1.7}footer a{color:var(--nav
 @media (max-width:760px){nav{order:3;flex-basis:100%;margin-left:0}nav ul{gap:.2rem 1.4rem}.tint{margin-left:auto}.bar .in{gap:.4rem .75rem}}
 @media (max-width:640px){body{font-size:15px}h1{font-size:40px}.lead{font-size:16.5px}dl{grid-template-columns:1fr}dt{margin-top:.3rem}dl.rows{grid-template-columns:1fr}dl.rows dt{border-top:1px solid var(--rule);padding-bottom:0}dl.rows dd{border-top:0;padding-top:.3rem}
   .grid.four,.markets,.cards.four{grid-template-columns:1fr}.grid.four .tile:nth-child(2){border-top:1px solid var(--rule)}.band{padding:1.4rem}.card-sec{padding:1.25rem}.logo img{height:30px}.cta{padding:.5rem .9rem;font-size:14px}}
+.dot.amber{background:#c98a0b}   /* NAV-02: the doors readout, not answering */

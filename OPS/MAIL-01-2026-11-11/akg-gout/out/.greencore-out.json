@@ -1,0 +1,60 @@
+{
+"changed": [
+{
+"file": "/public/ai-catalog.json",
+"before": 2,
+"left": 0
+},
+{
+"file": "/public/facts.json",
+"before": 6,
+"left": 2
+},
+{
+"file": "/public/index.html",
+"before": 4,
+"left": 0
+},
+{
+"file": "/public/llms.txt",
+"before": 2,
+"left": 0
+},
+{
+"file": "/public/openapi.json",
+"before": 1,
+"left": 0
+},
+{
+"file": "/public/.well-known/agent-card.json",
+"before": 2,
+"left": 0
+},
+{
+"file": "/public/.well-known/ai-catalog.json",
+"before": 1,
+"left": 0
+},
+{
+"file": "/public/.well-known/ard.json",
+"before": 1,
+"left": 0
+},
+{
+"file": "/public/.well-known/skills.json",
+"before": 2,
+"left": 0
+},
+{
+"file": "/public/.well-known/agent-skills/index.json",
+"before": 1,
+"left": 0
+},
+{
+"file": "/public/.well-known/agent-skills/holding_attestation/SKILL.md",
+"before": 3,
+"left": 0
+}
+],
+"skipped": []
+}

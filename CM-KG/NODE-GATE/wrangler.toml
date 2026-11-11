@@ -12,6 +12,13 @@ enabled = true
 binding = "X402"
 id = "dd183811c9b34c4db1a91029f5343fde"
 
+# TMKT-02 (2026-11-01): the filer identities of the Target Market door (key filer:<sha256 of the value>; the value is never held in clear)
+[[kv_namespaces]]
+binding = "TM_FILERS"
+id = "92ce6b39f3294602b91493c8b8d028c0"
+
 [vars]
 X402_FREE_PER_DAY = "100"
 SIGN_NODES = "all"   # NODE-SIGN-01: nl proved 2026-10-24, then the fleet
+
+BOOK_TTL = "300"   # BOOK-04: edge cache of the Book mirror reads, seconds

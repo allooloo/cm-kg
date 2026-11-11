@@ -103,8 +103,8 @@
    "door_azure": null,
    "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
   },
-  "duty": "DDO (Design and Distribution Obligations)",
-  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "duty": "Prepare a TMD",
+  "duty_source": "BOOK/au/sections/au.eco.v4.json · duty_map",
   "example": {
    "ticker": "BHP.AX",
    "isin": "AU000000BHP4",
@@ -134,8 +134,8 @@
    "door_azure": null,
    "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
   },
-  "duty": "MAS product due diligence",
-  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "duty": "not found",
+  "duty_source": "BOOK/sg/sections/sg.eco.v4.json · duty_map (not found: the Book holds no sourced duty)",
   "example": {
    "ticker": "D05.SI",
    "isin": "SG1L01001701",
@@ -165,8 +165,8 @@
    "door_azure": null,
    "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
   },
-  "duty": "FinSA product duties",
-  "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
+  "duty": "Zeitpunkt und Form der Informationen",
+  "duty_source": "BOOK/ch/sections/ch.eco.v4.json · duty_map",
   "example": {
    "ticker": "NESN.SW",
    "isin": "CH0038863350",
@@ -196,7 +196,7 @@
    "door_azure": null,
    "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
   },
-  "duty": "MiFID II product governance (Produkt\u00fcberwachung)",
+  "duty": "MiFID II product governance (Produktüberwachung)",
   "duty_source": "ESTATE\\worker\\products.js DUTY (the published duty line)",
   "example": {
    "ticker": "SAP.DE",
@@ -477,7 +477,7 @@
   "issuers_with_events": 697,
   "region": {
    "azure": "Sweden Central",
-   "city": "G\u00e4vle",
+   "city": "Gävle",
    "store": "swedencentral",
    "door": "swedencentral",
    "door_azure": null,
@@ -508,7 +508,7 @@
   "issuers_with_events": 139,
   "region": {
    "azure": "Sweden Central",
-   "city": "G\u00e4vle",
+   "city": "Gävle",
    "store": "swedencentral",
    "door": "swedencentral",
    "door_azure": null,
@@ -571,7 +571,7 @@
   "issuers_with_events": 191,
   "region": {
    "azure": "Sweden Central",
-   "city": "G\u00e4vle",
+   "city": "Gävle",
    "store": "swedencentral",
    "door": "swedencentral",
    "door_azure": null,
@@ -947,13 +947,13 @@
    "door_azure": null,
    "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
   },
-  "duty": "FSC suitability \u2014 Financial Consumer Protection Act, Article 9",
+  "duty": "FSC suitability — Financial Consumer Protection Act, Article 9",
   "duty_source": "https://tw-eco.ai/eco.json (duty)",
   "duty_gap": null,
   "example": {
    "ticker": "TW0002330008",
    "isin": "TW0002330008",
-   "name": "\u53f0\u7063\u7a4d\u9ad4\u96fb\u8def\u88fd\u9020\u80a1\u4efd\u6709\u9650\u516c\u53f8",
+   "name": "台灣積體電路製造股份有限公司",
    "record_url": "https://mcp.tw-cm-kg.ai/record/XTAI/TW0002330008"
   }
  },
@@ -980,7 +980,7 @@
    "door_azure": "Italy North",
    "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
   },
-  "duty": "SCA (now CMA) suitability \u2014 Rulebook (Manual of the Financial Activities, Chairman Resolution No. 13/Chairman of 2021), Section Three, Ch. 2, Art. 8 (onshore); DFSA Rulebook COB 3.4 Suitability (DIFC)",
+  "duty": "SCA (now CMA) suitability — Rulebook (Manual of the Financial Activities, Chairman Resolution No. 13/Chairman of 2021), Section Three, Ch. 2, Art. 8 (onshore); DFSA Rulebook COB 3.4 Suitability (DIFC)",
   "duty_source": "https://ae-eco.ai/eco.json (duty)",
   "duty_gap": null,
   "example": {
@@ -1011,7 +1011,7 @@
    "door_azure": "East US",
    "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
   },
-  "duty": "CVM suitability \u2014 Resolu\u00e7\u00e3o CVM n\u00ba 30/2021, arts. 2\u20133",
+  "duty": "CVM suitability — Resolução CVM nº 30/2021, arts. 2–3",
   "duty_source": "https://br-eco.ai/eco.json (duty)",
   "duty_gap": null,
   "example": {
@@ -1037,13 +1037,13 @@
   "issuers_with_events": 142,
   "region": {
    "azure": "Mexico Central",
-   "city": "Quer\u00e9taro State",
+   "city": "Querétaro State",
    "store": "mexicocentral",
    "door": "eastus",
    "door_azure": "East US",
    "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
   },
-  "duty": "CNBV investor profile (perfil de inversi\u00f3n) \u2014 Disposiciones de car\u00e1cter general aplicables a las entidades financieras y dem\u00e1s personas que proporcionen servicios de inversi\u00f3n, art. 4 and Anexo 3",
+  "duty": "CNBV investor profile (perfil de inversión) — Disposiciones de carácter general aplicables a las entidades financieras y demás personas que proporcionen servicios de inversión, art. 4 and Anexo 3",
   "duty_source": "https://mx-eco.ai/eco.json (duty)",
   "duty_gap": null,
   "example": {
@@ -1075,7 +1075,7 @@
    "door_azure": "Southeast Asia",
    "read_from": "Azure Resource Manager (storage account + Container App location), Azure location list"
   },
-  "duty": "SEBI suitability \u2014 SEBI (Investment Advisers) Regulations, 2013, regs 16\u201317",
+  "duty": "SEBI suitability — SEBI (Investment Advisers) Regulations, 2013, regs 16–17",
   "duty_source": "https://in-eco.ai/eco.json (duty)",
   "duty_gap": null,
   "example": {

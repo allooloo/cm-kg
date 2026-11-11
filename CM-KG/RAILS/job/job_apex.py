@@ -65,7 +65,25 @@ def main():
             f = get_json(c, f'sweeps/{NIGHT}/{cc}/failed.json'); s = get_json(c, f'sweeps/{NIGHT}/{cc}/skipped.json')
             if f: failed[cc] = f
             if s: skipped[cc] = s
-        log(f"{cc}: {'landed' if cc in markers else ('FAILED' if cc in failed else ('skipped' if cc in skipped else 'did not land'))}")
+        log(f"{cc}: {'landed' if cc in markers else ('FAILED' if cc in failed else ('skipped' if cc in skipped else 'no marker yet'))}")
+    # OPS-06 (2026-11-07): the bounded wait. A node with no marker at all may still be running (ca's Saturday Fill + Confirm night ends after this
+    # 12:30 UTC cron), so the apex re-reads those markers every three minutes until APEX_WAIT_UNTIL (HH:MM UTC, default 14:05: before the 14:30
+    # digest). A node still without a marker then is written "did not land" as before. Failed and skipped nodes are never waited for.
+    import time as _t
+    wait = [(cc, reg) for cc, reg in NODES if cc not in markers and cc not in failed and cc not in skipped]
+    hh, mm = (os.environ.get('APEX_WAIT_UNTIL') or '14:05').split(':'); until = T0.replace(hour=int(hh), minute=int(mm), second=0, microsecond=0)
+    if wait and not DRY: log(f"waiting for {' '.join(cc for cc, _ in wait)} (no marker yet) until {until:%H:%M} UTC")
+    while wait and not DRY and datetime.datetime.now(datetime.timezone.utc) < until:
+        _t.sleep(180); left = []
+        for cc, reg in wait:
+            sa = f'allooloocmkg{cc}pond'; key = az('storage', 'account', 'keys', 'list', '-n', sa, '-g', f'allooloo-cmkg-{reg}', '--query', '[0].value', '-o', 'tsv', raw=True); c = client(sa, key, CONT)
+            d = get_json(c, f'sweeps/{NIGHT}/{cc}/done.json'); f = None if d else get_json(c, f'sweeps/{NIGHT}/{cc}/failed.json'); s_ = None if (d or f) else get_json(c, f'sweeps/{NIGHT}/{cc}/skipped.json')
+            if d: markers[cc] = d; log(f'{cc}: landed (after the wait)')
+            elif f: failed[cc] = f; log(f'{cc}: FAILED (after the wait)')
+            elif s_: skipped[cc] = s_; log(f'{cc}: skipped (after the wait)')
+            else: left.append((cc, reg))
+        wait = left
+    for cc, _ in wait: log(f'{cc}: did not land' + ('' if DRY else f' (no marker by {until:%H:%M} UTC)'))
     # apex index for every node that landed; nodes without a marker keep last week's door files (build_index reads the stores as they stand)
     sh(['/usr/local/bin/python3', 'build_index.py'], cwd=f'{ROOT}/CM-KG/DOOR/apex')
     # SHELF-01 step 6 (2026-10-27): the shelf lights itself as each market seals — Replay, Score, Bench, Review per the ledger (holds in shelf/hold.json)
@@ -94,7 +112,18 @@ def main():
         json.dump(arkj, open(arkp, 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
         if not DRY: put(ac, 'swap/ark.json', json.dumps(arkj, ensure_ascii=False, indent=1))
         log('agent-swap logs pulled from the apex store; ark.json', 'updated' if not DRY else 'read (dry)')
+        # NAV-02 (2026-11-02): the About page's Overnight OpsAgents tile — the fleet's scheduled jobs, from the capacity snapshot of the job definitions
+        # (ops/capacity/latest.json, written after every fleet move); only the count goes public (ESTATE/public/ops/agents.json), never the job list
+        try:
+            capj = get_json(client(APEX_SA, akey, os.environ.get('OPS_CONTAINER', 'ops')), 'capacity/latest.json') or {}; jb = capj.get('jobs') or {}
+            if jb.get('scheduled') is not None:
+                os.makedirs(f'{ROOT}/CM-KG/ESTATE/public/ops', exist_ok=True)
+                json.dump({'scheduled_jobs': jb['scheduled'], 'read_utc': capj.get('read_utc'), 'what': 'the scheduled Container Apps jobs of the fleet (the Overnight OpsAgents), counted from the job definitions'}, open(f'{ROOT}/CM-KG/ESTATE/public/ops/agents.json', 'w', encoding='utf-8'), indent=1)
+                log('ops/agents.json written', jb['scheduled'])
+        except Exception as e: log('ops/agents.json not refreshed (flag):', repr(e)[:160])
     except Exception as e: log('agent-swap logs not refreshed (flag):', repr(e)[:200])
+    # TMKT-04 (2026-11-02): tm-verify — every document a target market statement names, re-fetched; drift records beside the statements; the digest's row
+    rc_tmv = sh(['/usr/local/bin/python3', '-X', 'utf8', 'tm_verify.py'] + (['--dry'] if DRY else []), cwd=f'{ROOT}/CM-KG/RAILS/job', check=False); log('tm-verify exit', rc_tmv if not isinstance(rc_tmv, tuple) else rc_tmv[0])
     # SPEND: the nodes' lines + the run-level Tavily reading (start = the last reading in SPEND.md, end = now)
     md = f'{ROOT}/CM-KG/SPEND/SPEND.md'; spend = []
     for cc, _ in NODES:

@@ -15,7 +15,7 @@ TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-
 cc, region, mdate = sys.argv[1], sys.argv[2], sys.argv[3]; after_job = '--after-job' in sys.argv
 node = f'{cc}-cm-kg'; rg = f'allooloo-cmkg-{region}'; sa = f'allooloocmkg{cc}pond'
 CONT = os.environ.get('STORAGE_CONTAINER', 'pond')   # ORDER-031 (2026-10-17): 'pond' on the wire, 'staging' for a dry run; default unchanged
-FLAGS = r'C:\ALLOOLOO\CM-KG\SWEEPS'
+FLAGS = os.environ.get('GATE_FLAGS') or r'C:\ALLOOLOO\CM-KG\SWEEPS'   # HOLD-WINDOW-01: GATE_* set only for a proof run
 def az(*a, raw=False):
     p = subprocess.run(['az', *a] + ([] if raw else ['-o', 'json']), capture_output=True, text=True, encoding='utf-8', errors='replace', shell=True)
     if p.returncode != 0: raise SystemExit(f"az {' '.join(a[:4])} failed: {(p.stderr or p.stdout)[-300:]}")
@@ -37,10 +37,24 @@ if after_job:
     if not prev: print(f'{node} gate: no previous facts version; publish'); sys.exit(0)
     new = counts(get('door/facts.json')); old = counts(get('door/facts.json', prev[-1]['v']))
 else:
-    new = counts(r'C:\ALLOOLOO\CM-KG\DOOR\data\facts.json'); old = counts(get('door/facts.json'))
+    new = counts(os.environ.get('GATE_NEW_FACTS') or r'C:\ALLOOLOO\CM-KG\DOOR\data\facts.json'); old = counts(get('door/facts.json'))
 dr, de = new[0] - old[0], new[1] - old[1]
 if dr >= 0 and de >= 0:
     print(f'{node} gate: forward (records {old[0]} -> {new[0]}, events {old[1]} -> {new[1]}); publish'); sys.exit(0)
+# HOLD-WINDOW-01 (CEO order 2026-11-08): events that left because the node's rolling window moved forward are counted apart and are not a drop; only a fall inside the
+# window holds. Records are judged as before. If the check cannot prove it, the build holds as before. window_roll.py says how.
+import window_roll
+window_note = ''
+if dr >= 0 and de < 0 and cc in window_roll.ROLLING:
+    try:
+        from azure.storage.blob import BlobServiceClient
+        v = window_roll.check(cc, mdate, BlobServiceClient(f'https://{sa}.blob.core.windows.net', credential=k).get_container_client(CONT), old[1], new[1], os.environ.get('GATE_NEW_EVENTS'))
+    except (Exception, SystemExit) as e: v = {'verdict': 'hold', 'why': 'window check not completed: ' + repr(e)[:200]}
+    json.dump({'node': node, 'market_date': mdate, 'events_before': old[1], 'events_after': new[1], **v}, open(os.environ.get('GATE_NOTE') or f'/tmp/{node}-gate-window.json', 'w', encoding='utf-8'))
+    window_note = f" · window from {v.get('window_start')}: {v.get('rolled_out', 'n/a')} rolled out, inside {v.get('inside_change', 'n/a')}, new days {v.get('new_days', 'n/a')}, {v['why']}"
+    if v['verdict'] == 'pass':
+        print(f"{node} gate: forward after the window roll · market date {mdate} · records {old[0]} -> {new[0]} ({dr:+d}) · events {old[1]} -> {new[1]} ({de:+d}){window_note}; publish"); sys.exit(0)
+    print(f'{node} gate: not released by the window check{window_note}')
 # IW-01 (2026-10-26): a drop the machine half has explained is released once, for its own market date — the explanation sits in the store at
 # door-release/<market date>.json (node, reason, the held build's records/events, the classification file). Only the window roll releases, and only a
 # build no smaller than the one explained; anything else holds as before.
@@ -60,5 +74,5 @@ if after_job:
     note = 'the job had published; index, facts and nodes restored to their previous versions (record blobs the job rewrote stay as written)'
 else:
     note = 'nothing published to door/; the store reload runs with DOOR_HOLD=<market date>: pond drops upload as usual, index/facts/nodes are written beside'
-line = f"HELD {node} · market date {mdate} · records {old[0]} -> {new[0]} ({dr:+d}) · events {old[1]} -> {new[1]} ({de:+d}) · new index beside at {sa}/pond/{held}/ · {note} · as-of stays {old[2]} until the machine half explains the drop (delisting / window roll / Confirm duplicates) and publishes"
+line = f"HELD {node} · market date {mdate} · records {old[0]} -> {new[0]} ({dr:+d}) · events {old[1]} -> {new[1]} ({de:+d}) · new index beside at {sa}/pond/{held}/ · {note} · as-of stays {old[2]} until the machine half explains the drop (delisting / window roll / Confirm duplicates) and publishes{window_note}"
 open(os.path.join(FLAGS, f'HELD-{node}-{mdate}.txt'), 'a', encoding='utf-8').write(line + '\n'); print(line); sys.exit(3)

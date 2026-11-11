@@ -1,0 +1,85 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Agentic KG Holdings",
+    "identifier": "did:web:agent-kg.ai",
+    "url": "https://agent-kg.ai"
+  },
+  "publisher": {
+    "displayName": "Agentic KG Holdings",
+    "identifier": "did:web:agent-kg.ai",
+    "principal": "Matthew Keddy",
+    "contact": "mailto:mk@agent-kg.ai"
+  },
+  "entries": [
+    {
+      "displayName": "The office MCP door",
+      "identifier": "urn:air:agent-kg.ai:server:office",
+      "type": "application/mcp-server+json",
+      "url": "https://agent-kg.ai/mcp",
+      "description": "Streamable-http MCP door over the office record. One tool, office_statement: the office's current holdings summary, signed EdDSA. No authentication for reads.",
+      "capabilities": [
+        "office-statement",
+        "signed-holdings-summary"
+      ],
+      "representativeQueries": [
+        "What does the Agentic Private Office of Matthew Keddy hold?",
+        "Give me a signed statement of the office's holdings summary.",
+        "Which hyperscaler tenancies does the office hold?"
+      ],
+      "metadata": {
+        "operator": "Agentic KG Holdings",
+        "principal": "Matthew Keddy",
+        "serverCard": "https://agent-kg.ai/.well-known/mcp.json",
+        "keyring": "https://agent-kg.ai/.well-known/jwks.json",
+        "x402Keyring": "https://agent-kg.ai/x402/jwks.json"
+      }
+    },
+    {
+      "displayName": "The office as an A2A party",
+      "identifier": "urn:air:agent-kg.ai:agent:office",
+      "type": "application/json",
+      "url": "https://agent-kg.ai/.well-known/agent-card.json",
+      "description": "A2A Agent Card: skills office_statement and holding_attestation; supported interfaces MCP and HTTP+JSON; OAuth and x402 security schemes.",
+      "capabilities": [
+        "office-statement",
+        "holding-attestation"
+      ],
+      "representativeQueries": [
+        "Is gsc-em.com held by the Agentic Private Office of Matthew Keddy?",
+        "Is allooloo.io the office's estate?",
+        "How do I register an agent with the office?"
+      ],
+      "metadata": {
+        "operator": "Agentic KG Holdings",
+        "principal": "Matthew Keddy",
+        "attest": "https://agent-kg.ai/attest/{host}",
+        "oauth": "https://agent-kg.ai/.well-known/oauth-authorization-server",
+        "authMd": "https://agent-kg.ai/auth.md"
+      }
+    },
+    {
+      "displayName": "The paid door (x402)",
+      "identifier": "urn:air:agent-kg.ai:api:x402",
+      "type": "application/json",
+      "url": "https://agent-kg.ai/api",
+      "description": "GET /api answers 402 (x402 v2, $0.01 USDC on Base mainnet, scheme exact); with payment it returns { receipt, statement, data } — the signed holdings summary with a receipt that resolves forever at /x402/receipt/{nonce}.",
+      "capabilities": [
+        "x402",
+        "signed-receipt"
+      ],
+      "representativeQueries": [
+        "How much does a signed statement from the office cost?",
+        "Where do office receipts resolve and which key signs them?"
+      ],
+      "metadata": {
+        "operator": "Agentic KG Holdings",
+        "price_usdc": "0.01",
+        "network": "eip155:8453",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "kid": "mk-office-x402-2026-09",
+        "page": "https://agent-kg.ai/x402"
+      }
+    }
+  ]
+}

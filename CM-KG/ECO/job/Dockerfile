@@ -9,4 +9,7 @@ RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && l
  && pip install --no-cache-dir cryptography azure-identity azure-storage-blob boto3 python-docx && npm install -g wrangler@4.152.0 && node --version && wrangler --version
 WORKDIR /app/CM-KG/ECO
 COPY CM-KG/ /app/CM-KG/
+# STACK-01 (2026-10-30): the Book of Markets beside the product; build_eco reads it (Book mode) for the fields, the duty line and the chapter version
+COPY BOOK/ /app/BOOK/
+ENV BOOK_ROOT=/app/BOOK BOOK_RAIL=/app/BOOK/rail
 CMD ["python", "-X", "utf8", "-I", "refresh_eco.py"]

@@ -1,0 +1,255 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "agent-kg.ai — the office doors",
+    "version": "0.12.4",
+    "description": "Agentic Private Office — Matthew Keddy. Operator: Agentic KG Holdings. Read-only public record; one paid call (x402); one licensed route (OAuth); one MCP tool.",
+    "contact": {
+      "name": "Agentic KG Holdings",
+      "email": "mk@agent-kg.ai",
+      "url": "https://agent-kg.ai/#contact"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://agent-kg.ai"
+    }
+  ],
+  "paths": {
+    "/facts.json": {
+      "get": {
+        "operationId": "facts",
+        "summary": "Office facts of record (live paid-calls line)",
+        "responses": {
+          "200": {
+            "description": "facts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api": {
+      "get": {
+        "operationId": "paidCall",
+        "summary": "Paid call (x402 v2): 402 offer without payment; { receipt, statement, data } with PAYMENT-SIGNATURE",
+        "parameters": [
+          {
+            "name": "PAYMENT-SIGNATURE",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "402": {
+            "description": "x402 v2 PaymentRequired (body + PAYMENT-REQUIRED header)"
+          },
+          "200": {
+            "description": "settled: receipt, statement (EdDSA JWT), data",
+            "headers": {
+              "PAYMENT-RESPONSE": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "X-X402-Receipt": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/x402/receipt/{nonce}": {
+      "get": {
+        "operationId": "receipt",
+        "summary": "Resolve a receipt, forever",
+        "parameters": [
+          {
+            "name": "nonce",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{32}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the receipt"
+          },
+          "404": {
+            "description": "unknown nonce"
+          }
+        }
+      }
+    },
+    "/x402/jwks.json": {
+      "get": {
+        "operationId": "x402Jwks",
+        "summary": "Receipt signing key, kid mk-office-x402-2026-09",
+        "responses": {
+          "200": {
+            "description": "JWKS"
+          }
+        }
+      }
+    },
+    "/attest/{host}": {
+      "get": {
+        "operationId": "holdingAttestation",
+        "summary": "A line signed with the office key that the estate at {host} is the office's",
+        "parameters": [
+          {
+            "name": "host",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "gsc-em.com"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "attestation (EdDSA JWT) + claims"
+          },
+          "404": {
+            "description": "not a holding"
+          }
+        }
+      }
+    },
+    "/mcp": {
+      "post": {
+        "operationId": "mcp",
+        "summary": "MCP door (streamable-http, JSON-RPC 2.0): initialize, tools/list, tools/call office_statement",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JSON-RPC response"
+          }
+        }
+      }
+    },
+    "/oauth/register": {
+      "post": {
+        "operationId": "register",
+        "summary": "Anonymous dynamic client registration (RFC 7591)",
+        "responses": {
+          "201": {
+            "description": "client_id + client_secret"
+          }
+        }
+      }
+    },
+    "/oauth/token": {
+      "post": {
+        "operationId": "token",
+        "summary": "client_credentials → EdDSA JWT (kid mk-office-2026-09)",
+        "responses": {
+          "200": {
+            "description": "access_token"
+          }
+        }
+      }
+    },
+    "/oauth/introspect": {
+      "post": {
+        "operationId": "introspect",
+        "summary": "RFC 7662 introspection",
+        "responses": {
+          "200": {
+            "description": "active + claims"
+          }
+        }
+      }
+    },
+    "/oauth/revoke": {
+      "post": {
+        "operationId": "revoke",
+        "summary": "RFC 7009 revocation",
+        "responses": {
+          "200": {
+            "description": "revoked"
+          }
+        }
+      }
+    },
+    "/licensed/statement": {
+      "get": {
+        "operationId": "licensedStatement",
+        "summary": "The signed holdings summary for a registered agent (scope office:attest)",
+        "security": [
+          {
+            "office": [
+              "office:attest"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "{ licensed_to, statement, data }"
+          },
+          "401": {
+            "description": "Bearer required"
+          }
+        }
+      }
+    },
+    "/health.json": {
+      "get": {
+        "operationId": "health",
+        "summary": "Status",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "office": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://agent-kg.ai/oauth/token",
+            "scopes": {
+              "office:read": "read the office record",
+              "office:attest": "receive the signed holdings summary by name"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-office": {
+    "operator": "Agentic KG Holdings",
+    "principal": "Matthew Keddy",
+    "keyring": "https://agent-kg.ai/.well-known/jwks.json",
+    "kid": "mk-office-2026-09",
+    "x402_kid": "mk-office-x402-2026-09",
+    "agent_card": "https://agent-kg.ai/.well-known/agent-card.json"
+  }
+}

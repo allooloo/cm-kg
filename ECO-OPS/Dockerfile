@@ -9,7 +9,8 @@ RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && l
  && apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/* \
  && pip install --no-cache-dir httpx cryptography azure-identity azure-storage-blob boto3 && npm install -g wrangler@4.152.0 && node --version && wrangler --version
 ENV PYTHONIOENCODING=utf-8 PYTHONUNBUFFERED=1 PYTHONUTF8=1 TZ=UTC CI=1 WRANGLER_SEND_METRICS=false \
-    SITE03A_SNAP=/app/CULL/snapshots SITE03A_LANE=/app/LANE SITE03A_REGISTRY=/app/PROTOCOLS/_canon/registry/estate.json CULL_ROOT=/app/CULL PROTOCOLS_DIR=/app/PROTOCOLS
+    SITE03A_SNAP=/app/CULL/snapshots SITE03A_LANE=/app/LANE SITE03A_REGISTRY=/app/PROTOCOLS/_canon/registry/estate.json CULL_ROOT=/app/CULL PROTOCOLS_DIR=/app/PROTOCOLS \
+    TRUNK_DIR=/app/STACK CANON_TEXTS=/app/STACK/canon-texts.json BOOK_ROOT=/app/BOOK BOOK_RAIL=/app/BOOK/rail CATALOGUE_CANON=/app/BOOK/rail/catalogue-canon.json
 WORKDIR /app/ECO-OPS
 COPY app/ /app/
 CMD ["python", "-X", "utf8", "eco_ops.py"]

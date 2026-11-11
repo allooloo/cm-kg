@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.allooloo/cm-kg",
-  "title": "Capital Markets Agents: MCP+A2A — 34 markets",
-  "description": "KYP Agentic Trading with the Capital Markets Knowledge Graph — 34 markets, each served in-country.",
-  "version": "0.13.0",
+  "title": "Capital Markets Agents: MCP+A2A",
+  "description": "KYP Agentic Trading: listed-issuer records served in-country, and AIO-10060 orderability outcomes.",
+  "version": "0.14.0",
   "websiteUrl": "https://getissuer.ai",
   "repository": {
     "url": "https://github.com/allooloo/cm-kg",
@@ -103,23 +103,27 @@
       "tools": [
         {
           "name": "resolve_issuer",
-          "description": "Find a listed company by ticker, ISIN or LEI and return its record summary, node and current version."
+          "description": "Find a listed company by ticker, ISIN or LEI: record summary, node, version."
         },
         {
           "name": "get_record",
-          "description": "Return the full Capital Markets Record for an issuer, with per-field source, reader and state; optionally a prior version."
+          "description": "The full Capital Markets Record, per-field source, reader and state."
         },
         {
           "name": "list_events_since",
-          "description": "Return dated, URL'd disclosure events for an issuer (releases, bulletins, halts, corporate actions, statement and record dates) since a date."
+          "description": "Dated, URL'd disclosure events for an issuer since a date."
         },
         {
           "name": "list_aliases",
-          "description": "Return the sourced trade and former names an issuer releases under."
+          "description": "Sourced trade and former names."
         },
         {
           "name": "list_nodes",
-          "description": "Return the market nodes on the roster of record and which are live."
+          "description": "The market nodes on the roster of record, and which are live."
+        },
+        {
+          "name": "get_orderability",
+          "description": "AIO-10060 orderability outcome per client category: one ACM-68000 signal or the evidence gaps; signed, receipted."
         }
       ],
       "facts": "https://mcp.getissuer.ai/facts.json",
@@ -153,10 +157,8 @@
           "https://agentic-registries.ai/registry/whoami"
         ]
       },
-      "surfaces_version": "2026-10-17.1",
-      "install": "{\"mcpServers\":{\"getissuer\":{\"type\":\"http\",\"url\":\"https://mcp.getissuer.ai/mcp\"}}}",
-      "markets_live": 34,
-      "counts_from": "apex list_nodes at cut time (2026-10-26T21:14Z); facts at https://mcp.getissuer.ai/facts.json"
+      "surfaces_version": "2026-10-31.1",
+      "install": "{\"mcpServers\":{\"getissuer\":{\"type\":\"http\",\"url\":\"https://mcp.getissuer.ai/mcp\"}}}"
     }
   }
 }
