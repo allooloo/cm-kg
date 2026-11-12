@@ -1,0 +1,5 @@
+import json, os, subprocess
+ENV = dict(os.environ, AZURE_CONFIG_DIR=r'C:\ALLOOLOO\.azure'); AZ = [r'C:\Program Files\Microsoft SDKs\Azure\CLI2\python.exe', '-IX', 'utf8', '-m', 'azure.cli']
+pw = json.loads(subprocess.run([*AZ, 'keyvault', 'secret', 'show', '--vault-name', 'allooloo-iw-kv-frc', '-n', 'pg-admin', '-o', 'json'], capture_output=True, text=True, env=ENV).stdout)['value']
+r = subprocess.run([*AZ, 'postgres', 'flexible-server', 'create', '-n', 'allooloo-iw-pg-frc', '-g', 'allooloo-iw-francecentral', '-l', 'francecentral', '--tier', 'Burstable', '--sku-name', 'Standard_B1ms', '--version', '16', '--storage-size', '32', '--admin-user', 'amnadmin', '--admin-password', pw, '--public-access', '0.0.0.0', '--yes', '--tags', 'estate=allooloo', 'product=issuerwire', 'order=IW-MOVE-01', '-o', 'json'], capture_output=True, text=True, env=ENV, encoding='utf-8', errors='replace')
+print('exit', r.returncode); print((r.stderr or '').replace(pw, '***')[-700:]); print((r.stdout or '').replace(pw, '***')[:300])
