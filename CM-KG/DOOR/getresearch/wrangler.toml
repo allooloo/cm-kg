@@ -28,3 +28,9 @@ id = "dd183811c9b34c4db1a91029f5343fde"
 [[kv_namespaces]]
 binding = "RESEARCH"
 id = "7d0e0e4a059e444982b5eb1cc500efc1"
+
+# USR-04 (2026-11-12): the receipts tile reads the receipt chain itself (the Record of Cleared Orders); this Worker issues SELECT only
+[[d1_databases]]
+binding = "RCO_DB"
+database_name = "rco-receipts"
+database_id = "111a8a79-4a2b-47e5-81a3-c7b7ab4dd4c6"

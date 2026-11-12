@@ -16,7 +16,7 @@ export const RESEARCH_TOOL = { name: RESEARCH_NAME, title: 'Get the research pag
   inputSchema: { type: 'object', properties: { ticker: { type: 'string', description: 'Ticker (AAPL), with exchange in the exchange argument or as NASDAQ:AAPL.' }, exchange: { type: 'string', description: 'Exchange for the ticker (NASDAQ, NYSE, LSE, TSX, …).' }, isin: { type: 'string', description: 'ISIN (12 characters).' }, lei: { type: 'string', description: 'LEI (20 characters).' } } } };
 export const researchKey = cmr => 'p:' + cmr;
 export async function researchCall(env, cx, args, { whichNode, forward }) {
-  args = args || {}; const base = { tool: RESEARCH_NAME, door: 'https://mcp.getissuer.ai/mcp', page: RESEARCH_PAGE };
+  args = args || {}; const base = { tool: RESEARCH_NAME, door: `https://${/^mcp\.getresearch\.ai$/.test(cx.host || '') ? 'mcp.getresearch.ai' : 'mcp.getissuer.ai'}/mcp`, page: RESEARCH_PAGE };   // USR-04: the door host the call came in on
   const isin = String(args.isin || '').trim().toUpperCase(), lei = String(args.lei || '').trim().toUpperCase(), tick = String(args.ticker || args.identifier || args.issuer || '').trim(), ex = String(args.exchange || '').trim().toUpperCase();
   const idf = isin || lei || (tick && ex && !/:/.test(tick) ? `${ex}:${tick}` : tick);
   if (!idf) return { o: { ...base, error: 'invalid_request', note: 'give a ticker with its exchange, or an ISIN, or an LEI' }, isError: true };

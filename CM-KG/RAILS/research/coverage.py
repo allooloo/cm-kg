@@ -14,6 +14,10 @@ PPLX = key('perplexity'); TODAY = datetime.datetime.now(datetime.timezone.utc).s
 EU_MISTRAL = {'de', 'fr', 'nl', 'ch', 'it', 'es', 'se', 'dk', 'no', 'fi', 'be', 'at', 'pl', 'pt', 'lu', 'gr', 'cz'}
 AGG = ('marketbeat', 'tipranks', 'yahoo', 'seekingalpha', 'zacks', 'investing.com', 'marketwatch', 'benzinga', 'stockanalysis', 'wallstreetzen', 'simplywall', 'fintel', 'gurufocus', 'morningstar', 'nasdaq.com', 'tradingview', 'wikipedia', 'reddit', 'barchart', 'marketscreener', 'macrotrends', 'finviz', 'investopedia', 'cnbc', 'bloomberg', 'reuters', 'wsj.com', 'ft.com', 'fool.com', 'google.', 'msn.com', 'stocktwits', 'x.com', 'twitter', 'linkedin', 'facebook', 'youtube', 'perplexity')
 UA = {'User-Agent': 'Mozilla/5.0 (compatible; Allooloo research read; +https://allooloo.io)', 'Accept': 'text/html,application/xhtml+xml,application/pdf;q=0.8,*/*;q=0.5', 'Accept-Language': 'en'}
+METER = float(sys.argv[sys.argv.index('--meter') + 1]) if '--meter' in sys.argv else None
+try: GROK = key('grok') if os.environ.get('RESEARCH_GROK', '1') == '1' and '--no-grok' not in sys.argv else None
+except Exception: GROK = None
+GROK_USD = float(os.environ.get('GROK_USD_PER_CALL', '0.025'))
 SP = {'calls': 0, 'prompt_tokens': 0, 'completion_tokens': 0, 'cost': 0.0, 'mistral_calls': 0, 'mistral_tokens': 0, 'fetches': 0}; LOCK = threading.Lock()
 def post(url, body, headers, timeout=120):
     for i in range(5):
@@ -56,16 +60,30 @@ PROMPT = """Issuer: {name} — listed on {exchange}, ticker {ticker}{isin}.
 Task A (coverage): find the issuer's OWN investor-relations page that lists the sell-side or independent research houses covering it (often titled "Analyst Coverage"). Give that page's URL and the research houses it names, exactly as written, with the analyst name and an initiation date only if the page states them.
 Task B (open research): find research notes on this issuer that are published openly and free to read in full (issuer-sponsored research such as Edison, Zacks SCR, Sidoti-style sponsored notes, Hardman, Trinity Delta; or independent publishers). Give each note's publisher, title, publication date (YYYY-MM-DD) and direct URL. News articles, press releases, price-target aggregators and paywalled reports are not research notes.
 Reply with JSON only, no prose: {{"coverage_page": "<url or null>", "houses": [{{"house": "", "analyst": null, "since": null}}], "open_research": [{{"publisher": "", "title": "", "date": "", "url": "", "kind": "issuer-sponsored|independent"}}]}}. If you cannot find a page for A or any note for B, return null and empty lists. Do not guess."""
-def read_one(o, cc):
+def read_one(o, cc, second=False):
+    """pass one (second=False): the Perplexity read. pass two (second=True): the Grok second read of an issuer whose first answer was thin."""
     idn = o['identity']; v = lambda k: idn[k].get('value'); name, tick, ex = v('name'), v('ticker'), v('exchange')
-    j = post('https://api.perplexity.ai/chat/completions', {'model': 'sonar', 'temperature': 0, 'messages': [{'role': 'user', 'content': PROMPT.format(name=name, exchange=ex, ticker=tick, isin=f", ISIN {v('isin')}" if v('isin') else '')}]}, {'Authorization': 'Bearer ' + PPLX})
+    j = {'choices': [{'message': {'content': '{}'}}]} if second else post('https://api.perplexity.ai/chat/completions', {'model': 'sonar', 'temperature': 0, 'messages': [{'role': 'user', 'content': PROMPT.format(name=name, exchange=ex, ticker=tick, isin=f", ISIN {v('isin')}" if v('isin') else '')}]}, {'Authorization': 'Bearer ' + PPLX})
     res = {'cmr': o['cmr'], 'read_date': TODAY, 'engine': 'Perplexity sonar (search) · page read by this rail'}
     if j.get('error'): res['error'] = j['error']; return res
     u = j.get('usage') or {}
-    with LOCK: SP['calls'] += 1; SP['prompt_tokens'] += u.get('prompt_tokens', 0); SP['completion_tokens'] += u.get('completion_tokens', 0); SP['cost'] += ((u.get('cost') or {}).get('total_cost') or 0)
+    with LOCK: SP['calls'] += 0 if second else 1; SP['prompt_tokens'] += u.get('prompt_tokens', 0); SP['completion_tokens'] += u.get('completion_tokens', 0); SP['cost'] += ((u.get('cost') or {}).get('total_cost') or 0)
     txt = j['choices'][0]['message']['content']; m = re.search(r'\{.*\}', txt, re.S)
     try: a = json.loads(m.group(0)) if m else {}
     except Exception: a = {}
+    # RESLATE-01 (CEO 2026-11-12): Grok is the second reader where Perplexity returns thin (no coverage page and no note). One Grok call (web search), the
+    # same question; its answer goes through the same page checks. Counted on the same meter at its actual cost (cost_in_usd_ticks on each response).
+    thin = not (isinstance(a.get('coverage_page'), str) and a.get('coverage_page', '').startswith('http')) and not a.get('open_research')
+    res['thin'] = bool(thin)
+    if thin and second and GROK:
+        g = post('https://api.x.ai/v1/responses', {'model': 'grok-4.6', 'input': PROMPT.format(name=name, exchange=ex, ticker=tick, isin=f", ISIN {v('isin')}" if v('isin') else ''), 'tools': [{'type': 'web_search'}]}, {'Authorization': 'Bearer ' + GROK}, timeout=240)
+        if not g.get('error'):
+            gt = ''.join(c.get('text', '') for o2 in g.get('output', []) if o2.get('type') == 'message' for c in o2.get('content', []) if c.get('type') == 'output_text'); gu = g.get('usage') or {}
+            with LOCK: SP['grok_calls'] = SP.get('grok_calls', 0) + 1; SP['grok_in'] = SP.get('grok_in', 0) + (gu.get('input_tokens') or 0); SP['grok_out'] = SP.get('grok_out', 0) + (gu.get('output_tokens') or 0); gc = (gu.get('cost_in_usd_ticks') or 0) / 1e10 or GROK_USD; SP['grok_usd'] = round(SP.get('grok_usd', 0) + gc, 4); SP['cost'] += gc   # actual $: xAI's cost_in_usd_ticks on the response (1e-10 $ a tick); the estimate only when it is absent
+            gm = re.search(r'\{.*\}', gt, re.S)
+            try: ga = json.loads(gm.group(0)) if gm else {}
+            except Exception: ga = {}
+            if isinstance(ga, dict) and (ga.get('coverage_page') or ga.get('open_research')): a = ga; res['engine'] = 'Perplexity sonar returned thin · Grok (web search), second reader · page read by this rail'
     checked = []; houses = []; cp = a.get('coverage_page') if isinstance(a.get('coverage_page'), str) and a.get('coverage_page', '').startswith('http') else None
     if cp:
         host = urllib.parse.urlparse(cp).netloc.lower()
@@ -102,13 +120,39 @@ def main():
     d = os.path.join(POND, f'{cc}-cm-kg', 'research-coverage', drop); os.makedirs(d, exist_ok=True); raw = os.path.join(d, 'raw.jsonl')
     done = {json.loads(l)['cmr'] for l in open(raw, encoding='utf-8')} if os.path.exists(raw) else set()
     todo = [o for o in (json.loads(l) for l in open(os.path.join(NUM, f'{cc}.jsonl'), encoding='utf-8')) if o['cmr'] not in done and o['identity']['name'].get('value') and (not only or o['cmr'].split('/')[-1] in only)]
+    # YIELD FIRST (RESLATE-01): the issuers where a call returns the most are read first — most filings in the window first (the record's own size measure);
+    # --meter <$> stops the search calls at the meter; the unread set is the tail (tail.json in the drop), picked up by the next run
+    todo.sort(key=lambda o: (-o['disclosure']['filings'], o['cmr']))
     if lim: todo = todo[:lim]
-    print(cc, 'to read', len(todo), 'already read', len(done), flush=True); n = [0]
+    meter = float(a[a.index('--meter') + 1]) if '--meter' in a else None; tail = []
+    print(cc, 'to read', len(todo), 'already read', len(done), 'meter', meter, flush=True); n = [0]
+    def guarded(o):
+        if meter is not None and SP['cost'] >= meter: return {'cmr': o['cmr'], 'tail': True}
+        return read_one(o, cc)
+    thin = []
     with open(raw, 'a', encoding='utf-8') as out, cf.ThreadPoolExecutor(th) as ex:
-        for res in ex.map(lambda o: read_one(o, cc), todo):
+        for res in ex.map(guarded, todo):
+            if res.get('tail'): tail.append(res['cmr']); continue
             if res.get('error'): print('ERR', res['cmr'], res['error'][:100], flush=True); continue
             out.write(json.dumps(res, ensure_ascii=False) + '\n'); out.flush(); n[0] += 1
+            if res.get('thin'): thin.append(res['cmr'])
             if n[0] % 250 == 0: print(cc, n[0], '/', len(todo), json.dumps(SP), flush=True)
+    # pass two, YIELD FIRST across the two readers: every Perplexity read is done first (the cheap read returns the most per dollar); what is left of the
+    # meter buys Grok second reads on the thin answers, in the same order of yield; the thin issuers not reached are the Grok tail
+    gtail = []; g2 = 0
+    if GROK and thin:
+        by = {o['cmr']: o for o in todo}; order = [by[c] for c in sorted(thin, key=lambda c: (-by[c]['disclosure']['filings'], c)) if c in by]
+        def second(o):
+            if meter is not None and SP['cost'] >= meter: return {'cmr': o['cmr'], 'tail': True}
+            return read_one(o, cc, second=True)
+        with open(raw, 'a', encoding='utf-8') as out, cf.ThreadPoolExecutor(max(2, th // 6)) as ex:
+            for res in ex.map(second, order):
+                if res.get('tail'): gtail.append(res['cmr']); continue
+                if res.get('error'): continue
+                if not res.get('thin'): out.write(json.dumps(res, ensure_ascii=False) + '\n'); out.flush(); g2 += 1   # the later line of an issuer is its read of record
+        print(cc, 'second reads (Grok) that returned a page or a note:', g2, 'of', len(order) - len(gtail), 'asked; not reached at the meter:', len(gtail), flush=True)
     sp = os.path.join(d, 'spend.json'); prev = json.load(open(sp)) if os.path.exists(sp) else {}
-    json.dump({k: prev.get(k, 0) + v for k, v in SP.items()}, open(sp, 'w'), indent=1); print(cc, 'DONE', n[0], json.dumps(SP), flush=True)
+    json.dump({k: prev.get(k, 0) + v for k, v in SP.items()}, open(sp, 'w'), indent=1)
+    json.dump({'meter': meter, 'unread': len(tail), 'tail': tail, 'thin_after_first_read': len(thin), 'grok_second_reads_not_reached': len(gtail), 'grok_tail': gtail}, open(os.path.join(d, 'tail.json'), 'w'))
+    print(cc, 'DONE', n[0], 'tail (unread at the meter)', len(tail), json.dumps(SP), flush=True)
 main()

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.allooloo/getresearch",
+  "title": "getresearch: the Data Research door",
+  "description": "The record's research page on a listed company: no analyst, no rating, no view. Signed, receipted.",
+  "version": "0.1.0",
+  "websiteUrl": "https://getresearch.ai",
+  "repository": {
+    "url": "https://github.com/allooloo/cm-kg",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.getresearch.ai/mcp"
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "operator": "Allooloo Technologies Corp.",
+      "category": "issuer record door (the research page, written from the signed record)",
+      "keywords": [
+        "research",
+        "data research",
+        "coverage",
+        "open research",
+        "issuer record",
+        "RCO-10060",
+        "receipt",
+        "capital markets"
+      ],
+      "authentication": "none",
+      "access": "free reads; the x402 offer only when asked (x402-pay: 1); every read receipted at mcp.rco-records.ai",
+      "same_router_as": "https://mcp.getissuer.ai/mcp (same index)",
+      "tools": [
+        "get_research",
+        "resolve_issuer",
+        "list_nodes"
+      ],
+      "errors": [
+        "unknown_issuer",
+        "ambiguous",
+        "no_page",
+        "invalid_request"
+      ]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+import { readFile } from 'node:fs/promises';
+const A = (await import('file:///C:/ALLOOLOO/CM-KG/DOOR/apex/index.js')).default; const ST = 'C:/ALLOOLOO/CM-KG/DOOR/apex/static';
+const env = { ASSETS: { fetch: async r => { const p = new URL(r.url).pathname; try { return new Response(await readFile(ST + p)); } catch { return new Response('nf', { status: 404 }); } } }, X402: { get: async () => null, put: async () => {}, list: async () => ({ keys: [] }) }, RESEARCH: { get: async () => null } };
+const rpc = async (host, m) => (await A.fetch(new Request(`https://${host}/mcp`, { method: 'POST', headers: { 'content-type': 'application/json', 'user-agent': 'Allooloo digest (usr04-local)' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, ...m }) }), env, { waitUntil() {} })).json();
+const get = async (host, p) => (await A.fetch(new Request(`https://${host}${p}`), env, { waitUntil() {} })).text();
+const R = []; const ok = (n, c, d) => { R.push(!!c); console.log(`${c ? 'PASS' : 'FAIL'} ${n}${d ? ' · ' + d : ''}`); };
+const tl = await rpc('mcp.getresearch.ai', { method: 'tools/list' }); ok('getresearch tools', tl.result.tools.map(x => x.name).join(',') === 'get_research,resolve_issuer,list_nodes', tl.result.tools.map(x => x.name).join(','));
+const ini = await rpc('mcp.getresearch.ai', { method: 'initialize', params: {} }); ok('server name and version', ini.result.serverInfo.name === 'getresearch' && ini.result.serverInfo.version === '0.27.0');
+const c = JSON.parse(await get('agent.getresearch.ai', '/.well-known/agent-card.json')); ok('card', c.name === 'getresearch' && c.url === 'https://mcp.getresearch.ai/mcp' && c.skills.length === 3 && c['x-allooloo'].doors.length === 8);
+const mj = JSON.parse(await get('mcp.getresearch.ai', '/mcp.json')); ok('mcp.json', mj.name === 'getresearch' && mj.tools.length === 3 && mj.errors.includes('no_page'));
+ok('llms', (await get('mcp.getresearch.ai', '/llms.txt')).startsWith('# get_research — '));
+const e = (await rpc('mcp.getresearch.ai', { method: 'tools/call', params: { name: 'get_research', arguments: { ticker: 'AAPL', exchange: 'NASDAQ' } } })).result.structuredContent; ok('call routed, door named', e.error === 'no_page' && e.door === 'https://mcp.getresearch.ai/mcp', e.error);
+const gi = await rpc('mcp.getissuer.ai', { method: 'tools/list' }); ok('getissuer still carries get_research', gi.result.tools.some(x => x.name === 'get_research') && gi.result.tools.length === 8);
+console.log(R.every(Boolean) ? 'USR-04 APEX LOCAL PASS' : 'USR-04 APEX LOCAL FAIL'); process.exit(R.every(Boolean) ? 0 : 1);

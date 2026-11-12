@@ -117,7 +117,7 @@ async function tileRead(env, url) {
 const n = v => v == null ? '' : int(Number(v));
 function tiles(v) {
   return scale([[n(v.countries), 'Countries live', '', 'ring'], [n(v.issuers), 'Issuers on the record', '', 'issuer'], [n(v.events), 'Dated disclosures', '', 'record'], [n(v.iw_rows), 'Issuerwire signed rows', '', 'pulse']])
-    + scale([[n(v.calls30), 'AI-agent calls, 30 days', '', 'desk'], [n(v.opsagents), 'OpsAgents on the fleet, nightly', '', 'key'], [n(v.regions), 'Azure regions, in-country', '', 'ring'], [n(v.arks), 'AWS arks, 60-minute standby', '', 'receipt']]);
+    + scale([[n(v.calls30), 'AI-agent calls, 30 days', '', 'desk'], [n(v.opsagents), 'OpsAgents on the fleet, weekly', '', 'key'], [n(v.regions), 'Azure regions, in-country', '', 'ring'], [n(v.arks), 'AWS arks, 60-minute standby', '', 'receipt']]);
 }
 function blocks(list, v) {
   return list.map(b => b[0] === 'tiles' ? tiles(v) : b[0] === 'lead' ? `<p><strong>${esc(b[1])}</strong> ${esc(b[2])}</p>` : b[0] === 'news' ? `<p><strong>${esc(b[1])}</strong> ${NEWS[0] ? `<a href="${esc(NEWS[0].url)}">${esc(NEWS[0].title)}</a> · ${esc(NEWS[0].date)}` : ''}</p>` : `<p>${esc(b[1])}</p>`).join('\n');

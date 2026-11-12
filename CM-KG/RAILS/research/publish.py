@@ -6,7 +6,7 @@ issuer left the record is not removed here (Rule One); it is listed in the run's
 Usage: python -X utf8 publish.py <cc> [...]     exit 1 on a failed market"""
 import sys, os, json, time, datetime, urllib.request, urllib.error
 R = r'C:\ALLOOLOO\CM-KG\RESEARCH'; A = 'dd2832b36f171b815f84c8487aada36b'; NS = '7d0e0e4a059e444982b5eb1cc500efc1'
-TOK = open(r'C:\ALLOOLOO\AGENT KEYS\cloudflare.txt', encoding='utf-8').read().strip().splitlines()[0]; BASE = f'https://api.cloudflare.com/client/v4/accounts/{A}/storage/kv/namespaces/{NS}'
+TOK = os.environ.get('CLOUDFLARE_KV_TOKEN') or open(r'C:\ALLOOLOO\AGENT KEYS\cloudflare.txt', encoding='utf-8').read().strip().splitlines()[0]; BASE = f'https://api.cloudflare.com/client/v4/accounts/{A}/storage/kv/namespaces/{NS}'
 def api(path, method='GET', body=None, raw=False):
     for i in range(6):
         try:

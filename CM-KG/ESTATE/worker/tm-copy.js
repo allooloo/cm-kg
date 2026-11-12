@@ -82,7 +82,7 @@ export default {
   "Every statement is signed by the manufacturer under its filer identity or its own published key, and by the home node under its record key (EdDSA); verify against the key ids named in the statement.",
   "Every filing and every read is receipted at https://mcp.rco-records.ai/mcp with the door as writer and the filer or reader as caller; the receipt's answer_hash binds it to the exact signed statement; verify_receipt is public and works offline against rco-records.ai/.well-known/jwks.json.",
   "Every version ever filed stays published, unchanged, for as long as a receipt cites it. An outcome that cited version 3 resolves to version 3.",
-  "The documents a statement names are re-fetched nightly; a document that no longer resolves or whose hash has changed is marked drifted on the statement, never removed, and the manufacturer is the one to file again.",
+  "The documents a statement names are re-fetched every week, after the Friday close; a document that no longer resolves or whose hash has changed is marked drifted on the statement, never removed, and the manufacturer is the one to file again.",
   "Whether a regime accepts the manufacturer's statement as the evidence a distributor may rely on is a sourced field of the Book of Markets, read from the regulator's own text; where the regime is silent, the condition stays with the firm even when a statement is on file."
  ],
  "s6": [

@@ -7,9 +7,10 @@
 // Output: CM-KG\RESEARCH\orderability\<cc>.json. Usage: node orderability.mjs <cc> [...]
 import fs from 'node:fs'; import path from 'node:path'; import readline from 'node:readline';
 import { stampClass } from '../../NODE-GATE/worker/stampclass.js';
-const POND = 'C:\\ALLOOLOO\\CM-KG\\POND', OUT = 'C:\\ALLOOLOO\\CM-KG\\RESEARCH\\orderability'; fs.mkdirSync(OUT, { recursive: true });
+// RESLATE-01: the root is the image's (CMKG_ROOT) or the laptop's, and the roster is read live, so the rail runs in the fleet job as it stands
+const ROOT = process.env.CMKG_ROOT || 'C:\\ALLOOLOO'; const POND = path.join(ROOT, 'CM-KG', 'POND'), OUT = path.join(ROOT, 'CM-KG', 'RESEARCH', 'orderability'); fs.mkdirSync(OUT, { recursive: true });
 const UA = 'Allooloo digest (USR-01 research roll-up)';
-const NODES = JSON.parse(fs.readFileSync('C:\\ALLOOLOO\\SITE\\USR-01\\list_nodes.json', 'utf8')).result.structuredContent.nodes;
+const NODES = (await (await fetch('https://mcp.getissuer.ai/mcp', { method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json', 'user-agent': UA }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'list_nodes', arguments: {} } }), signal: AbortSignal.timeout(60000) })).json()).result.structuredContent.nodes;
 const doorOf = cc => String(NODES.find(n => n.node === `${cc}-cm-kg`).door).replace(/\/mcp$/, '').replace(/\/$/, '');
 const latest = cc => { const b = path.join(POND, `${cc}-cm-kg`, 'research'); const ds = fs.readdirSync(b).filter(d => fs.existsSync(path.join(b, d, 'node.json'))).sort((a, c) => (a.slice(0, 10) + String(Number(a.slice(11) || 1)).padStart(3, '0')).localeCompare(c.slice(0, 10) + String(Number(c.slice(11) || 1)).padStart(3, '0'))); return path.join(b, ds[ds.length - 1]); };
 async function call(door, name, args) {

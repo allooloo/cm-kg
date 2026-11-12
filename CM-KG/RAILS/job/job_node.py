@@ -238,6 +238,22 @@ def main():
     if hold: n_rec, n_ev, n_asof = o_rec, o_ev, o_asof
     line = f"{NODE} · {n_asof or MDATE} · {n_rec} · {n_ev} · records {n_rec - o_rec:+d} · events {n_ev - o_ev:+d} (sweep {MDATE}, Azure job {REGION}{', HELD' if hold else ''})"
     log('NUMBERS LOG', line)
+    # RESLATE-01 (2026-11-12): the Data Research chain for this market, after its door is published — pull, roll-up, orderability, coverage, writer, exchange
+    # pages — from this market's own store, with its own keys; state in the store (research/). Never on a held night; a failed chain never fails the sweep.
+    research = {'ran': False}
+    if os.environ.get('RESEARCH_CHAIN', '1') == '1' and not hold and os.environ.get('JOB_MODE') != 'backfill' and CONT == 'pond':
+        try:
+            rc_rs = sh(['/usr/local/bin/python3', '-X', 'utf8', 'chain.py', CC, NIGHT], cwd=f'{RAILS}/research', check=False); log('research chain exit', rc_rs)
+            research = json.load(open(f'/tmp/research-{CC}.json', encoding='utf-8')) if os.path.exists(f'/tmp/research-{CC}.json') else {'ok': False, 'error': 'no summary written'}; research['ran'] = True; research['exit'] = rc_rs
+        except Exception as e: research = {'ran': True, 'ok': False, 'error': repr(e)[:300]}; log('research chain FAILED:', research['error'])
+    elif hold: research['why'] = 'the door is held: the pages stay as they were'
+    # RESLATE-01: the Tavily guard's ledger of this run (credits, calls, denied = the reads left unread at the meter, stopped) into the marker
+    guard = None
+    try:
+        import tempfile as _tf; _gl = os.environ.get('TAVILY_LEDGER') or os.path.join(_tf.gettempdir(), f"tavily-guard-{os.environ.get('CONTAINER_APP_JOB_EXECUTION_NAME', 'local')}.json")
+        guard = json.load(open(_gl, encoding='utf-8')) if os.path.exists(_gl) else {'credits': 0, 'calls': 0, 'denied': 0, 'stopped': None, 'note': 'no Tavily call was attempted'}
+        guard['run_ceiling'] = os.environ.get('TAVILY_RUN_CEILING'); guard['approved'] = os.environ.get('TAVILY_APPROVED')
+    except Exception as e: guard = {'error': repr(e)[:200]}
     # SPEND: the node's own lab lines from its drops (Canada carries the labs; the others call Tavily only) + its share of the Tavily counter
     tav1 = tavily_usage(); spend_lines = []
     if CC != 'us':
@@ -307,7 +323,7 @@ def main():
         except Exception as e: ark['error'] = repr(e)[:300]; log('ark write FAILED (a failed close for the apex):', ark['error'])
     done = {'node': NODE, 'night': NIGHT, 'market_date': MDATE, 'window_days': os.environ.get('WINDOW_DAYS'), 'fill_confirm': FILL_CONFIRM, 'region': REGION, 'store': f'{SA}/{CONT}', 'pond_drop': drop, 'records': n_rec, 'events': n_ev, 'as_of': n_asof, 'records_delta': n_rec - o_rec, 'events_delta': n_ev - o_ev,
             'served_before': {'records': o_rec, 'events': o_ev, 'as_of': o_asof}, 'gate_exit': gate, 'held': bool(hold), 'held_flag': held_flag, 'numbers_line': line, 'spend_lines': spend_lines,
-            'tavily': {'start': tav0, 'end': tav1}, 'ark': ark, 'image': IMAGE_TAG, 'execution': EXEC, 'started_utc': T0.isoformat(), 'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), **result}
+            'tavily': {'start': tav0, 'end': tav1}, 'tavily_guard': guard, 'research': research, 'ark': ark, 'image': IMAGE_TAG, 'execution': EXEC, 'started_utc': T0.isoformat(), 'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), **result}
     if os.path.exists(f'/tmp/{NODE}-gate-window.json'): done['window_roll'] = json.load(open(f'/tmp/{NODE}-gate-window.json', encoding='utf-8'))   # HOLD-WINDOW-01: events that left with the rolling window, counted apart
     blob_put(f'sweeps/{NIGHT}/{CC}/done.json', json.dumps(done, ensure_ascii=False, indent=1)); blob_put(f'sweeps/{NIGHT}/{CC}/numbers.txt', line + '\n', 'text/plain'); blob_put(f'sweeps/{NIGHT}/{CC}/spend.txt', '\n'.join(spend_lines) + '\n', 'text/plain')
     if held_flag: blob_put(f'sweeps/{NIGHT}/{CC}/held.txt', held_flag, 'text/plain')

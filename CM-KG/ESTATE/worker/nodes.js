@@ -262,7 +262,7 @@ export default {
     fiscal: 'set per issuer; carried as filed.',
     idForms: ['HKEX:00005', '00005', 'HKEX-GEM:<code>', 'HKEX-REIT:<code>', 'ISIN (HK…, KY…, BM…)', 'LEI', 'name in English'],
     auditorLine: 'Auditor and Hong Kong share registrar: read from the annual report Corporate Information page; a second reader that agrees confirms the field; a disagreement is kept as a conflict, never smoothed.',
-    residency: 'Store: storage account allooloocmkghkpond in East Asia (Hong Kong), container pond — HKEX list, HKEXnews and fill drops under pond/, rendered records and event lists under door/. Door: container app cmkg-door-hk in cmkg-env-eastasia.', engines: 'Reading order of record: Perplexity, then Grok second (the cost driver), Mistral review only; Tavily for the annual-report page extraction. HKEXnews itself is read deterministically.', sweep: 'Sweep clock: nightly at 02:00 Hong Kong standard time (18:00 UTC), seven nights a week; Width 1 over a three-day window every night, Fill and Confirm on the rotation night.',
+    residency: 'Store: storage account allooloocmkghkpond in East Asia (Hong Kong), container pond — HKEX list, HKEXnews and fill drops under pond/, rendered records and event lists under door/. Door: container app cmkg-door-hk in cmkg-env-eastasia.', engines: 'Reading order of record: Perplexity, then Grok second (the cost driver), Mistral review only; Tavily for the annual-report page extraction. HKEXnews itself is read deterministically.', sweep: 'Sweep clock: every week, after the Friday close in Hong Kong; Width 1 over an eight-day window, then Fill and Confirm.',
     example: 'HKEX:00005', duty: 'suitability (SFC Code of Conduct paragraph 5.2)'
   }
 };

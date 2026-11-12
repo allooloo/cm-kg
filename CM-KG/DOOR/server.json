@@ -1,164 +1,172 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.allooloo/cm-kg",
-  "title": "Capital Markets Agents: MCP+A2A",
-  "description": "KYP Agentic Trading: listed-issuer records served in-country, and AIO-10060 orderability outcomes.",
-  "version": "0.14.0",
-  "websiteUrl": "https://getissuer.ai",
-  "repository": {
-    "url": "https://github.com/allooloo/cm-kg",
-    "source": "github"
-  },
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.getissuer.ai/mcp"
-    }
-  ],
-  "_meta": {
-    "io.modelcontextprotocol.registry/publisher-provided": {
-      "operator": "Allooloo Technologies Corp.",
-      "category": "agentic market dataset",
-      "keywords": [
-        "agentic market dataset",
-        "capital markets",
-        "issuer record",
-        "ISIN",
-        "LEI",
-        "KYP",
-        "Australia",
-        "Austria",
-        "Belgium",
-        "Bermuda",
-        "Brazil",
-        "Canada",
-        "Cayman Islands",
-        "Czech Republic",
-        "Denmark",
-        "Finland",
-        "France",
-        "Germany",
-        "Greece",
-        "Hong Kong",
-        "India",
-        "Ireland",
-        "Italy",
-        "Japan",
-        "Jersey",
-        "Luxembourg",
-        "Mexico",
-        "Netherlands",
-        "Norway",
-        "Poland",
-        "Portugal",
-        "Singapore",
-        "South Korea",
-        "Spain",
-        "Sweden",
-        "Switzerland",
-        "Taiwan",
-        "United Arab Emirates",
-        "United Kingdom",
-        "United States"
-      ],
-      "authentication": "none",
-      "access": "read-only, public-record only; no prices, quotes or licensed market data",
-      "record_spec": "CMR v0 (cm-record.org, draft)",
-      "nodes_live": [
-        "ca-cm-kg",
-        "uk-cm-kg",
-        "au-cm-kg",
-        "sg-cm-kg",
-        "ch-cm-kg",
-        "de-cm-kg",
-        "fr-cm-kg",
-        "nl-cm-kg",
-        "hk-cm-kg",
-        "jp-cm-kg",
-        "kr-cm-kg",
-        "us-cm-kg",
-        "it-cm-kg",
-        "es-cm-kg",
-        "se-cm-kg",
-        "dk-cm-kg",
-        "no-cm-kg",
-        "fi-cm-kg",
-        "be-cm-kg",
-        "ie-cm-kg",
-        "at-cm-kg",
-        "pl-cm-kg",
-        "pt-cm-kg",
-        "lu-cm-kg",
-        "gr-cm-kg",
-        "cz-cm-kg",
-        "ky-cm-kg",
-        "bm-cm-kg",
-        "je-cm-kg",
-        "tw-cm-kg",
-        "ae-cm-kg",
-        "br-cm-kg",
-        "mx-cm-kg",
-        "in-cm-kg"
-      ],
-      "tools": [
-        {
-          "name": "resolve_issuer",
-          "description": "Find a listed company by ticker, ISIN or LEI: record summary, node, version."
-        },
-        {
-          "name": "get_record",
-          "description": "The full Capital Markets Record, per-field source, reader and state."
-        },
-        {
-          "name": "list_events_since",
-          "description": "Dated, URL'd disclosure events for an issuer since a date."
-        },
-        {
-          "name": "list_aliases",
-          "description": "Sourced trade and former names."
-        },
-        {
-          "name": "list_nodes",
-          "description": "The market nodes on the roster of record, and which are live."
-        },
-        {
-          "name": "get_orderability",
-          "description": "AIO-10060 orderability outcome per client category: one ACM-68000 signal or the evidence gaps; signed, receipted."
-        }
-      ],
-      "facts": "https://mcp.getissuer.ai/facts.json",
-      "llms_txt": "https://mcp.getissuer.ai/llms.txt",
-      "description_of_record": "What: KYP Agentic Trading with the Capital Markets Knowledge Graph — one public-record file per listed company across the national markets on the roster (list_nodes), identity through disclosure trail, each field carrying its source and the date it was read, served from the issuer's own jurisdiction over the Model Context Protocol and the Agent-to-Agent protocol. Why: So an agent acting for a licensed capital markets participant with a Know Your Product (KYP) obligation hands back a fact that can be defended. The KYP model runs on this record. No prices, no quotes, no licensed data.",
-      "estate": "One regional door per market on Azure Container Apps, apex router on Cloudflare, an A2A Agent Card per node.",
-      "agent_cards": "https://agent.getissuer.ai/.well-known/agent-card.json (apex) and one per node in nodes_live, named on its roster entry (list_nodes: agent_card)",
-      "confirmed": "Confirmed current by the operator, Sept 13 2026; records confirmed against the public filing, not signed by it.",
-      "x402": {
-        "endpoint": "https://agentic-x402.ai/api",
-        "surface": "https://agentic-x402.ai/",
-        "price_usdc": "0.01",
-        "network": "eip155:8453",
-        "scheme": "exact (EIP-3009)",
-        "trades_record_route": "https://agentic-trades.ai/x402/record/{node}/{exchange}/{code}",
-        "receipts": "https://agentic-x402.ai/x402/receipt/{nonce}",
-        "jwks": "https://agentic-x402.ai/x402/jwks.json"
-      },
-      "registries_gate": {
-        "authorization_server": "https://agentic-registries.ai",
-        "metadata": "https://agentic-registries.ai/.well-known/oauth-authorization-server",
-        "register": "https://agentic-registries.ai/oauth/register",
-        "token": "https://agentic-registries.ai/oauth/token",
-        "auth_md": "https://agentic-registries.ai/auth.md",
-        "grants": [
-          "client_credentials",
-          "urn:ietf:params:oauth:grant-type:jwt-bearer"
-        ],
-        "licensed_routes": [
-          "https://agentic-trades.ai/licensed/record/{node}/{exchange}/{code}",
-          "https://agentic-registries.ai/registry/whoami"
-        ]
-      },
-      "surfaces_version": "2026-10-31.1",
-      "install": "{\"mcpServers\":{\"getissuer\":{\"type\":\"http\",\"url\":\"https://mcp.getissuer.ai/mcp\"}}}"
-    }
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+ "name": "io.github.allooloo/cm-kg",
+ "title": "Capital Markets Agents: MCP+A2A",
+ "description": "KYP Agentic Trading: listed-issuer records served in-country, and AIO-10060 orderability outcomes.",
+ "version": "0.15.0",
+ "websiteUrl": "https://getissuer.ai",
+ "repository": {
+  "url": "https://github.com/allooloo/cm-kg",
+  "source": "github"
+ },
+ "remotes": [
+  {
+   "type": "streamable-http",
+   "url": "https://mcp.getissuer.ai/mcp"
   }
+ ],
+ "_meta": {
+  "io.modelcontextprotocol.registry/publisher-provided": {
+   "operator": "Allooloo Technologies Corp.",
+   "category": "agentic market dataset",
+   "keywords": [
+    "agentic market dataset",
+    "capital markets",
+    "issuer record",
+    "ISIN",
+    "LEI",
+    "KYP",
+    "Australia",
+    "Austria",
+    "Belgium",
+    "Bermuda",
+    "Brazil",
+    "Canada",
+    "Cayman Islands",
+    "Czech Republic",
+    "Denmark",
+    "Finland",
+    "France",
+    "Germany",
+    "Greece",
+    "Hong Kong",
+    "India",
+    "Ireland",
+    "Italy",
+    "Japan",
+    "Jersey",
+    "Luxembourg",
+    "Mexico",
+    "Netherlands",
+    "Norway",
+    "Poland",
+    "Portugal",
+    "Singapore",
+    "South Korea",
+    "Spain",
+    "Sweden",
+    "Switzerland",
+    "Taiwan",
+    "United Arab Emirates",
+    "United Kingdom",
+    "United States"
+   ],
+   "authentication": "none",
+   "access": "read-only, public-record only; no prices, quotes or licensed market data",
+   "record_spec": "CMR v0 (cm-record.org, draft)",
+   "nodes_live": [
+    "ca-cm-kg",
+    "uk-cm-kg",
+    "au-cm-kg",
+    "sg-cm-kg",
+    "ch-cm-kg",
+    "de-cm-kg",
+    "fr-cm-kg",
+    "nl-cm-kg",
+    "hk-cm-kg",
+    "jp-cm-kg",
+    "kr-cm-kg",
+    "us-cm-kg",
+    "it-cm-kg",
+    "es-cm-kg",
+    "se-cm-kg",
+    "dk-cm-kg",
+    "no-cm-kg",
+    "fi-cm-kg",
+    "be-cm-kg",
+    "ie-cm-kg",
+    "at-cm-kg",
+    "pl-cm-kg",
+    "pt-cm-kg",
+    "lu-cm-kg",
+    "gr-cm-kg",
+    "cz-cm-kg",
+    "ky-cm-kg",
+    "bm-cm-kg",
+    "je-cm-kg",
+    "tw-cm-kg",
+    "ae-cm-kg",
+    "br-cm-kg",
+    "mx-cm-kg",
+    "in-cm-kg"
+   ],
+   "tools": [
+    {
+     "name": "resolve_issuer",
+     "description": "Find a listed company by ticker, ISIN or LEI: record summary, node, version."
+    },
+    {
+     "name": "get_record",
+     "description": "The full Capital Markets Record, per-field source, reader and state."
+    },
+    {
+     "name": "list_events_since",
+     "description": "Dated, URL'd disclosure events for an issuer since a date."
+    },
+    {
+     "name": "list_aliases",
+     "description": "Sourced trade and former names."
+    },
+    {
+     "name": "list_nodes",
+     "description": "The market nodes on the roster of record, and which are live."
+    },
+    {
+     "name": "get_orderability",
+     "description": "AIO-10060 orderability outcome per client category: one ACM-68000 signal or the evidence gaps; signed, receipted."
+    },
+    {
+     "name": "get_signal",
+     "description": "ACM-68000 state of a listed security."
+    },
+    {
+     "name": "get_research",
+     "description": "The record's research page on an issuer; signed, receipted."
+    }
+   ],
+   "facts": "https://mcp.getissuer.ai/facts.json",
+   "llms_txt": "https://mcp.getissuer.ai/llms.txt",
+   "description_of_record": "What: KYP Agentic Trading with the Capital Markets Knowledge Graph — one public-record file per listed company across the national markets on the roster (list_nodes), identity through disclosure trail, each field carrying its source and the date it was read, served from the issuer's own jurisdiction over the Model Context Protocol and the Agent-to-Agent protocol. Why: So an agent acting for a licensed capital markets participant with a Know Your Product (KYP) obligation hands back a fact that can be defended. The KYP model runs on this record. No prices, no quotes, no licensed data.",
+   "estate": "One regional door per market on Azure Container Apps, apex router on Cloudflare, an A2A Agent Card per node.",
+   "agent_cards": "https://agent.getissuer.ai/.well-known/agent-card.json (apex) and one per node in nodes_live, named on its roster entry (list_nodes: agent_card)",
+   "confirmed": "Confirmed current by the operator, Sept 13 2026; records confirmed against the public filing, not signed by it.",
+   "x402": {
+    "endpoint": "https://agentic-x402.ai/api",
+    "surface": "https://agentic-x402.ai/",
+    "price_usdc": "0.01",
+    "network": "eip155:8453",
+    "scheme": "exact (EIP-3009)",
+    "trades_record_route": "https://agentic-trades.ai/x402/record/{node}/{exchange}/{code}",
+    "receipts": "https://agentic-x402.ai/x402/receipt/{nonce}",
+    "jwks": "https://agentic-x402.ai/x402/jwks.json"
+   },
+   "registries_gate": {
+    "authorization_server": "https://agentic-registries.ai",
+    "metadata": "https://agentic-registries.ai/.well-known/oauth-authorization-server",
+    "register": "https://agentic-registries.ai/oauth/register",
+    "token": "https://agentic-registries.ai/oauth/token",
+    "auth_md": "https://agentic-registries.ai/auth.md",
+    "grants": [
+     "client_credentials",
+     "urn:ietf:params:oauth:grant-type:jwt-bearer"
+    ],
+    "licensed_routes": [
+     "https://agentic-trades.ai/licensed/record/{node}/{exchange}/{code}",
+     "https://agentic-registries.ai/registry/whoami"
+    ]
+   },
+   "surfaces_version": "2026-11-11.1",
+   "install": "{\"mcpServers\":{\"getissuer\":{\"type\":\"http\",\"url\":\"https://mcp.getissuer.ai/mcp\"}}}"
+  }
+ }
 }

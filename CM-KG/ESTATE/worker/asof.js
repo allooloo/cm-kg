@@ -58,7 +58,7 @@ const CONTRACT = [['Input', 'issuer (ticker, ISIN or LEI) · as_of (ISO date) ·
 const LANES = [['Agent, per read', 'x402 on the existing per-call till. USDC and Open USD on Base.', 'https://data-paygo.ai/'], ['Firm, licence', 'Data Vintage enterprise licence.', 'https://data-licence.ai/'], ['Audit', 'issue_auditor_key — the firm\'s own key to list and verify its receipt chain.', 'https://rco-records.ai/']];
 const PATH = ['Store: the Replay store under Data Vintage — sealed market-years, 2021 forward. get_as_of is a read over it. No new store, no second copy of the history.',
   'Index: the router holds an index only; the record is served by the owning node\'s regional door in its own jurisdiction. getasof.ai routes the same way.',
-  'Nightly: the OpsAgents re-slate the trading day; a sealed year is immutable thereafter. Receipts chain per writer.',
+  'Every week, after the Friday close: the OpsAgents re-slate the trading week; a sealed year is immutable thereafter. Receipts chain per writer.',
   'Two clouds: Azure primary, AWS warm standby (Data Ark). The vintage and the receipt chain are both in the ark.',
   'Markets light one by one as each vintage seals (us first, then the roster). The door answers not_sealed until then rather than guessing.'];
 const KIT = ['/llms.txt', '/index.md', '/facts.json', '/.well-known/agent-card.json', '/.well-known/mcp.json', '/.well-known/x402.json', '/.well-known/security.txt', '/sitemap.xml', '/robots.txt', '/mcp.json'];

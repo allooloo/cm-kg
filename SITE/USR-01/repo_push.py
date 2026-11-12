@@ -6,10 +6,8 @@ import os, re, sys, subprocess
 MODE = sys.argv[1]; ROOT = r'C:\ALLOOLOO'
 src = open(os.path.join(ROOT, r'CM-KG\RAILS\job\ops_split.py'), encoding='utf-8').read(); ns = {}; exec(src.split('def ls():')[0], ns); is_ops = ns['is_ops']
 ps = open(os.path.join(ROOT, r'CM-KG\RAILS\job\public_scan.py'), encoding='utf-8').read(); PAT = eval(ps[ps.index('PAT = ') + 6: ps.index('}\n', ps.index('PAT = ')) + 1])
-CODE = ('.py', '.js', '.mjs', '.toml', '.json'); DIRS = ['CM-KG/DOOR/apex', 'CM-KG/ESTATE/worker', 'CM-KG/DOOR/getresearch', 'CM-KG/RAILS/research', 'SITE/USR-01']
-MSG = ('USR-01/02/03 (2026-11-11): getresearch.ai, Data Research; get_research on the apex router\n\n'
-       'Rails CM-KG/RAILS/research (pull, rollup, orderability, coverage, venues, write, publish): one research page per listed company on the record, written from the signed record. '
-       'The router answers get_research from the page store, signed and receipted; the estate gains getresearch.ai, the eighth door in FOR DESKS, a Research link in the footer row and the venue roster on the node pages; rails in SITE/USR-01.\n\nCo-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>')
+CODE = ('.py', '.js', '.mjs', '.toml', '.json'); DIRS = ['CM-KG/DOOR/apex', 'CM-KG/ESTATE/worker', 'CM-KG/DOOR/getresearch', 'CM-KG/RAILS/research', 'CM-KG/RAILS/job/job_node.py', 'CM-KG/RAILS/job/job_reslate.py', 'CM-KG/DOOR/server.json', 'SITE/USR-01']
+MSG = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'commit-msg.txt'), encoding='utf-8').read()
 def git(*a, check=True):
     r = subprocess.run(['git', '-c', 'core.quotepath=false', *a], cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace')
     if check and r.returncode: raise SystemExit(f'git {a[:3]}: {(r.stderr or r.stdout)[-400:]}')
@@ -18,7 +16,7 @@ st = [l for l in git('status', '--porcelain', '--untracked-files=all', '--', *DI
 take = []
 for l in st:
     p = l[3:].strip().strip('"')
-    if '.pre' in os.path.basename(p) or '/backup/' in p or '/__pycache__/' in p or '/static/' in p: continue
+    if '.pre' in os.path.basename(p) or '/backup/' in p or '/__pycache__/' in p or '/static/' in p or '/ctx-' in p: continue
     if p.startswith('SITE/USR-01/') and not p.endswith(('.py', '.mjs')): continue
     if not p.endswith(CODE) or is_ops(p): continue
     take.append(p)
