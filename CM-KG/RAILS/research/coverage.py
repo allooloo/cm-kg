@@ -15,7 +15,8 @@ EU_MISTRAL = {'de', 'fr', 'nl', 'ch', 'it', 'es', 'se', 'dk', 'no', 'fi', 'be', 
 AGG = ('marketbeat', 'tipranks', 'yahoo', 'seekingalpha', 'zacks', 'investing.com', 'marketwatch', 'benzinga', 'stockanalysis', 'wallstreetzen', 'simplywall', 'fintel', 'gurufocus', 'morningstar', 'nasdaq.com', 'tradingview', 'wikipedia', 'reddit', 'barchart', 'marketscreener', 'macrotrends', 'finviz', 'investopedia', 'cnbc', 'bloomberg', 'reuters', 'wsj.com', 'ft.com', 'fool.com', 'google.', 'msn.com', 'stocktwits', 'x.com', 'twitter', 'linkedin', 'facebook', 'youtube', 'perplexity')
 UA = {'User-Agent': 'Mozilla/5.0 (compatible; Allooloo research read; +https://allooloo.io)', 'Accept': 'text/html,application/xhtml+xml,application/pdf;q=0.8,*/*;q=0.5', 'Accept-Language': 'en'}
 METER = float(sys.argv[sys.argv.index('--meter') + 1]) if '--meter' in sys.argv else None
-try: GROK = key('grok') if os.environ.get('RESEARCH_GROK', '1') == '1' and '--no-grok' not in sys.argv else None
+GROK = None   # RESLATE-01 (CEO 2026-11-12): the Grok second read is struck — nine reads, nothing returned, about 0.77 a read. Perplexity only; the tail is the tail.
+try: pass
 except Exception: GROK = None
 GROK_USD = float(os.environ.get('GROK_USD_PER_CALL', '0.025'))
 SP = {'calls': 0, 'prompt_tokens': 0, 'completion_tokens': 0, 'cost': 0.0, 'mistral_calls': 0, 'mistral_tokens': 0, 'fetches': 0}; LOCK = threading.Lock()

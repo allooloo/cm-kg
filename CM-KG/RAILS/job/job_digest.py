@@ -371,7 +371,8 @@ def daily():
     except Exception as e: cap['provisioned'] = None
     # DIGEST-CAP-01 addendum (2026-10-25): every cmkg-sweep job's tag against the fleet tag of record (this job's own IMAGE_TAG — every fleet move carries the
     # digest jobs); configured = the job definition (capacity snapshot, ARM), ran = tonight's marker. Any mismatch is a DRIFT row. Read from the jobs, never typed.
-    FLEET = os.environ.get('FLEET_TAG') or IMAGE_TAG;   # SITE-04 (2026-10-28): the fleet tag of record by env when the digest runs ahead of the node fleet
+    FLEET = ((cap.get('provisioned') or {}).get('jobs') or {}).get('fleet_tag') or os.environ.get('FLEET_TAG') or IMAGE_TAG;   # FIX-01 drift (2026-11-12): the fleet tag is read from what runs (the capacity snapshot); the typed setting is the fallback
+    #   # SITE-04 (2026-10-28): the fleet tag of record by env when the digest runs ahead of the node fleet
     tags = (((cap.get('provisioned') or {}).get('jobs') or {}).get('tags') or {}); cap['fleet_tag'] = FLEET; cap['job_tags'] = []
     for jn in sorted(set(k for k, v in tags.items() if v.get('repo') == 'cmkg-sweep') | set(RAN)):
         cfg = (tags.get(jn) or {}).get('tag'); ran = RAN.get(jn); mod = (tags.get(jn) or {}).get('modified'); at = RAN_AT.get(jn)

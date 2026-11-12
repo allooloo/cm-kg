@@ -16,7 +16,7 @@ its own time zone: by then it is Saturday in every market on the roster) that re
      stay written in the stores and the digest says so.
   7  the digest: order lines (ops/digest/lines/<night>/) for the re-slate, the Tavily and Perplexity $ and tails, the research pages; then job_digest.py.
 Environment: NIGHT (override), RESLATE_ONLY (comma list of markets), RESLATE_DRY=1 (plan only: nothing started), RESLATE_WAIT_HOURS (default 11),
-RESLATE_SKIP (apex,others,publish,digest). Exit 1 when a market failed or the apex failed; the digest is written either way."""
+RESLATE_SKIP (apex,others,publish,digest,issuerwire). Issuerwire (IW-MOVE-01): its eight Ops Agents jobs run once in this job, in order, beside the markets. Exit 1 when a market failed or the apex failed; the digest is written either way."""
 import os, sys, json, time, subprocess, datetime, traceback
 ROOT = os.environ.get('CMKG_ROOT', '/job/ALLOOLOO'); RAILS = f'{ROOT}/CM-KG/RAILS'; HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE); import roster
 TENANT = '04a24e43-dc13-4578-950a-910db076a799'; SUB = '038b49c0-5a0c-46f7-bd34-41ee6d087b41'
@@ -49,6 +49,21 @@ def tavily_used():
         j = json.loads(urllib.request.urlopen(urllib.request.Request('https://api.tavily.com/usage', headers={'Authorization': 'Bearer ' + os.environ.get('TAVILY_API_KEY', '')}), timeout=30).read()); a = j.get('account') or {}
         return (a.get('plan_usage') or 0) + (a.get('paygo_usage') or 0), a
     except Exception as e: return None, {'error': repr(e)[:120]}
+IW_RG = 'allooloo-iw-francecentral'; IW_ORDER = ['standing', 'filings', 'coverage', 'claims', 'receipts', 'ark', 'stores', 'close']
+def issuerwire(out):
+    """IW-MOVE-01: Issuerwire's cycle — its eight Ops Agents jobs, once, in order, each awaited (its own replica timeout bounds it). A job that fails does
+    not stop the ones after it: each is its own duty and the digest names what failed."""
+    for x in IW_ORDER:
+        job = f'iw-{x}-rail'; t0 = time.time()
+        try:
+            j = az('containerapp', 'job', 'show', '-n', job, '-g', IW_RG); lim = int(j['properties']['configuration'].get('replicaTimeout') or 3600) + 600
+            r = az('containerapp', 'job', 'start', '-n', job, '-g', IW_RG); ex = r.get('name') or r.get('id', '').split('/')[-1]; st = None
+            while time.time() - t0 < lim:
+                time.sleep(30); e = az('containerapp', 'job', 'execution', 'show', '-n', job, '-g', IW_RG, '--job-execution-name', ex, check=False); st = ((e or {}).get('properties') or {}).get('status')
+                if st and st not in ('Running', 'Processing', 'Unknown'): break
+            out[x] = {'execution': ex, 'status': st or 'no status', 'seconds': int(time.time() - t0)}
+        except Exception as e: out[x] = {'status': 'NOT STARTED', 'error': repr(e)[:200]}
+        log('issuerwire', x, out[x].get('status'), out[x].get('seconds'))
 def main():
     log(f'RESLATE-01 the one job: night {NIGHT}, Tavily meter ${TAV_USD:.0f} = {TAV_CREDITS} credits, Perplexity meter ${PPLX_USD:.0f}{" — DRY: nothing is started" if DRY else ""}')
     if os.name != 'nt': az('login', '--identity', raw=True); az('account', 'set', '-s', SUB, raw=True)
@@ -64,18 +79,26 @@ def main():
     for cc, reg, n in nodes:
         rg = f'allooloo-cmkg-{reg}'; job = f'cmkg-{cc}-rail'; j = az('containerapp', 'job', 'show', '-n', job, '-g', rg, check=False)
         if not j: S['markets'][cc] = {'state': 'no job'}; log(cc, 'no job', job); continue
-        env = {e['name']: e.get('value') for e in j['properties']['template']['containers'][0].get('env', [])}; rc = int(env.get('TAVILY_RUN_CEILING') or 0)
+        env = {e['name']: e.get('value') for e in j['properties']['template']['containers'][0].get('env', [])}; rc = int(env.get('TAVILY_RUN_CEILING_APPROVED') or env.get('TAVILY_RUN_CEILING') or 0)
         y = (int(n.get('records') or 0) + int(n.get('events') or 0) / 100.0) / max(rc, 1)
         plan.append({'cc': cc, 'rg': rg, 'job': job, 'store': f'allooloocmkg{cc}pond', 'run_ceiling': rc, 'yield': round(y, 3), 'records_before': int(n.get('records') or 0), 'events_before': int(n.get('events') or 0), 'as_of_before': n.get('as_of'), 'pplx_meter': round(PPLX_USD * int(n.get('records') or 0) / tot_rec, 2)})
     plan.sort(key=lambda p: (-p['yield'], p['cc'])); S['yield_order'] = [p['cc'] for p in plan]; log('yield order:', ' '.join(S['yield_order']))
+    # FIX-01 THE HARD STOP: the meter is shared out in yield order before anything starts; each guard refuses the call that would pass its share
+    meter_left = TAV_CREDITS
+    for p in plan: p['run_meter'] = max(0, min(p['run_ceiling'], meter_left)); meter_left -= p['run_meter']
+    assert sum(p['run_meter'] for p in plan) <= TAV_CREDITS, 'the shares pass the Tavily meter'
+    S['tavily']['shared_out'] = sum(p['run_meter'] for p in plan); S['tavily']['no_share'] = [p['cc'] for p in plan if p['run_ceiling'] and not p['run_meter']]; log('Tavily meter shared out:', S['tavily']['shared_out'], 'of', TAV_CREDITS, 'credits · no share:', ' '.join(S['tavily']['no_share']) or 'none')
     if DRY: print(json.dumps({'plan': plan, 'tavily': S['tavily']}, indent=1)); return 0
     for p in plan:
-        envs = [f'NIGHT={NIGHT}', 'FILL_CONFIRM=1', 'NIGHTLY_WINDOW_DAYS=8', f"RESEARCH_PPLX_METER={p['pplx_meter']}", 'RESEARCH_CHAIN=1'] + ([f'TAVILY_ACCOUNT_CEILING={ceiling}'] if ceiling else [])
+        envs = [f'NIGHT={NIGHT}', 'FILL_CONFIRM=1', 'NIGHTLY_WINDOW_DAYS=8', f"RESEARCH_PPLX_METER={p['pplx_meter']}", 'RESEARCH_CHAIN=1', f"TAVILY_RUN_CEILING_APPROVED={p['run_ceiling']}", f"TAVILY_RUN_CEILING={p['run_meter']}"] + ([f'TAVILY_ACCOUNT_CEILING={ceiling}'] if ceiling else [])
         try:
             az('containerapp', 'job', 'update', '-n', p['job'], '-g', p['rg'], '--set-env-vars', *envs)
-            x = az('containerapp', 'job', 'start', '-n', p['job'], '-g', p['rg']); p['execution'] = x.get('name') or x.get('id', '').split('/')[-1]; log(p['cc'], 'started', p['execution'], 'run ceiling', p['run_ceiling'], 'yield', p['yield'])
+            x = az('containerapp', 'job', 'start', '-n', p['job'], '-g', p['rg']); p['execution'] = x.get('name') or x.get('id', '').split('/')[-1]; log(p['cc'], 'started', p['execution'], 'Tavily share', p['run_meter'], 'of approved', p['run_ceiling'], 'yield', p['yield'])
         except Exception as e: p['start_error'] = repr(e)[:300]; log(p['cc'], 'NOT STARTED', p['start_error'])
         time.sleep(8)
+    S['issuerwire'] = {}; iw_t = None
+    if 'issuerwire' not in SKIP and not ONLY:
+        import threading; iw_t = threading.Thread(target=issuerwire, args=(S['issuerwire'],), daemon=True); iw_t.start()
     deadline = time.time() + WAIT_H * 3600; left = [p for p in plan if p.get('execution')]
     while left and time.time() < deadline:
         time.sleep(240); nxt = []
@@ -93,7 +116,8 @@ def main():
     for p in left: p['failed'] = {'error': f'no marker after {WAIT_H} hours'}; log(p['cc'], 'did not land in', WAIT_H, 'hours')
     for p in plan:   # the per-run settings come off the jobs: the next run sets its own
         az('containerapp', 'job', 'update', '-n', p['job'], '-g', p['rg'], '--remove-env-vars', 'NIGHT', 'FILL_CONFIRM', 'NIGHTLY_WINDOW_DAYS', 'RESEARCH_PPLX_METER', check=False)
-    used1, acc1 = tavily_used(); S['tavily']['account_at_end'] = acc1; cr = (used1 - used0) if used0 is not None and used1 is not None else None
+        az('containerapp', 'job', 'update', '-n', p['job'], '-g', p['rg'], '--set-env-vars', f"TAVILY_RUN_CEILING={p['run_ceiling']}", check=False)   # the approved ceiling goes back
+    used1, acc1 = tavily_used(); S['tavily']['account_at_end'] = acc1; cr_acct = (used1 - used0) if used0 is not None and used1 is not None else None
     tail_t = []; tail_p = []; pp_usd = 0.0; pp_calls = 0; pages = 0; pg_changed = 0; pg_new = 0; rs_fail = []
     for p in plan:
         d = p.get('done') or {}; g = d.get('tavily_guard') or {}; r = d.get('research') or {}; cv = r.get('coverage') or {}; pg = r.get('pages') or {}
@@ -103,7 +127,8 @@ def main():
         if p.get('done') and not d.get('held') and not r.get('ok'): rs_fail.append(p['cc'])
         S['markets'][p['cc']] = {'state': 'landed' if p.get('done') else 'failed' if p.get('failed') else 'skipped' if p.get('skipped') else 'not started', 'held': bool(d.get('held')), 'records_before': (d.get('served_before') or {}).get('records', p['records_before']), 'records': d.get('records'), 'events_before': (d.get('served_before') or {}).get('events', p['events_before']), 'events': d.get('events'),
                                  'as_of_before': (d.get('served_before') or {}).get('as_of', p['as_of_before']), 'as_of': d.get('as_of'), 'market_date': d.get('market_date'), 'tavily_guard': g, 'research': {'ok': r.get('ok'), **pg, 'coverage': cv, 'error': r.get('error') or r.get('failed')}, 'error': (p.get('failed') or {}).get('error') or p.get('start_error'), 'execution': p.get('execution'), 'yield': p['yield']}
-    S['tavily'].update({'credits_this_run': cr, 'usd_this_run': round(cr * USD_PER_CREDIT, 2) if cr is not None else None, 'tail': tail_t}); S['perplexity'].update({'calls': pp_calls, 'usd': round(pp_usd, 2), 'tail': tail_p})
+    cr = sum(int(((p.get('done') or {}).get('tavily_guard') or {}).get('credits') or 0) for p in plan)   # FIX-01: what the guards let out, not a difference of Tavily's counter
+    S['tavily'].update({'account_counter_delta': cr_acct, 'account_counter_reset': bool(cr_acct is not None and cr_acct < 0), 'credits_this_run': cr, 'usd_this_run': round(cr * USD_PER_CREDIT, 2) if cr is not None else None, 'tail': tail_t}); S['perplexity'].update({'calls': pp_calls, 'usd': round(pp_usd, 2), 'tail': tail_p})
     landed = [c for c, m in S['markets'].items() if m['state'] == 'landed']; failed = [c for c, m in S['markets'].items() if m['state'] in ('failed', 'not started')]; held = [c for c, m in S['markets'].items() if m.get('held')]
     if 'others' not in SKIP:
         for job, rg in OTHERS + [(f"cmkg-{p['cc']}-backfill", p['rg']) for p in plan if p.get('done')]:
@@ -115,19 +140,22 @@ def main():
     S['apex_exit'] = apex_rc
     if 'publish' not in SKIP:
         if os.environ.get('CLOUDFLARE_KV_TOKEN'):
-            r = subprocess.run([PY, '-X', 'utf8', f'{RAILS}/research/publish_stores.py', NIGHT] + landed, capture_output=True, text=True, encoding='utf-8', errors='replace'); S['publish'] = {'exit': r.returncode, 'last': (r.stdout or '').strip().splitlines()[-1:]}; log('page store publish exit', r.returncode)
+            r = subprocess.run([PY, '-X', 'utf8', f'{RAILS}/research/publish_stores.py', NIGHT] + landed, capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=f'{RAILS}/research'); S['publish'] = {'exit': r.returncode, 'last': (r.stdout or '').strip().splitlines()[-1:]}; log('page store publish exit', r.returncode)
         else: S['publish'] = {'exit': None, 'note': 'not published: no page-store token (CLOUDFLARE_KV_TOKEN) in this job; the pages are written in each market store (research/state/pages.jsonl)'}; log(S['publish']['note'])
+    if iw_t: iw_t.join(timeout=6 * 3600)
+    iw_bad = [x for x in IW_ORDER if (S['issuerwire'].get(x) or {}).get('status') != 'Succeeded'] if iw_t else []
     S['finished_utc'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     ops = cont(APEX_SA, 'allooloo-cmkg-shared', os.environ.get('OPS_CONTAINER', 'ops'))
     L = {'10-reslate.txt': f"RESLATE {NIGHT}: {len(landed)} of {len(plan)} markets landed" + (f" · held {' '.join(held)}" if held else '') + (f" · FAILED {' '.join(failed)}" if failed else '') + f" · apex {'ok' if apex_rc == 0 else 'not run' if apex_rc is None else 'FAILED'} · one job (cmkg-apex-rail), next run the Saturday after",
-         '20-tavily.txt': f"Tavily this run: {cr if cr is not None else 'not read'} credits" + (f" = ${cr * USD_PER_CREDIT:.2f}" if cr is not None else '') + f" of the ${TAV_USD:.0f} meter · tail (unread at the meter or the ceiling): " + ('; '.join(tail_t) if tail_t else 'none'),
+         '20-tavily.txt': f"Tavily this run: {cr} credits = ${cr * USD_PER_CREDIT:.2f} (the guards' ledgers) of the ${TAV_USD:.0f} meter, {S['tavily']['shared_out']} credits shared out" + (' · the account counter was reset by Tavily during the run' if S['tavily']['account_counter_reset'] else '') + f" · tail (unread at the meter or the ceiling): " + ('; '.join(tail_t) if tail_t else 'none'),
          '30-research.txt': f"Data Research: {pages} pages in {sum(1 for m in S['markets'].values() if (m.get('research') or {}).get('ok'))} markets ({pg_new} new, {pg_changed} rewritten on change)" + (f" · chain FAILED in {' '.join(rs_fail)}" if rs_fail else '') + f" · Perplexity {pp_calls} calls ${pp_usd:.2f} of the ${PPLX_USD:.0f} meter · tail: " + ('; '.join(tail_p) if tail_p else 'none') + ' · page store: ' + ('published' if (S.get('publish') or {}).get('exit') == 0 else 'NOT published (' + str((S.get('publish') or {}).get('note') or (S.get('publish') or {}).get('exit')) + ')')}
+    if iw_t: L['40-issuerwire.txt'] = f"Issuerwire {NIGHT}: {len(IW_ORDER) - len(iw_bad)} of {len(IW_ORDER)} Ops Agents jobs ran" + (f" · FAILED {' '.join(iw_bad)}" if iw_bad else '') + ' · weekly, in the one job (iw-*-rail, allooloo-iw-francecentral)'
     for k, v in L.items(): put(ops, f"digest/{'lines-partial' if ONLY else 'lines'}/{NIGHT}/{k}", v + '\n')   # a partial run (RESLATE_ONLY) is not the estate's line
     put(ops, f'{NIGHT}/RESLATE-{NIGHT}.json', json.dumps(S, ensure_ascii=False, indent=1), 'application/json'); put(ops, f'{NIGHT}/reslate-job.log', '\n'.join(LOG) + '\n')
     for v in L.values(): log(v)
     if 'digest' not in SKIP:
         rc = subprocess.run([PY, f'{RAILS}/job/job_digest.py'], env={**os.environ, 'NIGHT': NIGHT, 'MODE': 'daily', 'OPS_CONTAINER': os.environ.get('OPS_CONTAINER', 'ops')}).returncode; log('digest exit', rc)
-    return 1 if failed or (apex_rc not in (0, None)) else 0
+    return 1 if failed or iw_bad or (apex_rc not in (0, None)) else 0
 if __name__ == '__main__':
     try: rc = main()
     except SystemExit as e: rc = e.code if isinstance(e.code, int) else 1; log('STOP', e)
