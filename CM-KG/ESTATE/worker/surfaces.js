@@ -2,6 +2,7 @@
 // Hosts: allooloo.io (§4, record pages §3, status §6) · twelve node surfaces (<cc>-cm-kg.ai; .org/.com 301) · eight product roots (agentic-*.ai; .com/.org/.io 301; RADAR §7)
 // · the estate roots and cm-record hosts. Every host: /llms.txt /facts.json /.well-known/agent-card.json /.well-known/security.txt /sitemap.xml /robots.txt.
 // Scheduled: the §6 probe every five minutes → KV. Counts and dates are live from list_nodes on every render; nothing typed. Previous Workers kept beside (index.js, index-v1-*.js).
+import { VENUES } from './venues-data.js';   // USR-01
 import NODE_DATA from './nodes.js';
 import { setRoster } from './roster.js';   // ENUM-01 (DAY ORDER 6): every list_nodes read sets the roster the modules read
 import EXAMPLES from './examples.js';
@@ -95,7 +96,8 @@ function nodeBody(host, cc, live) {
 function nodeFacts(host, cc, live) {
   const d = NODE_DATA[cc]; const v = nodeVals(cc, live); const node = `${cc}-cm-kg`;
   return { domain: host, kind: 'node surface', node, country: d.country, operator: OPERATOR, corporate: CORPORATE, contact: CONTACT, as_of: today(), surface_version: SURFACES_VERSION, source: 'public-record', live: v.live, issuer_records: v.live ? Number(v.issuers) : null, disclosure_events: v.live ? Number(v.events) : null, drop_date: v.drop || null, width: d.partner ? 0 : null,
-    coverage: d.coverage, exchanges: v.exchanges, storage_region: d.region, serving_region: d.partner ? null : d.region, mcp_url: d.partner ? null : `https://mcp.${cc}-cm-kg.ai/mcp`, agent_card: d.partner ? null : `https://agent.${cc}-cm-kg.ai/.well-known/agent-card.json`, apex: `${APEX}/mcp`, apex_content: 'index only', no_fallback: true,
+    coverage: d.coverage, exchanges: v.exchanges, venues: (VENUES.by_node || {})[cc] || null, venue_roster: 'https://getresearch.ai/venues.json',   // USR-01: the venue roster block
+    storage_region: d.region, serving_region: d.partner ? null : d.region, mcp_url: d.partner ? null : `https://mcp.${cc}-cm-kg.ai/mcp`, agent_card: d.partner ? null : `https://agent.${cc}-cm-kg.ai/.well-known/agent-card.json`, apex: `${APEX}/mcp`, apex_content: 'index only', no_fallback: true,
     sources_of_record: d.sources, field_source_mapping: d.mapping, known_gaps: d.gaps, gaps_carried_from: d.gapsFrom, duty: d.duty, local_partner: d.partner ? 'wanted' : undefined, identifier_forms: d.idForms, registry: REGISTRY,
     machine_paths: ['/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/security.txt', '/sitemap.xml', '/robots.txt'].concat(d.partner ? [] : ['/mcp.json', '/openapi.json']), counts_from: 'list_nodes (live on each render)' };
 }

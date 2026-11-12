@@ -44,7 +44,8 @@ async function runCheck() {
 let DK = null, DK_AT = 0, DK_RUN = null; const GATE_TOOL = { get_issuer: 'resolve_issuer' };
 async function runDesks() {
   const gate = await Promise.any(['https://mcp.us-cm-kg.ai/mcp', 'https://mcp.ca-cm-kg.ai/mcp', 'https://mcp.uk-cm-kg.ai/mcp'].map(g => rpc(g, 'tools/list').then(j => { const t = (j.result && j.result.tools) || []; if (!t.length) throw new Error('no tools'); return new Set(t.map(x => x.name)); }))).catch(() => new Set());
-  const live = await Promise.all(DESKS.map(async ([t, u, mj]) => { let ok = false; try { const r = await fetch(mj, { headers: UA, redirect: 'manual', cf: { cacheTtl: 300 }, signal: AbortSignal.timeout(4000) }); ok = r.status === 200; } catch (e) { ok = false; } return ok || gate.has(GATE_TOOL[t] || t) ? [t, u] : null; }));
+  const apexTools = await Promise.any(['https://mcp.getissuer.ai/mcp', 'https://mcp.capitalmarketsknowledgegraph.ai/mcp'].map(g => rpc(g, 'tools/list').then(j => { const t = (j.result && j.result.tools) || []; if (!t.length) throw new Error('no tools'); return new Set(t.map(x => x.name)); }))).catch(() => new Set());   // USR-03: get_research is on the router's own tool list; two hosts of the one router, since a Worker on one of their zones cannot fetch that zone's own route
+  const live = await Promise.all(DESKS.map(async ([t, u, mj]) => { if (!mj) return apexTools.has(t) ? [t, u] : null; let ok = false; try { const r = await fetch(mj, { headers: UA, redirect: 'manual', cf: { cacheTtl: 300 }, signal: AbortSignal.timeout(4000) }); ok = r.status === 200; } catch (e) { ok = false; } return ok || gate.has(GATE_TOOL[t] || t) ? [t, u] : null; }));
   DK = live.filter(Boolean); DK_AT = Date.now(); setDesks(DK); return DK;
 }
 export async function deskCheck(ctx) {

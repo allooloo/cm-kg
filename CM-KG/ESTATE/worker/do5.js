@@ -9,6 +9,10 @@
 import { OPERATOR, CORPORATE, CONTACT, SURFACES_VERSION, ROBOTS, SECURITY, esc, int, today, headers, sitemap, form, navHeader, estateFooter, SPRITE } from './chrome.js';   // SITE-04A: the nav of record + the estate footer
 import * as AEO from './aeo.js';
 import { M, EU_REGIME, EU_ROWS, VERSION5 } from './do5-data.js';
+import { VENUES } from './venues-data.js';   // USR-01: the venue roster (every exchange on the record keyed to its node; regulator, halts page, disclosure channel from the market file)
+// USR-01b: the European doors page (eu-cm-kg.ai) carries each market's Coverage line and venue block: the node page of the markets with no zone of their own
+const venueOf = cc => (VENUES.by_node || {})[cc] || null;
+const vfield = f => (f && f.value ? (f.source ? `${esc(f.value)} (${a(String(f.source).split(' ')[0], 'source')}${f.read_date ? ', read ' + esc(f.read_date) : ''})` : esc(f.value)) : 'not on the market file');
 
 const GI_MCP = 'https://mcp.getissuer.ai/mcp', GI_AGENT = 'https://agent.getissuer.ai/.well-known/agent-card.json', IW_MCP = 'https://mcp.issuerwire.ai/mcp';
 const EU14 = ['it', 'es', 'se', 'dk', 'no', 'fi', 'be', 'ie', 'at', 'pl', 'pt', 'lu', 'gr', 'cz'];
@@ -108,9 +112,11 @@ function cmkgBody(cc, live, iw) {
   const v = view(cc, live, iw); const d = v.d; const e = d.eco || {};
   const s1 = v.on ? li([`State: NODE LIVE · ${int(Number(v.n.records))} records · ${int(Number(v.n.events))} events · as of ${esc(v.asOf)} <span>(list_nodes)</span>`, d.residency ? esc(d.residency) : null])
     : li([`State: NODE OPENING`, `Store it will read: ${esc(d.store_named || val(e.regulated_information_store) || 'not named yet')}`]);
+  const vn = venueOf(cc);   // USR-01: the Coverage line and the venue lines, from the venue roster
+  const sv = vn ? li([`Coverage: ${esc(vn.coverage || 'not on the market file')}`, `Exchanges on the record: ${Object.entries(vn.exchanges_on_record || {}).map(([k, n]) => `${code(k)} ${int(Number(n))}`).join(' · ') || 'none'}`, `Regulator: ${vfield(vn.regulator)}`, `Halts page: ${vfield(vn.halts_page)}`, `Disclosure channel: ${vfield(vn.disclosure_channel)}`]) : '';
   const s2 = v.on ? li([`MCP door: ${code(doorOf(cc))}`, `A2A card: ${code(cardOf(cc))}`, `Through the resolver: ${code(GI_MCP)}`]) : li([`No door yet; ${code(GI_MCP)} answers ACM-404 for this market until the node is live.`]);
   const s3 = li([`Issuer page: ${a(`https://${issuerHost(cc)}/`, issuerHost(cc))}`, `Rules (ECO): ${a(`https://${cc}-eco.ai/`, `${cc}-eco.ai`)}`, ['/llms.txt', '/facts.json', '/.well-known/agent-card.json', '/.well-known/mcp.json', '/.well-known/security.txt', '/sitemap.xml', '/robots.txt'].map(p => `<a href="${p}">${code(p)}</a>`).join(' · ')]);
-  return { v, html: `<h2>Node</h2>${s1}<h2>Door</h2>${s2}<h2>Kit</h2>${s3}` };
+  return { v, html: `<h2>Node</h2>${s1}${sv ? `<h2>Venues</h2>${sv}` : ''}<h2>Door</h2>${s2}<h2>Kit</h2>${s3}` };
 }
 
 // ---------- the EU regime: eu-issuer.ai (regime object and one row per market) and eu-cm-kg.ai (the fourteen doors)
@@ -123,8 +129,8 @@ function regimeIssBody(live) {
 }
 function regimeCmkgBody(live) {
   const rows = EU14.map(cc => { const n = live[`${cc}-cm-kg`] || {};
-    return `<tr><td>${esc((M[cc] || {}).country || cc)}</td><td>${code(doorOf(cc))}</td><td>${a(cardOf(cc), 'card')}</td><td>${n.live ? `${int(Number(n.records))} · ${int(Number(n.events))} · ${esc(n.as_of || '')}` : 'not live'}</td></tr>`; }).join('');
-  return `<p>The European nodes of the Capital Markets Knowledge Graph answer under this zone: door ${code('https://<cc>.eu-cm-kg.ai/mcp')}, card ${code('https://<cc>.eu-cm-kg.ai/.well-known/agent-card.json')}. Luxembourg also has its own zone (${code('https://mcp.lu-cm-kg.ai/mcp')}).</p><table><thead><tr><th scope="col">Market</th><th scope="col">Door</th><th scope="col">Card</th><th scope="col">Records · events · as of</th></tr></thead><tbody>${rows}</tbody></table><p>Resolver for every market: ${code(GI_MCP)} · regime page ${a('https://eu-issuer.ai/', 'eu-issuer.ai')}</p>`;
+    return `<tr><td>${esc((M[cc] || {}).country || cc)}</td><td>${code(doorOf(cc))}</td><td>${a(cardOf(cc), 'card')}</td><td>${esc((venueOf(cc) || {}).coverage || 'not on the market file')}</td><td>${n.live ? `${int(Number(n.records))} · ${int(Number(n.events))} · ${esc(n.as_of || '')}` : 'not live'}</td></tr>`; }).join('');
+  return `<p>The European nodes of the Capital Markets Knowledge Graph answer under this zone: door ${code('https://<cc>.eu-cm-kg.ai/mcp')}, card ${code('https://<cc>.eu-cm-kg.ai/.well-known/agent-card.json')}. Luxembourg also has its own zone (${code('https://mcp.lu-cm-kg.ai/mcp')}).</p><table><thead><tr><th scope="col">Market</th><th scope="col">Door</th><th scope="col">Card</th><th scope="col">Coverage</th><th scope="col">Records · events · as of</th></tr></thead><tbody>${rows}</tbody></table><p>Resolver for every market: ${code(GI_MCP)} · regime page ${a('https://eu-issuer.ai/', 'eu-issuer.ai')}</p>`;
 }
 
 // ---------- machine files
@@ -183,14 +189,14 @@ export async function handle5(request, env, c) {
   let title, desc, h1, state, asOf, body, llms, facts;
   if (c.kind === 'iss') { const b = issBody(c.cc, live, iw); title = issTitle(c.cc); h1 = issH1(c.cc); state = b.v.state; asOf = b.v.asOf; body = b.html; desc = `${b.v.country}: regulator, store, disclosure rules, ${b.v.on ? 'live count and door' : 'node opening'}.`; llms = issLlms(host, c.cc, live, iw); facts = issFacts(host, c.cc, live, iw); }
   else if (c.kind === 'cmkg') { const b = cmkgBody(c.cc, live, iw); title = `${host} — ${b.v.country} node`; h1 = `${c.cc}-cm-kg — the ${b.v.country} node`; state = b.v.state; asOf = b.v.asOf; body = b.html; desc = `${b.v.country} node of the Capital Markets Knowledge Graph: state, door, kit.`;
-    llms = [`# ${host} — ${b.v.country} node surface`, `Operator: ${OPERATOR}. ${b.v.state}.`, b.v.on ? `Door: ${doorOf(c.cc)} · card ${cardOf(c.cc)} · ${b.v.n.records} records (list_nodes).` : `Door: not yet; resolver ${GI_MCP}.`, `Issuer page: https://${issuerHost(c.cc)}/ · rules: https://${c.cc}-eco.ai/`].join('\n') + '\n';
-    facts = { domain: host, kind: 'node surface', node, market: b.v.country, state: b.v.state, door: b.v.on ? doorOf(c.cc) : null, agent_card: b.v.on ? cardOf(c.cc) : null, records: b.v.on ? b.v.n.records : null, events: b.v.on ? b.v.n.events : null, as_of: b.v.asOf || null, resolver: GI_MCP, operator: OPERATOR, surface_version: VERSION5 }; }
+    llms = [`# ${host} — ${b.v.country} node surface`, `Operator: ${OPERATOR}. ${b.v.state}.`, b.v.on ? `Door: ${doorOf(c.cc)} · card ${cardOf(c.cc)} · ${b.v.n.records} records (list_nodes).` : `Door: not yet; resolver ${GI_MCP}.`, `Issuer page: https://${issuerHost(c.cc)}/ · rules: https://${c.cc}-eco.ai/`, venueOf(c.cc) ? `Coverage: ${venueOf(c.cc).coverage || 'not on the market file'}. Venue roster: https://getresearch.ai/venues.json` : null].filter(Boolean).join('\n') + '\n';
+    facts = { domain: host, kind: 'node surface', node, market: b.v.country, state: b.v.state, door: b.v.on ? doorOf(c.cc) : null, agent_card: b.v.on ? cardOf(c.cc) : null, records: b.v.on ? b.v.n.records : null, events: b.v.on ? b.v.n.events : null, as_of: b.v.asOf || null, resolver: GI_MCP, operator: OPERATOR, surface_version: VERSION5, coverage: (venueOf(c.cc) || {}).coverage || null, venues: venueOf(c.cc), venue_roster: 'https://getresearch.ai/venues.json' }; }
   else if (c.kind === 'regime-iss') { title = 'eu-issuer.ai — the EU regime for issuer records'; h1 = 'European Union: the regime an issuer record is read under'; state = 'regime'; body = regimeIssBody(live); desc = 'ESMA, MiFID II product governance, Prospectus Regulation, MAR, ESEF, and one row per EU/EEA market.';
     llms = ['# eu-issuer.ai — EU regime page', `Operator: ${OPERATOR}.`, 'Rules object: https://eu-eco.ai/eco.json', 'Markets: ' + EU_ROWS.map(r => `${r.country} ${r.eco_page || ''}`).join('; '), 'Doors: https://eu-cm-kg.ai/'].join('\n') + '\n';
     facts = { domain: host, kind: 'regime page', regime: 'European Union', rules: 'https://eu-eco.ai/eco.json', markets: EU_ROWS.map(r => ({ cc: r.cc, country: r.country, nca: r.nca, eco_page: r.eco_page, node_live: !!(live[`${r.cc}-cm-kg`] || {}).live })), operator: OPERATOR, surface_version: VERSION5 }; }
   else { title = 'eu-cm-kg.ai — the European doors'; h1 = 'The European doors of the Capital Markets Knowledge Graph'; state = 'regime zone'; body = regimeCmkgBody(live); desc = 'The European node doors, one subdomain each: <cc>.eu-cm-kg.ai/mcp.';
     llms = ['# eu-cm-kg.ai — European doors', `Operator: ${OPERATOR}.`, ...EU14.map(cc => `- ${(M[cc] || {}).country}: ${doorOf(cc)} (card ${cardOf(cc)})`), `Resolver: ${GI_MCP}`].join('\n') + '\n';
-    facts = { domain: host, kind: 'regime zone', doors: EU14.map(cc => ({ market: cc, country: (M[cc] || {}).country, door: doorOf(cc), agent_card: cardOf(cc), live: !!(live[`${cc}-cm-kg`] || {}).live, records: (live[`${cc}-cm-kg`] || {}).records || null })), resolver: GI_MCP, operator: OPERATOR, surface_version: VERSION5 }; }
+    facts = { domain: host, kind: 'regime zone', doors: EU14.map(cc => ({ market: cc, country: (M[cc] || {}).country, door: doorOf(cc), agent_card: cardOf(cc), coverage: (venueOf(cc) || {}).coverage || null, venues: venueOf(cc), live: !!(live[`${cc}-cm-kg`] || {}).live, records: (live[`${cc}-cm-kg`] || {}).records || null })), resolver: GI_MCP, operator: OPERATOR, surface_version: VERSION5 }; }
   if (p === '/llms.txt') return t(llms);
   if (p === '/facts.json') return j(facts);
   if (p === '/') {

@@ -1,0 +1,30 @@
+# USR-03 (2026-11-11): getresearch-pages — getresearch.ai, Data Research: one research page per listed company on the record, read from the page store
+# (KV allooloo-research, written by CM-KG\RAILS\research\publish.py). The shared Allooloo chrome from the estate source; routed only on getresearch.ai
+# (@ and www). The door is get_research on the apex router (mcp.getissuer.ai). The five forwards are whole-zone redirect rules, not routes here.
+# No cron. STATUS read-only; X402 read-only for the receipts tile (tot:get_research_receipts); RESEARCH read-only.
+name = "getresearch-pages"
+main = "../../ESTATE/worker/research.js"
+compatibility_date = "2026-09-01"
+account_id = "dd2832b36f171b815f84c8487aada36b"
+workers_dev = false
+preview_urls = false
+
+[assets]
+directory = "../../ESTATE/public"
+binding = "ASSETS"
+run_worker_first = true
+
+[observability]
+enabled = true
+
+[[kv_namespaces]]
+binding = "STATUS"
+id = "c651588272f14f3080c7dd99be21a4fd"
+
+[[kv_namespaces]]
+binding = "X402"
+id = "dd183811c9b34c4db1a91029f5343fde"
+
+[[kv_namespaces]]
+binding = "RESEARCH"
+id = "7d0e0e4a059e444982b5eb1cc500efc1"
