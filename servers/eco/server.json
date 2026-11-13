@@ -1,0 +1,47 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.allooloo/eco",
+  "description": "Each market's disclosure regime as one sourced, signed object, with the issuer's ACM-68000 signal.",
+  "title": "Electronic Compliance Objects (49 markets)",
+  "repository": {
+    "url": "https://github.com/allooloo/cm-kg",
+    "source": "github"
+  },
+  "version": "0.27.0",
+  "websiteUrl": "https://allooloo.ai/markets",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.getissuer.ai/eco/mcp"
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "authentication": "none",
+      "keyring": "https://allooloo.ai/.well-known/jwks.json (kid allooloo-eco-2026-10)",
+      "operator": "Allooloo Technologies Corp.",
+      "pages": "https://<cc>-eco.ai/ (49)",
+      "payment": {
+        "asset": "USDC",
+        "free_reads_per_agent_per_day": 100,
+        "network": "eip155:8453",
+        "pricing": "https://allooloo.ai/x402/pricing.json",
+        "protocol": "x402",
+        "version": 2
+      },
+      "receipts": "every get_signal and resolve_issuer leaves an RCO receipt on https://mcp.rco-a2a.ai/mcp",
+      "routing": {
+        "gtins": "https://gtinfetch.ai/mcp",
+        "listed_issuers": "https://mcp.getissuer.ai/mcp",
+        "receipts": "https://mcp.rco-a2a.ai/mcp"
+      },
+      "standard": "ECO-10060 (Agentic KG Holdings, MIT) — https://eco-10060.org/",
+      "tools": [
+        "get_eco",
+        "get_signal",
+        "resolve_issuer",
+        "list_nodes"
+      ]
+    }
+  }
+}
