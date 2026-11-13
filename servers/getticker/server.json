@@ -1,0 +1,48 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.allooloo/getticker",
+  "description": "The issuer behind a ticker: ISIN, LEI, listing and status, from the record: signed and receipted.",
+  "title": "getticker: the Ticker door",
+  "repository": {
+    "url": "https://github.com/allooloo/cm-kg",
+    "source": "github"
+  },
+  "version": "0.27.0",
+  "websiteUrl": "https://getticker.ai",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.getticker.ai/mcp"
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "access": "free reads; the x402 offer only when asked (x402-pay: 1); every read receipted at mcp.rco-records.ai",
+      "authentication": "none",
+      "category": "issuer record door (from fields already on the record)",
+      "errors": [
+        "unknown_issuer",
+        "ambiguous",
+        "not_on_record",
+        "invalid_request"
+      ],
+      "keywords": [
+        "ticker",
+        "ISIN",
+        "LEI",
+        "listing",
+        "symbol",
+        "RCO-10060",
+        "receipt",
+        "capital markets"
+      ],
+      "operator": "Allooloo Technologies Corp.",
+      "same_router_as": "https://mcp.getissuer.ai/mcp (same index)",
+      "tools": [
+        "get_ticker",
+        "resolve_issuer",
+        "list_nodes"
+      ]
+    }
+  }
+}
