@@ -1,0 +1,44 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.allooloo/gettargetmarket",
+  "description": "Target market statements by ISIN: filed by the manufacturer, signed, receipted (AIO-10060 v1.2).",
+  "title": "gettargetmarket: the Target Market door",
+  "repository": {
+    "url": "https://github.com/allooloo/cm-kg",
+    "source": "github"
+  },
+  "version": "0.27.0",
+  "websiteUrl": "https://gettargetmarket.ai",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.gettargetmarket.ai/mcp"
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "access": "public statements; every read and filing receipted at mcp.rco-records.ai",
+      "authentication": "none for reads; a filer value (Bearer) for file_target_market",
+      "category": "target market statement (AIO-10060 v1.2 §6)",
+      "keywords": [
+        "target market",
+        "manufacturer",
+        "product governance",
+        "MiFID II",
+        "PROD",
+        "AIO-10060",
+        "distributor",
+        "negative target market",
+        "capital markets"
+      ],
+      "operator": "Allooloo Technologies Corp.",
+      "same_router_as": "https://mcp.getissuer.ai/mcp (same index, no second store)",
+      "tools": [
+        "get_target_market",
+        "list_target_market_versions",
+        "verify_target_market",
+        "file_target_market"
+      ]
+    }
+  }
+}
