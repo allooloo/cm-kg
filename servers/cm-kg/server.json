@@ -1,0 +1,172 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.allooloo/cm-kg",
+  "description": "KYP Agentic Trading: listed-issuer records served in-country, and AIO-10060 orderability outcomes.",
+  "title": "Capital Markets Agents: MCP+A2A",
+  "repository": {
+    "url": "https://github.com/allooloo/cm-kg",
+    "source": "github"
+  },
+  "version": "0.27.0",
+  "websiteUrl": "https://getissuer.ai",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.getissuer.ai/mcp"
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "access": "read-only, public-record only; no prices, quotes or licensed market data",
+      "agent_cards": "https://agent.getissuer.ai/.well-known/agent-card.json (apex) and one per node in nodes_live, named on its roster entry (list_nodes: agent_card)",
+      "authentication": "none",
+      "category": "agentic market dataset",
+      "confirmed": "Confirmed current by the operator, Sept 13 2026; records confirmed against the public filing, not signed by it.",
+      "description_of_record": "What: KYP Agentic Trading with the Capital Markets Knowledge Graph — one public-record file per listed company across the national markets on the roster (list_nodes), identity through disclosure trail, each field carrying its source and the date it was read, served from the issuer's own jurisdiction over the Model Context Protocol and the Agent-to-Agent protocol. Why: So an agent acting for a licensed capital markets participant with a Know Your Product (KYP) obligation hands back a fact that can be defended. The KYP model runs on this record. No prices, no quotes, no licensed data.",
+      "estate": "One regional door per market on Azure Container Apps, apex router on Cloudflare, an A2A Agent Card per node.",
+      "facts": "https://mcp.getissuer.ai/facts.json",
+      "install": "{\"mcpServers\":{\"getissuer\":{\"type\":\"http\",\"url\":\"https://mcp.getissuer.ai/mcp\"}}}",
+      "keywords": [
+        "agentic market dataset",
+        "capital markets",
+        "issuer record",
+        "ISIN",
+        "LEI",
+        "KYP",
+        "Australia",
+        "Austria",
+        "Belgium",
+        "Bermuda",
+        "Brazil",
+        "Canada",
+        "Cayman Islands",
+        "Czech Republic",
+        "Denmark",
+        "Finland",
+        "France",
+        "Germany",
+        "Greece",
+        "Hong Kong",
+        "India",
+        "Ireland",
+        "Italy",
+        "Japan",
+        "Jersey",
+        "Luxembourg",
+        "Mexico",
+        "Netherlands",
+        "Norway",
+        "Poland",
+        "Portugal",
+        "Singapore",
+        "South Korea",
+        "Spain",
+        "Sweden",
+        "Switzerland",
+        "Taiwan",
+        "United Arab Emirates",
+        "United Kingdom",
+        "United States"
+      ],
+      "llms_txt": "https://mcp.getissuer.ai/llms.txt",
+      "nodes_live": [
+        "ca-cm-kg",
+        "uk-cm-kg",
+        "au-cm-kg",
+        "sg-cm-kg",
+        "ch-cm-kg",
+        "de-cm-kg",
+        "fr-cm-kg",
+        "nl-cm-kg",
+        "hk-cm-kg",
+        "jp-cm-kg",
+        "kr-cm-kg",
+        "us-cm-kg",
+        "it-cm-kg",
+        "es-cm-kg",
+        "se-cm-kg",
+        "dk-cm-kg",
+        "no-cm-kg",
+        "fi-cm-kg",
+        "be-cm-kg",
+        "ie-cm-kg",
+        "at-cm-kg",
+        "pl-cm-kg",
+        "pt-cm-kg",
+        "lu-cm-kg",
+        "gr-cm-kg",
+        "cz-cm-kg",
+        "ky-cm-kg",
+        "bm-cm-kg",
+        "je-cm-kg",
+        "tw-cm-kg",
+        "ae-cm-kg",
+        "br-cm-kg",
+        "mx-cm-kg",
+        "in-cm-kg"
+      ],
+      "operator": "Allooloo Technologies Corp.",
+      "record_spec": "CMR v0 (cm-record.org, draft)",
+      "registries_gate": {
+        "auth_md": "https://agentic-registries.ai/auth.md",
+        "authorization_server": "https://agentic-registries.ai",
+        "grants": [
+          "client_credentials",
+          "urn:ietf:params:oauth:grant-type:jwt-bearer"
+        ],
+        "licensed_routes": [
+          "https://agentic-trades.ai/licensed/record/{node}/{exchange}/{code}",
+          "https://agentic-registries.ai/registry/whoami"
+        ],
+        "metadata": "https://agentic-registries.ai/.well-known/oauth-authorization-server",
+        "register": "https://agentic-registries.ai/oauth/register",
+        "token": "https://agentic-registries.ai/oauth/token"
+      },
+      "surfaces_version": "2026-11-11.1",
+      "tools": [
+        {
+          "description": "Find a listed company by ticker, ISIN or LEI: record summary, node, version.",
+          "name": "resolve_issuer"
+        },
+        {
+          "description": "The full Capital Markets Record, per-field source, reader and state.",
+          "name": "get_record"
+        },
+        {
+          "description": "Dated, URL'd disclosure events for an issuer since a date.",
+          "name": "list_events_since"
+        },
+        {
+          "description": "Sourced trade and former names.",
+          "name": "list_aliases"
+        },
+        {
+          "description": "The market nodes on the roster of record, and which are live.",
+          "name": "list_nodes"
+        },
+        {
+          "description": "AIO-10060 orderability outcome per client category: one ACM-68000 signal or the evidence gaps; signed, receipted.",
+          "name": "get_orderability"
+        },
+        {
+          "description": "ACM-68000 state of a listed security.",
+          "name": "get_signal"
+        },
+        {
+          "description": "The record's research page on an issuer; signed, receipted.",
+          "name": "get_research"
+        }
+      ],
+      "x402": {
+        "endpoint": "https://agentic-x402.ai/api",
+        "jwks": "https://agentic-x402.ai/x402/jwks.json",
+        "network": "eip155:8453",
+        "price_usdc": "0.01",
+        "receipts": "https://agentic-x402.ai/x402/receipt/{nonce}",
+        "scheme": "exact (EIP-3009)",
+        "surface": "https://agentic-x402.ai/",
+        "trades_record_route": "https://agentic-trades.ai/x402/record/{node}/{exchange}/{code}"
+      }
+    }
+  }
+}
