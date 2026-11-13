@@ -1,0 +1,88 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.allooloo/getorderability",
+  "description": "AIO orderability: may a capital product be ordered for a client category? Signed by the home node.",
+  "title": "getorderability: AIO orderability door",
+  "repository": {
+    "url": "https://github.com/allooloo/cm-kg",
+    "source": "github"
+  },
+  "version": "0.27.0",
+  "websiteUrl": "https://getorderability.ai",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.getorderability.ai/mcp"
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "access": "read-only, public rule text and public record only; no prices",
+      "agent_card": "https://agent.getorderability.ai/.well-known/agent-card.json",
+      "authentication": "none",
+      "category": "orderability outcome (AIO-10060)",
+      "facts": "https://getorderability.ai/facts.json",
+      "install": {
+        "claude_code": "claude mcp add --transport http getorderability https://mcp.getorderability.ai/mcp"
+      },
+      "keywords": [
+        "AI orderability",
+        "AIO-10060",
+        "ACM-68000",
+        "orderability",
+        "product governance",
+        "target market",
+        "client category",
+        "KYP",
+        "PROD",
+        "MiFID II",
+        "FinSA",
+        "DDO",
+        "Reg BI",
+        "capital markets"
+      ],
+      "llms_txt": "https://getorderability.ai/llms.txt",
+      "not": "not advice, not an individual suitability assessment, not permission, not a venue and not an order",
+      "operator": "Allooloo Technologies Corp.",
+      "page": "https://getorderability.ai/",
+      "provenance": {
+        "chapter": "https://sm-eco-10060.org/market/",
+        "receipts": "https://mcp.rco-records.ai/mcp (writer: the node; the router writes its own receipt of the forward)",
+        "signals": "https://acm-68000.org/",
+        "signed": "EdDSA by the producing node (its /.well-known/jwks.json)",
+        "standard": "https://aio-10060.org/"
+      },
+      "same_router_as": "https://mcp.getissuer.ai/mcp (same index, no second store)",
+      "tools": [
+        {
+          "description": "The AIO-10060 outcome for one listed security and one client category of its home market: one ACM-68000 signal or the evidence gaps; signed by the node, receipted.",
+          "name": "get_orderability"
+        },
+        {
+          "description": "Find a listed company by ticker, ISIN or LEI.",
+          "name": "resolve_issuer"
+        },
+        {
+          "description": "The full Capital Markets Record from the owning node.",
+          "name": "get_record"
+        },
+        {
+          "description": "The ACM-68000 signal of a listed security in its home market.",
+          "name": "get_signal"
+        },
+        {
+          "description": "Sourced trade and former names.",
+          "name": "list_aliases"
+        },
+        {
+          "description": "Dated disclosure events since a date.",
+          "name": "list_events_since"
+        },
+        {
+          "description": "The market nodes on the roster of record.",
+          "name": "list_nodes"
+        }
+      ]
+    }
+  }
+}
